@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>图像仿真使用指南</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../video-sim.html">← 返回Video Sim</a>
+<span>SimISP 图像仿真入口与操作。</span>
+<code>efinity/图像仿真使用指南.md</code>
+<a href="../../../efinity/图像仿真使用指南.md">Markdown 源文件</a></p>
+<h1>图像仿真使用指南</h1></header>
+<main class="article"><h1 id="evoverse-simisp-用户使用手册">evoverse.simIsp 用户使用手册</h1>
+<blockquote>
+<p><strong>适用 SDK 版本</strong>: v1.0.0</p>
+</blockquote>
+<h2 id="1-概述">1. 概述</h2>
+<p><code>evoverse.simIsp</code> 是 EVOVERSE SDK 中专用于 <strong>ISP（图像信号处理）/ 图像处理 IP 仿真验证</strong> 的命令。它编译项目提供的 testbench、RTL 和可选 BFM，捕获 <code>result.hex</code> 后用 Python 后端进行图像质量分析，最终生成包含 PSNR、锐度、白平衡、直方图、Gamma 等指标的分析报告。</p>
+<blockquote>
+<p>当前 v1.0.0 VSIX 提供 Video Sim 启动入口和配套分析能力，但尚未随包提供通用 AXI-Stream BFM。项目如需 BFM，请放入 <code>sim/BFM/</code> 或 <code>sim/common/</code>。</p>
+</blockquote>
+<h3 id="与-evoverse-sim-的区别">与 evoverse.sim 的区别</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>evoverse.sim</code></th>
+<th><code>evoverse.simIsp</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>适用场景</td>
+<td>通用 FPGA 仿真</td>
+<td>ISP / 图像处理 IP</td>
+</tr>
+<tr>
+<td>配置方式</td>
+<td>sim.yaml</td>
+<td>video_sim.yaml</td>
+</tr>
+<tr>
+<td>输入数据</td>
+<td>通用激励</td>
+<td>图像 / 视频像素流（AXI-Stream）</td>
+</tr>
+<tr>
+<td>输出产物</td>
+<td>VCD 波形</td>
+<td>result.png + JSON 分析报告</td>
+</tr>
+<tr>
+<td>分析指标</td>
+<td>无</td>
+<td>PSNR、锐度、白平衡、直方图、Gamma</td>
+</tr>
+</tbody>
+</table>
+<p>两条命令完全独立，零共享代码。</p>
+<h3 id="整体数据流">整体数据流</h3>
+<pre><code>evoverse.simIsp
+    ↓
+解析 sim/video_sim.yaml
+    ↓
+scan: RTL (rtl/) + testbench (sim/tb_*.v) + BFM (axis_video_source/sink)
+    ↓
+iverilog -g2012 编译 → sim_isp.vvp
+    ↓
+vvp 运行仿真 → result.hex
+    ↓
+gen_output.py: result.hex → result.png
+    ↓
+analyze.py: golden.png vs result.png → JSON 报告
+    ↓
+Webview 展示报告
+</code></pre>
+<h2 id="2-目录结构">2. 目录结构</h2>
+<p>运行 <code>evoverse.simIsp</code> 时，命令会在项目根目录查找 <code>sim/</code> 目录。完整的目录结构约定如下：</p>
+<pre><code>project/
+├── rtl/                         # 用户 DUT（RTL 设计文件，自动扫描包含）
+│   ├── isp_denoise.v
+│   └── color_space.v
+└── sim/
+    ├── video_sim.yaml           # 【必需】ISP 仿真配置文件
+    ├── BFM/                     # 项目自带 BFM（可选）
+    │   └── axis_video_*.v
+    ├── common/                  # 本地公共 BFM（可选）
+    │   └── axis_video_*.v
+    ├── tests/                   # testbench 测试用例
+    │   └── tb_isp.v
+    ├── tb_*.v / tb_*.sv         # testbench 也可直接放在 sim/ 根目录
+    ├── testdata/                # 测试数据
+    │   ├── stimulus.hex         # 输入激励（axis_video_source 读取）
+    │   ├── golden.png           # 参考金标准图像
+    │   └── result.hex           # 【仿真产出】axis_video_sink 写入
+    └── output/                  # 【自动创建】分析输出
+        ├── images/
+        │   └── result.png       # 从 result.hex 还原的图像
+        └── reports/
+            └── sim_isp_&lt;timestamp&gt;.json  # 分析报告
+</code></pre>
+<h3 id="各目录说明">各目录说明</h3>
+<table>
+<thead>
+<tr>
+<th>目录 / 文件</th>
+<th>必选</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sim/video_sim.yaml</code></td>
+<td>✅ 是</td>
+<td>配置文件，命令通过检测此文件激活</td>
+</tr>
+<tr>
+<td><code>rtl/</code></td>
+<td>否</td>
+<td>用户 DUT 的 Verilog/SystemVerilog 文件，自动递归扫描</td>
+</tr>
+<tr>
+<td><code>sim/BFM/</code></td>
+<td>否</td>
+<td>用户自定义 BFM；当前版本没有随包提供通用 BFM</td>
+</tr>
+<tr>
+<td><code>sim/common/</code></td>
+<td>否</td>
+<td>用户自定义公共 BFM</td>
+</tr>
+<tr>
+<td><code>sim/tests/</code></td>
+<td>否</td>
+<td>testbench 目录，递归扫描 <code>tb_*.v</code> / <code>tb_*.sv</code></td>
+</tr>
+<tr>
+<td><code>sim/tb_*.v</code></td>
+<td>✅ 是</td>
+<td>至少需要一个 testbench 文件</td>
+</tr>
+<tr>
+<td><code>sim/testdata/</code></td>
+<td>建议</td>
+<td>存放 golden.png、stimulus.hex 等测试数据</td>
+</tr>
+<tr>
+<td><code>sim/output/</code></td>
+<td>自动</td>
+<td>运行时自动创建，存放图像和报告</td>
+</tr>
+</tbody>
+</table>
+<h3 id="文件扫描规则">文件扫描规则</h3>
+<ul>
+<li><strong>BFM 文件</strong>：扫描 <code>sim/BFM/</code> 和 <code>sim/common/</code>。Runner 也保留扫描 <code>bundled/video_sim/sim/common/</code> 的能力，但当前 v0.9.0 安装包中没有交付通用 BFM 文件。</li>
+<li><strong>testbench</strong>: 扫描 <code>sim/</code> 根目录的 <code>tb_*.v</code>/<code>tb_*.sv</code>，以及 <code>sim/tests/</code> 下递归扫描的 testbench 文件</li>
+<li><strong>RTL 文件</strong>: 递归扫描 <code>rtl/</code> 目录下的所有 <code>.v</code>、<code>.sv</code>、<code>.vh</code> 文件</li>
+</ul>
+<h2 id="3-配置文件-video_sim-yaml">3. 配置文件 video_sim.yaml</h2>
+<p>配置文件必须放置在 <code>sim/video_sim.yaml</code>。</p>
+<h3 id="完整写法">完整写法</h3>
+<pre><code class="language-yaml">adapter: video_sim
+
+params:
+  width: 1920
+  height: 1080
+  frames: 1
+  pixel_format: RGB888
+
+  golden: sim/testdata/golden.png
+  result: sim/testdata/result.hex
+
+metrics:
+  - psnr
+  - sharpness
+  - white_balance
+  - histogram
+  - gamma
+</code></pre>
+<h3 id="字段说明">字段说明</h3>
+<h4 id="顶层">顶层</h4>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>adapter</code></td>
+<td>string</td>
+<td>✅ 是</td>
+<td>固定值 <code>video_sim</code>，用于区分 simIsp 和 sim 命令</td>
+</tr>
+<tr>
+<td><code>params</code></td>
+<td>object</td>
+<td>✅ 是</td>
+<td>仿真参数</td>
+</tr>
+<tr>
+<td><code>metrics</code></td>
+<td>string[]</td>
+<td>否</td>
+<td>要启用的分析指标，默认全部启用</td>
+</tr>
+</tbody>
+</table>
+<h4 id="params-参数">params 参数</h4>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>width</code></td>
+<td>number</td>
+<td>1920</td>
+<td>图像宽度（像素）</td>
+</tr>
+<tr>
+<td><code>height</code></td>
+<td>number</td>
+<td>1080</td>
+<td>图像高度（像素）</td>
+</tr>
+<tr>
+<td><code>frames</code></td>
+<td>number</td>
+<td>1</td>
+<td>帧数（单帧图像设为 1）</td>
+</tr>
+<tr>
+<td><code>pixel_format</code></td>
+<td>string</td>
+<td>RGB888</td>
+<td>像素格式，见下表</td>
+</tr>
+<tr>
+<td><code>golden</code></td>
+<td>string</td>
+<td>-</td>
+<td>参考金标准图像路径（相对项目根目录或绝对路径）</td>
+</tr>
+<tr>
+<td><code>result</code></td>
+<td>string</td>
+<td>-</td>
+<td>仿真输出 result.hex 路径（相对项目根目录或绝对路径）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="支持的像素格式">支持的像素格式</h4>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>位宽</th>
+<th>tdata 宽度</th>
+<th>通道</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RGB888</code></td>
+<td>24 bit</td>
+<td>3 字节</td>
+<td>3</td>
+<td>标准 RGB 8-8-8，当前教程验证格式</td>
+</tr>
+<tr>
+<td><code>BGR888</code></td>
+<td>24 bit</td>
+<td>3 字节</td>
+<td>3</td>
+<td>BGR 字节顺序</td>
+</tr>
+<tr>
+<td><code>RGBA8888</code></td>
+<td>32 bit</td>
+<td>4 字节</td>
+<td>4</td>
+<td>RGBA 字节顺序</td>
+</tr>
+<tr>
+<td><code>BGRA8888</code></td>
+<td>32 bit</td>
+<td>4 字节</td>
+<td>4</td>
+<td>BGRA 字节顺序</td>
+</tr>
+<tr>
+<td><code>RGB565</code></td>
+<td>16 bit</td>
+<td>2 字节</td>
+<td>3</td>
+<td>输入为两个小端字节，转换为 RGB888</td>
+</tr>
+</tbody>
+</table>
+<p><code>result.hex</code> 当前采用<strong>一行一个字节</strong>的格式。例如 RGB888 的一个红色像素依次写三行 <code>ff</code>、<code>00</code>、<code>00</code>。RAW/YUV 格式尚未完成端到端验证，不作为 v0.9.0 教程承诺。</p>
+<h2 id="4-快速开始">4. 快速开始</h2>
+<h3 id="前置条件">前置条件</h3>
+<ul>
+<li><strong>Python</strong>: 3.10+，需安装 <code>Pillow</code> 和 <code>numpy</code></li>
+<li><strong>Icarus Verilog</strong>: iverilog + vvp，需在 VS Code 中配置 <code>evoverse.iverilogPath</code></li>
+<li><strong>EVOVERSE SDK</strong>: 已安装扩展</li>
+</ul>
+<h3 id="步骤一-创建项目结构">步骤一：创建项目结构</h3>
+<p>在项目根目录下创建 <code>sim/</code> 目录和 <code>rtl/</code> 目录：</p>
+<pre><code>mkdir sim                    # PowerShell
+mkdir sim\testdata
+mkdir sim\tests
+mkdir rtl
+</code></pre>
+<h3 id="步骤二-编写-dut-rtl">步骤二：编写 DUT（RTL）</h3>
+<p>在 <code>rtl/</code> 目录下放置你的图像处理 IP 的 Verilog/SystemVerilog 代码。DUT 需要符合 AXI-Stream 视频接口规范——接收 <code>axis_video_source</code> 发出的像素流，处理后输出给 <code>axis_video_sink</code>。</p>
+<h3 id="步骤三-编写-testbench">步骤三：编写 testbench</h3>
+<p>在 <code>sim/tests/</code>（或 <code>sim/</code> 根目录）创建 testbench 文件，命名必须以 <code>tb_</code> 开头，如 <code>tb_my_isp.v</code>。</p>
+<p>testbench 中需要实例化：
+- <code>axis_video_source</code> — 从 stimulus.hex 读入像素，通过 AXI-Stream 发出
+- 你的 DUT
+- <code>axis_video_sink</code> — 接收 DUT 输出的像素流，写入 result.hex</p>
+<h3 id="步骤四-准备测试数据">步骤四：准备测试数据</h3>
+<ol>
+<li>按项目 BFM 的约定准备输入激励。SDK 的 <code>result.hex</code> 转换器使用一行一个字节；如果输入和输出共用格式，<code>stimulus.hex</code> 也建议采用同样约定。</li>
+<li>将参考金标准图像 <code>golden.png</code> 放入 <code>sim/testdata/</code></li>
+</ol>
+<h3 id="步骤五-创建配置文件">步骤五：创建配置文件</h3>
+<p>在 <code>sim/</code> 目录创建 <code>video_sim.yaml</code>：</p>
+<pre><code class="language-yaml">adapter: video_sim
+
+params:
+  width: 64
+  height: 48
+  frames: 1
+  pixel_format: RGB888
+
+  golden: sim/testdata/golden.png
+  result: sim/testdata/result.hex
+
+metrics:
+  - psnr
+  - sharpness
+  - white_balance
+  - histogram
+  - gamma
+</code></pre>
+<h3 id="步骤六-配置-iverilog-路径">步骤六：配置 iverilog 路径</h3>
+<p>在 VS Code 设置中配置 Icarus Verilog 的安装路径：</p>
+<pre><code class="language-json">{
+    &quot;evoverse.iverilogPath&quot;: &quot;C:/iverilog/bin&quot;
+}
+</code></pre>
+<h3 id="步骤七-运行命令">步骤七：运行命令</h3>
+<p>在 VS Code 中按 <code>Ctrl+Shift+P</code>，输入 <code>evoverse.simIsp</code> 并执行。</p>
+<p>命令会自动完成：
+1. 解析 <code>video_sim.yaml</code>
+2. 扫描并编译所有源文件
+3. 运行仿真
+4. 生成 result.png
+5. 执行图像质量分析
+6. 在 Webview 中展示分析报告</p>
+<p>所有输出日志会显示在 VS Code 的「输出」面板（选择 "Sim ISP" 频道）。</p>
+<h2 id="5-bfm-说明">5. BFM 说明</h2>
+<p>BFM（Bus Functional Model）是仿真中模拟总线行为的非综合模型。项目可以按以下接口职责提供自己的 BFM；表中的文件当前不是 v0.9.0 VSIX bundled 内容：</p>
+<h3 id="axis_video_source-视频源">axis_video_source — 视频源</h3>
+<p>从 <code>stimulus.hex</code> 读取像素数据，通过 AXI-Stream 接口逐像素输出。</p>
+<p>工作方式：
+1. 仿真开始时通过 <code>$readmemh</code> 将 stimulus.hex 全部读入内部数组
+2. 按 AXI-Stream ready/valid 握手协议逐像素发送
+3. <code>tuser</code> 信号标记每帧首像素（SOF），<code>tlast</code> 信号标记每行末像素（EOL）
+4. 支持多帧 replay 模式和冲刷机制（flush，用于有流水线延迟的 IP）</p>
+<h3 id="axis_video_sink-视频接收器">axis_video_sink — 视频接收器</h3>
+<p>接收 AXI-Stream 像素流并写入 <code>result.hex</code>。</p>
+<p>工作方式：
+1. 仿真开始时打开 <code>result.hex</code> 文件
+2. 每当 <code>tvalid &amp; tready</code> 同时有效，将 <code>tdata</code> 以 8 位十六进制格式写入文件
+3. 对 <code>tuser</code> 和 <code>tlast</code> 进行协议合规检查，违规时报错
+4. 收满 <code>WIDTH × HEIGHT × FRAMES</code> 个像素后，标记 <code>frame_done</code> 并刷新文件
+5. 可配置反压模式（<code>C_READY_MODE</code> / <code>C_READY_RATE</code>），模拟下游吞吐限制</p>
+<h3 id="其他-bfm">其他 BFM</h3>
+<table>
+<thead>
+<tr>
+<th>BFM</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reg_config.v</code></td>
+<td>寄存器配置模型，用于向 DUT 发送寄存器读写请求</td>
+</tr>
+<tr>
+<td><code>ddr_model.v</code></td>
+<td>DDR 内存行为模型</td>
+</tr>
+<tr>
+<td><code>axi_frame_buffer.v</code></td>
+<td>AXI Frame Buffer 模型，用于帧缓存读写</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bfm-查找顺序">BFM 查找顺序</h3>
+<p>命令按以下优先级查找 BFM 文件（高到低）：
+1. <code>sim/BFM/</code> — 项目本地 BFM
+2. <code>sim/common/</code> — 项目本地公共 BFM
+3. <code>bundled/video_sim/sim/common/</code> — 预留的扩展 BFM 目录；当前 v0.9.0 包中为空</p>
+<p>同名文件以优先级高的为准。</p>
+<h2 id="6-分析指标">6. 分析指标</h2>
+<h3 id="6-1-psnr-峰值信噪比">6.1 PSNR（峰值信噪比）</h3>
+<p>衡量输出图像与参考金标准的相似度。值越高，图像失真越小。</p>
+<table>
+<thead>
+<tr>
+<th>PSNR 值</th>
+<th>等级</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&gt; 40 dB</td>
+<td>优秀</td>
+<td>几乎无失真，肉眼无法分辨差异</td>
+</tr>
+<tr>
+<td>&gt; 30 dB</td>
+<td>良好</td>
+<td>轻微失真，通常可接受</td>
+</tr>
+<tr>
+<td>&gt; 20 dB</td>
+<td>一般</td>
+<td>明显失真，需要优化</td>
+</tr>
+<tr>
+<td>≤ 20 dB</td>
+<td>差</td>
+<td>严重失真，DUT 可能存在 bug</td>
+</tr>
+</tbody>
+</table>
+<p>分析结果包含：总体 PSNR（dB）、逐通道 PSNR（B/G/R）、MSE。</p>
+<p>⚠ PSNR 需要提供 <code>golden</code> 参考图和 <code>output</code> 输出图。</p>
+<h3 id="6-2-锐度-sharpness">6.2 锐度（Sharpness）</h3>
+<p>衡量图像的清晰度和边缘细节保留程度。通过 Laplacian 方差和 Tenengrad 两个指标综合评定。</p>
+<table>
+<thead>
+<tr>
+<th>Laplacian 方差</th>
+<th>等级</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥ 2000</td>
+<td>极佳</td>
+<td>锐度充足，边缘锐利</td>
+</tr>
+<tr>
+<td>≥ 800</td>
+<td>优秀</td>
+<td>锐度良好，细节完整</td>
+</tr>
+<tr>
+<td>≥ 200</td>
+<td>良好</td>
+<td>锐度中等，基本可接受</td>
+</tr>
+<tr>
+<td>≥ 50</td>
+<td>一般</td>
+<td>偏软，细节有一定损失</td>
+</tr>
+<tr>
+<td>&lt; 50</td>
+<td>模糊</td>
+<td>严重模糊，DUT 可能过度降噪/滤波</td>
+</tr>
+</tbody>
+</table>
+<p>分析结果包含：Laplacian 方差、Sobel 梯度均值、Tenengrad 值。</p>
+<h3 id="6-3-白平衡-white-balance">6.3 白平衡（White Balance）</h3>
+<p>基于灰度世界假说分析图像的色彩平衡。理想情况下 R、G、B 三通道均值应当相等。</p>
+<p>分析结果包含：
+- <code>r_gain</code> / <code>g_gain</code> / <code>b_gain</code> — 各通道增益系数
+- <code>bias</code> — 色温倾向：
+  - <strong>偏冷(蓝)</strong>: R/B 比率 &lt; 0.85，图像偏蓝
+  - <strong>中性</strong>: R/B 比率在 0.85~1.15 之间，色彩平衡
+  - <strong>偏暖(黄)</strong>: R/B 比率 &gt; 1.15，图像偏黄
+- <code>white_point</code> — 最亮区域的白点 RGB 值</p>
+<h3 id="6-4-直方图-histogram">6.4 直方图（Histogram）</h3>
+<p>统计 RGB 三通道的亮度分布以及输出相对输入的亮度变化。</p>
+<p>分析结果包含：
+- 各通道的均值、标准差、中位数、最小/最大值、P5/P95 百分位
+- <code>shift</code> — 整体亮度偏移方向和幅度，例如 "亮度提升 12.3 (均值变化)"</p>
+<h3 id="6-5-gamma">6.5 Gamma</h3>
+<p>测量 DUT 的 Gamma 曲线与目标值（默认 2.2）的偏差。通过采样 17 级灰度阶梯进行拟合。</p>
+<table>
+<thead>
+<tr>
+<th>偏差 (Δ)</th>
+<th>等级</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 0.05</td>
+<td>优秀</td>
+<td>Gamma 曲线几乎完美匹配目标</td>
+</tr>
+<tr>
+<td>&lt; 0.1</td>
+<td>良好</td>
+<td>轻微偏差，实际使用中几乎不可感知</td>
+</tr>
+<tr>
+<td>&lt; 0.3</td>
+<td>一般</td>
+<td>可感知偏差，建议检查 Gamma 校正逻辑</td>
+</tr>
+<tr>
+<td>≥ 0.3</td>
+<td>偏差大</td>
+<td>严重偏差，Gamma 校正模块可能有问题</td>
+</tr>
+</tbody>
+</table>
+<p>分析结果包含：实测 Gamma 值、目标 Gamma 值、偏差、有效采样点数。</p>
+<p>⚠ Gamma 分析需要提供 <code>golden</code> 参考图（含丰富灰度级）和 <code>output</code> 输出图。</p>
+<h2 id="7-常见问题">7. 常见问题</h2>
+<h3 id="q-提示-iverilog-not-found">Q: 提示 "iverilog not found"</h3>
+<p><strong>原因</strong>: 未配置 Icarus Verilog 路径，或路径不正确。</p>
+<p><strong>解决</strong>:
+1. 确认已安装 Icarus Verilog（下载地址：http://bleyer.org/icarus/）
+2. 在 VS Code 设置中配置 <code>evoverse.iverilogPath</code>：
+   - Windows 示例: <code>C:/iverilog/bin</code>
+   - Linux 示例: <code>/usr/bin</code>
+3. 确保路径下包含 <code>iverilog.exe</code>（或 <code>iverilog</code>）和 <code>vvp.exe</code>（或 <code>vvp</code>）</p>
+<h3 id="q-提示-no-testbench-found">Q: 提示 "No testbench found"</h3>
+<p><strong>原因</strong>: <code>sim/</code> 目录下没有找到 testbench 文件。</p>
+<p><strong>解决</strong>: 确保 testbench 文件符合以下之一：
+- 放在 <code>sim/</code> 根目录，文件名以 <code>tb_</code> 开头，扩展名为 <code>.v</code> 或 <code>.sv</code>
+- 放在 <code>sim/tests/</code> 目录下，文件名以 <code>tb_</code> 开头</p>
+<h3 id="q-提示-result-hex-not-found">Q: 提示 "result.hex not found"</h3>
+<p><strong>原因</strong>: 仿真完成后没有生成 <code>result.hex</code>。</p>
+<p><strong>可能的情况</strong>:
+1. testbench 中没有实例化 <code>axis_video_sink</code>，或实例化了但未正确连接
+2. DUT 没有正确输出像素流，导致 sink 未收到数据
+3. 仿真在写入 result.hex 之前就异常退出了</p>
+<p><strong>排查</strong>: 检查仿真日志（VS Code 输出面板 → "Sim ISP"），确认是否有 ERROR 日志。检查 testbench 中 <code>axis_video_sink</code> 的例化是否正确。</p>
+<h3 id="q-python-脚本报错-no-module-named-pil-或-no-module-named-numpy">Q: Python 脚本报错 "No module named 'PIL'" 或 "No module named 'numpy'"</h3>
+<p><strong>原因</strong>: 缺少 Pillow 或 numpy 依赖。</p>
+<p><strong>解决</strong>:</p>
+<pre><code class="language-bash">pip install Pillow numpy
+</code></pre>
+<p>如果使用特定的 Python 环境，可以在 VS Code 设置中配置：</p>
+<pre><code class="language-json">{
+    &quot;evoverse.pythonPath&quot;: &quot;C:/path/to/python.exe&quot;
+}
+</code></pre>
+<p>未配置时，Windows 默认使用 <code>py</code>，Linux/macOS 默认使用 <code>python3</code>。</p>
+<h3 id="q-分析报告显示-需要-output-对比图">Q: 分析报告显示 "需要 --output 对比图"</h3>
+<p><strong>原因</strong>: 部分分析项（PSNR、Gamma）需要 golden.png 和 result.png 都存在才能运行。如果仿真没有生成 result.hex 或 result.png，这些分析项会自动跳过。</p>
+<p><strong>解决</strong>: 确认仿真正常完成并生成了 result.hex，以及 gen_output.py 成功将其转换为 result.png。</p>
+<h3 id="q-图像尺寸不一致警告">Q: 图像尺寸不一致警告</h3>
+<p><strong>原因</strong>: golden.png 和 result.png 的分辨率不匹配。</p>
+<p><strong>解决</strong>: analyze.py 会自动将 result.png 缩放到 golden.png 的尺寸。如需精确对比，确保 <code>video_sim.yaml</code> 中的 <code>width</code>/<code>height</code> 与 golden.png 一致。</p>
+<h3 id="q-如何生成-stimulus-hex">Q: 如何生成 stimulus.hex</h3>
+<p>当前转换脚本约定一行一个 8 位十六进制字节。RGB888 每个像素连续输出 R、G、B 三行。可以使用 Python 脚本从图像生成：</p>
+<pre><code class="language-python">from PIL import Image
+
+img = Image.open(&quot;input.png&quot;).convert(&quot;RGB&quot;)
+with open(&quot;stimulus.hex&quot;, &quot;w&quot;) as f:
+    for r, g, b in img.getdata():
+        f.write(f&quot;{r:02x}\n{g:02x}\n{b:02x}\n&quot;)
+</code></pre>
+<p>或者参考 SDK 内置的 <code>products/video-sim/scripts/gen_output.py</code> 中的 hex 解析逻辑。</p>
+<h3 id="q-可以一次分析多个-dut-吗">Q: 可以一次分析多个 DUT 吗</h3>
+<p>每个项目只能有一个 <code>sim/video_sim.yaml</code>。如果需要测试多个 DUT，可以在 testbench 中实例化不同的 DUT 并通过寄存器配置选择，或者为每个 DUT 创建独立项目目录。</p>
+<h3 id="q-如何查看详细日志">Q: 如何查看详细日志</h3>
+<p>在 VS Code 中打开「输出」面板（<code>Ctrl+Shift+U</code>），从下拉菜单中选择 "Sim ISP" 频道。所有编译、仿真、分析步骤的日志都会输出到这里。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 参考设计索引</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>按用途查找官方参考设计。</span>
+<code>efinity/Efinity参考设计索引.md</code>
+<a href="../../../efinity/Efinity参考设计索引.md">Markdown 源文件</a></p>
+<h1>Efinity 参考设计索引</h1></header>
+<main class="article"><h1 id="efinity-参考设计索引">Efinity 参考设计索引</h1>
+<blockquote>
+<p>单一事实来源：本文件汇总 <strong>Efinity 工具自带</strong> 与 <strong>Efinix 官方发布</strong> 的全部参考设计入口。
+所有"非本仓库代码"的资料均以<strong>链接</strong>形式给出；需要时按链接去 <code>git clone</code> 或下载。</p>
+<p>最后更新：2026-09-30
+对应 Efinity 工具版本：2026.1（安装根目录 <code>C:\Efinity\2026.1\</code>）
+对应 SDK 版本：EvoVerse SDK v1.0.0</p>
+<p>A 节（官方示例）与 B 节（IP Catalog）内容基于 2026-09-25 对 <code>C:\Efinity\2026.1\examples\</code> 与 <code>C:\Efinity\2026.1\ipm\ip\</code> 的逐目录实测。</p>
+</blockquote>
+<hr />
+<h2 id="0-速查索引">0. 速查索引</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>类别</th>
+<th>入口</th>
+<th>形式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>Efinity 安装包内置</td>
+<td><code>C:\Efinity\2026.1\examples\</code></td>
+<td>本地路径</td>
+<td>10 个官方示例：helloworld / dbg×4 / ru / unified / r4000×3</td>
+</tr>
+<tr>
+<td>B</td>
+<td>官方 IP Catalog</td>
+<td><code>C:\Efinity\2026.1\ipm\ip\</code></td>
+<td>本地路径</td>
+<td>47 个 IPXACT 组件（34 顶层 + 13 复合包子 IP）</td>
+</tr>
+<tr>
+<td>C</td>
+<td>官网 <code>support/ed/</code></td>
+<td>https://www.efinixinc.com/support/ed/</td>
+<td>链接</td>
+<td>板载预装/应用演示设计</td>
+</tr>
+<tr>
+<td>D</td>
+<td>GitHub: EmbeddedSystem-Solution</td>
+<td>https://github.com/Efinix-Inc/EmbeddedSystem-Solution</td>
+<td>链接</td>
+<td>Linux + 网口 + SDHC + Sapphire SoC 集成</td>
+</tr>
+<tr>
+<td>E</td>
+<td>GitHub: EVSoC</td>
+<td>https://github.com/Efinix-Inc/evsoc</td>
+<td>链接</td>
+<td>Edge Vision SoC 视频流水线</td>
+</tr>
+<tr>
+<td>F</td>
+<td>GitHub: TinyML</td>
+<td>https://github.com/Efinix-Inc/tinyml</td>
+<td>链接</td>
+<td>TFLite Micro + 自定义指令</td>
+</tr>
+<tr>
+<td>G</td>
+<td>GitHub: br2-efinix</td>
+<td>https://github.com/Efinix-Inc/br2-efinix</td>
+<td>链接</td>
+<td>Buildroot 外部树，编译 Linux</td>
+</tr>
+<tr>
+<td>H</td>
+<td>GitHub: xyloni</td>
+<td>https://github.com/Efinix-Inc/xyloni</td>
+<td>链接</td>
+<td>Xyloni 拇指板 + Opal SoC</td>
+</tr>
+<tr>
+<td>I</td>
+<td>GitHub: zephyr-efinix</td>
+<td>https://github.com/Efinix-Inc/zephyr-efinix</td>
+<td>链接</td>
+<td>Zephyr RTOS BSP</td>
+</tr>
+<tr>
+<td>J</td>
+<td>GitHub: libusb / openocd_riscv</td>
+<td>https://github.com/Efinix-Inc/libusb , openocd_riscv</td>
+<td>链接</td>
+<td>USB 驱动 / OpenOCD</td>
+</tr>
+<tr>
+<td>K</td>
+<td>Application Notes</td>
+<td>https://www.efinixinc.com/support/docs.php</td>
+<td>链接</td>
+<td>AN033 / AN043 / AN061 等</td>
+</tr>
+<tr>
+<td>L</td>
+<td>Sapphire SoC example software</td>
+<td>随 <code>efx_soc</code> IP 生成</td>
+<td>本地路径</td>
+<td>26 个 bare-metal 固件 example（清单见 <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md §12</a>）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="a-efinity-安装包内置-examples-10-个-全量实测">A. Efinity 安装包内置 examples（10 个，全量实测）</h2>
+<p><strong>位置</strong>：<code>C:\Efinity\2026.1\examples\</code>
+<strong>器件</strong>：全部 10 个示例目标器件均为 <strong>Ti60F225 / C4</strong>（Titanium），逐个核对自各示例工程 XML 的 <code>device_info</code>。
+<strong>说明</strong>：随 Efinity 安装包一同发布，文档见 <em>Efinity Software User Guide</em> 第 2 章 "Example Designs"。</p>
+<h3 id="a-1-总表">A.1 总表</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>目录</th>
+<th>主题</th>
+<th>工程 XML</th>
+<th>unified_flow</th>
+<th>拷贝改价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>helloworld/</code></td>
+<td>LED 跑马灯基线</td>
+<td><strong>无</strong></td>
+<td>—（不适用）</td>
+<td>ISF 语法入门；经典 PT flow 的 ISF 素材库</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>helloworld-dbg/</code></td>
+<td>Efinity Debugger 入门</td>
+<td>有</td>
+<td><code>false</code></td>
+<td>mark_debug 探针 + inithex 调试流程</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>helloworld-dbg_AUTO_AND_MANUAL/</code></td>
+<td>自动+手动探针</td>
+<td>有</td>
+<td><code>false</code></td>
+<td>dbg_manual.json 模板化探针生成</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>helloworld-dbg_GOLDEN/</code></td>
+<td>Golden 波形回归</td>
+<td>有</td>
+<td><code>false</code></td>
+<td>波形一致性回归基线</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>helloworld-dbg_MULTI_USERS/</code></td>
+<td>VIO + LA 多用户调试</td>
+<td>有</td>
+<td><code>false</code></td>
+<td>la.json / vio.json 多探针协同</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>helloworld-ru/</code></td>
+<td>Remote Update 多镜像</td>
+<td>4 个子工程 XML</td>
+<td><code>false</code></td>
+<td>多镜像 + cfg_CBSEL/cfg_ENA 切换</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>helloworld-unified/</code></td>
+<td><strong>Unified Flow 黄金样板</strong></td>
+<td>有</td>
+<td><strong><code>true</code>（唯一）</strong></td>
+<td>EvoVerse 工程生成器的对齐基准（见 A.9 深读）</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>r4000-mixed-preservation/</code></td>
+<td>增量编译 / preservation</td>
+<td>有</td>
+<td><code>false</code></td>
+<td>step1~4 + stub 替换未完成模块</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>r4000-place-regions/</code></td>
+<td>区域约束</td>
+<td>有（2018.4 老格式）</td>
+<td><code>false</code></td>
+<td>partitions.pdefn 布局约束</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>r4000-team-based-design/</code></td>
+<td>团队并行</td>
+<td>多个子工程</td>
+<td><code>false</code></td>
+<td>floorplan → 子工程 → 集成的协作流</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\examples\</code> 10 个子目录枚举 + 各 XML 读取（2026-09-25）。仅 <code>helloworld-unified/helloworld.xml</code> 含 <code>unified_flow="true"</code>。</p>
+</blockquote>
+<h3 id="a-2-helloworld-经典-pt-flow-素材库">A.2 helloworld/ — 经典 PT flow 素材库</h3>
+<ul>
+<li><strong>没有工程 XML</strong>（实测目录内无 <code>*.xml</code>）。只提供素材：9 块官方 dev kit 各一套 <code>*_kit.isf</code>，加 <code>helloworld.v</code> / <code>helloworld.sdc</code> / testbench / <code>example_report.tcl</code>。</li>
+<li><code>helloworld.v</code> 四个顶层端口全部带 <code>(* syn_peri_port = 0 *)</code> 属性——经典 flow 中外部端口必须这样标记（unified flow 下可省略）。</li>
+<li><strong>拷贝改价值</strong>: 学 ISF 引脚约束写法最干净的起点；本身不是一个可"打开即编译"的工程，需自建工程再引用其 ISF。</li>
+</ul>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\examples\helloworld\</code> 目录枚举 + <code>helloworld.v</code> 实读</p>
+</blockquote>
+<h3 id="a-3-helloworld-dbg-系列-4-个-efinity-debugger">A.3 helloworld-dbg 系列（4 个）— Efinity Debugger</h3>
+<table>
+<thead>
+<tr>
+<th>变体</th>
+<th>探针来源</th>
+<th>关键文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>helloworld-dbg/</code></td>
+<td>RTL <code>mark_debug</code> + xml <code>enable-mark-debug=1</code></td>
+<td><code>*.peri.xml</code>、original/reverse/v1/v2 <code>.inithex</code></td>
+</tr>
+<tr>
+<td><code>helloworld-dbg_AUTO_AND_MANUAL/</code></td>
+<td>向导自动 + 手动模板混合</td>
+<td><code>dbg_manual.json</code>、<code>dbg_manual_TEMPLATE.v</code>、<code>wizard.json</code></td>
+</tr>
+<tr>
+<td><code>helloworld-dbg_GOLDEN/</code></td>
+<td>固定 golden 基线</td>
+<td>波形回归用</td>
+</tr>
+<tr>
+<td><code>helloworld-dbg_MULTI_USERS/</code></td>
+<td>多用户分组探针</td>
+<td><code>la.json</code>、<code>vio.json</code>、各组 <code>*_TEMPLATE.v</code> / <code>top.v</code></td>
+</tr>
+</tbody>
+</table>
+<p>四者均为 <code>unified_flow="false"</code> 的经典 flow 工程，含 <code>*.peri.xml</code>。SDK 的六步 CLI 调试流程（扫描→探针表→触发→捕获→VCD）即以此族示例为教学原型。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\examples\helloworld-dbg*\</code> 目录枚举（2026-09-25）</p>
+</blockquote>
+<h3 id="a-4-helloworld-ru-remote-update-多镜像">A.4 helloworld-ru/ — Remote Update 多镜像</h3>
+<ul>
+<li>4 个完整子工程 <code>helloworld0..3</code>，各自带 XML / peri.xml / sdc / v；</li>
+<li>顶层 <code>isf/</code> 子目录仅 6 套 kit ISF（不是全 9 块板）；</li>
+<li>演示 <code>cfg_CBSEL</code> / <code>cfg_ENA</code> / <code>cfg_ERROR</code> / <code>cfg_USR_STATUS</code> 配置控制信号的多镜像切换。</li>
+</ul>
+<p><strong>拷贝改价值</strong>: 现场 OTA / 多镜像容错需求的唯一官方参考。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\examples\helloworld-ru\</code> 目录枚举</p>
+</blockquote>
+<h3 id="a-5-helloworld-unified-黄金样板-深读指南见-a-9">A.5 helloworld-unified/ — 黄金样板（深读指南见 A.9）</h3>
+<p>唯一 <code>unified_flow="true"</code> 示例，也是 EvoVerse 工程生成器（<code>_build_native_project_xml</code>）的默认参数对齐基准。</p>
+<h3 id="a-6-r4000-系列-3-个-高级流程">A.6 r4000 系列（3 个）— 高级流程</h3>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>机制</th>
+<th>关键文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r4000-mixed-preservation/</code></td>
+<td>增量编译：已完成模块 preservation，未完成模块用 stub</td>
+<td><code>common/</code> + <code>r4000.sdc/v</code> + <code>stubs.v</code>；step1~4 各含 <code>.pifce</code>/<code>.pdefn</code></td>
+</tr>
+<tr>
+<td><code>r4000-place-regions/</code></td>
+<td>区域约束布局</td>
+<td><code>partitions.pdefn</code>；<strong>注意其 XML 是 2018.4 老版本格式</strong>，不能直接套用到 2026.1 工程</td>
+</tr>
+<tr>
+<td><code>r4000-team-based-design/</code></td>
+<td>团队协作：顶层 floorplan + 并行子工程 + 集成</td>
+<td><code>step0-flrpln</code>（含 example-configs）、<code>step1a-alu</code> / <code>1b-cntrl</code> / <code>1c-register</code>、<code>step2-integ</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\examples\r4000-*\</code> 目录枚举（2026-09-25）</p>
+</blockquote>
+<h3 id="a-7-结论专节-官方示例不覆盖-ddr-lvds-独立-pll">A.7 结论专节：官方示例<strong>不覆盖</strong> DDR / LVDS / 独立 PLL</h3>
+<p>10 个示例逐一枚举后的结论：</p>
+<ol>
+<li><strong>没有任何一个官方示例包含 DDR 控制器或 LVDS 收发器的完整工程</strong>；</li>
+<li>PLL 只在 <code>helloworld-unified</code> 的 <code>_kit_manual.isf</code>（一次性引导脚本）中出现，不存在"独立 PLL 示例工程"；</li>
+<li>官方把 DDR/LVDS/MIPI 的完整参考放在<strong>官网 <code>support/ed/</code></strong>（§C）与 <strong>IP Catalog 各 IP 的 Example Design</strong>（§B，IP Manager 生成），而非 examples 目录。</li>
+</ol>
+<p><strong>对 EvoVerse 的含义（权威模板来源只有两处，AGENTS.md §15 契约）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>权威模板来源</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISF / 工程骨架</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code></td>
+<td>pins 风格 ISF + unified flow，本仓生成器默认参数即对齐它</td>
+</tr>
+<tr>
+<td>DDR / LVDS / 具体器件基线</td>
+<td>本仓库 catalog 中 <strong>bitstream 级实测通过</strong>的权威基线 demo（如同器件 <code>ddr-memtest</code>）</td>
+<td>"拷贝改，不从零发明"（<code>rules-efinity-hard.md</code> §15）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源</strong>: examples 全量枚举；AGENTS.md「权威模板来源」节</p>
+</blockquote>
+<h3 id="a-8-通用移植要点-m-2-详表的前提">A.8 通用移植要点（M.2 详表的前提）</h3>
+<ul>
+<li>经典 flow 示例的顶层端口带 <code>(* syn_peri_port = 0 *)</code>；<code>unified_flow="true"</code> 工程可省略；</li>
+<li><code>helloworld-ru</code> 的子工程是独立完整工程，不能只拷其中一个文件；</li>
+<li><code>r4000-place-regions</code> 的老格式 XML 仅作语义参考，元素需按 2026.1 schema 重写。</li>
+</ul>
+<hr />
+<h2 id="a-9-helloworld-unified-黄金样板深读指南">A.9 helloworld-unified 黄金样板深读指南</h2>
+<p><strong>位置</strong>: <code>C:\Efinity\2026.1\examples\helloworld-unified\</code>
+<strong>地位</strong>: EvoVerse 工程生成器（<code>awesomsdk\sdk\cli\evoverse</code> <code>_build_native_project_xml</code>）的默认参数对齐基准；ISF 引导/重放契约（AGENTS.md §15）的官方实证。</p>
+<h3 id="a-9-1-三类文件的角色与关系">A.9.1 三类文件的角色与关系</h3>
+<pre><code>helloworld.xml（工程 XML，enf_proj 命名空间）
+   │  design_info → design_file（用户 RTL）
+   │  constraint_info → &lt;efx:isf_file name=&quot;Ti60F225_kit_pins.isf&quot;/&gt;   ← 只引用 pins ISF
+   │            └──────→ &lt;efx:inter_file name=&quot;&quot;/&gt;                     ← 空条目（见 A.9.4 陷阱）
+   ▼
+Ti60F225_kit_pins.isf（重放安全：仅 set_property / assign_pkg_pin）
+   │  每次 unified build 被重放到 ──┐
+   ▼                               ▼
+Ti60F225_kit_manual.isf      helloworld.peri.xml（efxpt:design_db 命名空间）
+（一次性引导：create_*）      （PT 工具产出的工程源文件，构建后必须存活）
+</code></pre>
+<p>三者关系一句话：<strong>工程 XML 声明"我要用哪个 pins ISF"；manual ISF 是开荒工具只跑一次；peri.xml 是开荒后的持久化结果，每次构建被 pins ISF 增量重放。</strong></p>
+<h3 id="a-9-2-双-isf-分工-9-块板-2-18-个-isf-实测">A.9.2 双 ISF 分工（9 块板 × 2 = 18 个 ISF，实测）</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>命令风格</th>
+<th>执行时机</th>
+<th>可否重放</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;kit&gt;_pins.isf</code></td>
+<td>仅 <code>design.set_property</code>（PULL_OPTION 等）+ <code>design.assign_pkg_pin</code>（如 <code>("led[0]","K14")</code>）</td>
+<td>每次 build（工程 XML <code>efx:isf_file</code> 引用它）</td>
+<td>幂等，可无限重放</td>
+</tr>
+<tr>
+<td><code>&lt;kit&gt;_manual.isf</code></td>
+<td><code>design.create_pll_input_clock_gpio</code> + <code>design.create_block("pll_inst1","PLL")</code> + PLL 参数 set_property（M/N/O、<code>REFCLK_FREQ=25.0</code>、<code>CLKOUT0_DIV=110</code>）+ <code>assign_pkg_pin("pll_refclk","B2")</code> + <code>assign_resource("pll_inst1","PLL_TL0","PLL")</code></td>
+<td>仅 peri.xml 不存在时的<strong>一次性 bootstrap</strong></td>
+<td>不可重放（<code>create_*</code> 重复执行报 exists 错误）</td>
+</tr>
+</tbody>
+</table>
+<p>工程 XML 只引用 <code>_kit_pins.isf</code>——<code>_kit_manual.isf</code> 不被任何 XML 引用，靠人工在引导阶段执行。这与 AGENTS.md §15「引导编译 + 重放编译两连 PASS」验收完全对应。</p>
+<h3 id="a-9-3-peri-xml-里有什么-实测要点">A.9.3 peri.xml 里有什么（实测要点）</h3>
+<p><code>helloworld.peri.xml</code>（命名空间 <code>efxpt:design_db</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>内容</th>
+<th>实测值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>device_def</code></td>
+<td><code>Ti60F225</code></td>
+</tr>
+<tr>
+<td>iobank 定义</td>
+<td>12 个 bank：1A~4B 为 1.8V LVCMOS；BL/BR/TL/TR 为 3.3V</td>
+</tr>
+<tr>
+<td><code>ctrl_info</code></td>
+<td><code>cfg_CBSEL</code> / <code>cfg_ENA</code> / <code>cfg_ERROR</code> / <code>cfg_USR_STATUS</code>（Remote Update 控制面）</td>
+</tr>
+<tr>
+<td><code>clkmux_info</code></td>
+<td><code>CLKMUX_B</code> / <code>CLKMUX_L</code> / <code>CLKMUX_R</code></td>
+</tr>
+<tr>
+<td><code>seu_info</code></td>
+<td>SEU 相关配置</td>
+</tr>
+</tbody>
+</table>
+<p>peri.xml 是<strong>工程源文件</strong>：纳入版本管理、构建后存活、任何构建路径不得删除——删除重生成是 workaround 不是修复（AGENTS.md §15）。</p>
+<h3 id="a-9-4-已知陷阱实物-空的-efx-inter_file-name">A.9.4 已知陷阱实物：空的 <code>&lt;efx:inter_file name=""/&gt;</code></h3>
+<p><code>helloworld.xml</code> 的 <code>constraint_info</code> 中实测存在 <code>&lt;efx:inter_file name=""/&gt;</code> 空条目。官方示例带着它能编过，但 EvoVerse 实践中该条目会导致 build 失败——<code>rules-efinity-hard.md</code> §2 明确"<code>&lt;efx:inter_file&gt;</code> 的 name 不能为空字符串"。本仓生成器（<code>_build_native_project_xml</code>）的处理：不输出 inter_file 行；同理 <code>isf_file</code> 为空时整行省略（空 <code>&lt;efx:isf_file name=""/&gt;</code> 会让 PT 拒绝携带 peri.xml 的工程）。</p>
+<p><strong>拷贝改时必须做</strong>：删掉空的 <code>&lt;efx:inter_file/&gt;</code>；确认 <code>efx:isf_file</code> 指向真实存在的 pins ISF。</p>
+<h3 id="a-9-5-引导-ritual-对齐-agents-md-15">A.9.5 引导 ritual（对齐 AGENTS.md §15）</h3>
+<ol>
+<li>写好 pins 风格 ISF（只 set/assign），manual ISF 的 <code>create_*</code> 临时启用；</li>
+<li>编译一次生成 peri.xml → <strong>立即注释 <code>create_*</code> 行</strong>，附一行说明（何时启用）；</li>
+<li>重放编译必须再次全 PASS——引导 + 重放两连 PASS 才算 ISF 验收通过；</li>
+<li>peri.xml 与 ISF 一起纳入版本管理。</li>
+</ol>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\examples\helloworld-unified\</code> 全目录实读（helloworld.xml、18 个 ISF、helloworld.peri.xml，2026-09-25）；AGENTS.md §15</p>
+</blockquote>
+<hr />
+<h2 id="b-官方-ip-catalog-47-个-ipxact-组件">B. 官方 IP Catalog（47 个 IPXACT 组件）</h2>
+<p><strong>位置</strong>：<code>C:\Efinity\2026.1\ipm\ip\</code>
+<strong>规模（2026-09-25 实测）</strong>：47 个 IPXACT 组件 = 34 个顶层 + 13 个复合包子 IP（<code>efx_csi2</code>×4、<code>efx_dphy</code>×4、<code>efx_dsi</code>×4、<code>efx_soc</code>×1）；目录共 38 个（34 顶层 + 4 复合包容器 + <code>common</code>）。
+<strong>完整清单</strong>（含每个组件的 IPXACT library/name/version/moduleName 与 7 处目录名≠IPXACT 名陷阱）：见 <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md §3</a>——本节不再重复维护全表，以该文件为单一事实来源。</p>
+<p><strong>顶层目录速览</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>分组</th>
+<th>目录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>总线/桥/DMA</td>
+<td><code>efx_apb3_2_axi4_lite</code> <code>efx_apb_interconnect</code> <code>efx_data_pipeline</code> <code>efx_dma</code> <code>efx_pcie_dma</code> <code>efx_pma_64b66b_gb</code></td>
+</tr>
+<tr>
+<td>AXI 基础设施</td>
+<td><code>efx_axi_data_fifo</code> <code>efx_axi_interconnect</code> <code>efx_axi_stream_switch</code></td>
+</tr>
+<tr>
+<td>存储</td>
+<td><code>efx_bram</code> <code>efx_fifo_2</code></td>
+</tr>
+<tr>
+<td>存储控制器</td>
+<td><code>efx_ddr3_soft_controller</code> <code>efx_ddr_reset_controller</code> <code>efx_flash_controller</code> <code>efx_hyper_ram_2</code> <code>efx_jtag2spi_flash</code> <code>efx_sdram_controller</code> <code>efx_sd_host_controller</code> <code>efx_socddr_calrst</code></td>
+</tr>
+<tr>
+<td>运算</td>
+<td><code>efx_cordic</code> <code>efx_divider</code> <code>efx_divider_2</code> <code>efx_integer_square_root</code></td>
+</tr>
+<tr>
+<td>MIPI（复合包）</td>
+<td><code>efx_csi2\</code>（4 子 IP）<code>efx_dphy\</code>（4 子 IP）<code>efx_dsi\</code>（4 子 IP）</td>
+</tr>
+<tr>
+<td>SoC（复合包）</td>
+<td><code>efx_soc\efx_soc</code>（RV32）<code>efx_soc_rv64</code> <code>efx_hard_soc</code></td>
+</tr>
+<tr>
+<td>串行接口</td>
+<td><code>efx_i2c_controller</code> <code>efx_jtag</code> <code>efx_uart</code></td>
+</tr>
+<tr>
+<td>以太网</td>
+<td><code>efx_tsemac</code> <code>efx_mac10gbe</code> <code>efx_usxgmii_an_37</code></td>
+</tr>
+<tr>
+<td>PLL 配置</td>
+<td><code>efx_pll_cfg</code> <code>efx_pll_autoreset</code></td>
+</tr>
+<tr>
+<td>收发器</td>
+<td><code>efx_prbs_tx_rx</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>使用方式</strong>：Efinity 中 <em>IP Manager → 选择 IP → Deliverables 勾选 "Generate Example Design"</em>；脚本化用 <code>IPMDesignAPI</code>（见 <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md §8</a>）。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\</code> 目录枚举与 47 个 <code>ip_component.xml</code> 全量读取（2026-09-25）</p>
+</blockquote>
+<hr />
+<h2 id="c-官网-support-ed-example-design">C. 官网 <code>support/ed/</code> Example Design</h2>
+<p>入口：https://www.efinixinc.com/support/ed/index.php
+按板卡分组的"开发板预装/应用演示"设计。<strong>DDR/LVDS/MIPI 的完整参考主要在这里与 IP 自带 Example Design 中</strong>（A.7 结论）。</p>
+<h3 id="c-1-活跃">C.1 活跃</h3>
+<table>
+<thead>
+<tr>
+<th>板卡</th>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60 F225</td>
+<td>Ti60 F225 Development Kit Design</td>
+<td>Mini-DSI 显示 + UVC USB 视频 + SD 卡读</td>
+</tr>
+<tr>
+<td>Ti60 F225</td>
+<td>Memory Efficiency Tester</td>
+<td>BRAM 利用率基准</td>
+</tr>
+<tr>
+<td>Ti375 N1156</td>
+<td>PCIe® Reads/Writes on Linux Demo</td>
+<td>PCIe Gen4 EP，主机端 Linux 驱动</td>
+</tr>
+<tr>
+<td>T120 BGA324 / BGA576</td>
+<td>Edge Vision SoC Framework</td>
+<td>MIPI CSI-2 + DMA + Sapphire SoC（见 E）</td>
+</tr>
+<tr>
+<td>Ti60 F225 / Ti180 J484</td>
+<td>Edge Vision SoC Framework</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-2-eol-仍可下载-不再维护">C.2 EOL（仍可下载，不再维护）</h3>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trion T20 LVDS Loopback (v2021.1)</td>
+<td>外部 LVDS 环回</td>
+</tr>
+<tr>
+<td>Trion T20 SPI Passive Programming with Raspberry Pi</td>
+<td>RPi 配置 Trion，C/Python 软件</td>
+</tr>
+<tr>
+<td>Trion T8 Multi-Image Configuration</td>
+<td>多镜像配置，基于 helloworld 变体</td>
+</tr>
+<tr>
+<td>Floating-Point Converter</td>
+<td>浮点→定点转换</td>
+</tr>
+<tr>
+<td>Using the MIPI Virtual Channel</td>
+<td>Ti60F225 虚拟通道 MIPI 视频回环</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d-github-embeddedsystem-solution">D. GitHub: EmbeddedSystem-Solution</h2>
+<p><strong>仓库</strong>：https://github.com/Efinix-Inc/EmbeddedSystem-Solution
+<strong>许可</strong>：开源
+<strong>最近更新</strong>：2026-05-19
+<strong>分支</strong>：<code>Ti375C529</code>（默认）/ <code>Ti180J484</code> / <code>T120F576</code>
+<strong>关键 IP 组合</strong>：<code>efx_soc</code> Sapphire SoC、<code>efx_tsemac</code> 10/100/1000 Mbps 三速以太网、<code>efx_sd_host_controller</code> SD/eMMC、<code>efx_dma</code> + 内存控制器、<code>efx_hard_soc</code>（仅 Ti375C529 分支，硬化 4 核 RISC-V）、SDIO Wi-Fi 子卡（Embedded Artist 1×1 Wi-Fi 6）。</p>
+<table>
+<thead>
+<tr>
+<th>板卡</th>
+<th>SoC 类型</th>
+<th>OS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti375C529 Devkit</td>
+<td>High-Performance Sapphire SoC（硬化 4 核）</td>
+<td>Linux + FreeRTOS</td>
+</tr>
+<tr>
+<td>Ti180J484 Devkit</td>
+<td>Sapphire SoC（软核）</td>
+<td>FreeRTOS</td>
+</tr>
+<tr>
+<td>T120F576 Devkit</td>
+<td>Sapphire SoC（软核）</td>
+<td>FreeRTOS</td>
+</tr>
+</tbody>
+</table>
+<p><strong>获取</strong>：<code>git clone https://github.com/Efinix-Inc/EmbeddedSystem-Solution</code> 后 <code>git checkout &lt;board-branch&gt;</code>（分支见上）；用 Efinity 打开 <code>&lt;board&gt;_devkit.peri.xml</code>。</p>
+<hr />
+<h2 id="e-github-evsoc-edge-vision-soc-framework">E. GitHub: EVSoC（Edge Vision SoC Framework）</h2>
+<p><strong>仓库</strong>：https://github.com/Efinix-Inc/evsoc
+<strong>许可</strong>：MIT
+<strong>最近更新</strong>：2026-07-01
+<strong>分支</strong>：<code>main</code>（活跃，基于 Sapphire SoC）/ <code>evsoc_ruby</code>（历史，已停更）</p>
+<table>
+<thead>
+<tr>
+<th>板卡</th>
+<th>分辨率</th>
+<th>子目录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trion T120 BGA324</td>
+<td>1280×720 / 640×480（含双摄）</td>
+<td><code>T120F324_1280_720/</code>, <code>T120F324_1280_720_dualCam/</code>, <code>T120F324_640_480/</code></td>
+</tr>
+<tr>
+<td>Trion T120 BGA576</td>
+<td>同上</td>
+<td><code>T120F576_1280_720/</code>, <code>T120F576_1280_720_dualCam/</code>, <code>T120F576_640_480/</code></td>
+</tr>
+<tr>
+<td>Titanium Ti60 F225</td>
+<td>DSI</td>
+<td><code>Ti60F225_dsi/</code>, <code>Ti60F225_coral_dsi/</code></td>
+</tr>
+<tr>
+<td>Titanium Ti180 J484</td>
+<td>HDMI</td>
+<td><code>Ti180J484_hdmi/</code>, <code>Ti180J484_coral_hdmi/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键模块</strong>：Sapphire RISC-V SoC 控制、DMA Controller（帧搬运）、Camera Subsystem（MIPI CSI-2）、Display Subsystem（MIPI DSI / HDMI）、Hardware Accelerator Interface（可挂用户加速器）。
+<strong>获取</strong>：<code>git clone https://github.com/Efinix-Inc/evsoc</code>。</p>
+<hr />
+<h2 id="f-github-tinyml">F. GitHub: TinyML</h2>
+<p><strong>仓库</strong>：https://github.com/Efinix-Inc/tinyml
+<strong>许可</strong>：MIT
+<strong>最近更新</strong>：2026-03-24</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model_zoo/</code></td>
+<td>训练好的 TFLite 模型（MobilenetV1、YOLO、MediaPipe Face Landmark）</td>
+</tr>
+<tr>
+<td><code>tinyml_hello_world/</code></td>
+<td>静态输入推理 example</td>
+</tr>
+<tr>
+<td><code>tinyml_vision/</code></td>
+<td>端到端视觉 pipeline（结合 EVSoC）</td>
+</tr>
+<tr>
+<td><code>tools/tinyml_generator/</code></td>
+<td>GUI 工具，生成 accelerator 配置</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>FAQ 与用户手册</td>
+</tr>
+</tbody>
+</table>
+<p><strong>加速策略</strong>：① 纯 TFLite Micro C++（CPU 跑）→ ② Efinix TinyML Accelerator（自定义指令加速）→ ③ 用户自定义加速器（接在 hardware accelerator socket）→ ④ 通过 DMA 与 SoC slave 接口交换数据。
+<strong>支持的相机</strong>（quick start）：Raspberry Pi Camera Module v2、Sony IMX219、Google Coral Camera、Omnivision OV5645；主推板卡：Ti180 J484。
+<strong>获取</strong>：<code>git clone https://github.com/Efinix-Inc/tinyml</code>。</p>
+<hr />
+<h2 id="g-github-br2-efinix">G. GitHub: br2-efinix</h2>
+<p><strong>仓库</strong>：https://github.com/Efinix-Inc/br2-efinix
+<strong>许可</strong>：开源
+<strong>说明</strong>：Buildroot 外部树，含 OpenSBI v0.9、U-Boot v2021.04、Linux v5.10、RISC-V 交叉 GCC v8.4.0。
+<strong>支持板卡</strong>：T120F324、T120F576、Ti60F225、Ti180F484。
+<strong>与 D 配合</strong>：与 <code>EmbeddedSystem-Solution</code> 的 <code>embedded_sw/efx_solution</code> 配对使用——前者 RTL+ISF，后者软件栈。</p>
+<pre><code class="language-bash">git clone https://github.com/Efinix-Inc/br2-efinix
+</code></pre>
+<hr />
+<h2 id="h-github-xyloni">H. GitHub: xyloni</h2>
+<p><strong>仓库</strong>：https://github.com/Efinix-Inc/xyloni
+<strong>许可</strong>：MIT
+<strong>最近更新</strong>：2023-01-16
+<strong>说明</strong>：Xyloni 拇指型开发板（T8F81）配套工程与软件，含 Opal RISC-V SoC 入门示例。嵌入式与爱好者入门。</p>
+<pre><code class="language-bash">git clone https://github.com/Efinix-Inc/xyloni
+</code></pre>
+<hr />
+<h2 id="i-github-zephyr-efinix">I. GitHub: zephyr-efinix</h2>
+<p><strong>仓库</strong>：https://github.com/Efinix-Inc/zephyr-efinix
+<strong>上游基线</strong>：https://github.com/Efinix-Inc/zephyr （fork of zephyrproject-rtos/zephyr）
+<strong>许可</strong>：MIT
+<strong>说明</strong>：Zephyr RTOS 在 Efinix FPGA 上的 BSP 与开发环境配置指南。</p>
+<pre><code class="language-bash">git clone https://github.com/Efinix-Inc/zephyr-efinix
+</code></pre>
+<hr />
+<h2 id="j-github-调试-usb-工具链">J. GitHub: 调试 / USB 工具链</h2>
+<table>
+<thead>
+<tr>
+<th>仓库</th>
+<th>用途</th>
+<th>链接</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Efinix-Inc/libusb</code></td>
+<td>跨平台 USB 访问库（LGPL-2.1）</td>
+<td>https://github.com/Efinix-Inc/libusb</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/openocd_riscv</code></td>
+<td>RISC-V OpenOCD 调试</td>
+<td>https://github.com/Efinix-Inc/openocd_riscv</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/opensbi</code></td>
+<td>OpenSBI 源码镜像</td>
+<td>https://github.com/Efinix-Inc/opensbi</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/u-boot</code></td>
+<td>U-Boot 源码镜像</td>
+<td>https://github.com/Efinix-Inc/u-boot</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/buildroot</code></td>
+<td>Buildroot 源码镜像</td>
+<td>https://github.com/Efinix-Inc/buildroot</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="k-application-notes">K. Application Notes</h2>
+<p><strong>入口</strong>：https://www.efinixinc.com/support/docs.php
+<strong>链接形式</strong>：<code>https://www.efinixinc.com/docs/an&lt;NUM&gt;-&lt;title&gt;-v&lt;rev&gt;.pdf</code></p>
+<table>
+<thead>
+<tr>
+<th>AN</th>
+<th>标题</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AN033</td>
+<td>Configuring Titanium FPGAs</td>
+<td>Ti60 / Ti180 / Ti375</td>
+</tr>
+<tr>
+<td>AN043 v1.3</td>
+<td>10/100/1000 Mbps TSE MAC + Sapphire SoC on lwIP</td>
+<td>Ti60/Ti180/T120</td>
+</tr>
+<tr>
+<td>AN061</td>
+<td>Configuring Topaz FPGAs</td>
+<td>Tz170</td>
+</tr>
+<tr>
+<td>AN 020+</td>
+<td>MIPI / DDR / 配置模式</td>
+<td>按需</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>AN043 v1.3 资源参考（Efinity 2023.1，100 MHz 系统时钟）：</p>
+<table>
+<thead>
+<tr>
+<th>FPGA</th>
+<th>LUTs</th>
+<th>FFs</th>
+<th>BRAM</th>
+<th>DSP</th>
+<th>fMAX TSEMAC</th>
+<th>fMAX SoC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60 F225 C4</td>
+<td>17,958</td>
+<td>15,117</td>
+<td>176</td>
+<td>4</td>
+<td>245 MHz</td>
+<td>289 MHz</td>
+</tr>
+<tr>
+<td>Ti180 M484 C4</td>
+<td>24,224</td>
+<td>28,669</td>
+<td>284</td>
+<td>4</td>
+<td>245 MHz</td>
+<td>289 MHz</td>
+</tr>
+<tr>
+<td>Ti180 J484 C4</td>
+<td>24,369</td>
+<td>28,668</td>
+<td>284</td>
+<td>4</td>
+<td>233 MHz</td>
+<td>241 MHz</td>
+</tr>
+<tr>
+<td>T120 F324</td>
+<td>15,678</td>
+<td>14,223</td>
+<td>204</td>
+<td>4</td>
+<td>134 MHz</td>
+<td>63 MHz</td>
+</tr>
+<tr>
+<td>T120 F576</td>
+<td>15,588</td>
+<td>14,215</td>
+<td>204</td>
+<td>4</td>
+<td>134 MHz</td>
+<td>65 MHz</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr />
+<h2 id="l-sapphire-soc-example-software">L. Sapphire SoC example software</h2>
+<p>由 <code>efx_soc</code> / <code>efx_soc_rv64</code> / <code>efx_hard_soc</code> IP 生成时附带，路径为工程根目录 <code>embedded_sw/&lt;soc&gt;/software/</code>。
+所有 example 含 <code>makefile</code> + <code>src/</code>，可在 Efinity RISC-V Embedded Software IDE 直接 build。</p>
+<p><strong>26 个固件 example 完整清单与 BSP 结构</strong>：见 <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md §12</a>（单一事实来源，本节不再重复维护）。</p>
+<p>BSP 骨架速览：</p>
+<pre><code>embedded_sw/&lt;soc&gt;/
+├── bsp/efinix/EfxSapphireSoC/   # soc.h / soc.mk / linker/*.ld / openocd
+├── config/                       # Windows Eclipse 项目配置
+├── config_linux/                 # Linux Eclipse 项目配置
+├── software/                     # 26 个 example
+└── tool/                         # 帮助脚本
+</code></pre>
+<hr />
+<h2 id="m-sdk-evoverse-工程如何选择入口">M. SDK / EvoVerse 工程如何选择入口</h2>
+<h3 id="m-1-决策表">M.1 决策表</h3>
+<table>
+<thead>
+<tr>
+<th>你的目标</th>
+<th>应参考的分类</th>
+<th>入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>跑通最简 LED 跑马灯（任何板）</td>
+<td>A</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code>（统一 flow 基准）或 <code>helloworld\</code>（经典 ISF 素材）</td>
+</tr>
+<tr>
+<td>学 unified flow 工程结构 / 写工程生成器</td>
+<td>A.9</td>
+<td><code>helloworld-unified</code> 黄金样板</td>
+</tr>
+<tr>
+<td>用 Efinity Debugger 探信号</td>
+<td>A</td>
+<td><code>helloworld-dbg</code> 4 个变体</td>
+</tr>
+<tr>
+<td>多镜像 / 现场 OTA</td>
+<td>A</td>
+<td><code>helloworld-ru/helloworld0..3</code></td>
+</tr>
+<tr>
+<td>增量编译 / 区域约束 / 团队协作</td>
+<td>A</td>
+<td><code>r4000-*</code></td>
+</tr>
+<tr>
+<td>DDR / LVDS 基线</td>
+<td>A.7</td>
+<td><strong>官方 examples 没有</strong>——用本仓 catalog 实测基线（ddr-memtest）或 §C 官网 ED</td>
+</tr>
+<tr>
+<td>用某个 IP，先跑 IP 自带 example</td>
+<td>B</td>
+<td><code>C:\Efinity\2026.1\ipm\ip\efx_*</code> + IP Manager 生成</td>
+</tr>
+<tr>
+<td>板载演示（MIPI/PCIe/USB/SD）</td>
+<td>C</td>
+<td>官网 <code>support/ed/</code></td>
+</tr>
+<tr>
+<td>Linux + 网口 + SDHC 完整系统</td>
+<td>D</td>
+<td><code>EmbeddedSystem-Solution</code></td>
+</tr>
+<tr>
+<td>摄像头视频处理</td>
+<td>E</td>
+<td><code>evsoc</code></td>
+</tr>
+<tr>
+<td>AI / 推理</td>
+<td>F</td>
+<td><code>tinyml</code></td>
+</tr>
+<tr>
+<td>跑 RTOS</td>
+<td>I</td>
+<td><code>zephyr-efinix</code></td>
+</tr>
+<tr>
+<td>评估 USB / 调试栈</td>
+<td>J</td>
+<td><code>libusb</code> / <code>openocd_riscv</code></td>
+</tr>
+<tr>
+<td>改 SoC 固件</td>
+<td>L</td>
+<td><code>embedded_sw/&lt;soc&gt;/software/&lt;example&gt;/</code></td>
+</tr>
+<tr>
+<td>时序/lwIP 网口示例</td>
+<td>K</td>
+<td>AN043</td>
+</tr>
+<tr>
+<td>配置 Titanium / Topaz</td>
+<td>K</td>
+<td>AN033 / AN061</td>
+</tr>
+<tr>
+<td>评估某个 IP 的资源/功耗</td>
+<td>Vibe Coding</td>
+<td>生成 IP 原型 → <code>efx_map</code> → <code>.res.csv</code> → <code>efx_pnr</code> → power report</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m-2-移植到本仓库的注意事项">M.2 移植到本仓库的注意事项</h3>
+<ol>
+<li><strong>XML 元素顺序</strong>：所有参考 design 的 <code>&lt;efx:project&gt;</code> 顺序必须遵守 <code>Efinity-XML工程文件Schema参考.md</code>：
+   <code>device_info → design_info → interface_info → constraint_info → sim_info → misc_info → ooc_info → ip_info</code>。
+   <code>peri.xml</code> 属于 <code>interface_info</code>，<strong>不能</strong>放进 <code>constraint_info</code>。IP 的 <code>design_file</code> 注册条目必须位于 <code>&lt;efx:top_vhdl_arch&gt;</code> 之前。</li>
+<li><strong>ISF 引用</strong>：参考 design 里的 <code>*_kit.isf</code> 是板卡原厂 ISF；本仓库使用自建 ISF 时要替换为 <code>evoverse-sdk/catalog/boards/&lt;board&gt;/&lt;board&gt;.isf</code>。</li>
+<li><strong><code>syn_peri_port</code></strong>：经典 flow 需在 RTL 顶层外部端口加 <code>(* syn_peri_port = 0 *)</code>（见 <code>helloworld/helloworld.v</code>）；unified flow（<code>unified_flow="true"</code>）下可省略。</li>
+<li><strong>空 inter_file / 空 isf_file</strong>：<code>helloworld-unified</code> 自带空的 <code>&lt;efx:inter_file name=""/&gt;</code>，拷贝改时必须删除；<code>efx:isf_file</code> 无值时整行省略（A.9.4）。</li>
+<li><strong>时序约束</strong>：参考 design 里的 <code>sdc</code> 仅含基线；正式工程需补 PLL/clock group/IO delay。</li>
+<li><strong>许可证</strong>：所有 Efinix 官方源码遵循 Efinix 自有许可证或 MIT；二次发布需保留原 <code>LICENSE</code> 文件。</li>
+</ol>
+<hr />
+<h2 id="n-获取流程-备忘">N. 获取流程（备忘）</h2>
+<p>任何 GitHub 仓库的标准获取流程：</p>
+<pre><code class="language-bash"># 1. 在合适位置（不要放在本仓库内）建立单独目录
+mkdir -p d:/work/efinix-refs &amp;&amp; cd d:/work/efinix-refs
+
+# 2. 按需浅克隆
+git clone --depth 1 https://github.com/Efinix-Inc/&lt;repo&gt;.git
+
+# 3. 进入工程
+cd &lt;repo&gt;
+git log -1   # 确认 commit
+</code></pre>
+<blockquote>
+<p><strong>本仓库不存放这些代码</strong>——只留 GitHub 链接，避免仓库体积膨胀与许可证污染；需要时按上面命令去取。</p>
+</blockquote>
+<hr />
+<h2 id="o-引用与更新规则">O. 引用与更新规则</h2>
+<ul>
+<li><strong>新增 GitHub 仓库</strong>：在 §0 索引表追加一行，并在对应分类小节展开。</li>
+<li><strong>链接失效处理</strong>：每季度检查一次 GitHub 仓库与 <code>support/ed/</code> 链接；失效的标注 <code>⚠ Link dead: &lt;date&gt;</code>。</li>
+<li><strong>板卡覆盖扩展</strong>：新增板卡时，在 D/E/F 同步增列。</li>
+<li><strong>IP Catalog 数据</strong>：47 组件全表与名称陷阱只在 <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md</a> 维护；本文件 §B 仅维护分组速览，版本升级时以全量重提取为准。</li>
+</ul>
+<hr />
+<h2 id="p-版本与日期历史">P. 版本与日期历史</h2>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-30</td>
+<td>首版：合并 12 个分类共 30+ 个 reference design 入口</td>
+</tr>
+<tr>
+<td>2026-07-30</td>
+<td>重构：精简 A/B 节为路径+要点表；GitHub 仓库全部保留链接，不 clone；新增 N 节"获取流程"</td>
+</tr>
+<tr>
+<td>2026-07-30</td>
+<td>标注 EVSoC、EmbeddedSystem-Solution、TinyML 仓库最新提交时间</td>
+</tr>
+<tr>
+<td>2026-09-25</td>
+<td>实测增强：A 节扩为 10 示例全表（含拷贝改价值、unified_flow 真值、r4000 老格式 XML 警示）；新增 A.7"无 DDR/LVDS/独立 PLL 官方示例"结论专节与 A.9 helloworld-unified 深读指南（双 ISF/peri.xml/工程 XML 三者关系）；B 节修正为 47 组件并移交全表维护权；helloworld dev kit 计数修正为 9；M.2 增补空 inter_file/isf_file 陷阱</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>文件位置</strong>：<code>docs/efinity/Efinity参考设计索引.md</code>
+<strong>配套文档</strong>：
+- <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md</a> — 47 组件全表、IPMDesignAPI、IP 数据流
+- <a href="Efinity工具链参考.html">Efinity工具链参考.md</a> — 工具命令
+- <a href="Efinity-XML工程文件Schema参考.html">Efinity-XML工程文件Schema参考.md</a> — XML 元素顺序
+- <a href="Efinity-ISF语法参考.html">Efinity-ISF语法参考.md</a> — ISF 写法
+- <a href="Efinity设计规范.html">Efinity设计规范.md</a> — RTL 规范
+- <a href="Efinity优化设计.html">Efinity优化设计.md</a> — 时序/资源优化
+- 《Efinity文件格式-peri.xml.md》— peri.xml 结构（并行编写中）
+- 《Efinity硬IP-*参考.md》— 各硬 IP 的 ISF 用法（并行编写中）
+- <a href="FPGA-STA基础.html">FPGA-STA基础.md</a> — Setup/Hold/Slack/Skew/Jitter 通用理论（Q1）
+- <a href="FPGA-CDC模式.html">FPGA-CDC模式.md</a> — 2-FF/Gray/handshake/Async FIFO（Q2）
+- <a href="FPGA-时钟约束Cookbook.html">FPGA-时钟约束Cookbook.md</a> — create_clock/latency/uncertainty（Q3）
+- <a href="FPGA-时序例外Cookbook.html">FPGA-时序例外Cookbook.md</a> — false_path/MCP/clock_groups（Q4）
+- <a href="FPGA-IO时序约束.html">FPGA-IO时序约束.md</a> — set_input_delay/set_output_delay（Q5）
+- <a href="FPGA-Retiming与Pipelining.html">FPGA-Retiming与Pipelining.md</a> — Leiserson/Efinity --retiming（Q6）
+- <a href="FPGA-MTBF与Metastability.html">FPGA-MTBF与Metastability.md</a> — MTBF 方程与异步寄存器（Q7）</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

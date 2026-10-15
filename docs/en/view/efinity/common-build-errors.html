@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Common Build Errors</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Look up causes and native fix paths by error symptom.</span>
+<code>efinity/common-build-errors.md</code>
+<a href="../../../efinity/common-build-errors.md">Markdown source</a></p>
+<h1>Efinity Common Build Errors</h1></header>
+<main class="article"><h1 id="efinity-common-build-errors">Efinity Common Build Errors</h1>
+<blockquote>
+<p>Version: v1.0 | Based on Efinity 2026.1 (efx_map / efx_pnr / IP Manager / Design Check)</p>
+</blockquote>
+<h2 id="1-error-taxonomy-overview">1. Error taxonomy overview</h2>
+<p>Compile errors in the Efinity toolchain fall into six categories by origin:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Source</th>
+<th>Typical stage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synthesis errors</td>
+<td>efx_map</td>
+<td>map</td>
+</tr>
+<tr>
+<td>XML configuration errors</td>
+<td>efx_map / efx_pnr</td>
+<td>map / pnr</td>
+</tr>
+<tr>
+<td>Interface design check errors</td>
+<td>Interface Designer (Design Check)</td>
+<td>pnr</td>
+</tr>
+<tr>
+<td>IP Manager errors</td>
+<td>IP Manager (efxIP.log)</td>
+<td>project initialization</td>
+</tr>
+<tr>
+<td>P&amp;R errors</td>
+<td>efx_pnr</td>
+<td>pnr</td>
+</tr>
+<tr>
+<td>Programmer errors</td>
+<td>efx_pgm</td>
+<td>pgm</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>efx_map --help</code> error codes; <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>; Design Check rules</p>
+</blockquote>
+<hr />
+<h2 id="2-synthesis-errors">2. Synthesis errors</h2>
+<h3 id="2-1-efx-0002-illegal-command-line">2.1 EFX-0002: Illegal command line</h3>
+<pre><code>EFX-0002 (ERROR): Illegal command line
+</code></pre>
+<p><strong>Meaning</strong>: A command-line argument passed to efx_map is malformed or unrecognized.</p>
+<p><strong>Troubleshooting</strong>:
+- Check the command-line help <code>efx_map --help</code>
+- Confirm parameter names are spelled correctly and follow the <code>name=value</code> convention</p>
+<blockquote>
+<p>Source: <code>efx_map --help</code> — EFX-0002</p>
+</blockquote>
+<h3 id="2-2-efx-0003-source-file-analysis-failed">2.2 EFX-0003: Source file analysis failed</h3>
+<pre><code>EFX-0003 (ERROR): Analysis of source file '&lt;file&gt;' failed
+</code></pre>
+<p><strong>Meaning</strong>: Syntax analysis or semantic elaboration of a Verilog/VHDL source file failed.</p>
+<p><strong>Troubleshooting</strong>:
+- Look at the error messages that precede this one to pinpoint the specific syntax/semantic problem
+- Check the file for undeclared signals, missing module definitions, and syntax errors</p>
+<blockquote>
+<p>Source: <code>efx_map --help</code> — EFX-0003</p>
+</blockquote>
+<h3 id="2-3-undefined-black-box-modules">2.3 Undefined black-box modules</h3>
+<p>When the design references an undefined module, the default behavior is an error.</p>
+<p><strong>Control parameter:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--blackbox-error arg</code></td>
+<td><code>1</code></td>
+<td>Set to <code>0</code> to downgrade black boxes from ERROR to WARNING</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>efx_map --help</code> — <code>--blackbox-error</code></p>
+</blockquote>
+<h3 id="2-4-raising-log-verbosity">2.4 Raising log verbosity</h3>
+<p>When an error message is not specific enough, increase the output verbosity:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--message-verbosity arg</code></td>
+<td><code>0</code></td>
+<td>Increase this value for more detailed error context</td>
+</tr>
+<tr>
+<td><code>--suppress_warning_msgs arg</code></td>
+<td><code>0</code></td>
+<td>Set to <code>1</code> to suppress warnings (not recommended while troubleshooting)</td>
+</tr>
+<tr>
+<td><code>--msg_config_file arg</code></td>
+<td>—</td>
+<td>Specify a custom message-filter configuration file</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-powershell"># Pass verbosity options through efx_run
+efx_run.bat my_design --map_opts message-verbosity=1
+</code></pre>
+<blockquote>
+<p>Source: <code>efx_map --help</code> — <code>--message-verbosity</code>, <code>--suppress_warning_msgs</code>, <code>--msg_config_file</code></p>
+</blockquote>
+<hr />
+<h2 id="3-xml-project-file-configuration-errors">3. XML project file configuration errors</h2>
+<h3 id="3-1-element-ordering-breaking-efx_map">3.1 Element ordering breaking efx_map</h3>
+<p>In <code>--un_flow</code> (Unified Netlist Flow) mode, an incorrect XML element order breaks synthesis:</p>
+<ul>
+<li><strong>Symptom</strong>: efx_map refuses to process the file and may report a parse error</li>
+<li><strong>Root cause</strong>: the XML schema enforces element order strictly; some elements placed in the wrong position cause a flow-sequence mismatch</li>
+<li><strong>Troubleshooting</strong>: check element order against the project XML schema (<code>xml-project-schema.md</code>)</li>
+</ul>
+<blockquote>
+<p>Source: EvoVerse SDK engineering practice (project_memory.md)</p>
+</blockquote>
+<h3 id="3-2-peri_file-in-the-wrong-place">3.2 peri_file in the wrong place</h3>
+<p>The <code>&lt;efx:peri_file&gt;</code> element must sit inside <code>&lt;efx:constraint_info&gt;</code>, not <code>&lt;efx:interface_info&gt;</code>:</p>
+<pre><code class="language-xml">&lt;!-- Correct --&gt;
+&lt;efx:constraint_info&gt;
+    &lt;efx:peri_file name=&quot;output/design.peri.xml&quot; /&gt;
+&lt;/efx:constraint_info&gt;
+
+&lt;!-- Wrong: peri_file must not be inside interface_info --&gt;
+&lt;efx:interface_info&gt;
+    &lt;efx:peri_file name=&quot;output/design.peri.xml&quot; /&gt;
+&lt;/efx:interface_info&gt;
+</code></pre>
+<ul>
+<li><code>&lt;efx:interface_info&gt;</code> should contain only <code>&lt;efx:default_peri_file&gt;</code> (usually with an empty name)</li>
+<li><code>&lt;efx:constraint_info&gt;</code> holds the SDC, ISF, and peri files</li>
+</ul>
+<blockquote>
+<p>Source: EvoVerse SDK engineering practice (project_memory.md); <em>Efinity XML Project File Schema Reference</em> §4, §5</p>
+</blockquote>
+<h3 id="3-3-illegal-ooc_info-element">3.3 Illegal ooc_info element</h3>
+<p>The <code>&lt;efx:ooc_info /&gt;</code> element is not accepted in some flows (for example the Unified Netlist Flow):</p>
+<ul>
+<li><strong>Symptom</strong>: a project XML containing this element produces an illegal-configuration error in specific flows</li>
+<li><strong>Troubleshooting</strong>: if the project does not use OOC (Out-of-Context) synthesis, remove the <code>&lt;efx:ooc_info /&gt;</code> element</li>
+<li><strong>Note</strong>: even an empty element (such as <code>&lt;efx:ooc_info /&gt;</code>) can trigger the problem</li>
+</ul>
+<blockquote>
+<p>Source: EvoVerse SDK engineering practice (project_memory.md)</p>
+</blockquote>
+<h3 id="3-4-empty-inter_file-element">3.4 Empty inter_file element</h3>
+<p>If the <code>name</code> of <code>&lt;efx:inter_file name="" /&gt;</code> is empty and not needed, delete the line outright instead of keeping an empty element:</p>
+<pre><code class="language-xml">&lt;!-- Wrong: empty inter_file element --&gt;
+&lt;efx:inter_file name=&quot;&quot; /&gt;
+
+&lt;!-- Correct: omit the element entirely --&gt;
+</code></pre>
+<blockquote>
+<p>Source: EvoVerse SDK engineering practice (project_memory.md); <em>Efinity XML Project File Schema Reference</em> §5</p>
+</blockquote>
+<hr />
+<h2 id="4-interface-design-check-errors-design-check">4. Interface design check errors (Design Check)</h2>
+<p>The Interface Designer's Design Check runs before the P&amp;R stage and validates rules for clocks and clock multiplexers.</p>
+<blockquote>
+<p>Source: Titanium Design Check Error Messages</p>
+</blockquote>
+<h3 id="4-1-clock-rules-clock_rule">4.1 Clock rules (clock_rule)</h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clock_rule_capacity</code></td>
+<td>More than N distinct clocks cannot be connected within one region</td>
+</tr>
+<tr>
+<td><code>clock_rule_max_count</code></td>
+<td>The number of core clocks used exceeds the maximum limit (32)</td>
+</tr>
+<tr>
+<td><code>clock_rule_lvds_rx_clock_source</code></td>
+<td>A PLL output clock drives LVDS Rx on a different edge</td>
+</tr>
+<tr>
+<td><code>clock_rule_pll_ref_clock_lvds_rx</code></td>
+<td>The edge of the PLL reference clock does not match the edge where the LVDS Rx sits</td>
+</tr>
+<tr>
+<td><code>clock_rule_undefined_name</code></td>
+<td>Undefined clock source</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: Design Check <code>clock_rule_*</code> error messages</p>
+</blockquote>
+<h3 id="4-2-clock-multiplexer-rules-clkmux_rule">4.2 Clock multiplexer rules (clkmux_rule)</h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clkmux_rule_clocks_routed</code></td>
+<td>An unrouted pin drives a clock-mux input</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_core_clock_pin</code></td>
+<td>A core clock pin can only be used when the dynamic mux is enabled</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_core_clock_static_mux</code></td>
+<td>A core clock pin cannot be connected through a static mux</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_dynamic_clock_pin</code></td>
+<td>The dynamic clock pin name is empty</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_dynamic_clock_select_pin</code></td>
+<td>The dynamic clock select pin name is empty</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_global_regional_pin</code></td>
+<td>The global pin name for a regional connection is missing</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_global_regional_resource</code></td>
+<td>A regional buffer does not support a global connection</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_pll_output_clock</code></td>
+<td>A PLL output clock is routed more than once</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_regional_conn_type</code></td>
+<td>A regional buffer requires the <code>rclk</code> or <code>rctrl</code> connection type</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_type_config</code></td>
+<td>MIPI/GPIO/LVDS resources may not connect to the dynamic mux</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: Design Check <code>clkmux_rule_*</code> error messages</p>
+</blockquote>
+<h3 id="4-3-sdc-constraint-errors">4.3 SDC constraint errors</h3>
+<p>Poorly configured SDC constraints cause errors in the timing analysis stage:</p>
+<ul>
+<li><strong>unconstrained endpoints</strong>: missing SDC constraints leave many endpoints unconstrained</li>
+<li><strong>Troubleshooting</strong>: confirm that the <code>&lt;efx:sdc_file name="..." /&gt;</code> path in the project XML is correct and the file exists</li>
+<li>Make sure every clock domain has a <code>create_clock</code> or <code>create_generated_clock</code> definition</li>
+</ul>
+<blockquote>
+<p>Source: EvoVerse SDK engineering practice (project_memory.md)</p>
+</blockquote>
+<h3 id="4-4-gpio-assignment-conflicts">4.4 GPIO assignment conflicts</h3>
+<p>When the board image and the ISF file conflict, Interface Designer GPIO assignment fails:</p>
+<ul>
+<li><strong>Symptom</strong>: pin assignment fails with an already-assigned or conflict message</li>
+<li><strong>Troubleshooting</strong>: check whether pins assigned manually in the ISF file overlap pins auto-assigned by the board image</li>
+</ul>
+<blockquote>
+<p>Source: EvoVerse SDK engineering practice (project_memory.md)</p>
+</blockquote>
+<hr />
+<h2 id="5-ip-manager-errors">5. IP Manager errors</h2>
+<p>The IP Manager log lives at <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Error pattern</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PICKLE_LOAD-ERROR</code></td>
+<td>IP parameter deserialization failed — the IP configuration file is corrupt or in an incompatible format</td>
+</tr>
+<tr>
+<td><code>VALIDATE_PARAM-ERROR</code></td>
+<td>IP parameter validation failed — a parameter value is out of range or has the wrong type</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code></p>
+</blockquote>
+<hr />
+<h2 id="6-p-r-errors">6. P&amp;R errors</h2>
+<h3 id="6-1-routing-congestion">6.1 Routing congestion</h3>
+<p>Routing congestion is a common P&amp;R-stage problem:</p>
+<ul>
+<li><strong>Symptom</strong>: efx_pnr reports that routing cannot complete or some nets are unrouted</li>
+<li><strong>Troubleshooting</strong>:</li>
+<li>Raise the congestion optimization level with <code>--optimization_level CONGESTION_1/2/3</code></li>
+<li>Consider spreading out the placement of critical modules</li>
+</ul>
+<blockquote>
+<p>Source: <code>efx_pnr --help-verbose</code> — <code>--optimization_level</code></p>
+</blockquote>
+<h3 id="6-2-timing-violations">6.2 Timing violations</h3>
+<ul>
+<li><strong>Symptom</strong>: WNS (Worst Negative Slack) is negative; critical path timing is not met</li>
+<li><strong>Related parameter</strong>: <code>--print_critical_path N</code> (default <code>10</code>)</li>
+<li><strong>Troubleshooting</strong>: inspect the critical path report and look for unnecessarily long combinational paths</li>
+</ul>
+<blockquote>
+<p>Source: <code>efx_pnr --help</code> — <code>--print_critical_path</code></p>
+</blockquote>
+<hr />
+<h2 id="7-programmer-errors">7. Programmer errors</h2>
+<p>Programmer errors usually occur during bitstream generation (pgm) or programming:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Possible cause</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flash not detected</td>
+<td>The model is not in the database</td>
+<td>Check <code>pgm/bin/flash_db/</code></td>
+</tr>
+<tr>
+<td>Bitstream too large</td>
+<td>Compression not enabled</td>
+<td>Confirm <code>--bitstream_compression on</code> (on by default)</td>
+</tr>
+<tr>
+<td>SPI Active configuration fails</td>
+<td>Clock divider too high</td>
+<td>Increase <code>--oscillator_clock_divider</code></td>
+</tr>
+<tr>
+<td>Multi-image not working</td>
+<td>CBSEL pins not configured correctly</td>
+<td>Confirm <code>--enable_cbsel on</code> and legal addresses</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>efx_pgm --help</code></p>
+</blockquote>
+<hr />
+<h2 id="8-troubleshooting-workflow">8. Troubleshooting workflow</h2>
+<h3 id="8-1-standard-troubleshooting-steps">8.1 Standard troubleshooting steps</h3>
+<pre><code>1. Identify the error source (map / pnr / pgm / PT)
+      │
+2. Check the preceding error message (the error before EFX-0003)
+      │
+3. Enable verbose logging: --map_opts message-verbosity=1
+      │
+4. Check the XML project file: element order, peri_file placement
+      │
+5. Check SDC constraints: clock definitions, unconstrained endpoints
+      │
+6. Check the Design Check report: clock/clkmux rules
+      │
+7. Check the IP Manager log: efxIP.log
+</code></pre>
+<blockquote>
+<p>Source: compiled from efx_map --help, Design Check rules, and EvoVerse SDK engineering practice</p>
+</blockquote>
+<h3 id="8-2-common-diagnostic-commands">8.2 Common diagnostic commands</h3>
+<pre><code class="language-powershell"># Raise synthesis log verbosity
+efx_run.bat my_design --map_opts message-verbosity=1
+
+# Synthesis only (skip later steps for fast iteration)
+efx_run.bat my_design --flow map --map_opts message-verbosity=1
+
+# P&amp;R only, print more critical paths
+efx_run.bat my_design --flow pnr --pnr_opts print_critical_path=50
+
+# Suppress black-box errors (temporary triage; not recommended for release)
+efx_run.bat my_design --map_opts blackbox-error=0
+
+# Custom message filtering
+efx_run.bat my_design --map_opts msg_config_file=my_filter.cfg
+</code></pre>
+<blockquote>
+<p>Source: <code>efx_map --help</code>; <code>efx_pnr --help</code>; <code>efx_run --help</code></p>
+</blockquote>
+<hr />
+<h2 id="9-integration-with-the-evoverse-sdk">9. Integration with the EvoVerse SDK</h2>
+<h3 id="9-1-error-handling-in-the-sdk">9.1 Error handling in the SDK</h3>
+<p>Both the EvoVerse SDK CLI and the IDE Build hand the raw project XML to Efinity's official runner:</p>
+<pre><code class="language-powershell">call &lt;Efinity&gt;/bin/setup.bat
+&lt;Efinity&gt;/bin/efx_run.bat &lt;project.xml&gt; --flow compile
+</code></pre>
+<ul>
+<li>The directory holding the XML serves as the working directory; the SDK does not split the flow, pre-run PT, or generate a substitute XML</li>
+<li>By default it injects no thread counts, timeout, <code>--un_flow</code>, or MAP/PNR parameters; they are appended only when the user overrides them explicitly</li>
+<li>SDK health checks are advisory only and cannot override Efinity's own judgment of whether the project is legal</li>
+<li>stdout, stderr, and the exit code are returned verbatim by the vendor runner</li>
+<li>The SDK's Build Report panel shows the parsed, structured error information</li>
+<li>Efinity 2026.1 is the verified baseline; other versions stay native pass-through and are flagged as unverified</li>
+</ul>
+<blockquote>
+<p>Note: Efinity 2026.1 itself may update the project XML's version, sync state, or format. The SDK must not additionally rewrite or restore these vendor behaviors around a build.</p>
+<p>Source: EvoVerse SDK <code>buildRunner.ts</code></p>
+</blockquote>
+<h3 id="9-2-report-enrichment">9.2 Report enrichment</h3>
+<ul>
+<li>The efinity-adapter's <code>src/capabilities/report.ts</code> parses the map/P&amp;R/timing reports and extracts resource usage and timing summaries</li>
+<li><code>timingDiagnoser.ts</code> performs root-cause classification using six categories of error fingerprints</li>
+<li>LLM context injection (copilotContext.ts) can send RTL + SDC + diagnosis results to AI-assisted analysis</li>
+</ul>
+<blockquote>
+<p>Source: EvoVerse SDK <code>toolchain/</code> module</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>Document version:</strong> v1.0<br />
+<strong>Applies to toolchain:</strong> Efinity 2026.1<br />
+<strong>Data sources:</strong> <code>efx_map --help</code> (EFX-0002/0003, --blackbox-error, --message-verbosity), <code>efx_pnr --help</code>/<code>--help-verbose</code> (--print_critical_path, --optimization_level), <code>efx_pgm --help</code>, Design Check error messages, <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>, EvoVerse SDK engineering practice (project_memory.md), <em>Efinity XML Project File Schema Reference</em></p>
+</blockquote></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

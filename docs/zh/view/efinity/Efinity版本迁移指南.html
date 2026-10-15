@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 版本迁移</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>升级工具链时核对工程与 IP。</span>
+<code>efinity/Efinity版本迁移指南.md</code>
+<a href="../../../efinity/Efinity版本迁移指南.md">Markdown 源文件</a></p>
+<h1>Efinity 版本迁移</h1></header>
+<main class="article"><h1 id="efinity-版本迁移指南">Efinity 版本迁移指南</h1>
+<blockquote>
+<p>版本: v1.0 | 基于 Efinity 2026.1 | 最后更新: 2026-07-30</p>
+<p>本文档汇总从旧版 Efinity 迁移到 v2026.1 时需要注意的所有变更点，涵盖工具链、工程 XML、Sapphire SoC、RTL 编码、时序约束等方面的不兼容变化。</p>
+</blockquote>
+<hr />
+<h2 id="1-版本概述">1. 版本概述</h2>
+<h3 id="1-1-如何查看当前版本">1.1 如何查看当前版本</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>命令/路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Efinity 启动画面</td>
+<td>GUI 启动时显示</td>
+<td>显示版本号和构建日期</td>
+</tr>
+<tr>
+<td>命令行</td>
+<td><code>efx_run.bat --version</code></td>
+<td>显示 efx_run 版本</td>
+</tr>
+<tr>
+<td>工程 XML</td>
+<td>工程 <code>.xml</code> 中 <code>&lt;project sw_version="..."&gt;</code></td>
+<td>记录创建工程的 Efinity 版本</td>
+</tr>
+<tr>
+<td>版本文件</td>
+<td><code>C:\Efinity\&lt;version&gt;\version.txt</code></td>
+<td>包含完整版本信息</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：Efinity UG v16.0/v16.2 及工程 XML 实践。</p>
+</blockquote>
+<h3 id="1-2-版本兼容性警告">1.2 版本兼容性警告</h3>
+<p><strong>重要：</strong> 用新版 Efinity 打开旧工程后，工程文件会被更新为版本特定的建模信息，<strong>不可向后兼容</strong>。如果旧版编译产物（综合/布局布线输出）不兼容，软件会提示重新编译。</p>
+<blockquote>
+<p>来源：Efinity Software User Guide v16.0/v16.2，"Using an Existing Project with a New Software Version" 节。</p>
+</blockquote>
+<hr />
+<h2 id="2-efinity-2026-1-新特性与变更">2. Efinity 2026.1 新特性与变更</h2>
+<h3 id="2-1-新增器件支持">2.1 新增器件支持</h3>
+<table>
+<thead>
+<tr>
+<th>新器件</th>
+<th>特征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti125</td>
+<td>支持 HSIO2 引脚；最高 2.5 Gbps MIPI RX/TX</td>
+</tr>
+<tr>
+<td>Ti95</td>
+<td>同 Ti125 系列，低功耗 MIPI HS-RX</td>
+</tr>
+<tr>
+<td>Ti135N576</td>
+<td>新增封装变体</td>
+</tr>
+<tr>
+<td>Ti85N576</td>
+<td>新增封装变体</td>
+</tr>
+<tr>
+<td>Tz100N576</td>
+<td>Topaz 新器件</td>
+</tr>
+<tr>
+<td>Tz75N576</td>
+<td>Topaz 新器件</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：Efinix 官网 Efinity v2026.1 发布说明（https://www.efinixinc.com/products-efinity.html）。</p>
+</blockquote>
+<h3 id="2-2-新增功能">2.2 新增功能</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>HSIO2 支持</strong></td>
+<td>增强的 IO 性能和功耗，最高 2.5 Gbps MIPI RX/TX、1.8 Gbps LVDS RX/TX</td>
+</tr>
+<tr>
+<td><strong>Partition Planner</strong></td>
+<td>基于团队的并行设计分区 GUI 工具</td>
+</tr>
+<tr>
+<td><strong>efx_py</strong></td>
+<td>Python 脚本 API，可创建和修改工程，无需打开 GUI</td>
+</tr>
+<tr>
+<td><strong>AOE (Advanced Optimization Engine)</strong></td>
+<td>新的 efx_run_aoe.py 脚本，自动探索综合和布局选项</td>
+</tr>
+<tr>
+<td><strong>Dark Theme</strong></td>
+<td>GUI 暗色主题支持</td>
+</tr>
+<tr>
+<td><strong>编译时间缩短 ~30%</strong></td>
+<td>P&amp;R 编译时间减少约 30%</td>
+</tr>
+<tr>
+<td><strong>Floorplan Viewer 响应性改进</strong></td>
+<td>显著提升打开和操作速度</td>
+</tr>
+<tr>
+<td><strong>PHY Periphery Clock Network</strong></td>
+<td>新的分布时钟修改器（CM）资源，优化 PLL 和核心时钟网络使用</td>
+</tr>
+<tr>
+<td><strong>所有器件仅需 8GB 内存</strong></td>
+<td>Ti125/Ti95 优化后工具链内存需求降低</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：Efinix 官网 Efinity v2026.1 发布说明。</p>
+</blockquote>
+<h3 id="2-3-已废弃-移除的功能">2.3 已废弃/移除的功能</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>影响</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>I4 / I4L 时序模型</strong>（Ti35/Ti60 器件上）</td>
+<td>继续使用会触发运行时废弃警告</td>
+<td>迁移到当前时序模型</td>
+</tr>
+<tr>
+<td><strong>Ruby / Jade / Opal SoC</strong>（自 v2022.1 起 EOL）</td>
+<td>不再可用</td>
+<td>迁移到 Sapphire SoC（参见 §4）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：「Efinity工具链参考.md」§5.4：<code>C:\Efinity\2026.1\scripts\efx_run.py</code> 第 556–567 行（时序模型废弃检查逻辑）。</p>
+</blockquote>
+<hr />
+<h2 id="3-工具链迁移-gcc-8-3-13-4">3. 工具链迁移（GCC 8.3 → 13.4）</h2>
+<h3 id="3-1-变更概览">3.1 变更概览</h3>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>GCC 版本</th>
+<th>目标架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Efinity ≤ v2025.2</td>
+<td>GCC 8.3.0（riscv64-unknown-elf-gcc）</td>
+<td>RV32IMAC / RV64IMAC</td>
+</tr>
+<tr>
+<td>Efinity v2026.1</td>
+<td>GCC 13.4.0（riscv64-unknown-elf-gcc）</td>
+<td>RV32IMAC / RV64IMAC</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-升级收益">3.2 升级收益</h3>
+<ul>
+<li>改进的 C23 支持</li>
+<li>更好的 C++20/C++23 支持</li>
+<li>更多 RISC-V ISA 扩展支持</li>
+</ul>
+<h3 id="3-3-不兼容风险">3.3 不兼容风险</h3>
+<ul>
+<li><strong>BSP/firmware 代码</strong>：用 GCC 8.3 编译通过的代码在 GCC 13.4 下可能需要修改</li>
+<li><strong>链接脚本</strong>：可能需要适配新版本链接器行为</li>
+<li><strong>编译选项</strong>：某些旧版编译器标志可能已废弃</li>
+<li><strong>Sapphire SoC</strong>：v2026.1 生成的 SoC 必须搭配 Efinity RISC-V Embedded Software IDE v2026.1 使用</li>
+</ul>
+<h3 id="3-4-回退策略">3.4 回退策略</h3>
+<p>如果不希望升级工具链，可以继续使用：
+- Efinity v2025.2 + Efinity RISC-V Embedded Software IDE v2025.2</p>
+<blockquote>
+<p>来源：Efinix 官方文档（https://www.efinixinc.com/docs-html/riscv-embedded-ide-ug/topics/riscv-embedded-software-ide-toolchain.html）。</p>
+</blockquote>
+<hr />
+<h2 id="4-sapphire-soc-迁移-v1-v2">4. Sapphire SoC 迁移（v1 → v2）</h2>
+<h3 id="4-1-迁移前提">4.1 迁移前提</h3>
+<p>Sapphire SoC v2.0 自 Efinity v2021.2 引入，<strong>不能自动迁移</strong> v1.x 工程。Efinix 官方建议所有新设计使用 v2.0。</p>
+<blockquote>
+<p>来源：Efinix 官方 Sapphire RISC-V SoC User Guide v5.4，"Migrating to the Sapphire RV32 SoC v2.0" 节（https://www.efinixinc.com/docs-html/rv32-sapphire-ug/topics/riscv-sapphire-migrate-to-2.0.html）。</p>
+</blockquote>
+<h3 id="4-2-v1-v2-关键变更">4.2 v1 → v2 关键变更</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>v1.x</th>
+<th>v2.0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Timer 外设</strong></td>
+<td>Machine Timer</td>
+<td>CLINT Timer（原生 CPU 定时器）</td>
+</tr>
+<tr>
+<td><strong>设备名称定义</strong></td>
+<td>旧命名（soc.h）</td>
+<td>新命名 + compatibility.h 桥接层</td>
+</tr>
+<tr>
+<td><strong>参数名称</strong></td>
+<td>部分不同</td>
+<td>更新后的参数名</td>
+</tr>
+<tr>
+<td><strong>IP 配置向导</strong></td>
+<td>无 FPU/MMU/Peripheral Clock 选项</td>
+<td>新增：可配置 Cache、FPU、MMU、Peripheral Clock</td>
+</tr>
+<tr>
+<td><strong>Debug 配置</strong></td>
+<td>仅支持 default_softTap</td>
+<td>支持 Co-Debug、多种 JTAG 配置</td>
+</tr>
+<tr>
+<td><strong>AXI 接口</strong></td>
+<td>仅 AXI3</td>
+<td>支持 AXI3 和 AXI4（v2.0+）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-3-手动迁移步骤">4.3 手动迁移步骤</h3>
+<ol>
+<li><strong>新建 v2.0 工程</strong>：使用 IP Manager 创建 Sapphire SoC v2.0，选择对应器件型号</li>
+<li><strong>重新配置外设</strong>：在 IP 配置向导中逐一启用所需外设（UART/SPI/I2C/GPIO 等）</li>
+<li><strong>重新挂接 APB/AXI 从设备</strong>：在 RTL 顶层中重新连接自定义外设</li>
+<li><strong>固件代码适配</strong>：</li>
+<li>在应用代码顶部添加 <code>#include "compatibility.h"</code> 和 <code>#include "bsp.h"</code></li>
+<li>将 Machine Timer 调用替换为 CLINT Timer 驱动调用</li>
+<li>重新编译所有 firmware（使用 GCC 13.4）</li>
+<li><strong>替换 Debug 配置</strong>：删除旧的 debug 配置，使用 v2.0 版本</li>
+</ol>
+<h3 id="4-4-v2-0-ip-配置参考-兼容-v1-x-行为">4.4 v2.0 IP 配置参考（兼容 v1.x 行为）</h3>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>选项</th>
+<th>推荐设置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SOC</td>
+<td>Peripheral Clock</td>
+<td>DISABLE</td>
+<td>v1.x 中外设使用系统时钟</td>
+</tr>
+<tr>
+<td>SOC</td>
+<td>FPU</td>
+<td>DISABLE</td>
+<td>v1.x 不支持</td>
+</tr>
+<tr>
+<td>SOC</td>
+<td>MMU</td>
+<td>DISABLE</td>
+<td>v1.x 不支持</td>
+</tr>
+<tr>
+<td>SOC</td>
+<td>Atomic Extension</td>
+<td>DISABLE</td>
+<td>v1.x 不支持</td>
+</tr>
+<tr>
+<td>Cache/Memory</td>
+<td>Data Cache Way</td>
+<td>1</td>
+<td>v1.0 固定为 1 way</td>
+</tr>
+<tr>
+<td>Cache/Memory</td>
+<td>Data Cache Size</td>
+<td>4 KB（v1.0）/ 1–32 KB（v1.1）</td>
+<td>匹配原设计</td>
+</tr>
+<tr>
+<td>Cache/Memory</td>
+<td>I-Cache Way</td>
+<td>1</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>Cache/Memory</td>
+<td>I-Cache Size</td>
+<td>4 KB（v1.0）/ 1–32 KB（v1.1）</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：Efinix 官方文档（https://www.efinixinc.com/docs-html/rv32-sapphire-ug/topics/riscv-sapphire-migrate-to-2.0.html）。</p>
+</blockquote>
+<hr />
+<h2 id="5-工程-xml-迁移">5. 工程 XML 迁移</h2>
+<h3 id="5-1-元素顺序强制要求">5.1 元素顺序强制要求</h3>
+<p>Efinity 2026.1 对工程 XML 的 <code>&lt;efx:project&gt;</code> 子元素顺序有严格要求：</p>
+<pre><code>device_info → design_info → interface_info → constraint_info → sim_info → misc_info → ooc_info → ip_info
+</code></pre>
+<p><strong>关键点：</strong>
+- <code>peri_file</code> 必须放在 <code>&lt;interface_info&gt;</code> 中，不能放在 <code>&lt;constraint_info&gt;</code> 中
+- <code>ooc_info</code> 在部分 flow 模式下会导致失败（如果包含内容）
+- 顺序错误可能导致解析失败或行为异常</p>
+<blockquote>
+<p>来源：「Efinity参考设计索引.md」§M.2 及 <code>C:\Efinity\2026.1\bin\enf_proj.xsd</code>。</p>
+</blockquote>
+<h3 id="5-2-xml-自动升级行为">5.2 XML 自动升级行为</h3>
+<ul>
+<li>用 v2026.1 打开旧版工程 XML 时，Efinity 自动升级 XML schema</li>
+<li>升级后的 XML <strong>不可</strong>在旧版 Efinity 中打开</li>
+<li>建议在升级前备份原工程目录</li>
+</ul>
+<blockquote>
+<p>来源：Efinity UG v16.0/v16.2。</p>
+</blockquote>
+<h3 id="5-3-unified-flow-注意事项">5.3 Unified Flow 注意事项</h3>
+<ul>
+<li>Unified Flow（<code>unified_flow="true"</code>）在 2026.1 中继续支持</li>
+<li>旧版非 Unified Flow 工程需要 <code>(* syn_peri_port = 0 *)</code> 标记，可逐步迁移到 Unified Flow</li>
+</ul>
+<blockquote>
+<p>来源：「Efinity参考设计索引.md」§M.2。</p>
+</blockquote>
+<hr />
+<h2 id="6-peri-xml-重新生成">6. peri.xml 重新生成</h2>
+<h3 id="6-1-版本不兼容">6.1 版本不兼容</h3>
+<p><code>peri.xml</code>（Interface Designer 设计数据库）在不同 Efinity 版本之间可能不兼容。Block type、property、preset 和 resource 名称与器件及 Efinity 版本相关。</p>
+<blockquote>
+<p>来源：「Efinity设计API集成.md」§「版本兼容」。</p>
+</blockquote>
+<h3 id="6-2-重新生成策略">6.2 重新生成策略</h3>
+<p>当升级 Efinity 版本后 <code>peri.xml</code> 不兼容时：</p>
+<ol>
+<li><strong>删除旧的 <code>peri.xml</code></strong>（备份后）</li>
+<li><strong>确认工程 XML 正确引用对应的 <code>.peri.isf</code></strong>：</li>
+<li>运行 Efinity 原生 <code>efx_run --flow compile</code>，让原生 PT 阶段重新生成</li>
+<li>或在 Interface Designer 中打开并验证后保存</li>
+<li><strong>验证 DRC</strong>：运行 <code>evoverse design validate</code></li>
+<li><strong>确认编译通过</strong>：运行完整 <code>compile</code> flow</li>
+</ol>
+<p><strong>不要在 SDK 中维护 XML schema 迁移器</strong>——ISF 是规范来源。</p>
+<blockquote>
+<p>来源：「Efinity设计API集成.md」§「版本兼容」及 §「TJ180 实测基线」。</p>
+</blockquote>
+<h3 id="6-3-tj180-实测案例">6.3 TJ180 实测案例</h3>
+<p>已验证的迁移路径（Efinity 2026.1）：
+1. 删除旧 <code>peri.xml</code>
+2. 从 <code>constraints/base.peri.isf</code> 重建
+3. DesignAPI DRC 通过（0 error）
+4. Synthesis → Interface → PNR → PGM 全流程 PASS</p>
+<blockquote>
+<p>来源：「Efinity设计API集成.md」§「TJ180 实测基线」。</p>
+</blockquote>
+<hr />
+<h2 id="7-ip-catalog-变更">7. IP Catalog 变更</h2>
+<h3 id="7-1-新增-ip-2026-1">7.1 新增 IP（2026.1）</h3>
+<table>
+<thead>
+<tr>
+<th>IP</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti125/Ti95 器件支持</td>
+<td>大多数 IP 自动支持新器件</td>
+</tr>
+<tr>
+<td>HSIO2 相关 IP</td>
+<td>MIPI/CSI-2/DSI 性能增强</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-2-废弃-ip">7.2 废弃 IP</h3>
+<table>
+<thead>
+<tr>
+<th>IP</th>
+<th>状态</th>
+<th>替代方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ruby SoC</td>
+<td>EOL（v2022.1 起）</td>
+<td>Sapphire RV32 SoC（efx_soc）</td>
+</tr>
+<tr>
+<td>Jade SoC</td>
+<td>EOL（v2022.1 起）</td>
+<td>Sapphire RV32 SoC（efx_soc）</td>
+</tr>
+<tr>
+<td>Opal SoC</td>
+<td>EOL（v2022.1 起）</td>
+<td>Sapphire RV32 SoC（efx_soc）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：「Efinity参考设计索引.md」§B 及 Efinix 官方文档。</p>
+</blockquote>
+<h3 id="7-3-ip-版本号快照-2026-1">7.3 IP 版本号快照（2026.1）</h3>
+<table>
+<thead>
+<tr>
+<th>IP</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>efx_soc（Sapphire RV32）</td>
+<td>3.4.0</td>
+</tr>
+<tr>
+<td>efx_soc_rv64（Sapphire RV64）</td>
+<td>1.0.0</td>
+</tr>
+<tr>
+<td>efx_hard_soc（High Performance）</td>
+<td>1.23.0</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>C:\Efinity\2026.1\ipm\ip\efx_soc\efx_soc\ipm\ip_component.xml</code> 第 6 行；<code>efx_soc_rv64\ipm\ip_component.xml</code> 第 6 行；<code>efx_hard_soc\ipm\component.pickle</code>。</p>
+</blockquote>
+<hr />
+<h2 id="8-rtl-综合迁移">8. RTL/综合迁移</h2>
+<h3 id="8-1-时序模型废弃">8.1 时序模型废弃</h3>
+<p>Ti35/Ti60 器件上 <code>I4</code> / <code>I4L</code> 时序模型在 Efinity 2026.1 中已废弃。运行时会产生警告。应切换到当前支持的时序模型。</p>
+<blockquote>
+<p>来源：「Efinity工具链参考.md」§5.4。</p>
+</blockquote>
+<h3 id="8-2-periphery-推断-vs-实例化">8.2 Periphery 推断 vs 实例化</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>推断模式</td>
+<td><code>--peri-syn-inference</code></td>
+<td>由综合工具自动推断外设原语</td>
+</tr>
+<tr>
+<td>实例化模式</td>
+<td><code>--peri-syn-instantiation</code></td>
+<td>手动实例化外设原语</td>
+</tr>
+<tr>
+<td>Unified Flow</td>
+<td><code>unified_flow="true"</code></td>
+<td>推荐模式，统一管理</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：「Efinity工具链参考.md」§2.1 第 107–108 行。</p>
+</blockquote>
+<h3 id="8-3-新增综合选项">8.3 新增综合选项</h3>
+<p>Efinity 2026.1 新增/更新的综合选项（与旧版对比需实测确认），核心参数参见「Efinity工具链参考.md」§2。</p>
+<hr />
+<h2 id="9-sdc-约束迁移">9. SDC/约束迁移</h2>
+<h3 id="9-1-时序模型变更">9.1 时序模型变更</h3>
+<ul>
+<li>Ti35/Ti60 的 I4/I4L 时序模型废弃后，关联的 SDC 约束可能需要调整</li>
+<li>新器件（Ti125/Ti95）需要新的 <code>--operating_conditions</code> 设置</li>
+</ul>
+<h3 id="9-2-unified-sdc">9.2 Unified SDC</h3>
+<ul>
+<li>2026.1 继续支持 unified SDC 文件（<code>--unified_sdc_file</code>）</li>
+<li>Interface Designer 生成的 PT SDC 自动包含在编译流程中</li>
+</ul>
+<blockquote>
+<p>来源：「Efinity工具链参考.md」§3.2。</p>
+</blockquote>
+<hr />
+<h2 id="10-构建脚本迁移-efx_run-变更">10. 构建脚本迁移（efx_run 变更）</h2>
+<h3 id="10-1-核心变更">10.1 核心变更</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>旧行为</th>
+<th>新行为（2026.1）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>默认器件族</td>
+<td>Titanium</td>
+<td>Titanium</td>
+</tr>
+<tr>
+<td>默认器件</td>
+<td>Ti60F225</td>
+<td>Ti60F225</td>
+</tr>
+<tr>
+<td>编译流程</td>
+<td>map → PT → pnr → pgm</td>
+<td>不变</td>
+</tr>
+<tr>
+<td>Python API</td>
+<td>无</td>
+<td>efx_py 支持</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-2-aoe-脚本">10.2 AOE 脚本</h3>
+<p>新增 <code>efx_run_aoe.py</code> 自动探索综合和布局选项，替代手动参数试验。</p>
+<h3 id="10-3-构建命令示例">10.3 构建命令示例</h3>
+<pre><code class="language-powershell"># 标准编译（与旧版兼容）
+efx_run.bat my_design
+
+# 使用新器件（需指定）
+efx_run.bat my_design --family Titanium -d Ti125F225
+
+# 使用 AOE 探索
+efx_run_aoe.py my_design
+</code></pre>
+<blockquote>
+<p>来源：「Efinity工具链参考.md」§1.1–1.2 及 Efinity v2026.1 发布说明。</p>
+</blockquote>
+<hr />
+<h2 id="11-完整升级检查清单">11. 完整升级检查清单</h2>
+<h3 id="升级前">升级前</h3>
+<ul>
+<li>[ ] 备份整个工程目录（含 <code>.xml</code>、<code>peri.xml</code>、<code>*.peri.isf</code>、<code>sdc</code> 文件）</li>
+<li>[ ] 记录当前 Efinity 版本号</li>
+<li>[ ] 检查是否使用已废弃的 Ruby/Jade/Opal SoC</li>
+<li>[ ] 检查是否使用 I4/I4L 时序模型</li>
+<li>[ ] 确认 IP 依赖版本</li>
+</ul>
+<h3 id="升级中">升级中</h3>
+<ul>
+<li>[ ] 安装 Efinity 2026.1 及 RISC-V Embedded Software IDE 2026.1</li>
+<li>[ ] 用 v2026.1 打开工程 → 自动升级 XML schema</li>
+<li>[ ] 删除旧 <code>peri.xml</code> → 从 ISF 重新生成</li>
+<li>[ ] 检查 <code>&lt;efx:project&gt;</code> 子元素顺序（参见 §5.1）</li>
+<li>[ ] 如果是 Sapphire v1 → 按 §4.3 手动迁移到 v2</li>
+<li>[ ] 更新 GCC 工具链（8.3 → 13.4），重新编译 firmware</li>
+</ul>
+<h3 id="升级后">升级后</h3>
+<ul>
+<li>[ ] 运行 Interface Designer DRC（<code>evoverse design validate</code>）</li>
+<li>[ ] 运行 Synthesis，检查编译警告</li>
+<li>[ ] 运行完整 compile flow（Map → PT → PNR → PGM）</li>
+<li>[ ] 检查时序报告（确认无新增 violation）</li>
+<li>[ ] 重新烧录验证硬件功能</li>
+<li>[ ] 更新 DAYLOG.md</li>
+</ul>
+<hr />
+<h2 id="12-回滚策略">12. 回滚策略</h2>
+<p>如果需要回到旧版 Efinity：</p>
+<ol>
+<li><strong>保留旧版安装</strong>：Efinity 支持多版本并存（安装到不同目录）</li>
+<li><strong>使用备份工程</strong>：不要用新版工程 XML 回到旧版——已被自动升级</li>
+<li><strong>恢复 peri.xml</strong>：从 ISF 重建（而非恢复旧版二进制）</li>
+<li><strong>回退工具链</strong>：使用旧版 Efinity + 旧版 RISC-V IDE（GCC 8.3）</li>
+</ol>
+<p><strong>推荐的多版本管理方法：</strong></p>
+<pre><code>C:\Efinity\
+├── 2025.2\   （保留旧版，用于现有稳定工程）
+└── 2026.1\   （新版，用于新工程和迁移验证）
+</code></pre>
+<hr />
+<p><strong>文件位置</strong>：<code>docs/efinity/Efinity版本迁移指南.md</code></p>
+<p><strong>配套文档</strong>：
+- <a href="Efinity工具链参考.html">Efinity工具链参考.md</a> — 工具命令与参数
+- <a href="Efinity设计API集成.html">Efinity设计API集成.md</a> — peri.xml 管理
+- <a href="Efinity参考设计索引.html">Efinity参考设计索引.md</a> — 参考设计入口
+- <a href="Sapphire-SoC配置指南.html">Sapphire-SoC配置指南.md</a> — SoC 配置详解</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

@@ -1,0 +1,1497 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity IP Manager 指南</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>生成和管理 Efinity IP。</span>
+<code>efinity/Efinity-IP-Manager使用指南.md</code>
+<a href="../../../efinity/Efinity-IP-Manager使用指南.md">Markdown 源文件</a></p>
+<h1>Efinity IP Manager 指南</h1></header>
+<main class="article"><h1 id="efinity-ip-manager-使用指南">Efinity IP Manager 使用指南</h1>
+<blockquote>
+<p><strong>适用版本</strong>: Efinity 2026.1（安装根目录 <code>C:\Efinity\2026.1\</code>）
+<strong>更新日期</strong>: 2026-09-25
+<strong>本文性质</strong>: 知识库参考。所有论断均标注实测证据路径；未经实测的内容明确标注"待验证"。
+<strong>证据基线</strong>: <code>C:\Efinity\2026.1\ipm\</code> 安装目录全量实测（2026-09-25）+ EvoVerse SDK 仓库生成器源码</p>
+<p><strong>关联文档</strong>:
+- <a href="Efinity参考设计索引.html">Efinity参考设计索引.md</a> — 官方示例与参考设计入口
+- <a href="Efinity-XML工程文件Schema参考.html">Efinity-XML工程文件Schema参考.md</a> — 工程 XML 元素顺序（<code>efx:ip_info</code> 位置）
+- <a href="Efinity-ISF语法参考.html">Efinity-ISF语法参考.md</a> — 硬 IP 走 ISF 的写法
+- 《Efinity文件格式-peri.xml.md》— peri.xml 结构详解（并行编写中）
+- 《Efinity硬IP-*参考.md》— 各硬 IP 的 ISF 用法（并行编写中）</p>
+</blockquote>
+<hr />
+<h2 id="1-ip-manager-概述">1. IP Manager 概述</h2>
+<p>Efinity IP Manager 是 Efinity IDE 内置的交互式向导工具，用于<strong>自定义、验证和生成 Efinix 软 IP 核</strong>。</p>
+<p><strong>核心功能：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>入口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IP Catalog</td>
+<td>工具栏按钮 / <strong>Tools → Open IP Catalog</strong></td>
+<td>浏览全部 47 个 IP 组件（见 §3）</td>
+</tr>
+<tr>
+<td>IP Configuration</td>
+<td>Catalog 中选中 IP → <strong>Next</strong></td>
+<td>向导式配置参数、选择交付物、审查并生成</td>
+</tr>
+<tr>
+<td>IP Editor / IP Manager 主窗口</td>
+<td><strong>Tools → IP Manager</strong></td>
+<td>管理已生成 IP、导入第三方 IP、打包 IP</td>
+</tr>
+</tbody>
+</table>
+<p>IP Manager 对参数做合法性验证（<code>VALIDATE_PARAMS</code>），生成时可附带面向 Efinix 开发板的 Example Design 和/或 Testbench。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\ipm-main-pll-dyn-recfg.html</code>、<code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\ipm\doc\topics\ipm-main-pll-autoreset.html</code></p>
+</blockquote>
+<hr />
+<h2 id="2-ip-manager-架构">2. IP Manager 架构</h2>
+<h3 id="2-1-目录级架构-2026-1-实测">2.1 目录级架构（2026.1 实测）</h3>
+<p><code>C:\Efinity\2026.1\ipm\bin\</code> 下的模块划分：</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>职责</th>
+<th>关键文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rpc/</code></td>
+<td>后端服务进程（服务化 IP 生成）</td>
+<td><code>ipm_server.py</code>、<code>ipm_service.py</code></td>
+</tr>
+<tr>
+<td><code>gui/</code></td>
+<td>Web/GUI 前端服务与工具</td>
+<td><code>pack_ip.py</code>、<code>peri_handler.py</code>、<code>json_generator.py</code></td>
+</tr>
+<tr>
+<td><code>efx_ipmgr/</code></td>
+<td>IP Manager 核心引擎</td>
+<td><code>api_v2.py</code></td>
+</tr>
+<tr>
+<td><code>ipm_api_service/</code></td>
+<td>Python DesignAPI 服务层（脚本化调用入口）</td>
+<td><code>design.py</code>、<code>projectxml.py</code></td>
+</tr>
+<tr>
+<td><code>ip_packager/</code></td>
+<td>IP 打包器</td>
+<td><code>run_ip_packager.bat</code></td>
+</tr>
+<tr>
+<td><code>blkviewer/</code></td>
+<td>块图查看器</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>common/</code></td>
+<td>公共库</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>前端通过本地回环（localhost）服务与后端引擎通信：GUI 发起请求 → 后端完成参数验证、文件生成、示例工程构建 → 结果回传。脚本化场景直接调用 <code>ipm_api_service.design.IPMDesignAPI</code>（见 §8），绕过 GUI。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\bin\</code> 目录枚举（2026-09-25 实测）</p>
+</blockquote>
+<h3 id="2-2-日志体系">2.2 日志体系</h3>
+<p>IP Manager 全部事件写入 <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>，每行格式：</p>
+<pre><code>[日期 时间] [级别] [模块] [事件名-BEGIN/DONE 或 -WARNING/-ERROR]
+</code></pre>
+<p>实测样例（<code>efxIP.log</code>）：</p>
+<pre><code>[2026-05-29 17:19:16] [INFO] [gui.api_wrapper] [CHECK_IP_EXIST-BEGIN]
+</code></pre>
+<p>排查 IP 生成问题时优先看此日志的 <code>*-ERROR</code> / <code>*-WARNING</code> 行（详见 §11.2、§15）。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>（实测格式）</p>
+</blockquote>
+<hr />
+<h2 id="3-ip-catalog-47-组件完整清单">3. IP Catalog — 47 组件完整清单</h2>
+<h3 id="3-1-统计口径-重要">3.1 统计口径（重要）</h3>
+<p>2026.1 版 IP Catalog 实际包含 <strong>47 个 IPXACT 组件</strong>，由两部分构成：</p>
+<table>
+<thead>
+<tr>
+<th>构成</th>
+<th>数量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>顶层 IP</td>
+<td>34</td>
+<td><code>C:\Efinity\2026.1\ipm\ip\&lt;dir&gt;\ipm\ip_component.xml</code> 直挂</td>
+</tr>
+<tr>
+<td>复合包内子 IP</td>
+<td>13</td>
+<td><code>efx_csi2</code>(4) + <code>efx_dphy</code>(4) + <code>efx_dsi</code>(4) + <code>efx_soc</code>(1) 四个复合包目录内的子组件</td>
+</tr>
+</tbody>
+</table>
+<p>复合包目录本身<strong>没有</strong> <code>ip_component.xml</code>，它只是子 IP 的容器；每个子目录各自携带完整的 <code>ipm/</code> 元数据。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>Get-ChildItem C:\Efinity\2026.1\ipm\ip -Recurse -Filter ip_component.xml</code> 共返回 47 个文件（2026-09-25 实测）
+<strong>注意</strong>: 旧版本文档曾写"38 个 IP 核"，是只数了顶层目录、漏掉复合包子 IP 的统计错误。</p>
+</blockquote>
+<h3 id="3-2-全部-47-组件清单-按-ipxact-library-分组">3.2 全部 47 组件清单（按 IPXACT library 分组）</h3>
+<p>每个组件的四元组（vendor=efinixinc.com, library, name, version）与顶层模块名（moduleName）逐个读取自对应 <code>ip_component.xml</code>。</p>
+<p><strong>bridges_and_adaptors（6 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录（相对 <code>ipm\ip\</code>）</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_apb3_2_axi4_lite</code></td>
+<td>efx_apb3_2_axi4_lite</td>
+<td>5.2</td>
+<td>apb3_2_axi4_lite</td>
+<td>APB3 ⇄ AXI4-Lite 桥</td>
+</tr>
+<tr>
+<td><code>efx_apb_interconnect</code></td>
+<td>efx_apb_interconnect</td>
+<td>1.0</td>
+<td>efx_apb_interconnect</td>
+<td>APB 多主多从互联</td>
+</tr>
+<tr>
+<td><code>efx_data_pipeline</code></td>
+<td>efx_data_pipeline</td>
+<td>6.4</td>
+<td>efx_data_pipeline</td>
+<td>多级数据流水线</td>
+</tr>
+<tr>
+<td><code>efx_dma</code></td>
+<td>efx_dma</td>
+<td>6.4.2</td>
+<td>EfxDMA</td>
+<td>通用 DMA</td>
+</tr>
+<tr>
+<td><code>efx_pcie_dma</code></td>
+<td>efx_pcie_dma</td>
+<td>5.0</td>
+<td>efx_pcie_dma</td>
+<td>PCIe DMA 引擎</td>
+</tr>
+<tr>
+<td><code>efx_pma_64b66b_gb</code></td>
+<td>efx_pma_64b66b_gb</td>
+<td>1.0</td>
+<td>efx_pma_64b66b_gb</td>
+<td>64b/66b PMA 收发</td>
+</tr>
+</tbody>
+</table>
+<p><strong>axi_infra（3 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_axi_data_fifo</code></td>
+<td>efx_axi_data_fifo</td>
+<td>5.3</td>
+<td>efx_axi_data_fifo</td>
+<td>AXI-Stream 数据 FIFO</td>
+</tr>
+<tr>
+<td><code>efx_axi_interconnect</code></td>
+<td>efx_axi_interconnect</td>
+<td>5.7</td>
+<td>efx_axi_interconnect</td>
+<td>AXI 互联</td>
+</tr>
+<tr>
+<td><code>efx_axi_stream_switch</code></td>
+<td>efx_axi_stream_switch</td>
+<td>5.4</td>
+<td>efx_axi_stream_switch</td>
+<td>AXI-Stream 交换矩阵</td>
+</tr>
+</tbody>
+</table>
+<p><strong>memory（2 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_bram</code></td>
+<td>efx_bram</td>
+<td>6.4</td>
+<td>efx_bram</td>
+<td>Block RAM 封装</td>
+</tr>
+<tr>
+<td><code>efx_fifo_2</code></td>
+<td><strong>efx_fifo_top</strong> ⚠</td>
+<td>8.1</td>
+<td>efx_fifo_top</td>
+<td>双时钟 FIFO</td>
+</tr>
+</tbody>
+</table>
+<p><strong>arithmetic（4 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_cordic</code></td>
+<td>efx_cordic</td>
+<td>5.1</td>
+<td>efx_cordic</td>
+<td>CORDIC 算法</td>
+</tr>
+<tr>
+<td><code>efx_divider</code></td>
+<td>efx_divider</td>
+<td>5.3</td>
+<td>divider</td>
+<td>整数除法器</td>
+</tr>
+<tr>
+<td><code>efx_divider_2</code></td>
+<td>efx_divider_2</td>
+<td>1.0</td>
+<td>divider</td>
+<td>整数除法器（变体）</td>
+</tr>
+<tr>
+<td><code>efx_integer_square_root</code></td>
+<td>efx_integer_square_root</td>
+<td>5.3</td>
+<td>sqrt_top</td>
+<td>整数开方</td>
+</tr>
+</tbody>
+</table>
+<p><strong>mipi（12 个，全部为复合包子 IP）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_csi2\efx_csi2_rx</code></td>
+<td>efx_csi2_rx</td>
+<td>5.15</td>
+<td>efx_csi2_rx</td>
+<td>MIPI CSI-2 RX</td>
+</tr>
+<tr>
+<td><code>efx_csi2\efx_csi2_tx</code></td>
+<td>efx_csi2_tx</td>
+<td>5.14</td>
+<td>efx_csi2_tx</td>
+<td>MIPI CSI-2 TX</td>
+</tr>
+<tr>
+<td><code>efx_csi2\efx_2p5g_csi2_rx</code></td>
+<td><strong>efx_csi2_rx_top</strong> ⚠</td>
+<td>5.15</td>
+<td>efx_csi2_rx_top</td>
+<td>CSI-2 RX（2.5G 等级变体）</td>
+</tr>
+<tr>
+<td><code>efx_csi2\efx_2p5g_csi2_tx</code></td>
+<td><strong>efx_csi2_tx_top</strong> ⚠</td>
+<td>5.14</td>
+<td>efx_csi2_tx_top</td>
+<td>CSI-2 TX（2.5G 等级变体）</td>
+</tr>
+<tr>
+<td><code>efx_dphy\efx_dphy_rx</code></td>
+<td>efx_dphy_rx</td>
+<td>5.8</td>
+<td>efx_dphy_rx</td>
+<td>D-PHY RX</td>
+</tr>
+<tr>
+<td><code>efx_dphy\efx_dphy_tx</code></td>
+<td>efx_dphy_tx</td>
+<td>5.7</td>
+<td>efx_dphy_tx</td>
+<td>D-PHY TX</td>
+</tr>
+<tr>
+<td><code>efx_dphy\efx_dphy_bidir_rx</code></td>
+<td>efx_dphy_bidir_rx</td>
+<td>5.13</td>
+<td>efx_dphy_bidir_rx</td>
+<td>D-PHY 双向 RX</td>
+</tr>
+<tr>
+<td><code>efx_dphy\efx_dphy_bidir_tx</code></td>
+<td>efx_dphy_bidir_tx</td>
+<td>5.9</td>
+<td>efx_dphy_bidir_tx</td>
+<td>D-PHY 双向 TX</td>
+</tr>
+<tr>
+<td><code>efx_dsi\efx_dsi_rx</code></td>
+<td>efx_dsi_rx</td>
+<td>5.12</td>
+<td>efx_dsi_rx</td>
+<td>MIPI DSI RX</td>
+</tr>
+<tr>
+<td><code>efx_dsi\efx_dsi_tx</code></td>
+<td>efx_dsi_tx</td>
+<td>5.15</td>
+<td>efx_dsi_tx</td>
+<td>MIPI DSI TX</td>
+</tr>
+<tr>
+<td><code>efx_dsi\efx_2p5g_dsi_rx</code></td>
+<td><strong>efx_dsi_rx_top</strong> ⚠</td>
+<td>1.0</td>
+<td>efx_dsi_rx_top</td>
+<td>DSI RX（2.5G 等级变体）</td>
+</tr>
+<tr>
+<td><code>efx_dsi\efx_2p5g_dsi_tx</code></td>
+<td><strong>efx_dsi_tx_top</strong> ⚠</td>
+<td>1.0</td>
+<td>efx_dsi_tx_top</td>
+<td>DSI TX（2.5G 等级变体）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>memory_controller（8 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_ddr3_soft_controller</code></td>
+<td>efx_ddr3_soft_controller</td>
+<td>5.16</td>
+<td>efx_ddr3_soft_controller</td>
+<td>软核 DDR3 控制器</td>
+</tr>
+<tr>
+<td><code>efx_ddr_reset_controller</code></td>
+<td>efx_ddr_reset_controller</td>
+<td>5.2</td>
+<td>ddr_reset_sequencer</td>
+<td>DDR 复位时序</td>
+</tr>
+<tr>
+<td><code>efx_flash_controller</code></td>
+<td><strong>efx_asmi_flash_controller</strong> ⚠</td>
+<td>5.4</td>
+<td>efx_flash_controller_top</td>
+<td>ASMI（SPI/QSPI）Flash 控制器</td>
+</tr>
+<tr>
+<td><code>efx_hyper_ram_2</code></td>
+<td><strong>efx_hyper_ram</strong> ⚠</td>
+<td>6.13</td>
+<td>hbram_top</td>
+<td>HyperRAM 控制器</td>
+</tr>
+<tr>
+<td><code>efx_jtag2spi_flash</code></td>
+<td>efx_jtag2spi_flash</td>
+<td>3.2</td>
+<td>spiOverJtag</td>
+<td>JTAG-SPI Flash 桥</td>
+</tr>
+<tr>
+<td><code>efx_sdram_controller</code></td>
+<td>efx_sdram_controller</td>
+<td>5.6</td>
+<td>efx_sdram_controller</td>
+<td>SDRAM 控制器</td>
+</tr>
+<tr>
+<td><code>efx_sd_host_controller</code></td>
+<td>efx_sd_host_controller</td>
+<td>6.0</td>
+<td>sdhc</td>
+<td>SD/eMMC 主控</td>
+</tr>
+<tr>
+<td><code>efx_socddr_calrst</code></td>
+<td>efx_socddr_calrst</td>
+<td>5.9</td>
+<td>efx_socddr_calrst</td>
+<td>SoC + DDR 校准复位</td>
+</tr>
+</tbody>
+</table>
+<p><strong>soc（3 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_soc\efx_soc</code></td>
+<td>efx_soc</td>
+<td>3.4.0</td>
+<td>EfxSapphireSoc</td>
+<td>Sapphire RV32 SoC（软核，最常用入口）</td>
+</tr>
+<tr>
+<td><code>efx_soc_rv64</code></td>
+<td>efx_soc_rv64</td>
+<td>1.0.0</td>
+<td>EfxSapphireSocRV64</td>
+<td>Sapphire RV64 SoC</td>
+</tr>
+<tr>
+<td><code>efx_hard_soc</code></td>
+<td>efx_hard_soc</td>
+<td>1.23.0</td>
+<td>Axi4Peripheral_wrapper</td>
+<td>High-Performance Sapphire SoC（硬化 4 核）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>serial_interface（3 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_i2c_controller</code></td>
+<td>efx_i2c_controller</td>
+<td>5.4</td>
+<td>i2c_controller</td>
+<td>I²C 控制器</td>
+</tr>
+<tr>
+<td><code>efx_jtag</code></td>
+<td>efx_jtag</td>
+<td>1.1</td>
+<td>efx_jtag</td>
+<td>JTAG 用户接口</td>
+</tr>
+<tr>
+<td><code>efx_uart</code></td>
+<td>efx_uart</td>
+<td>5.3</td>
+<td>top_uart</td>
+<td>UART</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ethernet（3 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_tsemac</code></td>
+<td>efx_tsemac</td>
+<td>7.3</td>
+<td>efx_mac1gbe</td>
+<td>10/100/1000 Mbps 三速以太网 MAC</td>
+</tr>
+<tr>
+<td><code>efx_mac10gbe</code></td>
+<td>efx_mac10gbe</td>
+<td>1.5</td>
+<td>efx_mac10gbe</td>
+<td>10G Ethernet MAC</td>
+</tr>
+<tr>
+<td><code>efx_usxgmii_an_37</code></td>
+<td>efx_usxgmii_an_37</td>
+<td>1.0</td>
+<td>efx_usxgmii_an_37</td>
+<td>USXGMII 自动协商</td>
+</tr>
+</tbody>
+</table>
+<p><strong>PLL / pll（2 个，library 大小写不一致——两处实测如此，非笔误）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_pll_autoreset</code></td>
+<td>efx_pll_autoreset</td>
+<td>1.1</td>
+<td>efx_pll_autoreset</td>
+<td>PLL 自动复位（library=<code>PLL</code>）</td>
+</tr>
+<tr>
+<td><code>efx_pll_cfg</code></td>
+<td>efx_pll_cfg</td>
+<td>1.3</td>
+<td>efx_pll_cfg</td>
+<td>PLL 动态重配置（library=<code>pll</code>）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Transceivers（1 个）</strong></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>IPXACT name</th>
+<th>ver</th>
+<th>顶层模块</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_prbs_tx_rx</code></td>
+<td>efx_prbs_tx_rx</td>
+<td>1.0</td>
+<td>efx_prbs_tx_rx</td>
+<td>PRBS 误码测试</td>
+</tr>
+</tbody>
+</table>
+<p>合计：6+3+2+4+12+8+3+3+3+2+1 = <strong>47</strong>。</p>
+<blockquote>
+<p><strong>来源</strong>: 47 个 <code>C:\Efinity\2026.1\ipm\ip\**\ipm\ip_component.xml</code> 全量读取（2026-09-25），四元组取自 <code>&lt;ipxact:vendor&gt;/&lt;ipxact:library&gt;/&lt;ipxact:name&gt;/&lt;ipxact:version&gt;</code> 子元素，模块名取自 <code>&lt;ipxact:moduleName&gt;</code></p>
+</blockquote>
+<h3 id="3-3-目录名-ipxact-名陷阱-共-7-处">3.3 目录名 ≠ IPXACT 名陷阱（共 7 处）</h3>
+<p>用目录名推导 IPXACT name 或用错 moduleName 时会踩坑。下表为 2026.1 全部不一致处（其余 40 个组件目录名与 IPXACT name 一致）：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>目录名</th>
+<th>IPXACT name</th>
+<th>moduleName</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>efx_fifo_2</code></td>
+<td><code>efx_fifo_top</code></td>
+<td><code>efx_fifo_top</code></td>
+<td>library=memory</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>efx_flash_controller</code></td>
+<td><code>efx_asmi_flash_controller</code></td>
+<td><code>efx_flash_controller_top</code></td>
+<td>name 与 module 都与目录名不同</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>efx_hyper_ram_2</code></td>
+<td><code>efx_hyper_ram</code></td>
+<td><code>hbram_top</code></td>
+<td>两者均不同于目录名</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>efx_csi2\efx_2p5g_csi2_rx</code></td>
+<td><code>efx_csi2_rx_top</code></td>
+<td><code>efx_csi2_rx_top</code></td>
+<td>复合包内 2.5G 变体</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>efx_csi2\efx_2p5g_csi2_tx</code></td>
+<td><code>efx_csi2_tx_top</code></td>
+<td><code>efx_csi2_tx_top</code></td>
+<td>同上</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>efx_dsi\efx_2p5g_dsi_rx</code></td>
+<td><code>efx_dsi_rx_top</code></td>
+<td><code>efx_dsi_rx_top</code></td>
+<td>同上</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>efx_dsi\efx_2p5g_dsi_tx</code></td>
+<td><code>efx_dsi_tx_top</code></td>
+<td><code>efx_dsi_tx_top</code></td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<p><strong>实践规则</strong>: 任何需要 IPXACT name 的场合（<code>IPMDesignAPI.create_ip</code> 的 <code>name</code> 参数、vlnv 校验、文档检索），一律以 <code>ip_component.xml</code> 内容为准，不要用目录名。</p>
+<blockquote>
+<p><strong>来源</strong>: 上表各行对应的 <code>ip_component.xml</code>（2026-09-25 逐个实测）</p>
+</blockquote>
+<hr />
+<h2 id="4-双-ip-体系-软-ip-ipm-与硬-ip-pt-走完全不同的通道">4. 双 IP 体系：软 IP（ipm）与硬 IP（pt）走完全不同的通道</h2>
+<p>Efinity 2026.1 中"IP"一词覆盖两类东西，配置通道完全不同，混用是常见错误来源。</p>
+<h3 id="4-1-对照表">4.1 对照表</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>软 IP（IP Manager 体系）</th>
+<th>硬 IP（PT / Interface Designer 体系）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>代表</td>
+<td>efx_soc、efx_dma、efx_tsemac、efx_fifo_2、efx_bram、efx_uart、efx_csi2 协议层等 §3 全部 47 个</td>
+<td>PLL、DDR（ddr-memtest 类）、LVDS、MIPI D-PHY 引脚层、JTAG 硬核、OSC</td>
+</tr>
+<tr>
+<td>描述格式</td>
+<td>IPXACT 1685-2014（<code>ipm/ip_component.xml</code>）</td>
+<td>PT 工具内部数据 + ISF Python API</td>
+</tr>
+<tr>
+<td>配置入口</td>
+<td>IP Manager GUI / <code>IPMDesignAPI</code></td>
+<td>Interface Designer（GUI）或手写 ISF</td>
+</tr>
+<tr>
+<td>参数存储</td>
+<td>工程 <code>ip/&lt;module&gt;/settings.json</code></td>
+<td><code>&lt;design&gt;.peri.xml</code>（<code>efxpt:design_db</code> 命名空间）</td>
+</tr>
+<tr>
+<td>注册位置</td>
+<td>工程 XML <code>&lt;efx:ip_info&gt;</code>（原生 GUI flow）或 <code>&lt;efx:design_file&gt;</code>（EvoVerse flow，见 §7.3）</td>
+<td>工程 XML <code>&lt;efx:isf_file&gt;</code> 引用 ISF；ISF 重放到 peri.xml</td>
+</tr>
+<tr>
+<td>产物</td>
+<td>变体 RTL（<code>.v/.sv</code>）+ 例化模板</td>
+<td>peri.xml 中的硬块定义，综合时自动例化网表</td>
+</tr>
+<tr>
+<td>create 语义</td>
+<td><code>create_ip</code> 可重复执行（生成新实例目录）</td>
+<td>ISF <code>design.create_*</code> 是一次性 bootstrap（见 §4.3）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-2-判断规则">4.2 判断规则</h3>
+<p>拿到一个需求，先问"它是不是硬化宏单元"：</p>
+<ol>
+<li><strong>硬化宏单元</strong>（硅片上物理存在的块：PLL、DDR hard controller、LVDS、MIPI D-PHY、JTAG、OSC、PCIe 硬核）→ 走 <strong>ISF/peri.xml</strong> 通道，<strong>不要</strong>也不可能在 IP Manager 里创建。注意 MIPI 的分层：D-PHY 引脚/寄存器层是硬 IP（ISF），而 CSI-2/DSI 协议层是软 IP（§3 mipi 组 12 个组件）。</li>
+<li><strong>纯 RTL 软 IP</strong>（§3 清单内）→ 走 <strong>IP Manager</strong> 通道（GUI 或 IPMDesignAPI）。</li>
+<li><strong>边界情况</strong>：JTAG 硬核本身在 PT 通道；<code>efx_jtag</code>（JTAG 用户接口）与 <code>efx_jtag2spi_flash</code>（spiOverJtag）是挂在 JTAG 硬核上的软 IP，走 IP Manager。</li>
+<li>两类 IP 最终在<strong>同一次编译</strong>中合流：软 IP 变体 RTL 进 <code>efx_map</code> 源扫描，硬块定义经 peri.xml 进 PT/布局布线。</li>
+</ol>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\</code> 组件清单 vs <code>$EFINITY_HOME</code> PT 工具文档； EvoVerse 双通道实践见 <code>awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code></p>
+</blockquote>
+<h3 id="4-3-与-isf-引导契约的关系">4.3 与 ISF 引导契约的关系</h3>
+<p>ISF 的 <code>create_*</code> 命令一次性语义（引导后注释、只留 set/assign 重放安全命令）由 <code>rules-efinity-hard.md</code> §15 契约约束；peri.xml 是工程源文件、构建后必须存活。IP Manager 通道<strong>不触碰</strong> peri.xml——<code>IPMDesignAPI.generate_ip</code> 虽然会自动定位 peri.xml，但那只是为了让生成器感知工程上下文，不会向其写入内容。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\bin\ipm_api_service\design.py</code>（generate_ip 实现）；AGENTS.md §15</p>
+</blockquote>
+<hr />
+<h2 id="5-单-ip-目录结构-逐文件说明">5. 单 IP 目录结构（逐文件说明）</h2>
+<h3 id="5-1-标准布局-2026-1-实测">5.1 标准布局（2026.1 实测）</h3>
+<p>以 <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\</code> 为代表：</p>
+<pre><code>efx_&lt;name&gt;/
+├── ipm/                            — IP Manager 元数据（每个组件必有）
+│   ├── component.pickle            — 序列化的 IP 组件元数据（可删，自动重建）
+│   ├── graph.pickle                — 序列化的参数依赖图（可删，自动重建）
+│   ├── ip_component.xml            — IPXACT 1685-2014 组件描述（vlnv + moduleName）
+│   ├── ip_migration_handling.py    — IP 版本迁移处理脚本
+│   ├── doc/
+│   │   ├── topics/*.html           — 文档页（ipm-main*.html 使用指南、
+│   │   │                             &lt;ip&gt;-core-features/-customize/-fd.html、
+│   │   │                             ipmgr-troubleshooting.html、hlp-*.html）
+│   │   └── art/                    — 配图
+│   └── gui/
+│       └── config_template.json    — 配置向导 GUI 模板（47 组件均确认存在）
+├── source/                         — 主 RTL 源码
+│   └── rtl/
+├── generator/                      — 生成器脚本（部分 IP 有）
+├── fpga/                           — 面向 Efinix 开发板的 Example Design
+├── testbench/                      — 仿真 Testbench
+├── constraints/                    — 时序/引脚约束
+└── embedded_sw/                    — 嵌入式软件（仅 SoC/DMA/MAC 类，见 §12）
+</code></pre>
+<p><strong>已证伪的旧说法</strong>: 2026.1 实测 <code>ipm\ip</code> 下<strong>不存在</strong> <code>&lt;name&gt;.ip</code> 或 <code>&lt;name&gt;.tcl</code> 文件——每个 IP 的定义载体就是 <code>ipm/ip_component.xml</code> + 两个 pickle。旧文档中这两个文件是过时/错误描述，不要再引用。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\</code> 目录枚举；47 组件的 <code>ipm/gui/config_template.json</code> 与 <code>ipm/doc/topics/</code> 存在性全量核实（2026-09-25）</p>
+</blockquote>
+<h3 id="5-2-变体-rtl-目录">5.2 变体 RTL 目录</h3>
+<p>部分 IP 提供多个 <code>source_&lt;toolchain&gt;/</code> 目录，为不同工具链定制的 RTL（如 <code>source_efinity/</code>、<code>source_modelsim/</code>）。生成器按目标工具链择一路径输出。</p>
+<h3 id="5-3-复合包布局">5.3 复合包布局</h3>
+<p>四个复合包（<code>efx_csi2</code>、<code>efx_dphy</code>、<code>efx_dsi</code>、<code>efx_soc</code>）的容器目录只有子目录，无自身元数据：</p>
+<pre><code>efx_csi2/
+├── efx_csi2_rx/ipm/ip_component.xml
+├── efx_csi2_tx/ipm/ip_component.xml
+├── efx_2p5g_csi2_rx/ipm/ip_component.xml
+└── efx_2p5g_csi2_tx/ipm/ip_component.xml
+</code></pre>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\efx_csi2\</code>、<code>efx_dphy\</code>、<code>efx_dsi\</code>、<code>efx_soc\</code> 目录枚举</p>
+</blockquote>
+<h3 id="5-4-公共源码">5.4 公共源码</h3>
+<p><code>C:\Efinity\2026.1\ipm\ip\common\source\</code> 提供跨 IP 公用的基础模块（实测含 <code>efx_asyncreg.v</code>、<code>efx_pulse_sync.v</code>、<code>efx_resetsync.v</code>），部分生成结果会引用它们。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\common\source\</code> 目录枚举</p>
+</blockquote>
+<hr />
+<h2 id="6-工作流程-创建-ip-实例-gui">6. 工作流程：创建 IP 实例（GUI）</h2>
+<h3 id="6-1-打开-ip-manager">6.1 打开 IP Manager</h3>
+<ol>
+<li>点击工具栏 <strong>IP Catalog</strong> 按钮，或 <strong>Tools → Open IP Catalog</strong></li>
+<li>选中目标 IP → <strong>Next</strong> 进入 IP Configuration 向导</li>
+</ol>
+<h3 id="6-2-配置参数">6.2 配置参数</h3>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>General</strong></td>
+<td>输入 Module Name，设置自定义参数</td>
+</tr>
+<tr>
+<td><strong>Deliverables</strong></td>
+<td>勾选生成 Example Design 和/或 Testbench</td>
+</tr>
+<tr>
+<td><strong>Summary</strong></td>
+<td>审查全部选择</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-3-生成">6.3 生成</h3>
+<ol>
+<li>完成参数配置后点 <strong>Generate</strong>，在 Review 对话框确认</li>
+<li>Console 显示生成状态；成功后弹 Generation Success</li>
+<li>生成的 IP 自动加入工程，显示在 Project 面板的 <strong>IP</strong> 文件夹下</li>
+</ol>
+<p><strong>注意</strong>: 生成后 <code>&lt;module_name&gt;.sv</code> 已由工具自动管理，<strong>不要</strong>再通过 Project Editor 手动添加同名文件，否则编译报重复定义。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\ipm-main-pll-dyn-recfg.html</code>（Generating 步骤与注意事项）</p>
+</blockquote>
+<hr />
+<h2 id="7-ip-实例化数据流-从配置到综合">7. IP 实例化数据流（从配置到综合）</h2>
+<h3 id="7-1-全链路总览">7.1 全链路总览</h3>
+<pre><code>[配置]  GUI 向导 ──或── IPMDesignAPI.create_ip/config_ip
+              │
+              ▼
+工程 ip/&lt;module&gt;/settings.json          ← 参数快照（可版本管理）
+              │
+              ▼ generate_ip
+工程 ip/&lt;module&gt;/ 变体 RTL + _tmpl 例化模板 + _define 参数头
+              │
+              ▼ 注册
+工程 XML：&lt;efx:ip_info&gt;（原生 GUI flow）或 &lt;efx:design_file&gt;（EvoVerse flow）
+              │
+              ▼ efx_map
+变体 RTL 与用户 RTL 一起进入综合源扫描
+</code></pre>
+<h3 id="7-2-原生-efinity-gui-flow-的注册方式">7.2 原生 Efinity GUI flow 的注册方式</h3>
+<p>原生 flow 由 Efinity 自动在工程 XML 写入：</p>
+<pre><code class="language-xml">&lt;efx:ip_info&gt;
+    &lt;efx:ip path=&quot;ip/&lt;module_name&gt;/settings.json&quot;/&gt;
+&lt;/efx:ip_info&gt;
+</code></pre>
+<p><code>efx_run</code>/<code>efx_map</code> 解析该条目时，将其转换为对 <code>ip/&lt;module_name&gt;/</code> 目录的源扫描（<code>--dir</code> 语义），从而把生成的变体 RTL 纳入编译。</p>
+<h3 id="7-3-evoverse-flow-的实证决策-不写-efx-ip-改注册-design_file">7.3 EvoVerse flow 的实证决策：不写 <code>&lt;efx:ip&gt;</code>，改注册 design_file</h3>
+<p>EvoVerse 生成工程时<strong>刻意不写 <code>&lt;efx:ip&gt;</code> 条目</strong>，而是把生成的 IP RTL 以 <code>&lt;efx:design_file&gt;</code> 形式注册。实证原因（<code>awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code> <code>publishGeneratedIp</code> L73-108 注释）：</p>
+<ol>
+<li><code>&lt;efx:ip path="ip/&lt;m&gt;/settings.json"&gt;</code> 会被 efx_run 转成 <code>--dir ip/&lt;m&gt;</code> 整目录源扫描，与已注册的 <code>design_file</code> 条目<strong>重复编译</strong>，报 VERI-1206（重复模块定义）；</li>
+<li>走 <code>ip_src_file</code> 语义时，解析会定位到 IP 根目录而找不到 SoC 网表类产物。</li>
+</ol>
+<p>因此 EvoVerse 只注册 <code>design_file</code>。实现要点（<code>publishGeneratedIp</code>）：</p>
+<ul>
+<li>新 <code>design_file</code> 条目必须插在 <code>&lt;efx:top_vhdl_arch&gt;</code> <strong>之前</strong>（enf_proj.xsd 的元素顺序约束）；</li>
+<li><code>ip.ts</code> 内置 vlnv 校验正则：<code>^[A-Za-z0-9_.-]+(?:[:/][A-Za-z0-9_.-]+){2,3}$</code>（<code>validateIpIdentity</code>）。</li>
+</ul>
+<h3 id="7-4-evoverse-工程侧生成链">7.4 EvoVerse 工程侧生成链</h3>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>代码位置</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工程 XML 生成</td>
+<td><code>awesomsdk\sdk\cli\evoverse</code> <code>_build_native_project_xml</code>（约 L1868-1954）</td>
+<td>生成原生 enf_proj XML；<code>&lt;efx:ip_info/&gt;</code> 留空；<code>isf_file</code> 为空时<strong>省略该行</strong>（空的 <code>&lt;efx:isf_file name=""/&gt;</code> 会让 PT 拒绝携带 peri.xml 的工程）</td>
+</tr>
+<tr>
+<td>IP 产物注册</td>
+<td><code>products\efinity-adapter\extension\src\capabilities\ip.ts</code> <code>publishGeneratedIp</code>（L73-108）</td>
+<td>注册 design_file；顺序约束见 §7.3</td>
+</tr>
+<tr>
+<td>IP 生成执行</td>
+<td><code>C:\Efinity\2026.1\ipm\bin\ipm_api_service\design.py</code> <code>IPMDesignAPI.generate_ip</code></td>
+<td>在工程 <code>ip/</code> 目录产出变体 RTL（见 §8）</td>
+</tr>
+<tr>
+<td>事务保护</td>
+<td><code>ip.ts</code> <code>beginIpTransaction</code> / <code>rollbackIpTransaction</code></td>
+<td>生成前备份 peri.xml 与 ip 目录，失败回滚（见 §14.3）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源</strong>: 上述源码路径均为 2026-09-25 实读；VERI-1206 结论为 EvoVerse 实证（ip.ts 注释原文）
+<strong>历史注</strong>: 旧文档曾引用 <code>scripts\projectxml.py</code>——该文件已不存在，职能迁移至 <code>_build_native_project_xml</code>（工程 XML 生成）与 Efinity 自带的 <code>ipm\bin\ipm_api_service\projectxml.py</code>（efx:ip_info 节点管理）。</p>
+</blockquote>
+<hr />
+<h2 id="8-ipmdesignapi-参考-脚本化生成-ip">8. IPMDesignAPI 参考（脚本化生成 IP）</h2>
+<h3 id="8-1-初始化与库路径">8.1 初始化与库路径</h3>
+<pre><code class="language-python">from ipm_api_service.design import IPMDesignAPI
+
+api = IPMDesignAPI(device_name, family_name, project_path=&quot;.&quot;, is_verbose=False)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ip_library_root</code></td>
+<td><code>$EFINITY_HOME/ipm/ip</code>（官方只读库）</td>
+</tr>
+<tr>
+<td><code>user_ip_library_root</code></td>
+<td><code>$EFINITY_USER_DIR/ipm/user_ip</code>（用户导入库）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-2-四个核心方法-实测签名">8.2 四个核心方法（实测签名）</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>签名</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_ip</code></td>
+<td><code>create_ip(module_name, vendor, library, name)</code></td>
+<td>加载该 IP 的默认参数，返回 <code>(VLNV, IPLanguage)</code></td>
+</tr>
+<tr>
+<td><code>config_ip</code></td>
+<td><code>config_ip(module_name, configs: Dict[str,str])</code></td>
+<td>按 ParameterTemplate 更新参数；bit/int 类型自动转换</td>
+</tr>
+<tr>
+<td><code>generate_ip</code></td>
+<td><code>generate_ip(module_name)</code></td>
+<td>定位工程 XML（<code>&lt;工程名&gt;.xml</code> 或目录内首个非 <code>.peri.xml</code>）与 peri.xml，在<strong>工程目录</strong> <code>ip/</code> 下生成变体 RTL</td>
+</tr>
+<tr>
+<td><code>validate_ip</code></td>
+<td><code>validate_ip(module_name)</code></td>
+<td>返回 <code>(is_success, ValidatedParamResult, param_templates)</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>create_ip</code> 的 <code>name</code> 参数必须使用 IPXACT name（§3.3 陷阱表），不是目录名。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\bin\ipm_api_service\design.py</code>（L108-307 实读）</p>
+</blockquote>
+<h3 id="8-3-配套工具">8.3 配套工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>位置</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ProjectXML</code> 类</td>
+<td><code>C:\Efinity\2026.1\ipm\bin\ipm_api_service\projectxml.py</code></td>
+<td>ElementTree 管理 <code>&lt;efx:ip_info&gt;</code> 节点（缺失时插入到 <code>misc_info</code> 之后）</td>
+</tr>
+<tr>
+<td><code>pack_ip.py</code></td>
+<td><code>C:\Efinity\2026.1\ipm\bin\gui\pack_ip.py</code></td>
+<td>IP 目录打包为 zip（<code>--ip_folder/--output_folder/--ip_name</code>）。注意：awesomsdk 仓库 <code>scripts\</code> 下<strong>没有</strong>此工具，全仓检索确认；不要找错位置</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源</strong>: 上述文件 2026-09-25 实读；awesomsdk <code>scripts\</code> 全仓 Grep 确认无 pack_ip.py</p>
+</blockquote>
+<hr />
+<h2 id="9-ip-交付物-deliverables">9. IP 交付物（Deliverables）</h2>
+<p>生成后产出（以 <code>efx_pll_cfg</code> 官方文档描述为准）：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;module_name&gt;_define.svh</code> / <code>.vh</code></td>
+<td>自定义参数定义头文件</td>
+</tr>
+<tr>
+<td><code>&lt;module_name&gt;_tmpl.sv</code> / <code>_tmpl.vhd</code></td>
+<td>例化模板（复制到用户设计，改信号名即可）</td>
+</tr>
+<tr>
+<td><code>&lt;module_name&gt;.sv</code> / <code>.v</code></td>
+<td>IP 变体源码</td>
+</tr>
+<tr>
+<td><code>settings.json</code></td>
+<td>参数快照（§11.1）</td>
+</tr>
+<tr>
+<td><code>&lt;kit_name&gt;_devkit/</code></td>
+<td>面向特定开发板的 Example Design</td>
+</tr>
+<tr>
+<td><code>Testbench/</code></td>
+<td>仿真 Testbench</td>
+</tr>
+</tbody>
+</table>
+<p>使用时从 <code>_tmpl.sv</code> / <code>_tmpl.vhd</code> 复制例化模板；不要手动把 <code>&lt;module_name&gt;.sv</code> 再加进工程（§6.3 注意事项）。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\ipm-main-pll-dyn-recfg.html</code>（Generated Files / Instantiating the IP 节）</p>
+</blockquote>
+<hr />
+<h2 id="10-ooc-out-of-context-综合">10. OOC（Out-of-Context）综合</h2>
+<p>OOC 综合允许 IP 独立于顶层设计综合成独立网表，顶层 P&amp;R 阶段作为黑盒集成。优势：缩短顶层综合时间；IP 参数变更只需重综合该 IP；支持团队并行。</p>
+<p>工程 XML 中通过 <code>&lt;efx:ooc_info&gt;</code> 配置，元素顺序见 <a href="Efinity-XML工程文件Schema参考.html">Efinity-XML工程文件Schema参考.md</a>。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>Efinity-XML工程文件Schema参考.md</code>（ooc_info 元素）；<code>C:\Efinity\2026.1\bin\enf_proj.xsd</code></p>
+</blockquote>
+<hr />
+<h2 id="11-ip-参数管理">11. IP 参数管理</h2>
+<h3 id="11-1-settings-json">11.1 settings.json</h3>
+<p>每个 IP 实例的参数保存在工程 <code>ip/&lt;instance&gt;/settings.json</code>。用途：重新生成时恢复参数；版本控制追踪配置变化；跨工程复用配置。EvoVerse flow 同样使用原生 settings.json（§7.4）。</p>
+<h3 id="11-2-pickle-缓存与日志事件">11.2 Pickle 缓存与日志事件</h3>
+<p>IP Manager 用 Python pickle 序列化组件元数据（<code>component.pickle</code>、<code>graph.pickle</code>）。<code>efxIP.log</code> 中常见事件：</p>
+<table>
+<thead>
+<tr>
+<th>日志事件</th>
+<th>级别</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PICKLE_LOAD-WARNING</code></td>
+<td>WARNING</td>
+<td>Pickle 不存在或格式不匹配，自动重新生成</td>
+</tr>
+<tr>
+<td><code>PICKLE_LOAD-ERROR</code></td>
+<td>CRITICAL</td>
+<td>器件/系列与 Pickle 不匹配，弃用缓存走全量加载</td>
+</tr>
+<tr>
+<td><code>VALIDATE_PARAMS-BEGIN/-DONE</code></td>
+<td>DEBUG</td>
+<td>参数验证开始/完成</td>
+</tr>
+<tr>
+<td><code>GENERATE_PICKLE-BEGIN/-DONE</code></td>
+<td>INFO</td>
+<td>重建 Pickle</td>
+</tr>
+<tr>
+<td><code>CHECK_IP_EXIST-BEGIN/-DONE</code></td>
+<td>INFO</td>
+<td>检查 IP 实例是否已存在</td>
+</tr>
+</tbody>
+</table>
+<p><code>PICKLE_LOAD-ERROR</code> 典型样例（切换器件后缓存失效，属正常回退，不是故障）：</p>
+<pre><code>[CRITICAL] [PICKLE_LOAD-ERROR] Device or family not matching with pickle.
+Current device: T20F256, current device
+Current family: Trion, pickle family
+</code></pre>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code></p>
+</blockquote>
+<h3 id="11-3-参数验证">11.3 参数验证</h3>
+<p>生成前自动执行 <code>VALIDATE_PARAMS</code>；非法参数组合会终止生成并在 GUI/日志报告错误。</p>
+<hr />
+<h2 id="12-嵌入式软件-bsp-soc-dma-mac-类-ip">12. 嵌入式软件 BSP（SoC/DMA/MAC 类 IP）</h2>
+<h3 id="12-1-embedded_sw-目录结构">12.1 embedded_sw 目录结构</h3>
+<p>以 <code>efx_soc</code> 为代表，生成后包含：</p>
+<pre><code>embedded_sw/&lt;soc&gt;/
+├── bsp/efinix/EfxSapphireSoC/   — 板级支持包
+│   ├── soc.h                    — 硬件定义（外设基地址、中断号等）
+│   ├── soc.mk                   — Makefile 包含文件
+│   └── linker/*.ld              — 链接脚本
+├── config/                      — Windows Eclipse 项目配置
+├── config_linux/                — Linux Eclipse 项目配置
+├── software/                    — 固件示例（26 个，见下表）
+└── tool/                        — 辅助脚本
+</code></pre>
+<h3 id="12-2-固件示例清单-26-个">12.2 固件示例清单（26 个）</h3>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apb3Demo</code></td>
+<td>APB3 从设备</td>
+</tr>
+<tr>
+<td><code>Axi4Demo</code></td>
+<td>用户 AXI4 主控</td>
+</tr>
+<tr>
+<td><code>bootloader</code></td>
+<td>系统 Bootloader</td>
+</tr>
+<tr>
+<td><code>clintTimerInterruptDemo</code></td>
+<td>CLINT 定时器中断</td>
+</tr>
+<tr>
+<td><code>coremark</code></td>
+<td>CoreMark 基准测试</td>
+</tr>
+<tr>
+<td><code>customInstructionDemo</code></td>
+<td>自定义指令扩展</td>
+</tr>
+<tr>
+<td><code>dCacheFlushDemo</code></td>
+<td>数据 Cache 刷新</td>
+</tr>
+<tr>
+<td><code>dhrystone</code></td>
+<td>Dhrystone 基准测试</td>
+</tr>
+<tr>
+<td><code>FreeRTOS</code></td>
+<td>FreeRTOS 多任务</td>
+</tr>
+<tr>
+<td><code>fpuDemo</code></td>
+<td>FPU 使用</td>
+</tr>
+<tr>
+<td><code>gpioDemo</code></td>
+<td>GPIO 控制与中断</td>
+</tr>
+<tr>
+<td><code>iCacheFlushDemo</code></td>
+<td>指令 Cache 刷新</td>
+</tr>
+<tr>
+<td><code>inlineASMDemo</code></td>
+<td>内联汇编</td>
+</tr>
+<tr>
+<td><code>i2cDemo</code></td>
+<td>I²C 控制 MCP4725 DAC</td>
+</tr>
+<tr>
+<td><code>i2cEepromDemo</code></td>
+<td>I²C EEPROM 读写</td>
+</tr>
+<tr>
+<td><code>i2cMasterDemo</code> / <code>i2cMasterInterruptDemo</code></td>
+<td>I²C 主控（轮询/中断）</td>
+</tr>
+<tr>
+<td><code>i2cSlaveDemo</code></td>
+<td>I²C 从设备</td>
+</tr>
+<tr>
+<td><code>memTest</code></td>
+<td>内存地址/数据测试</td>
+</tr>
+<tr>
+<td><code>nestedInterruptDemo</code></td>
+<td>嵌套中断优先级</td>
+</tr>
+<tr>
+<td><code>semihostingDemo</code></td>
+<td>Semihosting 调试</td>
+</tr>
+<tr>
+<td><code>smpDemo</code></td>
+<td>多核 SMP（需 IDE v2023.1+）</td>
+</tr>
+<tr>
+<td><code>spiDemo</code> / <code>spiMasterDemo</code> / <code>spiSlaveDemo</code></td>
+<td>SPI 主/从</td>
+</tr>
+<tr>
+<td><code>timerDemo</code></td>
+<td>通用定时器</td>
+</tr>
+<tr>
+<td><code>uartDemo</code></td>
+<td>UART 收发</td>
+</tr>
+<tr>
+<td><code>userInterruptDemo</code></td>
+<td>用户中断源</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-3-bsp-关键文件">12.3 BSP 关键文件</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>soc.h</code></td>
+<td>外设基地址、中断向量、内存映射</td>
+</tr>
+<tr>
+<td><code>soc.mk</code></td>
+<td>编译选项与链接设置</td>
+</tr>
+<tr>
+<td><code>linker/*.ld</code></td>
+<td>代码/数据段布局</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源</strong>: <code>efx_soc</code> IP 生成的 <code>embedded_sw/&lt;soc&gt;/</code> 结构（Efinity 参考设计索引 §L 交叉印证）</p>
+</blockquote>
+<hr />
+<h2 id="13-ip-版本管理">13. IP 版本管理</h2>
+<h3 id="13-1-ip-迁移处理">13.1 IP 迁移处理</h3>
+<p>每个 IP 的 <code>ipm/ip_migration_handling.py</code> 处理版本升级时的参数迁移：Efinity 升级导致参数 Schema 变化时，自动把旧参数映射到新格式。</p>
+<h3 id="13-2-版本兼容">13.2 版本兼容</h3>
+<p>Block type、property、preset 和 resource 名称与器件及 Efinity 版本相关。生成 IP 后的 API 语义以当前安装的 <code>$EFINITY_HOME/doc/pdf/efinity-python-api.pdf</code> 为准。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\ip\**\ipm\ip_migration_handling.py</code>；Efinity 设计API集成.md</p>
+</blockquote>
+<hr />
+<h2 id="14-与-evoverse-sdk-的集成">14. 与 EvoVerse SDK 的集成</h2>
+<h3 id="14-1-职责分工">14.1 职责分工</h3>
+<pre><code class="language-text">IPMDesignAPI/settings.json → IP RTL 与 IP 实例参数
+ISF/peri.xml               → GPIO、PLL、DDR、MIPI、JTAG 等硬块（不走 ip_info）
+工程 XML（EvoVerse 生成）   → design_file 注册（不写 efx:ip，见 §7.3）
+efx_run --flow compile     → synthesis → PT → PNR → bitstream
+</code></pre>
+<h3 id="14-2-生成器代码位置-实测">14.2 生成器代码位置（实测）</h3>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>文件</th>
+<th>关键函数/位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工程 XML 构建</td>
+<td><code>awesomsdk\sdk\cli\evoverse</code></td>
+<td><code>_build_native_project_xml</code>（约 L1868-1954）</td>
+</tr>
+<tr>
+<td>IP 产物注册</td>
+<td><code>awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code></td>
+<td><code>publishGeneratedIp</code>（L73-108）</td>
+</tr>
+<tr>
+<td>IP 事务与校验</td>
+<td>同上</td>
+<td><code>beginIpTransaction</code> / <code>rollbackIpTransaction</code> / <code>validateIpIdentity</code></td>
+</tr>
+<tr>
+<td>IPM 结果解析</td>
+<td>同上</td>
+<td><code>parseIpmResult</code>（从 IPM 输出提取 JSON 结果）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-3-ip-添加时的-peri-xml-保护">14.3 IP 添加时的 peri.xml 保护</h3>
+<p><code>evoverse ip add</code> 流程（adapter 侧）：</p>
+<ol>
+<li><code>beginIpTransaction</code> 备份当前 peri.xml 与工程 <code>ip/</code> 目录；</li>
+<li>调用 IPMDesignAPI 生成 IP；</li>
+<li>生成后运行 DesignAPI DRC；</li>
+<li>若 IPM、结果解析或后置 DRC 任一失败 → <code>rollbackIpTransaction</code> 恢复原库，避免半完成状态进入编译。</li>
+</ol>
+<p>这与 AGENTS.md §15 的 peri.xml 存活契约一致：peri.xml 是工程源文件，任何失败路径都不得留下被破坏的版本。</p>
+<h3 id="14-4-不写-efx-ip-的决策记录">14.4 不写 <code>&lt;efx:ip&gt;</code> 的决策记录</h3>
+<p>见 §7.3。要点：避免 <code>--dir</code> 目录扫描与 design_file 重复编译（VERI-1206）；避免 <code>ip_src_file</code> 解析错位。此决策为 EvoVerse 实证，写工程 XML 时必须遵守。</p>
+<blockquote>
+<p><strong>来源</strong>: <code>ip.ts</code> L100-106 注释原文；<code>sdk\cli\evoverse</code> <code>_build_native_project_xml</code> 实读（2026-09-25）</p>
+</blockquote>
+<hr />
+<h2 id="15-故障排查">15. 故障排查</h2>
+<h3 id="15-1-ip-生成失败">15.1 IP 生成失败</h3>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Module Name 为空</td>
+<td>未输入模块名</td>
+<td>IP Configuration 的 Module Name 框输入名称</td>
+</tr>
+<tr>
+<td>Pickle 缓存损坏</td>
+<td>pickle 文件损坏</td>
+<td>删除该 IP 的 <code>component.pickle</code>/<code>graph.pickle</code>，重开 IP Manager 自动重建</td>
+</tr>
+<tr>
+<td><code>PermissionError</code></td>
+<td>pickle 被其他 Efinity 进程占用</td>
+<td>关闭其他 Efinity 实例后重试（<code>efxIP.log</code> 有实例记录）</td>
+</tr>
+<tr>
+<td>器件/系列不匹配</td>
+<td>工程器件与 IP 缓存目标不符</td>
+<td><code>PICKLE_LOAD-ERROR</code> 日志显示详情；属正常回退，等待全量加载完成即可</td>
+</tr>
+<tr>
+<td>重复模块定义（VERI-1206）</td>
+<td>EvoVerse 工程误写 <code>&lt;efx:ip&gt;</code> 或手动重复注册</td>
+<td>按 §7.3 只用 design_file 注册；删除多余 <code>&lt;efx:ip&gt;</code> 条目</td>
+</tr>
+<tr>
+<td>手动添加 <code>&lt;module_name&gt;.sv</code> 报重复</td>
+<td>IP 文件已由工具自动管理</td>
+<td>删除手动添加条目（§6.3）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-2-参数验证失败">15.2 参数验证失败</h3>
+<p><code>VALIDATE_PARAMS</code> 失败通常是参数组合非法：检查参数取值范围、参数间依赖（如 <code>efx_pll_cfg</code> Multi-config 模式需要有效 RAM Hex 文件、PLL Instance Name 与 Interface Designer 块名一致）。</p>
+<h3 id="15-3-定位手段">15.3 定位手段</h3>
+<ol>
+<li>先看 <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code> 的最后一个 <code>*-BEGIN</code> 与首个 <code>*-ERROR</code>；</li>
+<li>EvoVerse flow 再看 adapter 的事务日志（<code>beginIpTransaction</code> 之后是否走了 <code>rollbackIpTransaction</code>）;</li>
+<li>名称类问题先对照 §3.3 陷阱表核对 IPXACT name 与 moduleName。</li>
+</ol>
+<blockquote>
+<p><strong>来源</strong>: <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>；<code>ip.ts</code>；本文 §3.3/§7.3</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>权威来源汇总</strong>
+- <code>C:\Efinity\2026.1\ipm\ip\**\ipm\ip_component.xml</code> — 47 组件 vlnv/moduleName（2026-09-25 全量提取）
+- <code>C:\Efinity\2026.1\ipm\bin\ipm_api_service\design.py</code> — IPMDesignAPI 四方法实现
+- <code>C:\Efinity\2026.1\ipm\bin\ipm_api_service\projectxml.py</code> — efx:ip_info 节点管理
+- <code>C:\Efinity\2026.1\ipm\bin\gui\pack_ip.py</code> — IP 打包工具
+- <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code> — 日志格式与事件样例
+- <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\*.html</code> — IP Manager 使用步骤与交付物
+- <code>awesomsdk\sdk\cli\evoverse</code>（<code>_build_native_project_xml</code>）与 <code>awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code>（<code>publishGeneratedIp</code>）— EvoVerse 生成器证据
+- <code>awesomsdk\docs\efinity\Efinity参考设计索引.md</code> — 示例与入口索引</p>
+</blockquote></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

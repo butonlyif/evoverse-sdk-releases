@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PLL 与时钟设计</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>PLL、时钟资源和约束参考。</span>
+<code>efinity/Efinity-PLL与时钟设计.md</code>
+<a href="../../../efinity/Efinity-PLL与时钟设计.md">Markdown 源文件</a></p>
+<h1>PLL 与时钟设计</h1></header>
+<main class="article"><h1 id="efinity-pll-与时钟设计">Efinity PLL 与时钟设计</h1>
+<blockquote>
+<p><strong>版本</strong>: v1.0
+<strong>更新日期</strong>: 2026-07-30
+<strong>适用工具</strong>: Efinity 2026.1 (Titanium / Trion / Topaz 系列)
+<strong>来源</strong>: Efinity ISF 语法参考（ISF Importer/Exporter 源码）、efx_pll_cfg IP 文档、efx_pll_autoreset IP 源码、Efinity 设计规范、Efinity 编码风格指南</p>
+<p><strong>关联文档</strong>:
+- <a href="Efinity-ISF语法参考.html">Efinity-ISF语法参考.md</a> — ISF PLL 创建与属性设置命令
+- <a href="Efinity设计规范.html">Efinity设计规范.md</a> — §2 复位设计中 PLL Lock 合并规范
+- <a href="Efinity编码风格.html">Efinity编码风格.md</a> — §3 时钟命名与时鐘使能规则
+- <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md</a> — IP Manager 中 PLL 相关 IP 的使用</p>
+</blockquote>
+<hr />
+<h2 id="1-pll-架构概述">1. PLL 架构概述</h2>
+<p>Efinity FPGA 的 PLL（Phase-Locked Loop）是基于 VCO（压控振荡器）的模拟硬核模块，通过反馈分频器（Feedback Divider）和输出分频器（Output Divider）从参考时钟生成所需频率。</p>
+<p><strong>核心参数关系：</strong>
+- <code>FVCO = FIN × (Feedback Divider)</code> — VCO 频率
+- <code>FCLKOUTx = FVCO / CLKOUTx_DIV</code> — 各输出通道频率</p>
+<p>PLL 在 Efinity 中通过 <strong>Interface Designer（ISF）</strong> 配置为硬核，不在 RTL 中直接例化。</p>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §3.1（BLOCK_TYPE 列表），其中 PLL 列为全部器件支持的块类型 [Efinity-ISF语法参考.md §3.1]</p>
+</blockquote>
+<hr />
+<h2 id="2-pll-配置-via-isf">2. PLL 配置 via ISF</h2>
+<h3 id="2-1-create_block-创建-pll-实例">2.1 create_block 创建 PLL 实例</h3>
+<p>在 ISF 中通过 <code>design.create_block()</code> 创建 PLL 块：</p>
+<pre><code class="language-python">design.create_block(&quot;my_pll&quot;, &quot;PLL&quot;)
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §3（模块创建），<code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> (DesignAPI.create_block, line 192) [Efinity-ISF语法参考.md §3]</p>
+</blockquote>
+<h3 id="2-2-pll-属性设置">2.2 PLL 属性设置</h3>
+<p>PLL 属性通过 <code>design.set_property("inst", "PROP_NAME", "value", "PLL")</code> 设置：</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>说明</th>
+<th>示例值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FIN</code></td>
+<td>输入参考时钟频率（MHz）</td>
+<td><code>"50"</code></td>
+</tr>
+<tr>
+<td><code>CLKOUT0_EN</code></td>
+<td>使能输出通道 0</td>
+<td><code>"TRUE"</code> / <code>"FALSE"</code></td>
+</tr>
+<tr>
+<td><code>CLKOUT0_DIV</code></td>
+<td>输出通道 0 分频比</td>
+<td><code>"2"</code>（VCO/2）</td>
+</tr>
+<tr>
+<td><code>CLKOUT1_EN</code> ~ <code>CLKOUTx_EN</code></td>
+<td>使能输出通道 1~N</td>
+<td><code>"TRUE"</code> / <code>"FALSE"</code></td>
+</tr>
+<tr>
+<td><code>CLKOUT1_DIV</code> ~ <code>CLKOUTx_DIV</code></td>
+<td>输出通道 1~N 分频比</td>
+<td><code>"4"</code>, <code>"8"</code> 等</td>
+</tr>
+<tr>
+<td><code>CLKOUTx_PHASE</code></td>
+<td>输出通道相位偏移（度）</td>
+<td><code>"90"</code>, <code>"180"</code></td>
+</tr>
+<tr>
+<td><code>BANDWIDTH</code></td>
+<td>PLL 环路带宽</td>
+<td><code>"LOW"</code>, <code>"MEDIUM"</code>, <code>"HIGH"</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §4.2（PLL 属性示例）[Efinity-ISF语法参考.md §4.2]</p>
+</blockquote>
+<h3 id="2-3-绑定-pll-资源">2.3 绑定 PLL 资源</h3>
+<pre><code class="language-python">design.assign_resource(&quot;my_pll&quot;, &quot;PLL_R0&quot;, &quot;PLL&quot;)
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §5.2（assign_resource），<code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> (DesignAPI.assign_resource, line 790) [Efinity-ISF语法参考.md §5.2]</p>
+</blockquote>
+<h3 id="2-4-完整-isf-pll-示例">2.4 完整 ISF PLL 示例</h3>
+<pre><code class="language-python"># === PLL: 50MHz → 100MHz (CLKOUT0) + 200MHz (CLKOUT1) ===
+design.create_block(&quot;sys_pll&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;FIN&quot;, &quot;50&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_DIV&quot;, &quot;10&quot;, &quot;PLL&quot;)     # 1000MHz/10 = 100MHz
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_DIV&quot;, &quot;5&quot;, &quot;PLL&quot;)      # 1000MHz/5 = 200MHz
+design.assign_resource(&quot;sys_pll&quot;, &quot;PLL_R0&quot;, &quot;PLL&quot;)
+</code></pre>
+<p>PLL 参考时钟通过 <code>create_pll_input_clock_gpio</code> 创建专用 GPIO 作为 PLL 的时钟源。</p>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §2.1（<code>create_pll_input_clock_gpio</code>）[Efinity-ISF语法参考.md §2.1]</p>
+</blockquote>
+<hr />
+<h2 id="3-pll-配置-via-interface-designer-gui">3. PLL 配置 via Interface Designer GUI</h2>
+<p>在 Efinity GUI 中，可以通过 <strong>Interface Designer</strong> 图形化配置 PLL：</p>
+<ol>
+<li>打开工程后，进入 <strong>Tools → Interface Designer</strong></li>
+<li>在左侧面板中右键 → <strong>Create Block → PLL</strong></li>
+<li>在属性面板中设置 FIN、各输出通道的分频比、相位等参数</li>
+<li>GUI 实时计算并显示各通道输出频率</li>
+<li>点击 <strong>Generate</strong> 生成 ISF 和 <code>peri.xml</code></li>
+</ol>
+<p>Interface Designer 生成的配置与手写 ISF 等效。生成的 ISF 文件位于 <code>constraints/</code> 目录下。</p>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §1（ISF 概述——ISF 位于统一编译流程的 PT 步骤中）[Efinity-ISF语法参考.md §1]</p>
+</blockquote>
+<hr />
+<h2 id="4-pll-动态重配置-efx_pll_cfg-ip">4. PLL 动态重配置（efx_pll_cfg IP）</h2>
+<h3 id="4-1-功能概述">4.1 功能概述</h3>
+<p><code>efx_pll_cfg</code> IP 核允许在 FPGA 运行时动态切换 PLL 配置，无需重新编译比特流。核心特性：</p>
+<ul>
+<li>支持最多 <strong>85 组 PLL 配置</strong>存储和切换</li>
+<li>支持恢复到比特流中的原始 PLL 设置（PCR，Peripheral Configuration Register）</li>
+<li><strong>Single Configuration</strong> 和 <strong>Multi Configuration</strong> 两种模式</li>
+</ul>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\pll-dyn-recfg-core-features.html</code>（Features 页面）</p>
+</blockquote>
+<h3 id="4-2-rtl-参数">4.2 RTL 参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RAM_INIT_FILE</code></td>
+<td>string</td>
+<td><code>"./efx_pll_cfg_mif6.mem"</code></td>
+<td>Multi-config 模式下的 RAM Hex 文件路径</td>
+</tr>
+<tr>
+<td><code>ENABLE_SHIFT_OUT</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>使能移位输出</td>
+</tr>
+<tr>
+<td><code>EN_SINGLE_CFG</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>单配置模式使能（0=多配置, 1=单配置）</td>
+</tr>
+<tr>
+<td><code>PCR_REFCLK_SEL</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>PCR 参考时钟选择</td>
+</tr>
+<tr>
+<td><code>SINGLE_CFG</code></td>
+<td>120-bit</td>
+<td>（默认值）</td>
+<td>单配置模式下的配置字符串</td>
+</tr>
+<tr>
+<td><code>OPTIMIZE_RESOURCE</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>资源优化使能</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\source_efinity\efx_pll_cfg.sv</code>（模块端口与参数声明）</p>
+</blockquote>
+<h3 id="4-3-rtl-端口">4.3 RTL 端口</h3>
+<table>
+<thead>
+<tr>
+<th>端口</th>
+<th>方向</th>
+<th>位宽</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pll_select_pcr</code></td>
+<td>input</td>
+<td>1</td>
+<td>选择 PCR（原始配置）</td>
+</tr>
+<tr>
+<td><code>mif_selection</code></td>
+<td>input</td>
+<td>7</td>
+<td>MIF 配置选择（最多 128 组，实际支持 85 组）</td>
+</tr>
+<tr>
+<td><code>pll_cfg_start</code></td>
+<td>input</td>
+<td>1</td>
+<td>启动重配置</td>
+</tr>
+<tr>
+<td><code>pll_cfg_done</code></td>
+<td>output</td>
+<td>1</td>
+<td>重配置完成</td>
+</tr>
+<tr>
+<td><code>pll_recfg_in_progress</code></td>
+<td>output</td>
+<td>1</td>
+<td>重配置进行中</td>
+</tr>
+<tr>
+<td><code>pll_cfg_rst_n_i</code></td>
+<td>input</td>
+<td>1</td>
+<td>复位（低有效）</td>
+</tr>
+<tr>
+<td><code>pll_cfg_clk_i</code></td>
+<td>input</td>
+<td>1</td>
+<td>配置时钟输入</td>
+</tr>
+<tr>
+<td><code>pll_cfg_data_o</code></td>
+<td>output</td>
+<td>1</td>
+<td>配置数据输出到 PLL</td>
+</tr>
+<tr>
+<td><code>pll_cfg_clk</code></td>
+<td>output</td>
+<td>1</td>
+<td>配置时钟输出到 PLL</td>
+</tr>
+<tr>
+<td><code>pll_cfg_data_out</code></td>
+<td>input</td>
+<td>1</td>
+<td>配置数据从 PLL 读回</td>
+</tr>
+<tr>
+<td><code>pll_cfg_data_in</code></td>
+<td>output</td>
+<td>1</td>
+<td>配置数据写入 PLL</td>
+</tr>
+<tr>
+<td><code>pll_cfg_sel</code></td>
+<td>output</td>
+<td>1</td>
+<td>PLL 配置选择</td>
+</tr>
+<tr>
+<td><code>refclk_sel</code></td>
+<td>output</td>
+<td>2</td>
+<td>参考时钟选择</td>
+</tr>
+<tr>
+<td><code>pll_lock</code></td>
+<td>input</td>
+<td>1</td>
+<td>PLL 锁定状态输入</td>
+</tr>
+<tr>
+<td><code>user_pll_en</code></td>
+<td>output</td>
+<td>1</td>
+<td>用户 PLL 使能</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\source_efinity\efx_pll_cfg.sv</code>（模块端口声明）</p>
+</blockquote>
+<h3 id="4-4-配置模式">4.4 配置模式</h3>
+<p><strong>Multi Configuration（默认）：</strong>
+- 通过 IP Manager 配置时的 <code>Configuration Mode</code> 参数选择
+- 需要提供 RAM Hex File（由 Interface Designer 生成）
+- <code>EN_SINGLE_CFG = 0</code></p>
+<p><strong>Single Configuration：</strong>
+- 仅需一组配置，资源更优
+- 配置字符串从生成的 <code>.dyn_cfg.rpt</code> 文件中获取
+- <code>EN_SINGLE_CFG = 1</code></p>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\pll-dyn-recfg-core-customize.html</code>（Table 1: Configuration Mode 参数说明）</p>
+</blockquote>
+<h3 id="4-5-ip-manager-自定义参数">4.5 IP Manager 自定义参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>选项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration Mode</td>
+<td>Multi Configuration / Single Configuration</td>
+<td>多配置或单配置模式</td>
+</tr>
+<tr>
+<td>RAM Hex File Path</td>
+<td>文件路径</td>
+<td>Multi-config 的 RAM Hex 文件</td>
+</tr>
+<tr>
+<td>Configuration Setting</td>
+<td>字符串</td>
+<td>Single-config 的配置字符串</td>
+</tr>
+<tr>
+<td>PLL Instance Name</td>
+<td>字符串</td>
+<td>Interface Designer 中创建的 PLL 块名称</td>
+</tr>
+<tr>
+<td>Reference Clock Setting</td>
+<td>External Clock 0/1, Core Clock 0/1</td>
+<td>初始参考时钟选择，需与 PCR 设置匹配</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\pll-dyn-recfg-core-customize.html</code>（Table 1）</p>
+</blockquote>
+<h3 id="4-6-底层-pll-块类型">4.6 底层 PLL 块类型</h3>
+<p><code>efx_pll_cfg</code> IP 通过 Interface Designer 操作以下硬核块类型：
+- <code>EFX_FPLL_V1</code> — 第一代 PLL
+- <code>EFX_FPLL_V2</code> — 第二代 PLL</p>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\pt_block_define.txt</code></p>
+</blockquote>
+<hr />
+<h2 id="5-pll-autoreset-efx_pll_autoreset-ip">5. PLL Autoreset（efx_pll_autoreset IP）</h2>
+<h3 id="5-1-功能概述">5.1 功能概述</h3>
+<p><code>efx_pll_autoreset</code> 是 Trion PLL Auto-Reset IP 核（Trion 系列专用），用于在 PLL 失锁时自动触发复位脉冲。核心特性：</p>
+<ul>
+<li>复位触发后检查 PLL lock 状态</li>
+<li>超时后自动发出复位脉冲</li>
+<li>支持 1~8 个独立 FSM，每个 FSM 可监控一个或多个 PLL</li>
+</ul>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\ipm\doc\topics\pll-autoreset-core-features.html</code>（Features 页面）</p>
+</blockquote>
+<h3 id="5-2-rtl-参数与端口">5.2 RTL 参数与端口</h3>
+<p><strong>参数：</strong>
+| 参数 | 说明 | 范围 |
+|------|------|------|
+| <code>N_FSM</code> | FSM 数量 | 1~8，默认 8 |</p>
+<p><strong>端口：</strong>
+| 端口 | 方向 | 位宽 | 说明 |
+|------|------|------|------|
+| <code>i_pll_rstn</code> | input | N_FSM | 各 PLL 外部复位输入（低有效） |
+| <code>i_pll_locked</code> | input | N_FSM | 各 PLL 锁定状态输入 |
+| <code>o_pll_rstn</code> | output | N_FSM | 各 PLL 复位输出（合并外部复位与内部自动复位） |
+| <code>ro_clk</code> | output | 1 | 内部振荡器时钟输出（用于 FSM 时钟） |</p>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\source\efx_pll_autoreset.v</code>（模块端口与参数声明）</p>
+</blockquote>
+<h3 id="5-3-内部架构">5.3 内部架构</h3>
+<p>IP 由以下子模块组成：
+- <code>clk_gen</code> — 内部振荡器时钟生成
+- <code>EFX_GBUFCE</code> — 全局时钟缓冲（带时钟使能）
+- <code>checker</code> — 每个 FSM 的 lock 检查与复位脉冲生成
+- 同步器 — <code>lock_filt</code> / <code>lock_sync</code> 两级滤波防止亚稳态</p>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\source\efx_pll_autoreset.v</code>（模块实现）</p>
+</blockquote>
+<h3 id="5-4-参数配置">5.4 参数配置</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>选项</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FSM Count</td>
+<td>1 ~ 8</td>
+<td>2</td>
+<td>FSM 数量。多个 PLL 可共享一个 FSM（前提是不关心各 PLL 的启停时序）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\ipm\doc\topics\pll-autoreset-core-params.html</code>（Table 1）</p>
+</blockquote>
+<hr />
+<h2 id="6-时钟树规划">6. 时钟树规划</h2>
+<h3 id="6-1-全局时钟-vs-区域时钟">6.1 全局时钟 vs 区域时钟</h3>
+<p>Efinity FPGA 的时钟网络分为：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>ISF GPIO 类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Global Clock (GCLK)</strong></td>
+<td><code>create_input_clock_gpio</code></td>
+<td>全局时钟网络，可达全芯片</td>
+</tr>
+<tr>
+<td><strong>Regional Clock (RCLK)</strong></td>
+<td><code>create_regional_input_clock_gpio</code></td>
+<td>区域时钟，仅 Trion 以上支持</td>
+</tr>
+<tr>
+<td><strong>PLL Clock Input</strong></td>
+<td><code>create_pll_input_clock_gpio</code></td>
+<td>PLL 专用参考时钟输入</td>
+</tr>
+<tr>
+<td><strong>Clock Output</strong></td>
+<td><code>create_clockout_gpio</code></td>
+<td>时钟输出到引脚</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §2.1（GPIO 命令表），<code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> [Efinity-ISF语法参考.md §2.1]</p>
+</blockquote>
+<h3 id="6-2-时钟-spine">6.2 时钟 Spine</h3>
+<p>Efinity 器件的时钟通过 <strong>Clock Spine</strong> 分布。每个 Clock Spine 可驱动一个区域的逻辑。PLL 的输出通过全局时钟网络或区域时钟网络连接到目标逻辑区域。</p>
+<h3 id="6-3-rtl-中的-pll-连接">6.3 RTL 中的 PLL 连接</h3>
+<p>在 RTL 中，PLL 输出时钟作为顶层输入端口声明：</p>
+<pre><code class="language-systemverilog">// PLL 通过 Interface Designer 配置为硬核，不在 RTL 中例化
+// 在 RTL 中只声明 PLL 输出的时钟端口和锁定信号
+input  wire pll_clk_out,   // PLL 输出的工作时钟
+input  wire pll_locked,    // PLL 锁定指示
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> Efinity 编码风格指南 §7.3（PLL 配置）[Efinity编码风格.md §7.3]</p>
+</blockquote>
+<hr />
+<h2 id="7-时钟域策略">7. 时钟域策略</h2>
+<h3 id="7-1-同步时钟域">7.1 同步时钟域</h3>
+<p>同一 PLL 的不同输出通道（CLKOUT0, CLKOUT1, ...）之间是<strong>同步</strong>关系（同源 VCO），不需要 CDC 处理。</p>
+<h3 id="7-2-异步时钟域-cdc">7.2 异步时钟域（CDC）</h3>
+<p>以下情况视为异步时钟域，必须做 CDC 处理：</p>
+<ul>
+<li>不同 PLL 实例的输出之间</li>
+<li>外部独立晶振时钟与 PLL 输出之间</li>
+<li>板上多个独立时钟端口之间</li>
+</ul>
+<p>CDC 处理规则见 Efinity 设计规范 §3 [Efinity设计规范.md §3] 和 Efinity 编码风格指南 §6 [Efinity编码风格.md §6]。</p>
+<h3 id="7-3-sdc-时钟组声明">7.3 SDC 时钟组声明</h3>
+<pre><code class="language-tcl"># 异步时钟域
+set_clock_groups -asynchronous \
+    -group [get_clocks clk_50m] \
+    -group [get_clocks sys_clk] \
+    -group [get_clocks video_clk]
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> Efinity 编码风格指南 §9.2（时钟分组）[Efinity编码风格.md §9.2]</p>
+</blockquote>
+<hr />
+<h2 id="8-design-check-时钟规则">8. Design Check 时钟规则</h2>
+<p>Efinity PT（Interface Designer）阶段的 Design Check 包含以下时钟相关规则。违反会导致编译终止。</p>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>含义</th>
+<th>常见原因与修复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clock_rule_capacity</code></td>
+<td>单个区域连接的时钟超过上限</td>
+<td>减少该区域的时钟域数量，或将逻辑分散到更多区域</td>
+</tr>
+<tr>
+<td><code>clock_rule_max_count</code></td>
+<td>核心时钟数量超过最大限制（32）</td>
+<td>合并不必要的时钟域，使用时钟使能替代分频时钟</td>
+</tr>
+<tr>
+<td><code>clock_rule_lvds_rx_clock_source</code></td>
+<td>PLL 输出时钟驱动不同侧的 LVDS Rx</td>
+<td>确保同一侧的 LVDS Rx 使用同一侧 PLL 的输出时钟</td>
+</tr>
+<tr>
+<td><code>clock_rule_pll_ref_clock_lvds_rx</code></td>
+<td>PLL 参考时钟与 LVDS Rx 不在同一侧</td>
+<td>将 PLL 参考时钟来源调整到 LVDS Rx 同一侧</td>
+</tr>
+<tr>
+<td><code>clock_rule_undefined_name</code></td>
+<td>信号无时钟源定义</td>
+<td>在 SDC 中为所有时钟端口声明 <code>create_clock</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> 任务要求中提供的 Design Check 时钟规则表（clock_rule_*）</p>
+</blockquote>
+<hr />
+<h2 id="9-ssc-spread-spectrum-clocking-pll">9. SSC（Spread-Spectrum Clocking）PLL</h2>
+<p>扩频 PLL（PLL_SSC）用于降低 EMI（电磁干扰）。在 ISF 中通过 <code>create_block</code> 创建：</p>
+<pre><code class="language-python">design.create_block(&quot;ssc_pll&quot;, &quot;PLL_SSC&quot;)
+</code></pre>
+<p><code>PLL_SSC</code> 是 BLOCK_TYPE 列表中的独立类型 [Efinity-ISF语法参考.md §3.1]。具体 SSC 参数（调制频率、扩频范围）通过 <code>set_property</code> 设置，以 <code>efinity-python-api.pdf</code> 为准。</p>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §3.1（BLOCK_TYPE 列表含 <code>PLL_SSC</code>），Efinity设计API集成.md §版本兼容（属性以 <code>efinity-python-api.pdf</code> 为准）[Efinity-ISF语法参考.md §3.1]</p>
+</blockquote>
+<hr />
+<h2 id="10-内部振荡器-osc-使用">10. 内部振荡器（OSC）使用</h2>
+<p>Efinity 器件内置内部振荡器（OSC），可通过 ISF 创建：</p>
+<pre><code class="language-python">design.create_block(&quot;my_osc&quot;, &quot;OSC&quot;)
+</code></pre>
+<p>OSC 在 BLOCK_TYPE 列表中列为所有器件支持的块类型 [Efinity-ISF语法参考.md §3.1]。OSC 通常用于：
+- 上电初始时钟（PLL 锁定前的过渡时钟）
+- 低功耗待机时钟
+- <code>efx_pll_autoreset</code> 的 FSM 时钟源（见 §5）</p>
+<blockquote>
+<p><strong>来源:</strong> ISF 语法参考 §3.1（BLOCK_TYPE 列表含 <code>OSC</code>）[Efinity-ISF语法参考.md §3.1]</p>
+</blockquote>
+<hr />
+<h2 id="11-时钟不确定性预算">11. 时钟不确定性预算</h2>
+<p>在 SDC 中使用 <code>set_clock_uncertainty</code> 为 STA 预留 jitter / skew 裕量：</p>
+<pre><code class="language-tcl"># PLL 输出时钟 jitter 预算（通常 0.150~0.300 ns）
+set_clock_uncertainty 0.200 [get_clocks sys_clk]
+
+# 外部晶振时钟
+set_clock_uncertainty 0.100 [get_clocks clk_50m]
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> Efinity 设计规范 §4.2（完整约束模板中 <code>set_clock_uncertainty 0.200</code>）[Efinity设计规范.md §4.2]</p>
+</blockquote>
+<hr />
+<h2 id="12-pll-lock-与系统复位集成">12. PLL Lock 与系统复位集成</h2>
+<h3 id="12-1-pll-lock-合并复位">12.1 PLL Lock 合并复位</h3>
+<p>PLL 锁定信号 <code>pll_locked</code> 必须与外部复位合并：</p>
+<pre><code class="language-systemverilog">// PLL 未锁定时保持系统复位
+wire async_rst_n = rst_n_i &amp; pll_locked;
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> Efinity 设计规范 §2.2（与 PLL Lock 合并）[Efinity设计规范.md §2.2]</p>
+</blockquote>
+<h3 id="12-2-异步复位同步释放">12.2 异步复位同步释放</h3>
+<p>合并后的复位信号需要经过同步释放链：</p>
+<pre><code class="language-systemverilog">// 3 级同步器：异步断言，同步释放
+reg [2:0] rst_sync;
+always @(posedge sys_clk or negedge async_rst_n) begin
+    if (!async_rst_n)
+        rst_sync &lt;= 3'b000;
+    else
+        rst_sync &lt;= {rst_sync[1:0], 1'b1};
+end
+wire rst_n = rst_sync[2];
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> Efinity 设计规范 §2.1（异步复位同步释放）[Efinity设计规范.md §2.1]</p>
+</blockquote>
+<hr />
+<h2 id="13-时钟命名与编码规范">13. 时钟命名与编码规范</h2>
+<h3 id="13-1-时钟命名">13.1 时钟命名</h3>
+<table>
+<thead>
+<tr>
+<th>信号</th>
+<th>命名</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入参考时钟</td>
+<td><code>clk_&lt;freq&gt;m_i</code></td>
+<td><code>clk_50m_i</code>, <code>clk_100m_i</code></td>
+</tr>
+<tr>
+<td>系统工作时钟</td>
+<td><code>sys_clk</code></td>
+<td><code>sys_clk</code></td>
+</tr>
+<tr>
+<td>视频/像素时钟</td>
+<td><code>&lt;domain&gt;_clk</code></td>
+<td><code>video_clk</code>, <code>pixel_clk</code></td>
+</tr>
+<tr>
+<td>PLL 输出</td>
+<td><code>pll_&lt;freq&gt;m</code></td>
+<td><code>pll_200m</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>来源:</strong> Efinity 编码风格指南 §3.2（时钟命名）[Efinity编码风格.md §3.2]</p>
+</blockquote>
+<h3 id="13-2-时钟使能替代分频时钟">13.2 时钟使能替代分频时钟</h3>
+<p><strong>禁止</strong>使用分频后的时钟驱动逻辑。应使用时钟使能：</p>
+<pre><code class="language-systemverilog">// ❌ 禁止
+always @(posedge clk_div2) begin
+    cnt &lt;= cnt + 1;
+end
+
+// ✅ 正确
+reg clk_en;
+always @(posedge sys_clk) begin
+    clk_en &lt;= ~clk_en;  // 2 分频使能
+end
+always @(posedge sys_clk) begin
+    if (clk_en)
+        cnt &lt;= cnt + 1;
+end
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> Efinity 编码风格指南 §3.3（时钟使能）[Efinity编码风格.md §3.3]</p>
+</blockquote>
+<hr />
+<h2 id="14-完整设计示例">14. 完整设计示例</h2>
+<h3 id="14-1-isf-示例-多时钟域系统">14.1 ISF 示例：多时钟域系统</h3>
+<pre><code class="language-python"># === 时钟输入 ===
+design.create_input_clock_gpio(&quot;clk_50m&quot;)
+
+# === PLL: 50MHz → 100MHz + 200MHz + 25MHz ===
+design.create_block(&quot;sys_pll&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;FIN&quot;, &quot;50&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_DIV&quot;, &quot;10&quot;, &quot;PLL&quot;)     # 100MHz
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_DIV&quot;, &quot;5&quot;, &quot;PLL&quot;)      # 200MHz
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT2_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT2_DIV&quot;, &quot;40&quot;, &quot;PLL&quot;)     # 25MHz
+design.assign_resource(&quot;sys_pll&quot;, &quot;PLL_R0&quot;, &quot;PLL&quot;)
+</code></pre>
+<h3 id="14-2-sdc-示例-完整时钟约束">14.2 SDC 示例：完整时钟约束</h3>
+<pre><code class="language-tcl"># 板上时钟声明
+create_clock -name clk_50m  -period 20.000 [get_ports clk_50m]
+
+# PLL 输出时钟（通过 get_pins 引用 PLL 输出引脚）
+create_clock -name sys_clk   -period 10.000 [get_pins {sys_pll/CLKOUT0}]
+create_clock -name clk_200m  -period  5.000 [get_pins {sys_pll/CLKOUT1}]
+create_clock -name clk_25m   -period 40.000 [get_pins {sys_pll/CLKOUT2}]
+
+# 时钟不确定性（jitter 预算）
+set_clock_uncertainty 0.200 [get_clocks sys_clk]
+set_clock_uncertainty 0.200 [get_clocks clk_200m]
+
+# 异步时钟组（外部晶振 vs PLL 输出）
+set_clock_groups -asynchronous \
+    -group {clk_50m} \
+    -group {sys_clk clk_200m clk_25m}
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> 综合 ISF 语法参考 [Efinity-ISF语法参考.md]、Efinity 设计规范 §4 [Efinity设计规范.md §4]</p>
+</blockquote>
+<h3 id="14-3-rtl-示例-pll-与复位集成">14.3 RTL 示例：PLL 与复位集成</h3>
+<pre><code class="language-systemverilog">module top (
+    input  wire clk_50m_i,
+    input  wire rst_n_i,
+    output wire led_o
+);
+    // PLL 输出（由 Interface Designer 生成，连接到顶层端口）
+    // 实际编译时，Efinity 自动将 PLL 时钟连接到 RTL 中使用的信号
+
+    // ---- PLL Lock 合并复位 ----
+    wire async_rst_n = rst_n_i &amp; pll_locked;  // pll_locked 由 PLL 提供
+
+    // ---- 3级同步释放 ----
+    reg [2:0] rst_sync;
+    always @(posedge sys_clk or negedge async_rst_n) begin
+        if (!async_rst_n)
+            rst_sync &lt;= 3'b000;
+        else
+            rst_sync &lt;= {rst_sync[1:0], 1'b1};
+    end
+    wire rst_n = rst_sync[2];
+
+    // ---- 用户逻辑 ----
+    // ...
+endmodule
+</code></pre>
+<blockquote>
+<p><strong>来源:</strong> Efinity 设计规范 §2.2（PLL Lock 合并）[Efinity设计规范.md §2.2]</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>权威来源:</strong>
+- <code>docs/efinity/Efinity-ISF语法参考.md</code> — ISF PLL create_block、set_property、assign_resource
+- <code>docs/efinity/Efinity设计规范.md</code> — §2 复位设计（PLL Lock 合并）、§4 SDC 约束
+- <code>docs/efinity/Efinity编码风格.md</code> — §3 时钟与复位、§7.3 PLL 配置
+- <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\</code> — PLL 动态重配置 IP（source_efinity/efx_pll_cfg.sv, ipm/doc/）
+- <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\</code> — PLL Auto-Reset IP（source/, ipm/doc/）
+- <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> — DesignAPI ISF 命令实现
+- Design Check 时钟规则 — 来自 Efinity PT 阶段 DRC 验证</p>
+</blockquote></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FPGA Clock Constraints Cookbook</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Primary- and generated-clock constraint templates.</span>
+<code>efinity/fpga-clock-constraints-cookbook.md</code>
+<a href="../../../efinity/fpga-clock-constraints-cookbook.md">Markdown source</a></p>
+<h1>FPGA Clock Constraints Cookbook</h1></header>
+<main class="article"><h1 id="fpga-clock-constraints-cookbook">FPGA Clock Constraints Cookbook</h1>
+<blockquote>
+<p><strong>EvoVerse SDK · Knowledge Base — Cross-Vendor Supplement</strong></p>
+<p><strong>Intended audience</strong>: RTL engineers who need to write a complete SDC for Efinity projects; timing-diagnosis and AI collaborators</p>
+<p><strong>Last updated</strong>: 2026-07-30</p>
+<p><strong>Scope</strong>: Authoritative sources are the Efinity 2026.1 official SDC documentation (<code>efinity-timing-closure.pdf §5</code> + <code>C:\Efinity\2026.1\doc\topics\tim-*.html</code> + <code>constraint-*.html</code>), supplemented by AN 042 (PLL clock latency) + AN 043 (RGMII dynamic clock switch).</p>
+<p><strong>Related documents</strong>:
+- <a href="fpga-sta-basics.html">fpga-sta-basics.md</a> — Slack/Skew/Setup/Hold fundamentals
+- <a href="fpga-timing-exceptions-cookbook.html">fpga-timing-exceptions-cookbook.md</a> — false path / MCP / max_delay
+- <a href="fpga-io-timing-constraints.html">fpga-io-timing-constraints.md</a> — <code>set_input_delay</code> / <code>set_output_delay</code>
+- <a href="timing-analysis-guide.html">timing-analysis-guide.md</a> — the complete EvoVerse SDK timing analysis flow
+- <a href="pll-and-clock-design.html">pll-and-clock-design.md</a> — PLL ISF configuration</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-create_clock--primary-clock-constraint"><code>create_clock</code> — primary clock constraint</a></li>
+<li><a href="#2-create_generated_clock--derived-clocks"><code>create_generated_clock</code> — derived clocks</a></li>
+<li><a href="#3-virtual-clocks">Virtual Clocks</a></li>
+<li><a href="#4-pll-clock-latency--4-modes">PLL Clock Latency — 4 modes</a></li>
+<li><a href="#5-set_clock_latency--sourcenetwork-latency"><code>set_clock_latency</code> — source/network latency</a></li>
+<li><a href="#6-set_clock_uncertainty--jitter--margin"><code>set_clock_uncertainty</code> — Jitter + Margin</a></li>
+<li><a href="#7-set_clock_groups--asynchronousexclusive-grouping"><code>set_clock_groups</code> — asynchronous/exclusive grouping</a></li>
+<li><a href="#8-object-specifiers--get_-commands">Object Specifiers — <code>get_*</code> commands</a></li>
+<li><a href="#9-complete-efinity-sdc-example">Complete Efinity SDC example</a></li>
+<li><a href="#10-efinity-specific-notes">Efinity-specific notes</a></li>
+</ol>
+<hr />
+<h2 id="1-create_clock-primary-clock-constraint">1. <code>create_clock</code> — primary clock constraint</h2>
+<p><strong>Purpose</strong>: defines a primary clock (fed into the FPGA from outside, or generated internally).</p>
+<h3 id="1-1-basic-syntax">1.1 Basic syntax</h3>
+<pre><code class="language-sdc">create_clock -period &lt;period_ns&gt; -name &lt;clk_name&gt; [get_ports &lt;port_name&gt;]
+</code></pre>
+<h3 id="1-2-complete-efinity-example">1.2 Complete Efinity example</h3>
+<pre><code class="language-sdc"># Primary clock: 50 MHz, port clk_50m
+create_clock -period 20.0 -name sys_clk [get_ports clk_50m]
+
+# Video clock: 148.5 MHz
+create_clock -period 6.734 -name video_clk [get_ports video_clk_i]
+
+# SPI clock: 10 MHz (note: -waveform controls the duty cycle)
+create_clock -period 100.0 -name spi_clk [get_ports spi_clk_i]
+</code></pre>
+<h3 id="1-3-waveform-controls-the-clock-edges">1.3 <code>-waveform</code> controls the clock edges</h3>
+<pre><code class="language-sdc"># DDR rising-edge sampling: first edge at 0, second edge at period/2
+create_clock -period 10.0 -name ddr_clk \
+    -waveform {0.0 5.0} \
+    [get_ports ddr_clk_p]
+</code></pre>
+<blockquote>
+<p>"Using the <code>create_clock</code> Constraint ... Provides the period and (optionally) duty cycle / waveform of the primary clock."
+—— Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §5 "Using the create_clock Constraint"</code> ([A1])</p>
+</blockquote>
+<h3 id="1-4-the-add-option">1.4 The <code>-add</code> option</h3>
+<pre><code class="language-sdc"># One port driven by multiple clocks (rare, but worth noting)
+create_clock -period 10.0 -name clk_a -add [get_ports clk_pad]
+create_clock -period 20.0 -name clk_b -add [get_ports clk_pad]
+</code></pre>
+<p>See <code>C:\Efinity\2026.1\doc\topics\tim-add-clock-create.html</code>.</p>
+<hr />
+<h2 id="2-create_generated_clock-derived-clocks">2. <code>create_generated_clock</code> — derived clocks</h2>
+<p><strong>Purpose</strong>: defines the derived clock at the output of a PLL / clock divider / clock mux. The STA tool automatically traces the relationship between the derived clock and the primary clock.</p>
+<h3 id="2-1-pll-output-basic">2.1 PLL output (basic)</h3>
+<pre><code class="language-sdc"># PLL output 100 MHz (from primary clock sys_clk via a 4x PLL)
+create_generated_clock -name pll_out \
+    -source [get_ports sys_clk] \
+    -multiply_by 4 -divide_by 1 \
+    [get_pins {pll_inst/clk_out}]
+</code></pre>
+<h3 id="2-2-clock-divider">2.2 Clock divider</h3>
+<pre><code class="language-sdc"># Clock divider: sys_clk 100 MHz → div_clk 25 MHz (÷4)
+create_generated_clock -name div_clk \
+    -source [get_ports sys_clk] \
+    -divide_by 4 \
+    [get_pins {clk_div_inst/Q}]
+</code></pre>
+<h3 id="2-3-edges-edge_shift-fine-grained-control">2.3 <code>-edges</code> / <code>-edge_shift</code> fine-grained control</h3>
+<pre><code class="language-sdc"># Based on the PLL output but phase-shifted by 90°
+create_generated_clock -name pll_out_90 \
+    -source [get_pins {pll_inst/clk_out}] \
+    -edges {1 2 3} -edge_shift {0.0 2.5 5.0}
+</code></pre>
+<blockquote>
+<p>"Using the <code>create_generated_clock</code> Constraint ... Defines a derived clock from a PLL, divider, or clock mux. STA traces back to source clock for relationship analysis."
+—— Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §5 "Using the create_generated_clock Constraint"</code> ([A1])</p>
+</blockquote>
+<p>See <code>C:\Efinity\2026.1\doc\topics\tim-add-clock-creategen.html</code>.</p>
+<hr />
+<h2 id="3-virtual-clocks">3. Virtual Clocks</h2>
+<p><strong>When to use</strong>: the external clock source is not visible on any FPGA pin (e.g., the board clock enters through a dedicated clock buffer and the FPGA receives only data, not the clock).</p>
+<h3 id="3-1-typical-scenarios">3.1 Typical scenarios</h3>
+<ul>
+<li>Source-synchronous DDR interfaces (external clock and data arrive at the FPGA simultaneously; the FPGA has a dedicated internal PLL)</li>
+<li>An external PHY chip provides the reference clock to the MAC, and the MAC data enters the FPGA through ordinary I/O</li>
+</ul>
+<h3 id="3-2-syntax">3.2 Syntax</h3>
+<pre><code class="language-sdc">create_clock -period 10.0 -name virtual_ddr_clk
+# Reference the virtual clock in set_input_delay
+set_input_delay -clock virtual_ddr_clk -max 2.0 [get_ports ddr_data*]
+</code></pre>
+<blockquote>
+<p>"Virtual Clocks ... Used when the clock source is external and not present on an FPGA pin (e.g., source-synchronous interfaces)."
+—— Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §5 "Virtual Clocks"</code> ([A1])</p>
+</blockquote>
+<p>See <code>C:\Efinity\2026.1\doc\topics\tim-clock-virtual.html</code>.</p>
+<hr />
+<h2 id="4-pll-clock-latency-4-modes">4. PLL Clock Latency — 4 modes</h2>
+<p><strong>Efinity PLLs</strong> have 4 feedback modes; each mode has a different clock insertion delay and PLL compensation delay.</p>
+<blockquote>
+<p>"Trion and Titanium FPGAs have PLLs that you can use to generate clock signals in your design. The PLLs are located in the corners of the FPGA. You can use the PLL to compensate for clock skew/delay via external or internal feedback to meet timing requirements in advanced applications."
+"Global clock signals incur delays as they traverse the FPGA."
+"The clock insertion delay is the time it takes for a clock signal to travel from the pad of a GPIO configured as a global clock (GCLK) through the global clock network to the destination register. This document calls it the 'base' clock insertion delay."
+"The PLL compensation delay is the delay that is removed from the base clock insertion delay to create the actual insertion delay. It is always an amount you subtract from the clock insertion delay. Some PLL modes have a PLL compensation delay and some do not."
+—— Source: AN 042 v1.0 §A4.3 ([A4.3])</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>PLL mode</th>
+<th>Feedback path</th>
+<th>Compensation delay</th>
+<th>Use case</th>
+<th>Efinity doc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Local Feedback</strong></td>
+<td>internal feedback to the PLL's local input</td>
+<td>yes</td>
+<td>single clock domain with the lowest skew requirement</td>
+<td><code>tim-clock-latency-pll-local.html</code></td>
+</tr>
+<tr>
+<td><strong>Core Feedback</strong></td>
+<td>internal feedback into the core clock network</td>
+<td>yes</td>
+<td>spans multiple registers, core clock balancing</td>
+<td><code>tim-clock-latency-pll-core.html</code></td>
+</tr>
+<tr>
+<td><strong>External Feedback</strong></td>
+<td>external board-level feedback (dedicated PLL feedback pin)</td>
+<td>no (board delay counted)</td>
+<td>source-synchronous interfaces (DDR/RGMII)</td>
+<td><code>tim-clock-latency-pll-external.html</code></td>
+</tr>
+<tr>
+<td><strong>Cascading</strong></td>
+<td>PLL cascade (PLL1 output → PLL2 reference)</td>
+<td>accumulated across PLLs</td>
+<td>multiple frequency domains, ultra-low jitter</td>
+<td><code>tim-clock-latency-pll-cascading.html</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §5 "Clock Latency"</code> sub-sections ([A1])</p>
+</blockquote>
+<p><strong>Complete PLL ISF configuration example</strong>: <a href="pll-and-clock-design.html">pll-and-clock-design.md §"PLL ISF"</a>.</p>
+<hr />
+<h2 id="5-set_clock_latency-source-network-latency">5. <code>set_clock_latency</code> — source/network latency</h2>
+<p><strong>Purpose</strong>: models the board-level delay from the clock source to the FPGA pin (source latency) + the clock tree delay (network latency).</p>
+<blockquote>
+<p>"The source clock latency represents the time it takes to get from the clock source on the board to the global clock tree on the FPGA. This delay includes the board delay, buffer delay, and any PLL delay (including PLL compensation delay, which is negative, see AN 042: Working with PLLs)."
+"Most of the time you do not need to use <code>set_clock_latency</code>. However, it is required when you want to constrain external signals to core registers to capture the latency effect of the clock signal transferring onto the FPGA."
+"The Efinity software v2023.2 and higher creates a template for the <code>set_clock_latency</code> constraint in the <code>&lt;project&gt;.pt.sdc</code> file."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-clock-latency.html</code> ([A3.2])</p>
+</blockquote>
+<h3 id="5-1-basic-syntax">5.1 Basic syntax</h3>
+<pre><code class="language-sdc"># Source latency: board-level delay
+set_clock_latency -source -early 2.0 [get_clocks sys_clk]
+set_clock_latency -source -late  4.0 [get_clocks sys_clk]
+
+# Network latency: clock tree delay (usually inferred by the tool)
+set_clock_latency -early 0.5 [get_clocks sys_clk]
+set_clock_latency -late  1.0 [get_clocks sys_clk]
+</code></pre>
+<h3 id="5-2-gpio-clock-latency-details">5.2 GPIO clock latency details</h3>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-clock-latency-gpio.html</code> ([A3])</p>
+</blockquote>
+<hr />
+<h2 id="6-set_clock_uncertainty-jitter-margin">6. <code>set_clock_uncertainty</code> — Jitter + Margin</h2>
+<p><strong>Purpose</strong>: adds jitter and margin to the setup/hold checks.</p>
+<pre><code class="language-sdc"># Setup: 60 ps (jitter + margin)
+set_clock_uncertainty -to clk -setup 0.06
+
+# Hold: 20 ps (OCV/jitter)
+set_clock_uncertainty -to clk -hold 0.02
+</code></pre>
+<blockquote>
+<p>"How to Set Clock Uncertainty ... <code>set_clock_uncertainty -to clk -setup 0.06</code>"
+—— Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §5 "How to Set Clock Uncertainty"</code> ([A1])</p>
+</blockquote>
+<p><strong>Typical values (100 MHz system)</strong>:
+- Setup uncertainty: 60–100 ps
+- Hold uncertainty: 5–20 ps</p>
+<p>See <a href="fpga-sta-basics.html">fpga-sta-basics.md §9</a>.</p>
+<hr />
+<h2 id="7-set_clock_groups-asynchronous-exclusive-grouping">7. <code>set_clock_groups</code> — asynchronous/exclusive grouping</h2>
+<p><strong>Purpose</strong>: tells the STA tool which pairs of clock domains do <strong>not</strong> need timing checks.</p>
+<h3 id="7-1-exclusive-clocks-only-1-active-at-a-time">7.1 Exclusive clocks (only 1 active at a time)</h3>
+<pre><code class="language-sdc">set_clock_groups -exclusive -group {clk1 clk2} -group {clk3} -group {clk4}
+</code></pre>
+<p><strong>Typical scenario</strong>: a multi-way clock mux, with a <code>sel</code> register choosing the currently active clock.</p>
+<h3 id="7-2-asynchronous-clocks-independent-sources">7.2 Asynchronous clocks (independent sources)</h3>
+<pre><code class="language-sdc">set_clock_groups -asynchronous -group {clk_a} -group {clk_b}
+</code></pre>
+<p><strong>Typical scenario</strong>: USB PHY clock vs. CPU clock (completely different clock sources).</p>
+<h3 id="7-3-multiple-group-forms">7.3 Multiple-group forms</h3>
+<pre><code class="language-sdc"># Multiple groups in one command (recommended)
+set_clock_groups -exclusive -group {clk1 clk2} -group {clk3} -group {clk4}
+
+# Or multiple commands
+set_clock_groups -exclusive -group {clk1 clk2}
+set_clock_groups -exclusive -group {clk3}
+set_clock_groups -exclusive -group {clk4}
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-add-clock-set-clock-groups.html</code> ([A3.8])</p>
+<p>"Compares exclusive vs. asynchronous clock groups and provides constraint examples."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-unrelated-clk.html</code> ([A3.7])</p>
+</blockquote>
+<p>See <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md §6</a> and <a href="fpga-timing-exceptions-cookbook.html">fpga-timing-exceptions-cookbook.md §2-3</a>.</p>
+<hr />
+<h2 id="8-object-specifiers-get_-commands">8. Object Specifiers — <code>get_*</code> commands</h2>
+<p><strong>Purpose</strong>: selects the object collection (ports, pins, cells, nets) for SDC commands.</p>
+<h3 id="8-1-main-object-selectors">8.1 Main object selectors</h3>
+<pre><code class="language-sdc"># Get ports by name
+[get_ports clk_50m]
+[get_ports {data_in[*]}]              # all bits of the bus
+[get_ports &quot;data_in[0..7]&quot;]           # bit 0-7
+[get_ports {data_in[*] input_valid}]  # multiple objects
+
+# By clock object
+[get_clocks sys_clk]
+[get_clocks {clk_a clk_b}]
+
+# By pin (a specific pin of a cell)
+[get_pins {u_fft/clk}]
+[get_pins {u_fft/Q_reg[*]/D}]
+
+# By cell
+[get_cells u_fft]
+[get_cells {u_cpu u_dsp*}]
+
+# By net
+[get_nets {n_reset n_data*}]
+</code></pre>
+<h3 id="8-2-wildcards">8.2 Wildcards</h3>
+<pre><code class="language-sdc"># * matches any characters
+[get_ports {*_clk}]           # all *_clk ports
+
+# Multi-level wildcard
+[get_cells {u_core/*}]        # all cells under u_core
+</code></pre>
+<blockquote>
+<p>"Object Specifiers ... <code>get_clocks</code>, <code>get_ports</code>, <code>get_pins</code>, <code>get_cells</code>, <code>get_nets</code>."
+—— Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §12 "Object Specifiers"</code> ([A1])</p>
+</blockquote>
+<h3 id="8-3-filtering">8.3 Filtering</h3>
+<pre><code class="language-sdc"># Filter only leaf ports (excluding the bus)
+[get_ports -filter {is_hierarchical==false} {data*}]
+
+# Filter by direction
+[get_ports -filter {direction==in} {*_i}]
+</code></pre>
+<p>See <code>C:\Efinity\2026.1\doc\topics\constraint-object-specifiers.html</code>.</p>
+<hr />
+<h2 id="9-complete-efinity-sdc-example">9. Complete Efinity SDC example</h2>
+<h3 id="9-1-basic-system-asynchronous-fifo-interface">9.1 Basic system + asynchronous FIFO interface</h3>
+<pre><code class="language-sdc"># ============================================
+# Clock definitions
+# ============================================
+# Main system clock 100 MHz, driven directly by the external crystal
+create_clock -period 10.0 -name sys_clk [get_ports clk_100m]
+
+# Video processing clock 148.5 MHz, independent PLL output (PLL configuration: see pll-and-clock-design.md)
+create_generated_clock -name vid_clk \
+    -source [get_pins {pll_video/clkin}] \
+    -multiply_by 37 -divide_by 25 \
+    [get_pins {pll_video/clkout}]
+    # Actual frequency = 100 MHz * 37/25 = 148 MHz
+
+# DDR controller clock 400 MHz (from the DDR PHY hard block)
+create_generated_clock -name ddr_ck \
+    -source [get_pins {ddr_phy_inst/clk}] \
+    -multiply_by 4 -divide_by 1 \
+    [get_pins {ddr_phy_inst/ck_out}]
+
+# Asynchronous FIFO write clock 50 MHz (external ADC)
+create_clock -period 20.0 -name adc_clk [get_ports adc_clk_i]
+
+# ============================================
+# Clock Uncertainty
+# ============================================
+set_clock_uncertainty -to sys_clk -setup 0.100
+set_clock_uncertainty -to sys_clk -hold  0.020
+set_clock_uncertainty -to vid_clk -setup 0.150
+set_clock_uncertainty -to vid_clk -hold  0.030
+
+# ============================================
+# Asynchronous clock grouping (mutually unchecked)
+# ============================================
+set_clock_groups -asynchronous \
+    -group {sys_clk vid_clk ddr_ck} \
+    -group {adc_clk}
+
+# ============================================
+# False paths (special paths)
+# ============================================
+# Reset signal path (asynchronous reset, unchecked)
+set_false_path -from [get_ports arst_n]
+
+# JTAG / debug interface (functional, excluded from STA)
+set_false_path -from [get_ports {tck tms tdi}]
+set_false_path -to   [get_ports tdo]
+
+# ============================================
+# IO constraints (see fpga-io-timing-constraints.md)
+# ============================================
+# DDR-controller-specific constraints (auto-generated by the Efinity hard block)
+# ...
+
+# ADC input: sys_clk domain, 2 ns data delay (PCB trace)
+set_input_delay -clock sys_clk -max 4.0 [get_ports adc_data_i*]
+set_input_delay -clock sys_clk -min 1.0 [get_ports adc_data_i*]
+
+# LED output: sys_clk domain
+set_output_delay -clock sys_clk -max 2.0 [get_ports led_user_o]
+
+# ============================================
+# Multicycle / max delay (see fpga-timing-exceptions-cookbook.md)
+# ============================================
+# CPU ↔ peripherals: the processor bus can span multiple cycles
+set_multicycle_path -setup -from [get_clocks cpu_clk] -to [get_clocks peri_clk] 2
+set_multicycle_path -hold  -from [get_clocks cpu_clk] -to [get_clocks peri_clk] 1
+</code></pre>
+<h3 id="9-2-rgmii-interface-source-synchronous-real-an-043-example">9.2 RGMII interface (source-synchronous) — real AN 043 example</h3>
+<pre><code class="language-sdc"># RGMII TX clock: 125 MHz (PLL output)
+create_generated_clock -name rgmii_tx_clk \
+    -source [get_pins {pll_rgmii/clkin}] \
+    -multiply_by 5 -divide_by 4 \
+    [get_pins {pll_rgmii/clkout}]
+
+# RGMII RX clock: 125 MHz (input from the PHY)
+create_clock -period 8.0 -name rgmii_rx_clk [get_ports rgmii_rx_clk_i]
+
+# RGMII dynamic clock switching (2.5 / 25 / 125 MHz) — Titanium only
+create_generated_clock -name rgmii_tx_clk_2p5 \
+    -source [get_pins {pll_rgmii/clkin}] \
+    -multiply_by 1 -divide_by 40 \
+    -add [get_pins {pll_rgmii/clkout}]
+create_generated_clock -name rgmii_tx_clk_25 \
+    -source [get_pins {pll_rgmii/clkin}] \
+    -multiply_by 1 -divide_by 4 \
+    -add [get_pins {pll_rgmii/clkout}]
+
+# Exclusive group (pick one of the three RGMII clocks)
+set_clock_groups -exclusive \
+    -group {rgmii_tx_clk} \
+    -group {rgmii_tx_clk_25} \
+    -group {rgmii_tx_clk_2p5}
+</code></pre>
+<blockquote>
+<p>Source: AN 043 v1.3 §"RGMII Dynamic Clock Switch" ([A4.2])</p>
+</blockquote>
+<hr />
+<h2 id="10-efinity-specific-notes">10. Efinity-specific notes</h2>
+<h3 id="10-1-the-auto-generated-pt-sdc-template">10.1 The auto-generated <code>pt.sdc</code> template</h3>
+<p>Efinity 2023.2+ generates <code>&lt;project&gt;.pt.sdc</code> in the project directory with a built-in <code>set_clock_latency</code> template—users should <strong>not</strong> delete it manually, or the PLL compensation delay is lost.</p>
+<blockquote>
+<p>"The Efinity software v2023.2 and higher creates a template for the <code>set_clock_latency</code> constraint in the <code>&lt;project&gt;.pt.sdc</code> file."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-clock-latency.html</code> ([A3.2])</p>
+</blockquote>
+<p>See <a href="toolchain-reference.html">toolchain-reference.md §"pt.sdc"</a>.</p>
+<h3 id="10-2-exclusive-vs-asynchronous">10.2 Exclusive vs asynchronous</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Meaning</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-exclusive</code></td>
+<td>only one active at a time</td>
+<td>clock mux with multiple selectable clocks</td>
+</tr>
+<tr>
+<td><code>-asynchronous</code></td>
+<td>completely independent clock sources (never active at the same time)</td>
+<td>cross-domain CDC</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-unrelated-clk.html</code> ([A3.7])</p>
+</blockquote>
+<h3 id="10-3-sdc-file-management">10.3 SDC file management</h3>
+<p>Efinity supports multiple SDC files (divided by hierarchy):
+- <code>&lt;project&gt;.sdc</code> — the user's main constraints
+- <code>&lt;project&gt;_dc.sdc</code> — generated by PnR after the first run (original constraints preserved)
+- <code>&lt;project&gt;.pt.sdc</code> — auto-generated PT timing constraints
+- <code>&lt;design_module&gt;.sdc</code> — module-level constraints (OOC synthesis)</p>
+<p>See <code>C:\Efinity\2026.1\doc\topics\tim-sdc-overview.html</code> and <code>C:\Efinity\2026.1\doc\topics\tim-sdc-multiple.html</code>.</p>
+<h3 id="10-4-sdc-warnings-tim-sdc-warnings">10.4 SDC warnings (tim-sdc-warnings)</h3>
+<p>After parsing the SDC, the Efinity STA tool emits diagnostic messages (see <code>C:\Efinity\2026.1\doc\topics\efn-sdc-warnings.html</code>). Common warnings:</p>
+<table>
+<thead>
+<tr>
+<th>Warning</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Unreferenced clock</code></td>
+<td><code>create_clock</code> present but never referenced</td>
+<td>Delete it, or add <code>set_input_delay</code></td>
+</tr>
+<tr>
+<td><code>Multiple drivers on clock</code></td>
+<td>multiple sources drive the same net</td>
+<td>Use <code>set_clock_groups -exclusive</code></td>
+</tr>
+<tr>
+<td><code>No path found between ...</code></td>
+<td>different clock domains not grouped</td>
+<td>Add <code>set_clock_groups</code> or <code>set_false_path</code></td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="toolchain-reference.html">toolchain-reference.md</a> §"STA Warnings".</p>
+<hr />
+<h2 id="appendix-a-key-sdc-command-index">Appendix A — Key SDC command index</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_clock</code></td>
+<td>Define the primary clock</td>
+<td>§1</td>
+</tr>
+<tr>
+<td><code>create_generated_clock</code></td>
+<td>Define derived clocks</td>
+<td>§2</td>
+</tr>
+<tr>
+<td><code>create_virtual_clock</code></td>
+<td>Define a virtual clock</td>
+<td>§3</td>
+</tr>
+<tr>
+<td><code>set_clock_latency</code></td>
+<td>Clock latency (source/network)</td>
+<td>§5</td>
+</tr>
+<tr>
+<td><code>set_clock_uncertainty</code></td>
+<td>jitter + margin</td>
+<td>§6</td>
+</tr>
+<tr>
+<td><code>set_clock_groups</code></td>
+<td>Asynchronous / exclusive grouping</td>
+<td>§7</td>
+</tr>
+<tr>
+<td><code>set_input_delay</code></td>
+<td>Input port delay</td>
+<td>See <a href="fpga-io-timing-constraints.html">fpga-io-timing-constraints.md</a></td>
+</tr>
+<tr>
+<td><code>set_output_delay</code></td>
+<td>Output port delay</td>
+<td>See <a href="fpga-io-timing-constraints.html">fpga-io-timing-constraints.md</a></td>
+</tr>
+<tr>
+<td><code>set_false_path</code></td>
+<td>False path</td>
+<td>See <a href="fpga-timing-exceptions-cookbook.html">fpga-timing-exceptions-cookbook.md</a></td>
+</tr>
+<tr>
+<td><code>set_multicycle_path</code></td>
+<td>Multi-cycle path</td>
+<td>See <a href="fpga-timing-exceptions-cookbook.html">fpga-timing-exceptions-cookbook.md</a></td>
+</tr>
+<tr>
+<td><code>set_max_delay</code> / <code>set_min_delay</code></td>
+<td>Custom path delay</td>
+<td>See <a href="fpga-timing-exceptions-cookbook.html">fpga-timing-exceptions-cookbook.md</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-b-cross-vendor-source-index">Appendix B — Cross-vendor source index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Source</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[A1]</td>
+<td>Efinity Timing Closure User Guide §5 (UG-EFN-TIMING-v7.1, Dec 2024)</td>
+<td>Official PDF</td>
+</tr>
+<tr>
+<td>[A3.2]</td>
+<td>Efinity topics — <code>tim-clock-latency.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.3]</td>
+<td>Efinity topics — <code>tim-clk-relationships.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.7]</td>
+<td>Efinity topics — <code>tim-unrelated-clk.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.8]</td>
+<td>Efinity topics — <code>tim-add-clock-set-clock-groups.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A4.2]</td>
+<td>Efinix AN 043 v1.3 (TSE MAC + RGMII Dynamic Clock Switch)</td>
+<td>Official AN</td>
+</tr>
+<tr>
+<td>[A4.3]</td>
+<td>Efinix AN 042 v1.0 (Working with PLLs)</td>
+<td>Official AN</td>
+</tr>
+</tbody>
+</table>
+<p>The research source index was originally recorded in the internal research notes §E; those temporary notes are not published with the repository.</p>
+<hr />
+<p><strong>End of FPGA Clock Constraints Cookbook</strong></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

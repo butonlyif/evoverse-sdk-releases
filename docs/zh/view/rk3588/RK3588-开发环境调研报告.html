@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RK3588 开发环境调研报告</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
+<span>**版本**: v2.0.0</span>
+<code>rk3588/RK3588-开发环境调研报告.md</code>
+<a href="../../../rk3588/RK3588-开发环境调研报告.md">Markdown 源文件</a></p>
+<h1>RK3588 开发环境调研报告</h1></header>
+<main class="article"><h1 id="rk3588-开发环境调研报告">RK3588 开发环境调研报告</h1>
+<blockquote>
+<p><strong>版本</strong>: v2.0.0
+<strong>调研日期</strong>: 2026-07-13
+<strong>最近复核</strong>: 2026-07-14
+<strong>适用对象</strong>: RK3588 开发者 / EvoVerse SDK 集成团队
+<strong>目标</strong>: 建立可复现、可审计的 RK3588 BSP 开发基线，并为 EvoVerse Adapter 提供输入约束
+<strong>结论口径</strong>: RK3588 的可执行构建命令以“开发板厂商交付的 BSP release note、manifest 与板级配置”为准；本文中的命令是模板，不是跨 BSP 保证可用的固定接口</p>
+</blockquote>
+<hr />
+<h2 id="目录">目录</h2>
+<ol>
+<li><a href="#1-rk3588-简介">RK3588 简介</a></li>
+<li><a href="#2-开发环境技术栈">开发环境技术栈</a></li>
+<li><a href="#3-开发环境搭建步骤">开发环境搭建步骤</a></li>
+<li><a href="#4-常见开发场景">常见开发场景</a></li>
+<li><a href="#5-sdk-集成要点">SDK 集成要点</a></li>
+<li><a href="#6-参考资料">参考资料</a></li>
+<li><a href="#7-macos-特别注意事项">macOS 特别注意事项</a></li>
+<li><a href="#8-深度调研结论与工程基线">深度调研结论与工程基线</a></li>
+</ol>
+<hr />
+<p><a id="1"></a></p>
+<h2 id="1-rk3588-简介">1. RK3588 简介</h2>
+<h3 id="1-1-芯片定位">1.1 芯片定位</h3>
+<p>Rockchip RK3588 是瑞芯微电子的高性能 ARM SoC，定位<strong>高端物联网、智能座舱、边缘计算、AIoT</strong> 领域。它采用 4× Cortex-A76 + 4× Cortex-A55 异构 CPU 架构与 8nm 工艺；具体频率、媒体能力和可用接口仍受芯片变体、封装、板级设计及 BSP 限制。</p>
+<h3 id="1-2-主要特性">1.2 主要特性</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>规格</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>4x Cortex-A76 + 4x Cortex-A55</td>
+<td>ARM big.LITTLE 架构，大核主频最高 2.4GHz</td>
+</tr>
+<tr>
+<td><strong>GPU</strong></td>
+<td>Mali-G610 MP4</td>
+<td>支持 OpenGL ES 1.1/2.0/3.2, Vulkan 1.2</td>
+</tr>
+<tr>
+<td><strong>NPU</strong></td>
+<td>6TOPS</td>
+<td>支持 INT4/INT8/INT16/FP16，算力强劲</td>
+</tr>
+<tr>
+<td><strong>VPU</strong></td>
+<td>8K@30fps 编解码</td>
+<td>支持 H.265/H.264/VP9/AV1</td>
+</tr>
+<tr>
+<td><strong>ISP</strong></td>
+<td>最大 48MP</td>
+<td>支持双 ISP 通道</td>
+</tr>
+<tr>
+<td><strong>内存</strong></td>
+<td>LPDDR4/LPDDR4X/LPDDR5</td>
+<td>最大支持 32GB</td>
+</tr>
+<tr>
+<td><strong>存储</strong></td>
+<td>eMMC 5.1, UFS 2.1, PCIe 3.0, SATA 3.0</td>
+<td>多存储接口支持</td>
+</tr>
+<tr>
+<td><strong>接口</strong></td>
+<td>USB 3.0, USB 2.0, PCIe, HDMI 2.1, MIPI-CSI/DSI</td>
+<td>丰富外设接口</td>
+</tr>
+<tr>
+<td><strong>工艺</strong></td>
+<td>8nm FinFET</td>
+<td>低功耗高性能</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-应用场景">1.3 应用场景</h3>
+<ul>
+<li><strong>智能座舱</strong>: IVI、数字仪表、HUD</li>
+<li><strong>边缘计算</strong>: AI 推理、机器视觉</li>
+<li><strong>智能家居</strong>: 智能音箱、智能显示</li>
+<li><strong>工业控制</strong>: 工业平板、机器视觉</li>
+<li><strong>ARM 开发板</strong>: 面向开发者的评估板（如 Rockchip EVB、第三方开发板）</li>
+</ul>
+<hr />
+<p><a id="2"></a></p>
+<h2 id="2-开发环境技术栈">2. 开发环境技术栈</h2>
+<h3 id="2-1-交叉编译工具链">2.1 交叉编译工具链</h3>
+<p>RK3588 采用 <strong>ARM64 (AArch64)</strong> 架构，需要使用交叉编译工具链：</p>
+<table>
+<thead>
+<tr>
+<th>工具链</th>
+<th>说明</th>
+<th>获取方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GCC AArch64</strong></td>
+<td>主流选择，GCC 10+</td>
+<td><code>apt install gcc-aarch64-linux-gnu</code></td>
+</tr>
+<tr>
+<td><strong>Linaro GCC</strong></td>
+<td>长期支持版本，稳定可靠</td>
+<td><a href="https://developer.arm.com/downloads/-/gnu-a">developer.arm.com</a></td>
+</tr>
+<tr>
+<td><strong>Rockchip 配套工具链</strong></td>
+<td>官方 BSP 配套</td>
+<td>SDK 内部自带</td>
+</tr>
+</tbody>
+</table>
+<p><strong>典型工具链前缀</strong>: <code>aarch64-linux-gnu-</code></p>
+<h3 id="2-2-sdk-类型">2.2 SDK 类型</h3>
+<p>Rockchip 提供多种 SDK 选择：</p>
+<table>
+<thead>
+<tr>
+<th>SDK 类型</th>
+<th>适用场景</th>
+<th>构建系统</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rockchip Linux SDK</strong></td>
+<td>Linux 开发</td>
+<td>Buildroot / Yocto</td>
+<td>完整 BSP，包含 U-Boot、Kernel、Rootfs</td>
+</tr>
+<tr>
+<td><strong>Rockchip Android SDK</strong></td>
+<td>Android 开发</td>
+<td>AOSP</td>
+<td>完整 Android 系统</td>
+</tr>
+<tr>
+<td><strong>Debian/Ubuntu Rootfs</strong></td>
+<td>快速验证</td>
+<td>预编译镜像</td>
+<td>可直接烧录使用</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-2-1-linux-sdk-目录结构">2.2.1 Linux SDK 目录结构</h4>
+<pre><code>rockchip-linux-sdk/
+├── app/                     # 应用程序
+├── buildroot/               # Buildroot 构建系统
+├── build.sh -&gt; device/rockchip/common/scripts/build.sh  # 编译脚本
+├── device/                  # 编译配置
+│   └── rockchip/
+│       └── rk3588/          # RK3588 板级配置
+├── docs/                    # 开发文档
+├── external/               # 第三方组件
+├── kernel -&gt; kernel-6.1/    # Linux 内核
+├── kernel-6.1/              # 内核源码
+├── prebuilt_rootfs/         # 预编译根文件系统
+├── prebuilts/               # 交叉编译工具链
+├── rkbin/                   # Rockchip 二进制固件
+├── tools/                   # 烧录工具
+└── u-boot/                  # U-Boot Bootloader
+</code></pre>
+<h3 id="2-3-构建系统">2.3 构建系统</h3>
+<table>
+<thead>
+<tr>
+<th>构建系统</th>
+<th>用途</th>
+<th>复杂度</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Buildroot</strong></td>
+<td>生成精简 Rootfs</td>
+<td>中等</td>
+<td>嵌入式产品、定制化需求</td>
+</tr>
+<tr>
+<td><strong>Yocto/Poky</strong></td>
+<td>生成完整发行版 Rootfs</td>
+<td>高</td>
+<td>大规模生产、产品化</td>
+</tr>
+<tr>
+<td><strong>AOSP</strong></td>
+<td>Android 系统构建</td>
+<td>高</td>
+<td>Android 产品开发</td>
+</tr>
+<tr>
+<td><strong>手动编译</strong></td>
+<td>内核/U-Boot 单独编译</td>
+<td>低</td>
+<td>快速验证、驱动开发</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-4-调试工具">2.4 调试工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>连接方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ADB</strong></td>
+<td>Android 调试桥</td>
+<td>USB / 网络</td>
+</tr>
+<tr>
+<td><strong>Fastboot</strong></td>
+<td>刷机模式</td>
+<td>USB</td>
+</tr>
+<tr>
+<td><strong>串口 (UART)</strong></td>
+<td>串口终端、日志</td>
+<td>TTL 串口 (1500000 8N1)</td>
+</tr>
+<tr>
+<td><strong>GDB</strong></td>
+<td>源码级调试</td>
+<td>JTAG 或网络</td>
+</tr>
+<tr>
+<td><strong>Rockchip Flash Tool</strong></td>
+<td>烧录固件</td>
+<td>USB (Maskrom 模式)</td>
+</tr>
+<tr>
+<td><strong>rkdeveloptool</strong></td>
+<td>命令行烧录</td>
+<td>Linux/macOS</td>
+</tr>
+<tr>
+<td><strong>JTAG/DAP</strong></td>
+<td>硬件调试</td>
+<td>20-pin JTAG 接口</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a id="3"></a></p>
+<h2 id="3-开发环境搭建步骤">3. 开发环境搭建步骤</h2>
+<h3 id="3-1-依赖软件安装">3.1 依赖软件安装</h3>
+<h4 id="3-1-1-linux-ubuntu-debian-环境">3.1.1 Linux (Ubuntu/Debian) 环境</h4>
+<pre><code class="language-bash"># 安装基础依赖
+sudo apt update
+sudo apt install -y build-essential git git-lfs wget
+
+# 安装交叉编译工具链
+sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+# 安装构建工具
+sudo apt install -y cmake ninja-build bison flex libssl-dev
+
+# 安装 Python (构建脚本依赖)
+sudo apt install -y python3 python3-pip python3-dev
+
+# 安装 RK3588 专用依赖
+sudo apt install -y \
+    device-tree-compiler \
+    libncurses-dev \
+    libusb-1.0-0-dev \
+    qemu-user-static \
+    live-build \
+    patchelf \
+    chrpath \
+    gawk \
+    texinfo \
+    diffstat \
+    binfmt-support \
+    unzip \
+    bc
+</code></pre>
+<h4 id="3-1-2-macos-环境-当前用户环境">3.1.2 macOS 环境 (当前用户环境)</h4>
+<p>macOS 开发 RK3588 需要额外配置：</p>
+<pre><code class="language-bash"># 1. 安装 Homebrew
+/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;
+
+# 2. 不在宿主机安装 gcc-arm-embedded：它面向裸机 Cortex-M，不能替代 AArch64 Linux 工具链
+# AArch64 Linux BSP 编译统一放入 Linux 容器/虚拟机，并使用 BSP 自带或锁定版本的工具链
+
+# 3. 安装构建依赖
+brew install wget cmake ninja bison flex openssl
+
+# 4. 安装 Docker (推荐方式编译 SDK)
+brew install --cask docker
+</code></pre>
+<p><strong>macOS 重要提示</strong>: Rockchip SDK 主要面向 Linux 环境开发，macOS 用户建议使用 Docker 容器进行 SDK 编译。</p>
+<h3 id="3-2-sdk-获取方式">3.2 SDK 获取方式</h3>
+<h4 id="3-2-1-官方渠道-需要-nda">3.2.1 官方渠道 (需要 NDA)</h4>
+<pre><code class="language-bash"># 联系 Rockchip 或开发板厂商获取 SDK 下载链接
+# 官方文档: https://developer.rock-chips.com/
+
+# 下载后解压
+tar xvf rk3588_linux6.1_rkr4_sdk.repo.tar
+
+# 同步子模块
+.repo/repo/repo sync -l
+</code></pre>
+<h4 id="3-2-2-开发板厂商">3.2.2 开发板厂商</h4>
+<table>
+<thead>
+<tr>
+<th>厂商</th>
+<th>SDK 特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Firefly</strong></td>
+<td>官方深度定制，文档完善</td>
+</tr>
+<tr>
+<td><strong>Radxa</strong></td>
+<td>社区活跃，社区版 SDK 开源</td>
+</tr>
+<tr>
+<td><strong>Khadas</strong></td>
+<td>Yocto/Buildroot/Debian 多版本</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-编译环境配置">3.3 编译环境配置</h3>
+<h4 id="3-3-1-环境变量设置">3.3.1 环境变量设置</h4>
+<pre><code class="language-bash"># 创建编译环境配置脚本
+cat &gt; envsetup.sh &lt;&lt; 'EOF'
+#!/bin/bash
+export ARCH=arm64
+export CROSS_COMPILE=aarch64-linux-gnu-
+export PATH=$PATH:/path/to/toolchain/aarch64-linux-gnu/bin
+export RK_KERNEL_VERSION=6.1
+EOF
+
+# 加载环境
+source envsetup.sh
+</code></pre>
+<h4 id="3-3-2-docker-编译环境-推荐-macos">3.3.2 Docker 编译环境 (推荐 macOS)</h4>
+<pre><code class="language-bash"># 创建 Dockerfile
+cat &gt; Dockerfile &lt;&lt; 'EOF'
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update &amp;&amp; apt-get install -y \
+    build-essential git git-lfs wget \
+    gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+    cmake ninja-build bison flex libssl-dev \
+    python3 python3-pip python3-dev \
+    device-tree-compiler \
+    libncurses-dev libusb-1.0-0-dev \
+    qemu-user-static
+
+WORKDIR /workspace
+CMD [&quot;/bin/bash&quot;]
+EOF
+
+# 构建镜像
+docker build -t rk3588-dev:latest .
+
+# 运行容器
+docker run -it --rm -v $(pwd):/workspace rk3588-dev:latest
+</code></pre>
+<h3 id="3-4-sdk-编译流程">3.4 SDK 编译流程</h3>
+<h4 id="3-4-1-linux-sdk-完整编译">3.4.1 Linux SDK 完整编译</h4>
+<pre><code class="language-bash">cd rockchip-linux-sdk
+
+# 1. 按当前 BSP release note 选择板级配置（命令名称因 BSP 而异）
+./build.sh lunch
+# 必须选择目标板卡 profile，不要只按 SoC 名称猜测 defconfig
+
+# 2. 完整编译 (包含 u-boot, kernel, rootfs)
+./build.sh
+
+# 3. 产物位置
+ls rockdev/
+# update.img - 完整固件包
+</code></pre>
+<h4 id="3-4-2-单独编译各组件">3.4.2 单独编译各组件</h4>
+<pre><code class="language-bash"># 编译 U-Boot
+cd u-boot
+make distclean
+make rockchip/rk3588_defconfig
+make CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+
+# 编译 Kernel
+cd ../kernel-6.1
+make ARCH=arm64 rockchip_linux_defconfig
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+
+# 编译设备树
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- dtbs
+</code></pre>
+<h3 id="3-5-烧录-调试方式">3.5 烧录/调试方式</h3>
+<h4 id="3-5-1-烧录工具">3.5.1 烧录工具</h4>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>平台</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rockchip Flash Tool</strong></td>
+<td>Windows/Linux</td>
+<td>官方烧录工具，图形界面</td>
+</tr>
+<tr>
+<td><strong>rkdeveloptool</strong></td>
+<td>Linux/macOS</td>
+<td>命令行烧录工具</td>
+</tr>
+<tr>
+<td><strong>upgrade_tool</strong></td>
+<td>Linux</td>
+<td>命令行烧录工具</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># 安装 rkdeveloptool
+git clone https://github.com/rockchip-linux/rkdeveloptool.git
+cd rkdeveloptool
+./autogen.sh
+./configure
+make
+sudo make install
+
+# 使用 rkdeveloptool 烧录
+rkdeveloptool ld          # 检测设备
+rkdeveloptool db rk3588_loader.bin  # 下载 Loader
+# 裸扇区写入风险高；主线 rkdeveloptool 的 wl 参数为扇区号，必须从当前 BSP 的 parameter/GPT 获取
+# rkdeveloptool wl &lt;sector&gt; &lt;image&gt;
+rkdeveloptool rd         # 重启设备
+</code></pre>
+<h4 id="3-5-2-烧录模式">3.5.2 烧录模式</h4>
+<p>RK3588 支持多种烧录模式：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>进入方式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maskrom 模式</strong></td>
+<td>按住 Maskrom 按键 + 复位</td>
+<td>强制烧录，芯片最底层模式</td>
+</tr>
+<tr>
+<td><strong>Loader 模式</strong></td>
+<td>按住音量+键 + 复位</td>
+<td>升级固件</td>
+</tr>
+<tr>
+<td><strong>Normal 模式</strong></td>
+<td>正常启动</td>
+<td>正常启动运行</td>
+</tr>
+</tbody>
+</table>
+<h4 id="3-5-3-串口连接">3.5.3 串口连接</h4>
+<pre><code class="language-bash"># 串口参数
+# 波特率由板卡原理图/BSP 配置决定；Rockchip 调试串口常见 1500000，不能盲猜为 115200
+# 数据位: 8, 停止位: 1, 校验: 无
+
+# macOS 使用 screen
+screen /dev/tty.usbserial-* 1500000
+
+# Linux 使用 minicom 或 picocom
+minicom -D /dev/ttyUSB0 -b 1500000
+</code></pre>
+<hr />
+<p><a id="4"></a></p>
+<h2 id="4-常见开发场景">4. 常见开发场景</h2>
+<h3 id="4-1-linux-开发">4.1 Linux 开发</h3>
+<h4 id="4-1-1-内核驱动开发">4.1.1 内核驱动开发</h4>
+<pre><code class="language-bash"># 1. 获取内核源码
+cd kernel-6.1
+make ARCH=arm64 rockchip_linux_defconfig
+make ARCH=arm64 menuconfig  # 配置内核选项
+
+# 2. 编写驱动 (示例: hello_world.c)
+cat &gt; drivers/misc/hello_rk3588.c &lt;&lt; 'EOF'
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
+
+static int __init hello_init(void) {
+    pr_info(&quot;Hello RK3588!\n&quot;);
+    return 0;
+}
+
+static void __exit hello_exit(void) {
+    pr_info(&quot;Goodbye RK3588!\n&quot;);
+}
+
+module_init(hello_init);
+module_exit(hello_exit);
+MODULE_LICENSE(&quot;GPL&quot;);
+MODULE_AUTHOR(&quot;Developer&quot;);
+MODULE_DESCRIPTION(&quot;Hello RK3588 Driver&quot;);
+EOF
+
+# 3. 编译模块
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- M=drivers/misc modules
+</code></pre>
+<h3 id="4-2-android-开发">4.2 Android 开发</h3>
+<pre><code class="language-bash"># 以下 manifest URL、分支和 lunch target 必须取自板卡厂商 Android BSP release note
+# 1. 安装 repo
+curl https://storage.googleapis.com/git-repo-downloads/repo &gt; ~/bin/repo
+chmod a+x ~/bin/repo
+
+# 2. 初始化已验证的板卡 BSP 仓库
+repo init -u &lt;vendor-manifest-url&gt; -b &lt;validated-branch&gt; -m &lt;validated-manifest.xml&gt;
+repo sync -c -j$(nproc)
+
+# 3. 编译 Android
+source build/envsetup.sh
+lunch &lt;validated-product&gt;-userdebug
+make -j$(nproc)
+</code></pre>
+<h3 id="4-3-npu-ai-开发">4.3 NPU/AI 开发</h3>
+<p>RK3588 内置 NPU 支持 AI 推理：</p>
+<pre><code class="language-bash"># 1. RKNN SDK
+git clone https://github.com/airockchip/rknn-toolkit2.git
+
+# 2. 安装 RKNN 工具链
+pip install rknn-toolkit2
+
+# 3. 模型转换
+python convert.py --input model.onnx --output model.rknn
+
+# 4. 推理代码
+python inference.py --model model.rknn
+</code></pre>
+<hr />
+<p><a id="5"></a></p>
+<h2 id="5-sdk-集成要点">5. SDK 集成要点</h2>
+<h3 id="5-1-架构对照">5.1 架构对照</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Efinix FPGA (当前)</th>
+<th>RK3588 SoC (目标)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>硬件描述</strong></td>
+<td>Verilog / SystemVerilog</td>
+<td>Device Tree + Schematic</td>
+</tr>
+<tr>
+<td><strong>编译流程</strong></td>
+<td>Efinity 综合 + 布局布线</td>
+<td>ARM 交叉编译 + U-Boot + TF-A</td>
+</tr>
+<tr>
+<td><strong>调试方式</strong></td>
+<td>JTAG (Efinix Debugger)</td>
+<td>JTAG (DAP) + 串口 + GDB</td>
+</tr>
+<tr>
+<td><strong>软件环境</strong></td>
+<td>裸机 / FreeRTOS</td>
+<td>Linux on AArch64</td>
+</tr>
+<tr>
+<td><strong>BSP</strong></td>
+<td>Sapphire SoC BSP</td>
+<td>Rockchip BSP + Device Tree Overlay</td>
+</tr>
+<tr>
+<td><strong>烧录方式</strong></td>
+<td>FTDI Programmer</td>
+<td>eMMC/SD 烧录 + rkdeveloptool</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-软件物料清单">5.2 软件物料清单</h3>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>版本</th>
+<th>来源</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U-Boot / rkbin / TF-A</td>
+<td>BSP 锁定组合</td>
+<td>板卡 BSP manifest</td>
+<td>不可独立追新；记录提交 ID 与二进制哈希</td>
+</tr>
+<tr>
+<td>Kernel</td>
+<td>BSP 分支（常见 5.10/6.1）或主线</td>
+<td>板卡 BSP / kernel.org</td>
+<td>BSP 驱动能力与主线支持范围不同</td>
+</tr>
+<tr>
+<td>Rootfs 构建器</td>
+<td>BSP 锁定版本</td>
+<td>Buildroot / Yocto / Debian 流程</td>
+<td>不把发行版名称等同于 BSP</td>
+</tr>
+<tr>
+<td>AArch64 工具链</td>
+<td>BSP 指定版本</td>
+<td>BSP prebuilts / Arm GNU Toolchain</td>
+<td>记录三元组、版本和 sysroot</td>
+</tr>
+<tr>
+<td>RKNN Toolkit2 / Runtime / Driver</td>
+<td>严格兼容矩阵</td>
+<td>airockchip</td>
+<td>模型格式、用户态 runtime、内核驱动必须成套验证</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a id="6"></a></p>
+<h2 id="6-参考资料">6. 参考资料</h2>
+<h3 id="6-1-官方文档">6.1 官方文档</h3>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>链接</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rockchip 开发者门户</td>
+<td>https://developer.rock-chips.com/</td>
+<td>官方开发者网站</td>
+</tr>
+<tr>
+<td>RK3588 Wiki</td>
+<td>https://wiki.rk3588.cn/</td>
+<td>社区 Wiki</td>
+</tr>
+<tr>
+<td>Rockchip Linux SDK (GitHub)</td>
+<td>https://github.com/rockchip-linux</td>
+<td>官方开源仓库</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-开发板参考">6.2 开发板参考</h3>
+<table>
+<thead>
+<tr>
+<th>开发板</th>
+<th>厂商</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RK3588 EVB</td>
+<td>Rockchip</td>
+<td>官方评估板</td>
+</tr>
+<tr>
+<td>Rock 5 Model B</td>
+<td>Radxa</td>
+<td>社区热门开发板</td>
+</tr>
+<tr>
+<td>Core-3588JD4</td>
+<td>Firefly</td>
+<td>工业级开发板</td>
+</tr>
+<tr>
+<td>Edge2</td>
+<td>Khadas</td>
+<td>高性能开发板</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-3-工具链下载">6.3 工具链下载</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>下载链接</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linaro GCC</td>
+<td>https://developer.arm.com/downloads/-/gnu-a</td>
+<td>ARM 官方工具链</td>
+</tr>
+<tr>
+<td>RKNN Toolkit2</td>
+<td>https://github.com/airockchip/rknn-toolkit2</td>
+<td>当前维护的 NPU 模型转换/评估工具；旧 <code>rockchip-linux</code> 仓库已停止维护</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-4-本次复核使用的一手资料">6.4 本次复核使用的一手资料</h3>
+<table>
+<thead>
+<tr>
+<th>资料</th>
+<th>用途</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/rockchip-linux/rkdeveloptool">rockchip-linux/rkdeveloptool</a></td>
+<td>核对 RockUSB 写入语义</td>
+<td><code>wl</code> 示例使用扇区地址，单位为 sector；不能把示例偏移当作通用分区</td>
+</tr>
+<tr>
+<td><a href="https://github.com/airockchip/rknn-toolkit2">airockchip/rknn-toolkit2</a></td>
+<td>核对 RKNN 维护入口与软件栈</td>
+<td>RK3588 属于支持平台；Toolkit2、Lite2、Runtime 与内核驱动是不同组件</td>
+</tr>
+<tr>
+<td><a href="https://docs.kernel.org/PCI/pci.html">Linux PCI 驱动文档</a></td>
+<td>核对 PCIe Endpoint 驱动模型</td>
+<td>可枚举 PCI 设备通常由 PCI ID 表匹配驱动</td>
+</tr>
+<tr>
+<td><a href="https://www.kernel.org/doc/html/latest/devicetree/usage-model.html">Linux Devicetree 使用模型</a></td>
+<td>核对 DT 职责</td>
+<td>DT 描述不可自发现的板级硬件；不能替代 PCI 总线枚举</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>链接指向的是持续更新入口；生产基线仍须在 <code>build-manifest.json</code> 中记录实际使用的 tag/commit 和文件哈希。</p>
+</blockquote>
+<hr />
+<p><a id="7"></a></p>
+<h2 id="7-macos-特别注意事项">7. macOS 特别注意事项</h2>
+<h3 id="7-1-环境限制">7.1 环境限制</h3>
+<p>macOS 开发者需要注意以下限制：</p>
+<ol>
+<li><strong>交叉编译工具链</strong>: Homebrew 的 ARM 工具链可能不完整，建议使用 Docker 或 Linux 虚拟机</li>
+<li><strong>USB 驱动</strong>: 需要安装 Silicon Labs VCP 驱动才能识别串口</li>
+<li><strong>烧录工具</strong>: Rockchip Flash Tool 仅有 Windows/Linux 版本，macOS 可用 rkdeveloptool</li>
+<li><strong>构建速度</strong>: macOS 文件系统对大量小文件编译不友好</li>
+</ol>
+<h3 id="7-2-推荐工作流-macos">7.2 推荐工作流 (macOS)</h3>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                    macOS Host                           │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │              Docker Container                    │   │
+│  │  ┌─────────────────────────────────────────────┐│   │
+│  │  │        Ubuntu 22.04 + RK3588 SDK           ││   │
+│  │  │                                             ││   │
+│  │  │  - 交叉编译工具链                           ││   │
+│  │  │  - Buildroot / Yocto                        ││   │
+│  │  │  - rkdeveloptool                            ││   │
+│  │  └─────────────────────────────────────────────┘│   │
+│  └─────────────────────────────────────────────────┘   │
+│                          │                              │
+│           (代码同步 via VS Code Remote / NFS)           │
+│                          │                              │
+└──────────────────────────┼──────────────────────────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │   RK3588 Board      │
+                │   (USB 烧录/调试)   │
+                └─────────────────────┘
+</code></pre>
+<h3 id="7-3-串口连接-macos">7.3 串口连接 (macOS)</h3>
+<pre><code class="language-bash"># 1. 安装 USB 驱动
+# Silicon Labs: https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+
+# 2. 检查串口设备
+ls /dev/tty.*
+
+# 3. 使用 screen 连接
+screen /dev/tty.usbserial-* 1500000
+</code></pre>
+<hr />
+<h2 id="附录-a-快速参考命令">附录 A: 快速参考命令</h2>
+<pre><code class="language-bash"># 环境检查
+aarch64-linux-gnu-gcc -v
+python3 --version
+git --version
+
+# SDK 编译
+cd rockchip-linux-sdk
+./build.sh lunch    # 选择配置
+./build.sh          # 完整编译
+
+# 烧录
+rkdeveloptool ld
+rkdeveloptool db rk3588_loader.bin
+# 仅在从当前 BSP 分区表确认扇区后执行：
+rkdeveloptool wl &lt;sector&gt; &lt;image&gt;
+rkdeveloptool rd
+
+# ADB 连接
+adb devices
+adb shell
+</code></pre>
+<hr />
+<h2 id="附录-b-常见问题">附录 B: 常见问题</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编译报错 "unrecognized opcode <code>arch64</code>"</td>
+<td>确认 CROSS_COMPILE 正确设置</td>
+</tr>
+<tr>
+<td>rkdeveloptool 找不到设备</td>
+<td>进入 Maskrom 模式，检查 USB 连接</td>
+</tr>
+<tr>
+<td>内核编译卡住</td>
+<td>检查内存是否足够 (建议 16GB+)，增加 swap</td>
+</tr>
+<tr>
+<td>NPU 推理失败</td>
+<td>确认 RKNN 模型与 RKNN SDK 版本匹配</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-深度调研结论与工程基线">8. 深度调研结论与工程基线</h2>
+<h3 id="8-1-最重要的结论">8.1 最重要的结论</h3>
+<ol>
+<li><strong>RK3588 不是一个可独立构建的“通用目标”</strong>。真正的构建目标是 <code>SoC + 封装/内存拓扑 + PMIC + 存储 + Carrier + BSP 发布版</code>。同为 RK3588 的 EVB、Rock 5、Firefly 等板卡，其 DDR 初始化、U-Boot defconfig、DTS、分区表和烧录 loader 均可能不同。</li>
+<li><strong>BSP 是版本闭包，不是组件清单</strong>。<code>U-Boot + rkbin/DDR blob + TF-A/OP-TEE + Kernel + DT + Rootfs + 打包工具</code> 必须按厂商验证过的组合锁定。单独把内核或 U-Boot 升级到“较新版本”不构成可复现方案。</li>
+<li><strong>开发与部署分离</strong>。编译应在固定 Linux 容器/VM 中完成；串口、ADB/SSH 和烧录可在宿主机执行。macOS Docker Desktop 的 Linux VM 不能默认直通 Maskrom USB，烧录建议使用原生 Linux/Windows 工位或经验证的 USB 转发方案。</li>
+<li><strong>先做板级 bring-up，再做自动化</strong>。Adapter 的首个支持对象必须是一块明确板卡和一个明确 BSP 版本，不能从 SoC 数据手册直接推导出可启动固件。</li>
+</ol>
+<h3 id="8-2-推荐的可复现环境契约">8.2 推荐的可复现环境契约</h3>
+<p>每次构建必须生成 <code>build-manifest.json</code>，至少记录：</p>
+<pre><code class="language-json">{
+  &quot;boardProfile&quot;: &quot;vendor-board-revision&quot;,
+  &quot;bspManifestCommit&quot;: &quot;&lt;sha&gt;&quot;,
+  &quot;components&quot;: {&quot;uboot&quot;: &quot;&lt;sha&gt;&quot;, &quot;kernel&quot;: &quot;&lt;sha&gt;&quot;, &quot;rkbin&quot;: &quot;&lt;sha&gt;&quot;},
+  &quot;toolchain&quot;: {&quot;triple&quot;: &quot;aarch64-linux-gnu&quot;, &quot;version&quot;: &quot;&lt;exact&gt;&quot;, &quot;sha256&quot;: &quot;&lt;sha256&gt;&quot;},
+  &quot;containerImage&quot;: &quot;&lt;registry/image@sha256:digest&gt;&quot;,
+  &quot;configHashes&quot;: {&quot;uboot&quot;: &quot;&lt;sha256&gt;&quot;, &quot;kernel&quot;: &quot;&lt;sha256&gt;&quot;, &quot;rootfs&quot;: &quot;&lt;sha256&gt;&quot;},
+  &quot;sourceDateEpoch&quot;: 0
+}
+</code></pre>
+<p>宿主机建议基线：Linux x86_64、磁盘预留不少于 250 GB（Android 构建需更高）、内存至少 16 GB（大型并行构建建议 32 GB）、Git LFS 与 <code>repo</code> 可用。具体容量以 BSP release note 为准。容器镜像必须使用 digest 固定；源码、下载缓存和输出目录分卷挂载，避免因容器删除丢失产物。</p>
+<h3 id="8-3-三条经过校正的工作流">8.3 三条经过校正的工作流</h3>
+<table>
+<thead>
+<tr>
+<th>工作流</th>
+<th>输入</th>
+<th>输出</th>
+<th>适用范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BSP 全量构建</td>
+<td>厂商 manifest、board profile、锁定容器</td>
+<td>可烧录镜像与 manifest</td>
+<td>发布/CI，最可信</td>
+</tr>
+<tr>
+<td>内核/DT 增量</td>
+<td>同一 BSP 的 <code>.config</code>、DTS、Module.symvers</td>
+<td>Image、DTB、modules</td>
+<td>驱动开发；必须保持 ABI 一致</td>
+</tr>
+<tr>
+<td>应用/NPU</td>
+<td>sysroot、交叉工具链、RKNN 兼容矩阵</td>
+<td>ELF/包、<code>.rknn</code>、验证报告</td>
+<td>不触碰启动链，迭代最快</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-4-烧录安全门禁">8.4 烧录安全门禁</h3>
+<ul>
+<li>执行写操作前必须记录 USB VID/PID、芯片信息、设备模式、板卡 profile 和目标存储介质；多设备连接时拒绝自动选择。</li>
+<li>loader 必须来自当前板卡/BSP，禁止仅凭“RK3588”复用；DDR 参数不匹配可能导致下载失败或不稳定。</li>
+<li>禁止把示例 <code>0x4000</code> 当作通用分区地址。偏移单位、GPT/parameter 布局和镜像类型必须由 profile 明确给出。</li>
+<li>默认先读取并保存 GPT/parameter；擦除、写 bootloader、写全盘镜像属于高风险操作，必须显式确认。</li>
+<li>写入后至少校验镜像哈希/回读、启动串口关键阶段、内核版本、DT model/compatible 与 rootfs 版本。</li>
+</ul>
+<h3 id="8-5-验收清单">8.5 验收清单</h3>
+<p>环境调研只有在以下证据齐全时才算完成：同一 clean checkout 连续构建两次成功；产物及配置可追溯；冷启动/热重启/掉电启动通过；串口保留完整 BootROM→loader→U-Boot→Kernel→userspace 日志；PCIe、GMAC、MIPI、GPIO 逐项以板卡原理图和运行时探测验证；NPU 记录 Toolkit2、模型格式、runtime 与驱动版本，并用固定输入做精度/性能回归。</p>
+<h3 id="8-6-资料可信度与待确认项">8.6 资料可信度与待确认项</h3>
+<p>优先级为：板卡 BSP release note/manifest 与原理图 &gt; Rockchip 芯片文档及官方仓库 &gt; Linux 内核文档 &gt; 开发板社区资料。公开资料无法替代受控 datasheet/TRM、板级原理图和实际 BSP。</p>
+<p>在选定首块目标板前，以下内容保持“待确认”：具体 PCIe/Combo PHY 复用关系、MIPI DPHY 路由、GPIO 可用性、调试 UART 波特率、分区布局、loader 文件、DT 节点 label、内核分支及 RKNN 兼容组合。EvoVerse Adapter 必须把这些作为 profile 输入，不能硬编码。</p>
+<hr />
+<p><strong>文档更新记录</strong></p>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>版本</th>
+<th>更新内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-13</td>
+<td>v1.0.0</td>
+<td>初始版本，涵盖 RK3588 开发环境调研</td>
+</tr>
+<tr>
+<td>2026-07-14</td>
+<td>v2.0.0</td>
+<td>校正工具链/烧录风险；加入 BSP 版本闭包、可复现环境契约、安全门禁与验收标准</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>文档路径</strong>: <code>RK3588-开发环境调研报告.md</code></p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

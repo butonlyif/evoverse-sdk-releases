@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FPGA I/O Timing Constraints</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Input/output delays and board-level interface constraints.</span>
+<code>efinity/fpga-io-timing-constraints.md</code>
+<a href="../../../efinity/fpga-io-timing-constraints.md">Markdown source</a></p>
+<h1>FPGA I/O Timing Constraints</h1></header>
+<main class="article"><h1 id="fpga-io-timing-constraints">FPGA IO Timing Constraints</h1>
+<blockquote>
+<p><strong>EvoVerse SDK · Knowledge Base — Cross-Vendor Supplement</strong></p>
+<p><strong>Intended audience</strong>: RTL engineers who need to write complete IO timing constraints for external interfaces (DDR / RGMII / SPI / I²C / GPIO etc.); timing-diagnosis and AI collaborators</p>
+<p><strong>Last updated</strong>: 2026-07-30</p>
+<p><strong>Scope</strong>: Authoritative sources are the Efinity 2026.1 official IO constraint documentation (<code>efinity-timing-closure.pdf §6 "Constraining I/O"</code> + <code>C:\Efinity\2026.1\doc\topics\constraint-setinput-setoutput-delay.html</code> + <code>tim-clock-latency-gpio.html</code> + <code>concept_constraints_*.html</code>), supplemented by AN 043 (RGMII), CSDN IO timing basics, and MPI Lesson 11.</p>
+<p><strong>Related documents</strong>:
+- <a href="fpga-clock-constraints-cookbook.html">fpga-clock-constraints-cookbook.md</a> — <code>create_clock</code> / <code>create_generated_clock</code>
+- <a href="fpga-timing-exceptions-cookbook.html">fpga-timing-exceptions-cookbook.md</a> — false path / multicycle / max_delay
+- <a href="timing-analysis-guide.html">timing-analysis-guide.md</a> — the complete EvoVerse SDK timing analysis flow
+- <a href="isf-syntax-reference.html">isf-syntax-reference.md</a> — pin / IO bank configuration</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-why-io-timing-constraints-matter">Why IO timing constraints matter</a></li>
+<li><a href="#2-set_input_delay--input-delay"><code>set_input_delay</code> — input delay</a></li>
+<li><a href="#3-set_output_delay--output-delay"><code>set_output_delay</code> — output delay</a></li>
+<li><a href="#4-source-synchronous-interfaces">Source-synchronous interfaces</a></li>
+<li><a href="#5-system-synchronous-interfaces">System-synchronous interfaces</a></li>
+<li><a href="#6-fpga-pin-tsu--th">FPGA pin Tsu / Th</a></li>
+<li><a href="#7-efinity-gpio-clock-latency">Efinity GPIO Clock Latency</a></li>
+<li><a href="#8-sdr-vs-ddr-timing">SDR vs DDR timing</a></li>
+<li><a href="#9-complete-efinity-io-sdc-example">Complete Efinity IO SDC example</a></li>
+</ol>
+<hr />
+<h2 id="1-why-io-timing-constraints-matter">1. Why IO timing constraints matter</h2>
+<p><strong>The core problem</strong>: when the FPGA talks to external chips (DDR / PHY / ADC / DAC), the arrival time of external signals depends on the PCB trace length + the external device's Tco/Tsu/Th—information <strong>only the designer knows</strong>; the STA tool does not infer it automatically.</p>
+<blockquote>
+<p>"Static timing analysis is 'static' because it doesn't depend on specific input stimulus vectors — instead, it analyzes all possible paths in worst case. But there's a key premise: the tool needs to know what 'qualified' means. That standard is what we give via timing constraints."
+—— Source: [B7] CSDN timing analysis</p>
+</blockquote>
+<p><strong>Consequences of leaving paths unconstrained</strong>:
+- The STA tool assumes 0 ns external delay → paths too tight → too many reported violations
+- Or it assumes infinite delay → paths too loose → the actual hardware does not work</p>
+<blockquote>
+<p>"If you don't add constraints, the tool uses a very permissive default that only guarantees basic connectivity. The tool may route critical signals on slow channels, or use non-optimized placement, ultimately causing the design to fail to work."
+—— Source: [B7] CSDN timing analysis</p>
+</blockquote>
+<p><strong>Two typical problem classes</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Start</th>
+<th>End</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In-Reg (input)</td>
+<td>external chip → PCB trace → FPGA input pin</td>
+<td>internal FPGA register D</td>
+</tr>
+<tr>
+<td>Reg-Out (output)</td>
+<td>internal FPGA register Q</td>
+<td>PCB trace → external chip input pin</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="fpga-sta-basics.html">fpga-sta-basics.md §2</a>.</p>
+<hr />
+<h2 id="2-set_input_delay-input-delay">2. <code>set_input_delay</code> — input delay</h2>
+<p><strong>Purpose</strong>: tells the STA tool how long an external signal <strong>still</strong> needs, after arriving at the FPGA input pin, to reach an internal register's D pin.</p>
+<h3 id="2-1-synchronous-input-same-source-as-the-fpga-clock">2.1 Synchronous input (same source as the FPGA clock)</h3>
+<pre><code class="language-sdc"># Input delay: external device Tco_max + PCB trace max delay
+set_input_delay -clock sys_clk -max 4.0 [get_ports adc_data_i*]
+
+# min delay: external device Tco_min + PCB trace min delay
+set_input_delay -clock sys_clk -min 1.0 [get_ports adc_data_i*]
+</code></pre>
+<p><strong>Meaning</strong>:
+- <code>-max 4.0</code> (ns): worst-case data delay of 4 ns
+- The STA tool computes: <strong>Required time = sys_clk period − max delay − Tsu − uncertainty</strong>
+- That is: setup slack = (Period − 4 − Tsu − uncertainty) − (Tco + Tlogic + Tnet)</p>
+<h3 id="2-2-asynchronous-input-independent-clock-domain">2.2 Asynchronous input (independent clock domain)</h3>
+<pre><code class="language-sdc"># The external device has its own clock, asynchronous to sys_clk
+set_input_delay -clock virtual_ext_clk -max 5.0 [get_ports async_in_i]
+set_input_delay -clock virtual_ext_clk -min 2.0 [get_ports async_in_i]
+
+# Pair with a CDC synchronizer
+set_clock_groups -asynchronous -group {sys_clk} -group {virtual_ext_clk}
+</code></pre>
+<p>See the CDC synchronizer template in <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md §3</a>.</p>
+<h3 id="2-3-the-clock_fall-option-ddr">2.3 The <code>-clock_fall</code> option (DDR)</h3>
+<pre><code class="language-sdc"># DDR interface: the falling edge also samples
+set_input_delay -clock ddr_clk -clock_fall -max 2.0 [get_ports ddr_dq[*]]
+</code></pre>
+<p>See <a href="#8-sdr-vs-ddr-timing">§8</a>.</p>
+<h3 id="2-4-add_delay-multi-clock-stacking">2.4 <code>-add_delay</code> multi-clock stacking</h3>
+<pre><code class="language-sdc"># The same input port is sampled by two clocks (rare, but worth noting)
+set_input_delay -clock clk_a -max 3.0 [get_ports data_in] -add
+set_input_delay -clock clk_b -max 4.0 [get_ports data_in] -add
+</code></pre>
+<hr />
+<h2 id="3-set_output_delay-output-delay">3. <code>set_output_delay</code> — output delay</h2>
+<p><strong>Purpose</strong>: tells the STA tool the arrival time of the FPGA output-pin data <strong>relative to</strong> the downstream device's clock edge.</p>
+<h3 id="3-1-basic-syntax">3.1 Basic syntax</h3>
+<pre><code class="language-sdc"># Max delay: external device Tsu
+set_output_delay -clock sys_clk -max 2.0 [get_ports led_user_o]
+
+# Min delay: external device Th (-min must not be negative)
+set_output_delay -clock sys_clk -min -0.5 [get_ports led_user_o]
+</code></pre>
+<p><strong>Meaning</strong>:
+- <code>-max 2.0</code> (ns): the downstream device needs the data to arrive <strong>within</strong> 2 ns after the clock edge (to satisfy its Tsu)
+- The STA tool computes: <strong>Required time = sys_clk period + Tco + output max delay</strong>
+- That is: setup slack = (Period + 2 − Tco − output_delay) − (Tco + Tlogic + Tnet + T_output_buf)</p>
+<h3 id="3-2-add_delay-and-reference_pin">3.2 <code>-add_delay</code> and <code>-reference_pin</code></h3>
+<pre><code class="language-sdc"># Specify a reference pin (a reference that is not a clock port)
+set_output_delay -reference_pin [get_ports clk_o] -max 1.5 [get_ports data_o*]
+</code></pre>
+<hr />
+<h2 id="4-source-synchronous-interfaces">4. Source-synchronous interfaces</h2>
+<p><strong>Definition</strong>: clock and data are emitted by the external chip <strong>at the same time</strong> (typical: DDR, RGMII, high-speed SPI modes)</p>
+<h3 id="4-1-ddr3-interface-an-042-ddr3-controller">4.1 DDR3 interface (AN 042 + DDR3 controller)</h3>
+<p>The DDR3 controller is an Efinity hard IP and its constraints are usually <strong>auto-generated</strong>. Manual case:</p>
+<pre><code class="language-sdc"># DDR3 clock: 400 MHz (DDR CK 800 MHz data rate)
+create_clock -period 2.5 -name ddr_ck [get_ports ddr_ck_t]
+
+# DDR DQ input delay (DDR mode: rising + falling edges)
+set_input_delay -clock ddr_ck -max 0.4 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_ck -min -0.4 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_ck -clock_fall -max 0.4 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_ck -clock_fall -min -0.4 [get_ports ddr_dq[*]]
+
+# DDR DQ output delay
+set_output_delay -clock ddr_ck -max 0.4 [get_ports ddr_dq[*]]
+set_output_delay -clock ddr_ck -min -0.4 [get_ports ddr_dq[*]]
+</code></pre>
+<blockquote>
+<p>Source: AN 042 + DDR3 Soft Controller Core User Guide v1.6 §A4.5</p>
+</blockquote>
+<p><strong>DDR PHY hard block (Titanium)</strong>:</p>
+<pre><code class="language-sdc"># Titanium DDR PHY: max 3,300 Mbps
+# CLKOUT4 drives controller at 1/4 PHY data rate
+create_generated_clock -name ddr_ckout4 \
+    -source [get_pins {ddr_phy/clk}] \
+    -divide_by 4 \
+    [get_pins {ddr_phy/clkout4}]
+</code></pre>
+<blockquote>
+<p>Source: Titanium DDR DRAM Block User Guide v2.6 §A4.6</p>
+</blockquote>
+<h3 id="4-2-rgmii-interface-an-043">4.2 RGMII interface (AN 043)</h3>
+<p>RGMII is a source-synchronous DDR interface whose clock and data are <strong>center-aligned</strong>—the clock edge sits in the middle of the data eye.</p>
+<pre><code class="language-sdc"># RGMII TX clock 125 MHz (PLL output)
+create_generated_clock -name rgmii_tx_clk \
+    -source [get_pins {pll_rgmii/clkin}] \
+    -multiply_by 5 -divide_by 4 \
+    [get_pins {pll_rgmii/clkout}]
+
+# TX data: DDR mode, use -clock_fall
+set_output_delay -clock rgmii_tx_clk -max 0.5 [get_ports rgmii_txd[*]]
+set_output_delay -clock rgmii_tx_clk -min 1.0 [get_ports rgmii_txd[*]]
+set_output_delay -clock rgmii_tx_clk -max 0.5 -clock_fall [get_ports rgmii_txd[*]]
+set_output_delay -clock rgmii_tx_clk -min 1.0 -clock_fall [get_ports rgmii_txd[*]]
+
+# RX data: input from the PHY
+create_clock -period 8.0 -name rgmii_rx_clk [get_ports rgmii_rx_clk_i]
+set_input_delay -clock rgmii_rx_clk -max 0.5 [get_ports rgmii_rxd[*]]
+set_input_delay -clock rgmii_rx_clk -min 1.0 [get_ports rgmii_rxd[*]]
+set_input_delay -clock rgmii_rx_clk -clock_fall -max 0.5 [get_ports rgmii_rxd[*]]
+set_input_delay -clock rgmii_rx_clk -clock_fall -min 1.0 [get_ports rgmii_rxd[*]]
+</code></pre>
+<blockquote>
+<p>Source: AN 043 v1.3 §"RGMII Dynamic Clock Switch" ([A4.2])</p>
+</blockquote>
+<h3 id="4-3-spi-interface-simple-source-synchronous">4.3 SPI interface (simple source-synchronous)</h3>
+<pre><code class="language-sdc"># SPI clock 50 MHz
+create_clock -period 20.0 -name spi_clk [get_ports spi_sck_i]
+
+# SPI MOSI/MISO synchronous constraints
+set_input_delay -clock spi_clk -max 5.0 [get_ports spi_miso_i]
+set_input_delay -clock spi_clk -min 2.0 [get_ports spi_miso_i]
+set_output_delay -clock spi_clk -max 4.0 [get_ports spi_mosi_o]
+set_output_delay -clock spi_clk -min 0.0 [get_ports spi_mosi_o]
+</code></pre>
+<hr />
+<h2 id="5-system-synchronous-interfaces">5. System-synchronous interfaces</h2>
+<p><strong>Definition</strong>: the FPGA and the external device <strong>share the same clock bus</strong> (typical: asynchronous SRAM, parallel DAC, bus interfaces)</p>
+<h3 id="5-1-asynchronous-sram-interface">5.1 Asynchronous SRAM interface</h3>
+<pre><code class="language-sdc"># System clock 100 MHz
+create_clock -period 10.0 -name sys_clk [get_ports clk_100m]
+
+# SRAM input (address + data + control)
+set_input_delay -clock sys_clk -max 6.0 [get_ports sram_data_io*]
+set_input_delay -clock sys_clk -min 1.0 [get_ports sram_data_io*]
+
+# SRAM output
+set_output_delay -clock sys_clk -max 5.0 [get_ports sram_data_io*]
+set_output_delay -clock sys_clk -min 0.0 [get_ports sram_data_io*]
+set_output_delay -clock sys_clk -max 5.0 [get_ports {sram_addr[*] sram_oe_n sram_we_n sram_cs_n}]
+</code></pre>
+<h3 id="5-2-bus-interfaces-wishbone-axi-apb">5.2 Bus interfaces (wishbone / AXI / APB)</h3>
+<pre><code class="language-sdc"># Common-source clock
+create_clock -period 10.0 -name sys_clk [get_ports clk_i]
+
+# Input
+set_input_delay -clock sys_clk -max 4.0 [get_ports {bus_data_i[*] bus_ack_i bus_err_i bus_rty_i}]
+set_input_delay -clock sys_clk -min 1.0 [get_ports {bus_data_i[*] bus_ack_i bus_err_i bus_rty_i}]
+
+# Output
+set_output_delay -clock sys_clk -max 3.0 [get_ports {bus_data_o[*] bus_adr_o[*] bus_we_o bus_sel_o[*] bus_cyc_o bus_stb_o}]
+set_output_delay -clock sys_clk -min 0.0 [get_ports {bus_data_o[*] bus_adr_o[*] bus_we_o bus_sel_o[*] bus_cyc_o bus_stb_o}]
+</code></pre>
+<hr />
+<h2 id="6-fpga-pin-tsu-th">6. FPGA pin Tsu / Th</h2>
+<p><strong>FPGA pin Tsu/Th</strong>: the intrinsic setup/hold requirements of the FPGA's internal IO cell (<strong>independent of the PCB</strong>). Provided in the FPGA datasheet.</p>
+<blockquote>
+<p>"The Setup time (t_su) is the time required for the input to be stable before a clock edge."
+"The Hold time (t_h) is the minimum amount of time required for the input to be stable after the clock edge."
+—— Source: [B4] MPI Lesson 11</p>
+</blockquote>
+<p><strong>Typical FPGA Tsu/Th</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Process</th>
+<th>Tsu</th>
+<th>Th</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7nm ASIC</td>
+<td>45 ps</td>
+<td>35 ps</td>
+</tr>
+<tr>
+<td>Modern FPGA (typical)</td>
+<td>180 ps</td>
+<td>120 ps</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: [B5] arXiv 2510.26985</p>
+</blockquote>
+<p><strong>Efinity Trion/Titanium</strong>: see the specific device datasheet (TJ180A484S etc.):</p>
+<pre><code>Tsu (input setup to global clock) = ~0.6 ns (typical)
+Th  (input hold from global clock) = ~0.1 ns (typical)
+</code></pre>
+<p>The PnR tool uses the concrete values automatically during STA. See the corresponding device datasheet.</p>
+<hr />
+<h2 id="7-efinity-gpio-clock-latency">7. Efinity GPIO Clock Latency</h2>
+<p><strong>Efinity GPIO as a clock input</strong>: the clock latency needs dedicated constraints.</p>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-clock-latency-gpio.html</code> ([A3])</p>
+</blockquote>
+<h3 id="7-1-the-three-segments-of-clock-latency">7.1 The three segments of clock latency</h3>
+<table>
+<thead>
+<tr>
+<th>Segment</th>
+<th>Start</th>
+<th>End</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Board-level delay</strong></td>
+<td>external clock source</td>
+<td>FPGA pin</td>
+<td><code>set_clock_latency -source</code></td>
+</tr>
+<tr>
+<td><strong>GCLK network delay</strong></td>
+<td>FPGA pin (as GCLK)</td>
+<td>global clock tree</td>
+<td>inferred automatically by the tool</td>
+</tr>
+<tr>
+<td><strong>PLL compensation delay</strong></td>
+<td>PLL input</td>
+<td>PLL output</td>
+<td>applied automatically by Efinity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-2-complete-example">7.2 Complete example</h3>
+<pre><code class="language-sdc"># Board-level clock latency: crystal → FPGA pin
+set_clock_latency -source -early 1.0 [get_clocks sys_clk]
+set_clock_latency -source -late  3.0 [get_clocks sys_clk]
+
+# GCLK network latency (usually inferred by the tool; no manual setting needed)
+# set_clock_latency -early 0.5 [get_clocks sys_clk]
+# set_clock_latency -late  1.0 [get_clocks sys_clk]
+</code></pre>
+<p>See <a href="fpga-clock-constraints-cookbook.html">fpga-clock-constraints-cookbook.md §5</a> and AN 042.</p>
+<hr />
+<h2 id="8-sdr-vs-ddr-timing">8. SDR vs DDR timing</h2>
+<h3 id="8-1-sdr-single-data-rate">8.1 SDR (Single Data Rate)</h3>
+<p><strong>Characteristic</strong>: 1 bit of data per clock cycle.</p>
+<pre><code class="language-sdc"># Rising-edge sampling: the default
+set_input_delay -clock sys_clk -max 4.0 [get_ports sdr_data_i*]
+set_input_delay -clock sys_clk -min 1.0 [get_ports sdr_data_i*]
+</code></pre>
+<h3 id="8-2-ddr-double-data-rate">8.2 DDR (Double Data Rate)</h3>
+<p><strong>Characteristic</strong>: 2 bits of data per clock cycle (sampled on both the rising and falling edges).</p>
+<pre><code class="language-sdc"># DDR input: sampled on both rising and falling edges
+set_input_delay -clock ddr_clk -max 1.5 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_clk -min 0.0 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_clk -clock_fall -max 1.5 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_clk -clock_fall -min 0.0 [get_ports ddr_dq[*]]
+</code></pre>
+<h3 id="8-3-center-aligned-vs-edge-aligned">8.3 Center-aligned vs edge-aligned</h3>
+<table>
+<thead>
+<tr>
+<th>Alignment</th>
+<th>Typical interfaces</th>
+<th>set_input_delay meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Edge-aligned</strong></td>
+<td>SPI, async SRAM</td>
+<td>data and clock arrive <strong>at the same time</strong></td>
+</tr>
+<tr>
+<td><strong>Center-aligned</strong></td>
+<td>DDR, RGMII</td>
+<td>the clock sits in the <strong>middle</strong> of the data eye</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Edge-aligned</strong>: <code>set_input_delay -max</code> ≈ the data valid window
+<strong>Center-aligned</strong>: <code>set_input_delay -max</code> ≈ (period/2 − setup margin)</p>
+<h3 id="8-4-edge-aligned-compensation-example-ddr-write-leveling">8.4 Edge-aligned compensation example (DDR write leveling)</h3>
+<pre><code class="language-sdc"># The DDR PHY handles write leveling automatically; users need no manual compensation
+# Adjust manually only if PHY calibration fails:
+set_output_delay -clock ddr_ck -max 0.5 [get_ports ddr_dq[*]]
+set_output_delay -clock ddr_ck -min 0.0 [get_ports ddr_dq[*]]
+</code></pre>
+<hr />
+<h2 id="9-complete-efinity-io-sdc-example">9. Complete Efinity IO SDC example</h2>
+<h3 id="9-1-integrated-system-ddr3-rgmii-spi-gpio">9.1 Integrated system: DDR3 + RGMII + SPI + GPIO</h3>
+<pre><code class="language-sdc"># ============================================
+# Clock definitions
+# ============================================
+create_clock -period 10.0 -name sys_clk [get_ports clk_100m]      # 100 MHz main clock
+create_generated_clock -name vid_clk -multiply_by 37 -divide_by 25 \
+    -source [get_pins {pll_video/clkin}] [get_pins {pll_video/clkout}]   # 148.5 MHz
+create_generated_clock -name ddr_ck -multiply_by 4 -divide_by 1 \
+    -source [get_pins {pll_ddr/clkin}] [get_pins {pll_ddr/clkout}]       # 400 MHz DDR
+create_clock -period 8.0 -name rgmii_rx_clk [get_ports rgmii_rx_clk_i]   # 125 MHz
+create_clock -period 20.0 -name spi_sck_i [get_ports spi_sck_i]          # 50 MHz SPI
+
+# ============================================
+# Uncertainty
+# ============================================
+set_clock_uncertainty -to sys_clk -setup 0.100
+set_clock_uncertainty -to sys_clk -hold  0.020
+
+# ============================================
+# Asynchronous grouping (video + DDR isolated from the main system)
+# ============================================
+set_clock_groups -asynchronous \
+    -group {sys_clk spi_sck_i rgmii_rx_clk} \
+    -group {vid_clk ddr_ck}
+
+# ============================================
+# DDR3 controller (hard block auto-constrained; a few manual entries)
+# ============================================
+# The hard-block PHY usually auto-generates set_input_delay
+set_input_delay -clock ddr_ck -max 0.4 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_ck -min -0.4 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_ck -clock_fall -max 0.4 [get_ports ddr_dq[*]]
+set_input_delay -clock ddr_ck -clock_fall -min -0.4 [get_ports ddr_dq[*]]
+
+# ============================================
+# RGMII TX (center-aligned DDR output)
+# ============================================
+create_generated_clock -name rgmii_tx_clk -multiply_by 5 -divide_by 4 \
+    -source [get_pins {pll_rgmii/clkin}] [get_pins {pll_rgmii/clkout}]
+set_output_delay -clock rgmii_tx_clk -max 0.5 [get_ports rgmii_txd[*]]
+set_output_delay -clock rgmii_tx_clk -min 1.0 [get_ports rgmii_txd[*]]
+set_output_delay -clock rgmii_tx_clk -clock_fall -max 0.5 [get_ports rgmii_txd[*]]
+set_output_delay -clock rgmii_tx_clk -clock_fall -min 1.0 [get_ports rgmii_txd[*]]
+
+# RGMII RX (center-aligned DDR input)
+set_input_delay -clock rgmii_rx_clk -max 0.5 [get_ports rgmii_rxd[*]]
+set_input_delay -clock rgmii_rx_clk -min 1.0 [get_ports rgmii_rxd[*]]
+set_input_delay -clock rgmii_rx_clk -clock_fall -max 0.5 [get_ports rgmii_rxd[*]]
+set_input_delay -clock rgmii_rx_clk -clock_fall -min 1.0 [get_ports rgmii_rxd[*]]
+
+# ============================================
+# SPI input (external SPI Flash)
+# ============================================
+set_input_delay -clock spi_sck_i -max 5.0 [get_ports spi_miso_i]
+set_input_delay -clock spi_sck_i -min 1.0 [get_ports spi_miso_i]
+set_output_delay -clock spi_sck_i -max 4.0 [get_ports spi_mosi_o]
+set_output_delay -clock spi_sck_i -min 0.0 [get_ports spi_mosi_o]
+set_output_delay -clock spi_sck_i -max 4.0 [get_ports spi_csn_o]
+
+# ============================================
+# GPIO (buttons + LEDs)
+# ============================================
+# Button input (asynchronous, synchronized in the sys_clk domain)
+set_input_delay -clock sys_clk -max 8.0 [get_ports btn_i*]
+set_input_delay -clock sys_clk -min 2.0 [get_ports btn_i*]
+
+# LED output
+set_output_delay -clock sys_clk -max 4.0 [get_ports led_o*]
+set_output_delay -clock sys_clk -min 0.0 [get_ports led_o*]
+
+# ============================================
+# Asynchronous reset / JTAG / test
+# ============================================
+set_false_path -from [get_ports arst_n]
+set_false_path -from [get_ports {tck tms tdi}]
+set_false_path -to   [get_ports tdo]
+</code></pre>
+<h3 id="9-2-an-043-real-world-rgmii-phy-mode">9.2 AN 043 real-world RGMII PHY mode</h3>
+<pre><code class="language-sdc"># RGMII 2.5 / 25 / 125 MHz dynamic switching (Titanium only)
+create_generated_clock -name rgmii_tx_125 -multiply_by 5 -divide_by 4 \
+    -source [get_pins {pll_rgmii/clkin}] [get_pins {pll_rgmii/clkout}]
+create_generated_clock -name rgmii_tx_25 -multiply_by 1 -divide_by 4 \
+    -source [get_pins {pll_rgmii/clkin}] [get_pins {pll_rgmii/clkout}] -add
+create_generated_clock -name rgmii_tx_2p5 -multiply_by 1 -divide_by 40 \
+    -source [get_pins {pll_rgmii/clkin}] [get_pins {pll_rgmii/clkout}] -add
+
+# Pick one of the three
+set_clock_groups -exclusive \
+    -group {rgmii_tx_125} \
+    -group {rgmii_tx_25} \
+    -group {rgmii_tx_2p5}
+</code></pre>
+<blockquote>
+<p>Source: AN 043 v1.3 ([A4.2])</p>
+</blockquote>
+<hr />
+<h2 id="appendix-a-cross-vendor-source-index">Appendix A — Cross-vendor source index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Source</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[B4]</td>
+<td>Max Planck Institute — Lesson 11 (Tsu/Th/Tco)</td>
+<td>University lecture notes</td>
+</tr>
+<tr>
+<td>[B5]</td>
+<td>arXiv 2510.26985 (FPGA vs ASIC timing, Tsu/Th magnitude)</td>
+<td>Academic paper</td>
+</tr>
+<tr>
+<td>[B7]</td>
+<td>CSDN — FPGA timing analysis (default constraint behavior)</td>
+<td>Chinese tutorial</td>
+</tr>
+<tr>
+<td>[A1]</td>
+<td>Efinity Timing Closure User Guide §6 "Constraining I/O"</td>
+<td>Official PDF</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>constraint-setinput-setoutput-delay.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>tim-clock-latency-gpio.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>concept_constraints_*.html</code> (sync/bypass inputdelay/outdelay/inoutdelay)</td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A4.2]</td>
+<td>Efinix AN 043 v1.3 (RGMII)</td>
+<td>Official AN</td>
+</tr>
+<tr>
+<td>[A4.5]</td>
+<td>Efinix DDR3 Soft Controller Core User Guide v1.6</td>
+<td>Official AN</td>
+</tr>
+<tr>
+<td>[A4.6]</td>
+<td>Efinix Titanium DDR DRAM Block User Guide v2.6</td>
+<td>Official AN</td>
+</tr>
+</tbody>
+</table>
+<p>The research source index was originally recorded in the internal research notes §E; those temporary notes are not published with the repository.</p>
+<hr />
+<p><strong>End of FPGA IO Timing Constraints</strong></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

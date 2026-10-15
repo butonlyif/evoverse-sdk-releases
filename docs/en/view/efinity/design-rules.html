@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Design Rules</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>RTL, reset, CDC, SDC and simulation rules.</span>
+<code>efinity/design-rules.md</code>
+<a href="../../../efinity/design-rules.md">Markdown source</a></p>
+<h1>Efinity Design Rules</h1></header>
+<main class="article"><h1 id="efinity-design-rules">Efinity Design Rules</h1>
+<blockquote>
+<p>Summarized from the Efinity 2026.1 toolchain and the actual RTL code of EvoVerse projects.
+Data sources: <code>efx_map --help</code>, <code>efx_run.py</code>, project snapshot RTL, and the Golden Top reference design.</p>
+</blockquote>
+<hr />
+<h2 id="1-rtl-coding-rules">1. RTL coding rules</h2>
+<h3 id="1-1-file-structure">1.1 File structure</h3>
+<pre><code class="language-systemverilog">`default_nettype none
+`timescale 1ns / 1ps
+
+//============================================================================
+// Module: &lt;module_name&gt;
+// Description: &lt;description&gt;
+// Interface: &lt;port description&gt;
+//============================================================================
+module module_name (
+    input  wire clk_i,
+    input  wire rst_n_i,
+    output wire sig_o
+);
+
+    // ---- Internal signals ----
+    reg [WIDTH-1:0] reg_name_r;
+
+    // ---- Combinational / sequential logic ----
+    // ...
+
+endmodule
+
+`default_nettype wire
+</code></pre>
+<p><strong>Key points</strong>:
+- The file header must be <code>`default_nettype none</code>; restore <code>`default_nettype wire</code> at the end
+- Implicit net types are forbidden; every wire must be declared explicitly
+- The timescale is uniformly <code>1ns / 1ps</code></p>
+<h3 id="1-2-naming-conventions">1.2 Naming conventions</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Suffix</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input port</td>
+<td><code>_i</code></td>
+<td><code>clk_i</code>, <code>rst_n_i</code>, <code>enable_i</code></td>
+</tr>
+<tr>
+<td>Output port</td>
+<td><code>_o</code></td>
+<td><code>count_o</code>, <code>pwm_o</code>, <code>led_o</code></td>
+</tr>
+<tr>
+<td>Internal register</td>
+<td><code>_r</code></td>
+<td><code>count_r</code>, <code>state_r</code></td>
+</tr>
+<tr>
+<td>Active-low signal</td>
+<td><code>_n</code></td>
+<td><code>rst_n</code>, <code>btn_n</code></td>
+</tr>
+<tr>
+<td>Clock signal</td>
+<td><code>clk_</code></td>
+<td><code>clk_50m</code>, <code>sys_clk</code></td>
+</tr>
+<tr>
+<td>Parameter constant</td>
+<td><code>UPPER_CASE</code></td>
+<td><code>WIDTH</code>, <code>DEPTH</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-port-declarations">1.3 Port declarations</h3>
+<p>All ports must declare both direction AND type explicitly:</p>
+<pre><code class="language-systemverilog">// Correct
+module top (
+    input  wire       clk50_in,
+    input  wire       rst_n_i,
+    output wire       led_user,
+    output reg  [7:0] count_o
+);
+
+// Wrong — implicit net type
+module top (input clk50_in, output led_user);
+</code></pre>
+<h3 id="1-4-parameterization">1.4 Parameterization</h3>
+<pre><code class="language-systemverilog">module counter #(
+    parameter WIDTH = 8
+) (
+    input  wire              clk_i,
+    input  wire              rst_n_i,
+    output wire [WIDTH-1:0]  count_o
+);
+    reg [WIDTH-1:0] count_r;
+    // ...
+endmodule
+</code></pre>
+<h3 id="1-5-instantiation">1.5 Instantiation</h3>
+<pre><code class="language-systemverilog">// Correct — named port connections
+counter_top #(
+    .WIDTH(16)
+) u_counter (
+    .clk_i   (sys_clk),
+    .rst_n_i (rst_n),
+    .count_o (led_count)
+);
+
+// Forbidden — .* implicit connection
+</code></pre>
+<h3 id="1-6-section-comments">1.6 Section comments</h3>
+<pre><code class="language-systemverilog">// ---- Async-reset synchronous-release ----
+reg [2:0] rst_sync;
+always @(posedge sys_clk or negedge rst_n_i) begin
+    // ...
+end
+
+// ---- 26-bit counter ----
+reg [25:0] blink_cnt;
+always @(posedge sys_clk or negedge rst_n) begin
+    // ...
+end
+
+// ---- LED drive ----
+assign led_user = blink_cnt[25];
+</code></pre>
+<hr />
+<h2 id="2-reset-design">2. Reset design</h2>
+<h3 id="2-1-async-reset-synchronous-release-mandatory-pattern">2.1 Async-reset synchronous-release (mandatory pattern)</h3>
+<pre><code class="language-systemverilog">// 3-stage synchronizer: asynchronous assert, synchronous release
+reg [2:0] rst_sync;
+always @(posedge sys_clk or negedge rst_n_i) begin
+    if (!rst_n_i)
+        rst_sync &lt;= 3'b000;
+    else
+        rst_sync &lt;= {rst_sync[1:0], 1'b1};
+end
+wire rst_n = rst_sync[2];
+</code></pre>
+<h3 id="2-2-merging-with-pll-lock">2.2 Merging with PLL lock</h3>
+<pre><code class="language-systemverilog">// Hold the system in reset while the PLL is unlocked
+wire async_rst_n = rst_n_i &amp; pll_locked;
+</code></pre>
+<h3 id="2-3-submodule-reset">2.3 Submodule reset</h3>
+<pre><code class="language-systemverilog">always @(posedge clk_i or negedge rst_n_i) begin
+    if (!rst_n_i)
+        count_r &lt;= '0;
+    else
+        count_r &lt;= count_r + 1'b1;
+end
+</code></pre>
+<h3 id="2-4-reset-coverage-principles">2.4 Reset coverage principles</h3>
+<ul>
+<li>All sequential logic (registers) must have a reset</li>
+<li><code>assign</code> statements in combinational logic are not reset directly; they are reset indirectly through the registers that drive them</li>
+<li>Reset polarity is uniformly active-low (<code>_n</code> suffix)</li>
+</ul>
+<hr />
+<h2 id="3-cdc-clock-domain-crossing-handling">3. CDC (clock-domain crossing) handling</h2>
+<h3 id="3-1-single-bit-control-signal-synchronization">3.1 Single-bit control signal synchronization</h3>
+<pre><code class="language-systemverilog">// 2-3 stage shift-register synchronizer
+reg [2:0] sync;
+always @(posedge dst_clk) begin
+    sync &lt;= {sync[1:0], src_signal};
+end
+wire dst_signal = sync[2];
+</code></pre>
+<h3 id="3-2-multi-bit-data-buses">3.2 Multi-bit data buses</h3>
+<ul>
+<li>Cross clock domains with an asynchronous FIFO (Gray-coded pointers)</li>
+<li>Never synchronize a multi-bit bus through a shift-register synchronizer</li>
+</ul>
+<h3 id="3-3-cdc-declarations-in-sdc">3.3 CDC declarations in SDC</h3>
+<pre><code class="language-tcl"># Declared between all asynchronous clock domains
+set_clock_groups -asynchronous \
+    -group {clk_50m} \
+    -group {clk_33_ddr} \
+    -group {clk_27_mipi_a clk_27_mipi_b}
+
+# False path on the first stage of the CDC synchronizer chain
+set_false_path -from [get_cells {u_rst_sys/sync_r[0]}]
+</code></pre>
+<h3 id="3-4-simplification-for-single-clock-domain-projects">3.4 Simplification for single-clock-domain projects</h3>
+<p>Teaching projects (single clock domain) do not need <code>set_clock_groups</code>. However, <strong>every clock port on the board must still be declared in the SDC</strong> (even if unused in RTL), otherwise STA analysis will be incomplete.</p>
+<hr />
+<h2 id="4-sdc-constraint-rules">4. SDC constraint rules</h2>
+<h3 id="4-1-minimal-constraint-template-stage-0-1">4.1 Minimal constraint template (Stage 0/1)</h3>
+<pre><code class="language-tcl"># Primary clock
+create_clock -name clk50_in -period 20.000 [get_ports clk50_in]
+
+# False path for asynchronous inputs
+set_false_path -from [get_ports rst_n_i]
+set_false_path -from [get_ports {btn_n[*]}]
+
+# False path for slow outputs
+set_false_path -to [get_ports led_user]
+</code></pre>
+<h3 id="4-2-complete-constraint-template">4.2 Complete constraint template</h3>
+<pre><code class="language-tcl"># 1. Declare every on-board clock
+create_clock -name clk50_in     -period 20.000 [get_ports clk50_in]
+create_clock -name clk33_ddr    -period 30.000 [get_ports clk33_ddr]
+
+# 2. Clock uncertainty (jitter budget)
+set_clock_uncertainty 0.200 [get_clocks clk50_in]
+
+# 3. Asynchronous clock groups
+set_clock_groups -asynchronous \
+    -group {clk50_in} \
+    -group {clk33_ddr}
+
+# 4. I/O delay constraints
+set_input_delay  -max 5.0 -clock clk50_in [get_ports uart_rxd]
+set_output_delay -max 5.0 -clock clk50_in [get_ports uart_txd]
+
+# 5. False path for asynchronous inputs
+set_false_path -from [get_ports rst_n_i]
+set_false_path -from [get_ports {btn_n[*]}]
+
+# 6. False path for slow / debug outputs
+set_false_path -to [get_ports led_user]
+</code></pre>
+<h3 id="4-3-constraint-principles">4.3 Constraint principles</h3>
+<table>
+<thead>
+<tr>
+<th>Principle</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Declare conservatively</td>
+<td>Declare clock ports in the SDC even when the RTL does not use them</td>
+</tr>
+<tr>
+<td>Asynchronous = false path</td>
+<td>Add a false path to every asynchronous external input</td>
+</tr>
+<tr>
+<td>First-stage CDC exemption</td>
+<td>Apply an explicit false path to the first register of each CDC synchronizer chain</td>
+</tr>
+<tr>
+<td>Constrain I/O as needed</td>
+<td>Use set_input/output_delay for high-speed interfaces and false paths for slow signals</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-common-mistakes">4.4 Common mistakes</h3>
+<table>
+<thead>
+<tr>
+<th>Mistake</th>
+<th>Consequence</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDC omits declarations for unused clock ports</td>
+<td>STA does not analyze the clock network attached to that port</td>
+<td>Always declare all on-board clocks</td>
+</tr>
+<tr>
+<td>No clock groups declared</td>
+<td>Cross-domain paths produce bogus setup violations</td>
+<td><code>set_clock_groups -asynchronous</code></td>
+</tr>
+<tr>
+<td>No false path on the synchronizer first stage</td>
+<td>Metastability paths are reported as timing violations</td>
+<td>Point the false path precisely at the synchronizer first stage</td>
+</tr>
+<tr>
+<td><code>create_clock</code> period unit error</td>
+<td>20 ns written as 20 (ps)</td>
+<td>Always use ns units</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-golden-top-reference-constraint-system">5. Golden Top reference constraint system</h2>
+<p>The Golden Top is the complete WS-E1 hardware reference design; its constraint files can serve as constraint templates for complex multi-peripheral designs.</p>
+<h3 id="5-1-clock-domain-declarations">5.1 Clock domain declarations</h3>
+<pre><code class="language-tcl"># 8 independent on-board clock domains
+create_clock -name clk_50m      -period 20.000 [get_ports clk_50m]
+create_clock -name ddr_clk_ref  -period 30.000 [get_ports ddr_clk_ref]
+create_clock -name clk_27_mipi_a -period 37.037 [get_ports clk_27_mipi_a]
+create_clock -name clk_27_mipi_b -period 37.037 [get_ports clk_27_mipi_b]
+create_clock -name pll_ethernet_refclk -period 40.000 [get_ports pll_ethernet_refclk]
+create_clock -name rgmii_rxc    -period 8.000  [get_ports rgmii_rxc]
+</code></pre>
+<h3 id="5-2-peripheral-i-o-constraints">5.2 Peripheral I/O constraints</h3>
+<pre><code class="language-tcl"># UART (115200 bps)
+set_input_delay  -max 10.0 -clock clk_50m [get_ports system_uart_0_io_rxd]
+set_output_delay -max 10.0 -clock clk_50m [get_ports system_uart_0_io_txd]
+
+# SPI (10MHz)
+set_output_delay -max 20.0 -clock clk_50m [get_ports {system_spi_0_io_*}] -add
+
+# GPIO
+set_false_path -from [get_ports {system_gpio_0_io_*}]
+set_false_path -to   [get_ports {system_gpio_0_io_*}]
+</code></pre>
+<h3 id="5-3-cdc-synchronizer-chain-exemptions">5.3 CDC synchronizer chain exemptions</h3>
+<pre><code class="language-tcl"># Reset synchronizer first stage
+set_false_path -from [get_cells {u_rst_sys/sync_r[0]}]
+set_false_path -from [get_cells {u_rst_spi/sync_r[0]}]
+
+# First stage of the cross-domain signal synchronizers
+set_false_path -from [get_cells {u_sync_btn/sync_r[0]}]
+</code></pre>
+<hr />
+<h2 id="6-simulation-rules">6. Simulation rules</h2>
+<h3 id="6-1-testbench-template">6.1 Testbench template</h3>
+<pre><code class="language-systemverilog">`timescale 1ns / 1ps
+
+module tb_module_name;
+
+    reg        clk;
+    reg        rst_n;
+    wire [7:0] count;
+
+    // DUT instantiation
+    module_name u_dut (
+        .clk_i  (clk),
+        .rst_n_i(rst_n),
+        .count_o(count)
+    );
+
+    // Clock generation
+    always #5 clk = ~clk;  // 100MHz
+
+    // VCD dump
+    initial begin
+        $dumpfile(&quot;dump.vcd&quot;);
+        $dumpvars(0, tb_module_name);
+    end
+
+    // Test stimulus
+    initial begin
+        clk   = 0;
+        rst_n = 0;
+        #20 rst_n = 1;  // release reset after 2 cycles
+        // ... stimulus ...
+        #1000 $finish;
+    end
+
+endmodule
+</code></pre>
+<h3 id="6-2-simulation-verification-points">6.2 Simulation verification points</h3>
+<ul>
+<li>Reset release: hold reset for at least 2 clock cycles</li>
+<li>Waveform dump: use <code>$dumpfile</code> + <code>$dumpvars</code></li>
+<li>Test coverage: normal operation, boundary conditions, reset recovery</li>
+</ul>
+<hr />
+<h2 id="7-synthesis-coding-considerations">7. Synthesis coding considerations</h2>
+<h3 id="7-1-avoid-latches">7.1 Avoid latches</h3>
+<pre><code class="language-systemverilog">// Wrong — infers a latch
+always @(*) begin
+    if (enable) out = data;
+end
+
+// Correct — complete if-else
+always @(*) begin
+    if (enable) out = data;
+    else        out = '0;
+end
+</code></pre>
+<h3 id="7-2-avoid-combinational-loops">7.2 Avoid combinational loops</h3>
+<pre><code class="language-systemverilog">// Wrong — combinational loop
+assign a = b | c;
+assign b = a &amp; d;
+
+// Correct — break the loop through a register
+always @(posedge clk) a_r &lt;= b_r | c;
+assign a = a_r;
+</code></pre>
+<h3 id="7-3-prefer-registered-outputs">7.3 Prefer registered outputs</h3>
+<pre><code class="language-systemverilog">// Avoid — long combinational logic driving a port directly
+assign led = (complex_combinational_expression);
+
+// Recommended — registered output
+always @(posedge clk) led_r &lt;= complex_combinational_expression;
+assign led = led_r;
+</code></pre>
+<h3 id="7-4-efinity-synthesis-inference-notes">7.4 Efinity synthesis inference notes</h3>
+<ul>
+<li>Efinity <code>efx_map</code> can infer BRAM, DSP, and IO registers from RTL</li>
+<li>Steer inference with attributes such as <code>(* ram_style = "block" *)</code></li>
+<li>In the unified flow, synthesis infers GPIO automatically; <strong>do not re-create in the ISF any GPIO that synthesis has already inferred</strong></li>
+<li><code>peri-syn-instantiation</code> / <code>peri-syn-inference</code> control how peripheral primitives are inferred</li>
+</ul></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

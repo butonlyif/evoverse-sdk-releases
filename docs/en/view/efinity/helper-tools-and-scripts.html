@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Helper Tools and Scripts Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The authoritative reference for helper tools such as ftdi_program, flashshell and efx_bram_edit, plus installed script assets.</span>
+<code>efinity/helper-tools-and-scripts.md</code>
+<a href="../../../efinity/helper-tools-and-scripts.md">Markdown source</a></p>
+<h1>Efinity Helper Tools and Scripts Reference</h1></header>
+<main class="article"><h1 id="efinity-helper-tools-and-scripts-reference">Efinity Helper Tools and Scripts Reference</h1>
+<blockquote>
+<p><strong>Applies to</strong>: Efinity 2026.1 (installation root <code>C:\Efinity\2026.1</code>, referred to below as <code>%EFINITY_HOME%</code>)
+<strong>Survey date</strong>: 2026-09-25
+<strong>Evidence convention</strong>: every statement in this document comes from direct reading of the sources/scripts inside the 2026.1 installation; key claims are annotated with evidence as <code>relative path:line</code>.
+<strong>Scope</strong>: the main compile chain (<code>efx_map</code> / <code>efx_pnr</code> / <code>efx_pgm</code> / <code>efx_run</code>) is described in toolchain-reference.md; this document covers <strong>all remaining helper assets</strong> — the command-line programming script, flashshell, the bin\ helper tools, the flash loader bitstreams, the scripts/pt dual-copy relationship, the Tcl package load chain, and an overview of the efx_dbg debug library.</p>
+</blockquote>
+<hr />
+<h2 id="1-script-asset-map">1. Script asset map</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Location (relative to <code>%EFINITY_HOME%</code>)</th>
+<th>Form</th>
+<th>One-line purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ftdi_program.py</code></td>
+<td><code>pgm\bin\efx_pgm\</code></td>
+<td>Python script (149 KB)</td>
+<td>The native script for JTAG/SPI programming in 8 modes (details in §2)</td>
+</tr>
+<tr>
+<td><code>ftdi_pgm.bat</code></td>
+<td><code>pgm\bin\</code></td>
+<td>BAT entry</td>
+<td>The official command-line programming entry; sets up <code>PYTHONPATH</code> (§2.1)</td>
+</tr>
+<tr>
+<td>flashshell</td>
+<td><code>pgm\flashshell\</code></td>
+<td>cmd2 interactive app</td>
+<td>Interactive SPI/JTAG flash read/write shell, 18 commands (§3)</td>
+</tr>
+<tr>
+<td>flash loader bitstreams</td>
+<td><code>pgm\fli\{trion,topaz,titanium}\</code></td>
+<td>46 <code>.bit</code> files</td>
+<td>Bridge bitstreams preloaded into the FPGA before JTAG-Bridge flash programming (§5)</td>
+</tr>
+<tr>
+<td><code>device_db.xml</code></td>
+<td><code>pgm\bin\</code></td>
+<td>XML</td>
+<td>The programmer's device database: IDCODE / option register / scan chain (§5.2)</td>
+</tr>
+<tr>
+<td><code>efx_bram_edit.exe</code></td>
+<td><code>bin\</code></td>
+<td>EXE</td>
+<td>update / read / revert of the BRAM initialization contents of a placed-and-routed design (§4)</td>
+</tr>
+<tr>
+<td><code>efx_vdb_util.exe</code></td>
+<td><code>bin\</code></td>
+<td>EXE</td>
+<td>VDB (synthesis database) consistency check (§4)</td>
+</tr>
+<tr>
+<td><code>efx_export.exe</code></td>
+<td><code>bin\</code></td>
+<td>EXE</td>
+<td>Efinity database export (BETA); <code>--placeloc</code> exports placement locations (§4)</td>
+</tr>
+<tr>
+<td><code>efx_map_ramest.exe</code></td>
+<td><code>bin\</code></td>
+<td>EXE</td>
+<td>BRAM resource estimator (pre-synthesis) (§4)</td>
+</tr>
+<tr>
+<td><code>efx_py.exe</code></td>
+<td><code>bin\</code></td>
+<td>EXE</td>
+<td>Embedded CPython interpreter linked against <code>libefx.dll</code> (§4)</td>
+</tr>
+<tr>
+<td><code>efx_sta.exe</code></td>
+<td><code>bin\</code></td>
+<td>EXE</td>
+<td>Static timing analysis Tcl shell (§7.4)</td>
+</tr>
+<tr>
+<td><code>dbg_wizard.exe</code></td>
+<td><code>bin\</code></td>
+<td>EXE (pure GUI)</td>
+<td>Debug wizard GUI; no command-line mode (§4)</td>
+</tr>
+<tr>
+<td><code>python3.bat</code> / <code>efx_run.bat</code> / <code>efx_code.bat</code></td>
+<td><code>bin\</code></td>
+<td>BAT entries</td>
+<td>Launchers for the interpreter / the compile-flow controller / the code shell (§4.2)</td>
+</tr>
+<tr>
+<td><code>scripts\</code></td>
+<td><code>scripts\</code></td>
+<td>Python package</td>
+<td>The compile-flow controller <code>efx_run.py</code> and its step modules — the <strong>authoritative consumption path</strong> (§6)</td>
+</tr>
+<tr>
+<td><code>pt\bin\</code></td>
+<td><code>pt\bin\</code></td>
+<td>Python package</td>
+<td>The same-origin script copies shipped with PT (the Interface Designer GUI) (§6)</td>
+</tr>
+<tr>
+<td><code>tcl_packages\</code></td>
+<td><code>tcl_packages\</code></td>
+<td>Tcl packages</td>
+<td>Timing/SDC command packages + the synthesis front-end shell package (§7)</td>
+</tr>
+<tr>
+<td><code>efx_dbg</code></td>
+<td><code>debugger\bin\efx_dbg\</code></td>
+<td>Python library</td>
+<td>The debugger engine: debug-core RTL generation / JTAG / flash / OpenOCD / JCF (§8)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-ftdi_program-py-the-native-jtag-spi-programming-script">2. ftdi_program.py — the native JTAG/SPI programming script</h2>
+<h3 id="2-1-actual-location-and-invocation-entry">2.1 Actual location and invocation entry</h3>
+<p><strong>The actual path is <code>pgm\bin\efx_pgm\ftdi_program.py</code></strong> (not <code>pgm\ftdi_program.py</code> under the installation root), main class <code>FtdiProgram</code>, with <code>parse_cmdline()</code> at the bottom of the module (<code>pgm\bin\efx_pgm\ftdi_program.py:3148</code>) + <code>main()</code> (same file <code>:3341</code>).</p>
+<p>The official command-line entry is <code>pgm\bin\ftdi_pgm.bat</code>:</p>
+<pre><code class="language-bat">:: ftdi_pgm.bat:7-8 (read from the actual file)
+set PYTHONPATH=%EFINITY_HOME%/debugger/bin;%EFINITY_HOME%/pgm/bin
+&quot;python3.bat&quot; pgm\bin\efx_pgm\ftdi_program.py %*
+</code></pre>
+<p>Two key points (evidence <code>pgm\bin\ftdi_pgm.bat:7-8</code>):</p>
+<ol>
+<li><code>PYTHONPATH</code> injects <code>debugger\bin</code> (providing the <code>efx_dbg</code> package) and <code>pgm\bin</code> (providing the <code>efx_pgm</code> package) — <code>ftdi_program.py</code> imports both (<code>ftdi_program.py:147-171</code>, including <code>efx_dbg.jcf/jtag/jtag_chain_detector</code>, <code>efx_pgm.jtag2SpiDriver</code>, etc.).</li>
+<li>The bat invokes the script via the <strong>relative path</strong> <code>pgm\bin\efx_pgm\ftdi_program.py</code>, so <code>pgm\bin\ftdi_pgm.bat</code> must be run from the <code>%EFINITY_HOME%</code> root (or <code>cd /d %EFINITY_HOME%</code> first).</li>
+</ol>
+<p>The underlying dependencies are <code>pyftdi</code> (MPSSE/JTAG-SPI) and <code>pyspiflash</code>; the docstring (<code>ftdi_program.py:1-116</code>) gives the ADBUS pin mapping for the FTDI C232HM-DDHSL-0 cable (<code>SCLK=ADBUS0 … CDONE=ADBUS5</code>) plus driver installation notes (udev rules on Linux, zadig to replace the FTDI driver on Windows). On Linux, also watch the udev permissions.</p>
+<p><strong>Default clock frequencies and the verify method</strong> are set in <code>FtdiProgram.__init__</code> (<code>ftdi_program.py:193-219</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Default</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jtag_program_freq</code></td>
+<td>3 MHz (<code>3E6</code>)</td>
+<td>around <code>ftdi_program.py:219</code> (<code>__init__</code>)</td>
+</tr>
+<tr>
+<td><code>spi_direct_program_freq</code></td>
+<td>3 MHz (<code>3E6</code>)</td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>spi_flash_program_freq</code></td>
+<td>6 MHz (<code>6E6</code>)</td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>verify_method</code></td>
+<td><code>onchipx2</code></td>
+<td><code>ftdi_program.py:219</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-2-the-eight-programming-modes">2.2 The eight programming modes</h3>
+<p><code>-m/--mode</code> has 8 legal values (from <code>parse_cmdline()</code> at <code>ftdi_program.py:3148</code>, the choices list). Dispatch inside <code>main()</code> (<code>ftdi_program.py:3341-3379</code>):</p>
+<table>
+<thead>
+<tr>
+<th>mode (default <code>passive</code>)</th>
+<th>Function dispatched by main()</th>
+<th>Semantics</th>
+<th>Input file format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>passive</code></td>
+<td><code>spi_direct_program</code></td>
+<td>The FPGA is unconfigured; the SPI flash bus is wired straight to the host, which writes the flash directly</td>
+<td><code>.hex</code></td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td><code>spi_flash_program</code></td>
+<td>The FPGA is configured and running; the SPI flash is written through the FPGA-side bridge</td>
+<td><code>.hex</code></td>
+</tr>
+<tr>
+<td><code>jtag</code></td>
+<td><code>jtag_program</code></td>
+<td>JTAG downloads the bitstream straight to the FPGA (no flash write)</td>
+<td><code>.bit</code></td>
+</tr>
+<tr>
+<td><code>jtag_chain</code></td>
+<td><code>jtag_program(chain=True)</code></td>
+<td>Multi-device JTAG chain; <code>-n/--num</code> selects the Nth chip on the chain</td>
+<td><code>.bit</code></td>
+</tr>
+<tr>
+<td><code>erase_flash</code></td>
+<td><code>spi_erase_flash</code></td>
+<td>Erases the SPI flash (combine with <code>--address</code> / <code>--num_bytes</code>)</td>
+<td>no input file</td>
+</tr>
+<tr>
+<td><code>read_flash</code></td>
+<td><code>spi_read_flash</code></td>
+<td>Reads flash contents into <code>-o/--output_file</code></td>
+<td>no input file</td>
+</tr>
+<tr>
+<td><code>jtag_bridge</code></td>
+<td><code>jtag2spi</code></td>
+<td>Accesses the SPI flash via the JTAG-Bridge (the §5 flash loader is preloaded into the FPGA first)</td>
+<td><code>.hex</code></td>
+</tr>
+<tr>
+<td><code>jtag_bridge_x8</code></td>
+<td><code>jtag2spi_x8</code></td>
+<td>Same as <code>jtag_bridge</code>, 8-bit-wide bus variant</td>
+<td><code>.hex</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Mode-file compatibility</strong> is enforced by <code>check_mode_file_compatibility()</code> (<code>ftdi_program.py:3130-3145</code>):</p>
+<ul>
+<li><code>jtag</code> / <code>jtag_chain</code> accept only <code>.bit</code>;</li>
+<li><code>passive</code> / <code>active</code> / <code>jtag_bridge</code> / <code>jtag_bridge_x8</code> accept only <code>.hex</code> (SPI flash programming uses the hex format exported by the Efinity GUI).</li>
+</ul>
+<p>The sub-operations of the <code>jtag_bridge</code> family are controlled by <code>--jtag_bridge_mode</code>; <code>jtag2spi()</code> dispatches on six values (<code>ftdi_program.py:1696-1737</code>): <code>read</code> / <code>erase</code> / <code>write</code> / <code>erase_and_write</code> / <code>all_no_erase</code> / <code>all</code> (<code>all</code> and <code>all_no_erase</code> verify per <code>--verify_method</code> after programming).</p>
+<h3 id="2-3-command-line-parameter-table">2.3 Command-line parameter table</h3>
+<p>From direct reading of <code>parse_cmdline()</code> (<code>ftdi_program.py:3148-3236</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input_file</code> (positional)</td>
+<td>Input file: <code>.bit</code> (jtag family) or <code>.hex</code> (SPI family); not needed by <code>erase_flash</code> / <code>read_flash</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>-m, --mode</code></td>
+<td>Programming mode, choices = <code>passive, active, jtag, jtag_chain, erase_flash, read_flash, jtag_bridge, jtag_bridge_x8</code></td>
+<td><code>passive</code></td>
+</tr>
+<tr>
+<td><code>-o, --output_file</code></td>
+<td>Output file for <code>read_flash</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>-u, --url</code></td>
+<td>FTDI device URL (e.g. <code>ftdi://…</code>; query with <code>-l</code>/<code>--scan_usb</code>)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>-a, --aurl</code></td>
+<td>Legacy device URL parameter, <strong>marked DEPRECATED</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>-x, --xml</code></td>
+<td>JCF configuration file used by JTAG programming</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>-n, --num</code></td>
+<td>Index of the target chip on the JTAG chain (for <code>jtag_chain</code>)</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>-b, --board_profile</code></td>
+<td>Board profile matching</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>--address</code></td>
+<td>Flash start address</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>--num_bytes</code></td>
+<td>Number of bytes to operate on</td>
+<td><code>-1</code> (= whole chip / per file)</td>
+</tr>
+<tr>
+<td><code>--burst_size</code></td>
+<td>Burst size (multiples of 256 bytes); effective only for legacy <code>jtag_bridge</code> / <code>jtag_bridge_x8</code></td>
+<td><code>-1</code></td>
+</tr>
+<tr>
+<td><code>--jtag_bridge_mode</code></td>
+<td>choices = <code>erase, write, erase_and_write, read, all_no_erase, all</code></td>
+<td><code>all</code></td>
+</tr>
+<tr>
+<td><code>--jtag_clock_freq</code></td>
+<td>JTAG clock frequency (Hz)</td>
+<td><code>6000000</code></td>
+</tr>
+<tr>
+<td><code>--verify_method</code></td>
+<td>choices = <code>none, onchipx1, onchipx2, onchipx4, hostx1</code>; <code>onchipx2</code> is on-chip CRC verification (SPI ×2 readback), <code>hostx1</code> reads back to the host for a byte-by-byte compare</td>
+<td><code>onchipx2</code></td>
+</tr>
+<tr>
+<td><code>--check_flash_if_supported</code></td>
+<td>Verify the flash JEDEC ID against a given hex value (e.g. <code>C84012</code>)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>--spi_active_freq</code></td>
+<td>SPI frequency for active mode (Hz)</td>
+<td><code>6000000</code></td>
+</tr>
+<tr>
+<td><code>--spi_passive_freq</code></td>
+<td>SPI frequency for passive mode (Hz)</td>
+<td><code>3000000</code></td>
+</tr>
+<tr>
+<td><code>-l, --list_usb</code> / <code>--scan_usb</code></td>
+<td>Enumerate/scan FTDI devices on USB</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-4-exit-codes">2.4 Exit codes</h3>
+<p>At the end of <code>main()</code>, success and failure call <code>sys.exit(0)</code> / <code>sys.exit(1)</code> respectively (<code>ftdi_program.py:3341-3379</code>). Scripts/CI can judge the programming result from this.</p>
+<h3 id="2-5-invocation-examples-for-the-eight-modes">2.5 Invocation examples for the eight modes</h3>
+<p>All examples below are run from the <code>%EFINITY_HOME%</code> root (for the reason, see §2.1 point 2). Query the device URL with <code>--list_usb</code> first; the examples use <code>ftdi://</code> as a placeholder:</p>
+<pre><code class="language-bat">:: 1. passive: FPGA unconfigured, write .hex to the SPI flash directly
+pgm\bin\ftdi_pgm.bat -m passive -u ftdi:// design.hex
+
+:: 2. active: FPGA already running, program the flash through the FPGA bridge
+pgm\bin\ftdi_pgm.bat -m active -u ftdi:// design.hex
+
+:: 3. jtag: download .bit to the FPGA over JTAG (with a JCF)
+pgm\bin\ftdi_pgm.bat -m jtag -u ftdi:// -x debug.jcf design.bit
+
+:: 4. jtag_chain: multi-chip chain, select the 2nd chip
+pgm\bin\ftdi_pgm.bat -m jtag_chain -u ftdi:// -n 2 design.bit
+
+:: 5. erase_flash: erase the whole chip (--address/--num_bytes can limit the range)
+pgm\bin\ftdi_pgm.bat -m erase_flash -u ftdi://
+
+:: 6. read_flash: read the flash back into a file
+pgm\bin\ftdi_pgm.bat -m read_flash -u ftdi:// -o flash_dump.hex
+
+:: 7. jtag_bridge: write the flash via the JTAG-Bridge (preloads the fli loader first, see §5)
+pgm\bin\ftdi_pgm.bat -m jtag_bridge -u ftdi:// --jtag_bridge_mode erase_and_write design.hex
+
+:: 8. jtag_bridge_x8: 8-bit-wide JTAG-Bridge variant
+pgm\bin\ftdi_pgm.bat -m jtag_bridge_x8 -u ftdi:// design.hex
+</code></pre>
+<blockquote>
+<p>SDK/adapter-side automation: the <code>program</code> flow of <code>scripts\efx_run.py</code> imports <code>efx_pgm.ftdi_program</code> directly and calls <code>FtdiProgram</code> (the <code>run_program()</code> from <code>scripts\efx_run.py:1718</code>), sharing the same code path as the command line.</p>
+</blockquote>
+<hr />
+<h2 id="3-flashshell-the-interactive-flash-debug-shell">3. flashshell — the interactive flash debug shell</h2>
+<h3 id="3-1-location-and-architecture">3.1 Location and architecture</h3>
+<ul>
+<li>Entry script: <code>pgm\flashshell\flashshell.py</code>, built on the <code>cmd2</code> framework; <code>get_all_plugins()</code> scans the <code>exts\</code> directory for all <code>BaseExt</code> subclasses and registers commands automatically (read from <code>flashshell.py</code>).</li>
+<li>The intro after startup shows the typical usage: <code>&gt; auto_config</code> followed by <code>&gt; spi_reg_read 0x01 1</code>.</li>
+<li>A non-interactive single-command mode is supported: <code>flashshell.py &lt;command&gt; [args]</code> (read from <code>main()</code>). Running it requires the <code>setup.bat</code> environment (Python and <code>PYTHONPATH</code>).</li>
+<li>Commands are split across four extension modules: <code>exts\ext_ftdi.py</code> (device connection, 4), <code>exts\ext_spiflash.py</code> (SPI flash, 6), <code>exts\ext_jtagbridge.py</code> (JTAG bridge, 6), <code>exts\ext_common.py</code> (demo, 2) — <strong>18 user commands</strong> in total.</li>
+</ul>
+<h3 id="3-2-command-list-18">3.2 Command list (18)</h3>
+<p><strong>Connection management (<code>ext_ftdi.py</code>, 4)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Arguments</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>find_devices</code></td>
+<td>—</td>
+<td>List available FTDI devices</td>
+</tr>
+<tr>
+<td><code>config</code></td>
+<td><code>&lt;sernum&gt; [-p 1\|2] [-t spi\|jtag] [-f 3E06]</code></td>
+<td>Connect a device by serial number; <code>-p</code> port, <code>-t</code> protocol, <code>-f</code> frequency; serial numbers support Tab completion</td>
+</tr>
+<tr>
+<td><code>unconfig</code></td>
+<td>—</td>
+<td>Disconnect the current device</td>
+</tr>
+<tr>
+<td><code>auto_config</code></td>
+<td><code>[-p] [-t] [-d 1-20]</code></td>
+<td>Auto-discover and connect the <code>-d</code>th device, choosing the best protocol/frequency from the board profile</td>
+</tr>
+</tbody>
+</table>
+<p><strong>SPI flash (<code>ext_spiflash.py</code>, 6)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Arguments</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spi_reg_cmd</code></td>
+<td><code>&lt;reg&gt;</code></td>
+<td>Send a raw register command to the SPI flash</td>
+</tr>
+<tr>
+<td><code>spi_reg_read</code></td>
+<td><code>&lt;reg&gt; &lt;length&gt; [--dummy_count] [--returnhex]</code></td>
+<td>Read SPI flash status/ID registers</td>
+</tr>
+<tr>
+<td><code>spi_reg_write</code></td>
+<td><code>&lt;reg&gt; &lt;val...&gt;</code></td>
+<td>Write SPI flash registers</td>
+</tr>
+<tr>
+<td><code>spi_flash_read</code></td>
+<td><code>-o &lt;file&gt; -s &lt;addr&gt; -l &lt;len&gt;</code></td>
+<td>Read a flash range into a file</td>
+</tr>
+<tr>
+<td><code>spi_flash_erase</code></td>
+<td><code>-s &lt;addr&gt; -l &lt;len&gt;</code></td>
+<td>Erase a flash range</td>
+</tr>
+<tr>
+<td><code>spi_flash_write</code></td>
+<td><code>-i &lt;file&gt; -s &lt;addr&gt;</code></td>
+<td>Write a file into the flash</td>
+</tr>
+</tbody>
+</table>
+<p><strong>JTAG bridge (<code>ext_jtagbridge.py</code>, 6)</strong> — semantics map one-to-one onto the SPI family; the underlying transport is the JTAG-Bridge:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Arguments</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jtag_reg_select</code></td>
+<td><code>&lt;reg&gt;</code></td>
+<td>Select a JTAG bridge register</td>
+</tr>
+<tr>
+<td><code>jtag_reg_read</code></td>
+<td>—</td>
+<td>Read the currently selected register</td>
+</tr>
+<tr>
+<td><code>jtag_reg_write</code></td>
+<td><code>&lt;reg&gt; &lt;val&gt;</code></td>
+<td>Write a JTAG bridge register</td>
+</tr>
+<tr>
+<td><code>jtag_flash_read</code></td>
+<td><code>-o &lt;file&gt; -s &lt;addr&gt; -l &lt;len&gt;</code></td>
+<td>Read the flash via the JTAG bridge</td>
+</tr>
+<tr>
+<td><code>jtag_flash_erase</code></td>
+<td><code>-s &lt;addr&gt; -l &lt;len&gt;</code></td>
+<td>Erase the flash via the JTAG bridge</td>
+</tr>
+<tr>
+<td><code>jtag_flash_write</code></td>
+<td><code>-i &lt;file&gt; -s &lt;addr&gt;</code></td>
+<td>Write the flash via the JTAG bridge</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Demo/misc (<code>ext_common.py</code>, 2)</strong>: <code>common</code>, <code>print</code> (plugin-mechanism demo commands, no production use).</p>
+<hr />
+<h2 id="4-bin-helper-tool-reference-card">4. bin\ helper tool reference card</h2>
+<p>The help text below was captured live from <code>bin\*.exe --help</code> on 2026-09-25 (<code>$env:EFINITY_HOME='C:\Efinity\2026.1'</code> must be set first, otherwise some tools report <code>ERROR: EFINITY_HOME environment variable must be defined</code>).</p>
+<h3 id="4-1-exe-tools">4.1 EXE tools</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Key options</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_bram_edit.exe</code></td>
+<td>Modify/read/roll back the BRAM initialization contents of a placed-and-routed netlist</td>
+<td><code>-j/--project &lt;xml&gt;</code>; <code>-i/--mem_info &lt;protobuf&gt;</code>; <code>-p/--place</code>; <code>-l/--lbf</code>; <code>-o/--output</code>; <code>-f/--family</code>; <code>-b/--memory &lt;logical_mem&gt;,&lt;init_file&gt;</code>; <code>-m/--mode</code> (default <code>update</code>, choices <code>update \| read \| revert</code>); <code>-v/--verbose</code></td>
+<td>Typical use: swap BRAM init values without re-running pnr</td>
+</tr>
+<tr>
+<td><code>efx_vdb_util.exe</code></td>
+<td>VDB (synthesis database) check</td>
+<td>Global options: <code>--command check</code>, <code>--subargs</code>, <code>--help</code>, <code>--verbose</code>; example: <code>efx_vdb_util.exe check --vdb &lt;input vdb&gt;</code></td>
+<td>Help text goes to stderr; PowerShell shows it in red but the content is complete</td>
+</tr>
+<tr>
+<td><code>efx_export.exe</code></td>
+<td>"Efinity Database Export Utility [BETA]"</td>
+<td>Basic: <code>--prj --family --device --circuit --pnr_work_dir --pnr_output_dir</code>; operation: <code>--placeloc &lt;file&gt;</code> exports cell placement</td>
+<td>The <code>--placeloc</code> output can be fed to <code>efx_pnr --loc_assignment</code> for placement reuse</td>
+</tr>
+<tr>
+<td><code>efx_map_ramest.exe</code></td>
+<td>BRAM Resource Estimator (observed version string <code>v2026.1.132.1.15</code>)</td>
+<td><code>--family</code>, <code>--device</code>, <code>--be</code> (default 0, Titanium byte-enable), <code>--mode</code> (default <code>speed</code>; choices <code>speed\|area\|power</code>), <code>--size [Depth]x[Width]</code>, <code>--size2</code> (TDP second-port size)</td>
+<td>Estimate BRAM usage before synthesis, for device selection/trimming</td>
+</tr>
+<tr>
+<td><code>efx_py.exe</code></td>
+<td>Embedded CPython interpreter linked against <code>libefx.dll</code></td>
+<td><code>--help</code> prints standard Python usage</td>
+<td>Running it outside the setup.bat environment fails with <code>Failed to init CPython</code> (observed); it is an internal Efinity extension mechanism — for script development use <code>bin\python3.bat</code> directly</td>
+</tr>
+<tr>
+<td><code>efx_sta.exe</code></td>
+<td>Static timing analysis Tcl shell</td>
+<td><code>--prj &lt;xml&gt;</code>; <code>-t/--tclsh [script]</code>: open the project, load the design, then start a Tcl session (or run the given script)</td>
+<td>Relationship to <code>tcl_packages</code>: §7.4</td>
+</tr>
+<tr>
+<td><code>dbg_wizard.exe</code></td>
+<td>Debug wizard</td>
+<td>— (<strong>pure GUI, no command-line mode</strong>)</td>
+<td>For command-line automation use the SDK-side debug flow or the <code>efx_dbg</code> library (§8)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-2-bat-entries">4.2 BAT entries</h3>
+<table>
+<thead>
+<tr>
+<th>BAT</th>
+<th>Behavior (line numbers read from the files)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bin\python3.bat</code></td>
+<td>Calls <code>python311\bin\python.exe</code> (<code>:8</code>) — the interpreter entry for script development</td>
+</tr>
+<tr>
+<td><code>bin\efx_run.bat</code></td>
+<td>Calls <code>scripts\efx_run.py</code> (<code>:8</code>) — the compile-flow controller entry (§6)</td>
+</tr>
+<tr>
+<td><code>bin\efx_code.bat</code></td>
+<td><code>python3.bat -m els_shell -e %*</code> (<code>:4</code>) — the Efinity code shell</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-flash-loader-bitstreams-pgm-fli-and-the-device_db-idcode-mapping">5. Flash loader bitstreams (pgm\fli) and the device_db IDCODE mapping</h2>
+<h3 id="5-1-purpose-and-naming-rules">5.1 Purpose and naming rules</h3>
+<p><code>pgm\fli\</code> is split into three device-family subdirectories (<code>trion\</code> 11, <code>topaz\</code> 14, <code>titanium\</code> 21 — <strong>46 <code>.bit</code> files</strong> in total). These are the <strong>bridge bitstreams (flash loaders) preloaded into the FPGA when programming the flash over the JTAG-Bridge</strong>: <code>ftdi_program.py -m jtag_bridge[_x8]</code> (§2.2) first downloads the matching loader into the FPGA, and the FPGA then bridges access to the SPI flash.</p>
+<p><strong>Naming rule</strong>: <code>u&lt;IDCODE lowercase hex&gt;[_t&lt;model/speed grade&gt;].bit</code></p>
+<ul>
+<li><code>u</code> + the IDCODE without the <code>0x</code> prefix, matching <code>&lt;idcode value="0x…"&gt;</code> in <code>pgm\bin\device_db.xml</code> <strong>verbatim</strong> (e.g. <code>u006C0A79</code> ↔ <code>0x006C0A79</code>).</li>
+<li><code>_tXX</code> suffix: distinguishes multiple models/speed grades sharing one die (e.g. T35/T20 same die → <code>u00240A79_t35</code> and <code>u00240A79_t20</code>).</li>
+<li><code>_tXXqYYY</code>: includes a package variant (e.g. <code>u00210A79_t8q144</code>, <code>u00210A79_t20q144</code> are q144 package variants).</li>
+<li>Special cases <code>u00000000_t8/t4</code>: small T8/T4 devices use an all-zero placeholder IDCODE in device_db (<code>device_db.xml:41-42</code>, original comment "this is obviously invalid").</li>
+</ul>
+<h3 id="5-2-device_db-xml-structure">5.2 device_db.xml structure</h3>
+<p><code>pgm\bin\device_db.xml</code> is organized by <code>&lt;die name="…"&gt;</code>; each die carries <code>&lt;idcode&gt;</code>, <code>&lt;family&gt;</code>, <code>&lt;option_register&gt;</code> (bitstream option register layout and sync words), and <code>&lt;scan_chain&gt;</code> (CDONE/NSTATUS/CBUS and other status bit addresses). Example (<code>device_db.xml:125-126</code>): <code>&lt;die name="T35/T20"&gt; &lt;idcode value="0x00240A79"/&gt; &lt;family value="Trion"/&gt;</code>. The whole database has 48 die entries (lines 16-882).</p>
+<h3 id="5-3-idcode-mapping-tables">5.3 IDCODE mapping tables</h3>
+<p>The tables below are the result of cross-checking the fli bitstreams against device_db.xml ("line" = the <code>&lt;die name&gt;</code> line number in device_db.xml; the IDCODE line = the die line +1):</p>
+<p><strong>Trion (<code>fli\trion\</code>)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Bitstream file</th>
+<th>die (line)</th>
+<th>IDCODE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u00240A79_t35</code> / <code>u00240A79_t20</code></td>
+<td>T35/T20 (:125)</td>
+<td><code>0x00240A79</code></td>
+</tr>
+<tr>
+<td><code>u00220A79_t85</code> / <code>_t55</code> / <code>_t120</code></td>
+<td>T120/T85/T55 (:93)</td>
+<td><code>0x00220A79</code></td>
+</tr>
+<tr>
+<td><code>u00210A79_t8q144</code> / <code>_t20q144</code> / <code>_t20</code> / <code>_t13</code></td>
+<td>T20/T13/T8 (:66)</td>
+<td><code>0x00210A79</code></td>
+</tr>
+<tr>
+<td><code>u00000000_t8</code> / <code>_t4</code></td>
+<td>T8/T4 (:41)</td>
+<td><code>0x00000000</code> (placeholder)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Titanium (<code>fli\titanium\</code>)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Bitstream file</th>
+<th>die (line)</th>
+<th>IDCODE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u10660A79</code></td>
+<td>Ti60_MP (:217)</td>
+<td><code>0x10660A79</code></td>
+</tr>
+<tr>
+<td><code>u10661A79</code></td>
+<td>Ti35_MP (:234)</td>
+<td><code>0x10661A79</code></td>
+</tr>
+<tr>
+<td><code>u00680A79</code></td>
+<td>Ti180M (:268)</td>
+<td><code>0x00680A79</code></td>
+</tr>
+<tr>
+<td><code>u00684A79</code></td>
+<td>Ti180L (:336)</td>
+<td><code>0x00684A79</code></td>
+</tr>
+<tr>
+<td><code>u00688A79</code></td>
+<td>Ti90L (:370)</td>
+<td><code>0x00688A79</code></td>
+</tr>
+<tr>
+<td><code>u0068CA79</code></td>
+<td>Ti120L (:353)</td>
+<td><code>0x0068CA79</code></td>
+</tr>
+<tr>
+<td><code>u00690A79</code></td>
+<td>Ti180J (:285)</td>
+<td><code>0x00690A79</code></td>
+</tr>
+<tr>
+<td><code>u00691A79</code></td>
+<td>Ti90J (:319)</td>
+<td><code>0x00691A79</code></td>
+</tr>
+<tr>
+<td><code>u00692A79</code></td>
+<td>Ti120J (:302)</td>
+<td><code>0x00692A79</code></td>
+</tr>
+<tr>
+<td><code>u006A0A79</code> / <code>u006A0EF3</code></td>
+<td>Ti375 (:387) / TJ375 (:404)</td>
+<td><code>0x006A0A79</code> / <code>0x006A0EF3</code></td>
+</tr>
+<tr>
+<td><code>u006A1A79</code> / <code>u006A1EF3</code></td>
+<td>Ti165 (:455) / TJ165 (:472)</td>
+<td><code>0x006A1A79</code> / <code>0x006A1EF3</code></td>
+</tr>
+<tr>
+<td><code>u006A2A79</code> / <code>u006A2EF3</code></td>
+<td>Ti240 (:421) / TJ240 (:438)</td>
+<td><code>0x006A2A79</code> / <code>0x006A2EF3</code></td>
+</tr>
+<tr>
+<td><code>u006C0A79</code> / <code>u006C0EF3</code></td>
+<td>Ti135 (:506) / TJ135 (:523)</td>
+<td><code>0x006C0A79</code> / <code>0x006C0EF3</code></td>
+</tr>
+<tr>
+<td><code>u006C2A79</code> / <code>u006C2EF3</code></td>
+<td>Ti85 (:540) / TJ85 (:557)</td>
+<td><code>0x006C2A79</code> / <code>0x006C2EF3</code></td>
+</tr>
+<tr>
+<td><code>u006E0A79</code></td>
+<td>Ti125 (:574)</td>
+<td><code>0x006E0A79</code></td>
+</tr>
+<tr>
+<td><code>u006E2A79</code></td>
+<td>Ti95 (:591)</td>
+<td><code>0x006E2A79</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Topaz (<code>fli\topaz\</code>)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Bitstream file</th>
+<th>die (line)</th>
+<th>IDCODE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u10668A79</code></td>
+<td>Tz50 (:643)</td>
+<td><code>0x10668A79</code></td>
+</tr>
+<tr>
+<td><code>u10678A79</code></td>
+<td>TP50 (:660)</td>
+<td><code>0x10678A79</code></td>
+</tr>
+<tr>
+<td><code>u00698A79</code> / <code>u0069CA79</code></td>
+<td>Tz110 (:677) / TP110 (:694)</td>
+<td><code>0x00698A79</code> / <code>0x0069CA79</code></td>
+</tr>
+<tr>
+<td><code>u00699A79</code> / <code>u0069DA79</code></td>
+<td>Tz170 (:711) / TP170 (:728)</td>
+<td><code>0x00699A79</code> / <code>0x0069DA79</code></td>
+</tr>
+<tr>
+<td><code>u006A8A79</code> / <code>u006B8EF3</code></td>
+<td>Tz200 (:745) / TP200 (:762)</td>
+<td><code>0x006A8A79</code> / <code>0x006B8EF3</code></td>
+</tr>
+<tr>
+<td><code>u006A9A79</code> / <code>u006B9EF3</code></td>
+<td>Tz325 (:779) / TP325 (:796)</td>
+<td><code>0x006A9A79</code> / <code>0x006B9EF3</code></td>
+</tr>
+<tr>
+<td><code>u006C8A79</code> / <code>u006D8EF3</code></td>
+<td>Tz75 (:813) / TP75 (:830)</td>
+<td><code>0x006C8A79</code> / <code>0x006D8EF3</code></td>
+</tr>
+<tr>
+<td><code>u006C9A79</code> / <code>u006D9EF3</code></td>
+<td>Tz100 (:847) / TP100 (:864)</td>
+<td><code>0x006C9A79</code> / <code>0x006D9EF3</code></td>
+</tr>
+</tbody>
+</table>
+<p>Summary of the pattern: names ending in <code>…A79</code> carry the standard IDCODE; <code>…EF3</code> endings appear on the TJ series (the J variants of Ti) and some high-capacity TP devices; the ES version of Ti60 (<code>Ti60</code>, IDCODE <code>0x00360A79</code>, <code>device_db.xml:191-192</code>) has <strong>no</strong> matching fli bitstream (only the production Ti60_MP does) — for ES devices, program the flash in passive/active mode.</p>
+<h3 id="5-4-when-they-are-used">5.4 When they are used</h3>
+<p>Only <code>-m jtag_bridge</code> / <code>-m jtag_bridge_x8</code> need an fli loader (load the loader first, then reach the flash through the bridge); <code>-m passive</code> / <code>-m active</code> access the flash directly or through the already-configured FPGA, and <code>-m jtag</code> / <code>jtag_chain</code> only download the SRAM bitstream — none of them consume fli.</p>
+<hr />
+<h2 id="6-the-scripts-vs-pt-bin-dual-copy-relationship">6. The scripts\ vs pt\bin\ dual-copy relationship</h2>
+<h3 id="6-1-hash-evidence-get-filehash-2026-09-25">6.1 Hash evidence (Get-FileHash, 2026-09-25)</h3>
+<p>The two directories share 7 same-named <code>.py</code> files; <strong>all SHA256 hashes are identical (IDENTICAL)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>SHA256 (identical for both copies)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_pt_jtag_util.py</code></td>
+<td><code>B47548E09B6C40E0F2EB567A36A4F4018AF08F2561546BA7C7C82F104113148A</code></td>
+</tr>
+<tr>
+<td><code>efx_run_pt_auto_reasg.py</code></td>
+<td><code>CBE6595D497479BC5792C2D826635FDFA3A944B91521CB970C4ACAC396EF964F</code></td>
+</tr>
+<tr>
+<td><code>efx_run_pt_gen_constraints.py</code></td>
+<td><code>7C9E04F7D77D94073D18C9FD568470E3898485CB77B127595EE5DA30EE6D6C31</code></td>
+</tr>
+<tr>
+<td><code>efx_run_pt_gen_isf.py</code></td>
+<td><code>201D4DF169EA0541EFCC88CC7E4593E46B4E7CBC006854BA5A40484FC8042918</code></td>
+</tr>
+<tr>
+<td><code>efx_run_pt_gen_sim_netlist.py</code></td>
+<td><code>50F377119F5A157FC14916A5DDFEFED90B7D1D023A906D90D9B5661287F901FF</code></td>
+</tr>
+<tr>
+<td><code>efx_run_pt_import_isf.py</code></td>
+<td><code>E5DE54666514834FD0580D79261DEAAD3FE261071D0ECC172CDCE1D5D39BBAA4</code></td>
+</tr>
+<tr>
+<td><code>efx_run_pt_unified.py</code></td>
+<td><code>5334BEDAECBAEC8EC1E8F67187EE835A78C164793E5A2F2105822EFFE2028D01</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-files-unique-to-each-side">6.2 Files unique to each side</h3>
+<ul>
+<li>Unique to <code>pt\bin\</code>: <code>debug_netlistdb.py</code>, <code>efx_run_pt_migrate.py</code>, <code>engine.py</code>, <code>engine_excp.py</code>, <code>pt_version.py</code>, <code>_version.py</code>, <code>__init__.py</code>, <code>__main__.py</code> (the entry and internal engine of PT as a standalone GUI application).</li>
+<li>Unique to <code>scripts\</code>: <code>efx_run.py</code> (the compile-flow controller), <code>efx_run_map.py</code> / <code>efx_run_pnr.py</code> / <code>efx_run_pgm.py</code> / <code>efx_run_sim.py</code> / <code>efx_run_aoe.py</code> / <code>efx_run_dbg.py</code>, <code>_app_info.py</code>, <code>sw_version.txt</code>.</li>
+</ul>
+<h3 id="6-3-authoritative-conclusions">6.3 Authoritative conclusions</h3>
+<ol>
+<li><strong><code>scripts\</code> is the authoritative path actually consumed by the compile flow.</strong> Evidence chain (<code>scripts\efx_run.py</code> read in full, 2151 lines):</li>
+<li><code>efx_run.py:33-36</code> — the top imports <code>efx_run_map/efx_run_sim/efx_run_pnr/efx_run_pgm</code> (sibling modules in the same <code>scripts\</code> directory);</li>
+<li>in <code>run_pt()</code>, <code>efx_run.py:1378-1382</code>: <code>import efx_run_pt_unified as efx_run_pt</code> (imported from <code>SCRIPT_DIR</code>, i.e. <code>scripts\</code>);</li>
+<li><code>efx_run.py:1472-1476</code>: PT runs as a subprocess — <code>python_exe = EFINITY_HOME/python311/bin/python.exe</code>, <code>args_lst[0] = os.path.join(SCRIPT_DIR, args_lst[0])</code>, i.e. what actually executes is <strong><code>scripts\efx_run_pt_unified.py</code></strong>;</li>
+<li><code>bin\efx_run.bat:8</code> also points to <code>scripts\efx_run.py</code>.</li>
+<li><strong><code>pt\bin\</code> is the same-origin copy shipped with PT (the Interface Designer GUI) as a standalone application</strong> — the PT GUI needs to run the same PT scripts inside its own process, so it carries them along; the two byte-identical copies keep the GUI flow and the command-line compile flow behaviorally identical.</li>
+<li>Corollary: <strong>any patch/replacement of <code>efx_run_pt_*.py</code> must be applied to both copies</strong>, otherwise GUI-inside and GUI-outside behavior diverges; when chasing a PT behavior difference, compare the two hashes first.</li>
+<li>Side note: PT subprocess exit code <code>2</code> means the interface step was skipped (<code>efx_run.py:1483-1484</code>) — a special code, not a failure.</li>
+</ol>
+<hr />
+<h2 id="7-the-tcl_packages-load-chain-and-the-sta-extension-points">7. The tcl_packages\ load chain and the STA extension points</h2>
+<h3 id="7-1-directory-layout">7.1 Directory layout</h3>
+<pre><code>tcl_packages\
+├── efinity\efinity_init.tcl      # timing/SDC command packages (consumed by STA)
+├── efx_map\                      # synthesis front-end shell package (EfxShell 1.0)
+│   ├── pkgIndex.tcl              # package ifneeded EfxShell 1.0
+│   ├── EfxPkg.tcl                # empty shell: namespace + package provide
+│   ├── EfxTclShellInit.tcl       # shell init + Verific/efx command wrappers
+│   └── efxshell.sh               # Linux launcher script
+└── tcllib\cmdline\               # Tcl command-line parsing library (cmdline package)
+</code></pre>
+<h3 id="7-2-the-efinity_init-tcl-load-chain">7.2 The efinity_init.tcl load chain</h3>
+<p><code>efinity_init.tcl</code> (434 lines, read in full) does three things:</p>
+<ol>
+<li><strong>Loads four local C extension libraries</strong> (<code>:15-26</code>, picking <code>bin\*.dll</code> / <code>lib\*.so</code> per platform):</li>
+</ol>
+<p><code>tcl
+   load $::env(EFINITY_HOME)/$LIB_DIR/libtiming.$LIB_EXT timing
+   load $::env(EFINITY_HOME)/$LIB_DIR/libsdc_get_cmds.$LIB_EXT sdc_get_cmds
+   load $::env(EFINITY_HOME)/$LIB_DIR/libsdc_constr_cmds.$LIB_EXT sdc_constr_cmds
+   load $::env(EFINITY_HOME)/$LIB_DIR/libtiming_report_cmds.$LIB_EXT timing_report_cmds</code></p>
+<ol>
+<li><strong>Defines the help system and command catalogs</strong>: <code>help</code> (<code>:32-94</code>, split into <code>sdc</code>/<code>timing</code> groups), <code>print_sdc_commands</code> (<code>:101-148</code>, ~20 SDC commands: <code>create_clock</code>/<code>set_clock_groups</code>/<code>set_false_path</code>/<code>set_input_delay</code>/<code>set_bus_skew</code>, etc.), <code>print_timing_commands</code> (<code>:150-183</code>, 13 commands: <code>read_sdc</code>/<code>report_timing_summary</code>/<code>report_cdc</code>/<code>set_timing_model</code>, etc.).</li>
+<li><strong>Thin wrapper forwarding + collection-command overloading</strong>:</li>
+<li><code>:199-347</code> forwards every top-level command in one line into the C namespaces: <code>timing::</code> (read_sdc/write_sdc/report_<em>), <code>sdc_get_cmds::</code> (get_cells/get_ports/all_</em>), <code>sdc_constr_cmds::</code> (create_clock/set_*). The comment is explicit: "wrappers must stay thin; all checks happen on the C side" (<code>:189-195</code>).</li>
+<li><code>:349-434</code> overloads <code>lappend/lassign/lsort/lindex/linsert/llength/lrange/lreplace/lreverse/lsearch/lset/foreach</code> via <code>rename</code> + <code>interp alias</code> so they support "object groups" (collection objects), and provides <code>foreach_in_collection</code>. <strong>This means that in these shells, when iterating timing objects, the standard Tcl list commands have been replaced with object-aware versions</strong> — do not rely on the original semantics of the overloaded commands when writing your own STA Tcl scripts.</li>
+</ol>
+<h3 id="7-3-the-efx_map-package-synthesis-front-end-shell">7.3 The efx_map package (synthesis front-end shell)</h3>
+<ul>
+<li><code>pkgIndex.tcl:18</code>: <code>package ifneeded EfxShell 1.0</code> → <code>pkgLoad</code> sources <code>EfxPkg.tcl</code> then <code>EfxTclShellInit.tcl</code> in turn (<code>:12-16</code>); <code>EfxPkg.tcl</code> is a bare shell that only does <code>package provide EfxShell 1.0</code> (<code>:1-3</code>).</li>
+<li><code>EfxTclShellInit.tcl</code>:</li>
+<li><code>:9</code> <code>package require cmdline</code> (depends on <code>tcllib\cmdline</code>);</li>
+<li><code>:21-49</code> sets the <code>efx_va [id]&gt;</code> interactive prompt and runs the shell initialization;</li>
+<li><code>:53-162</code> forwards the Verific/VeriApps object API (<code>get_libs/get_attribute/get_instances/get_ports/get_port_direction</code>, etc., landing in the <code>va::</code> namespace);</li>
+<li><code>:164-262</code> synthesis front-end commands: <code>read_verilog</code>, <code>read_binary_netlist</code>, <code>map -design -lib-name</code>, <code>write_verilog/write_binary</code>, <code>fm_verify</code> (formal verification; accepts <code>.v</code>/<code>.vbd</code>/netlist inputs);</li>
+<li><code>:265-396</code> flow options: <code>set_option_value/set_private_option_value</code> and their parameterized wrappers <code>set_option</code> (root/efx-verilog/include-dir/output-dir/work-dir/num_ram_4k/num_mult16/insert-ios/max-bit-blast-mem-size, etc.) and <code>set_private_option</code> (efx_root/debug/assert_mode/merge_cascaded_muxes).</li>
+</ul>
+<h3 id="7-4-how-efx_sta-consumes-these-packages">7.4 How efx_sta consumes these packages</h3>
+<p>Two consumption paths (both verified live):</p>
+<ol>
+<li><strong>Standalone STA</strong>: <code>bin\efx_sta.exe --help</code> (captured 2026-09-25) gives the full usage — <code>--prj &lt;xml&gt;</code> opens a project; <code>-t/--tclsh [script]</code> "Open the specified project, load the design, then start a Tcl session" (interactive without an argument, or runs the given script). This embedded Tcl interpreter loads the <code>tcl_packages</code> packages at startup (the 4 DLLs and the command wrappers of <code>efinity_init.tcl</code> take effect here).</li>
+<li><strong>Compile-flow embedded STA (the sta_tclsh flow)</strong>: the flow list of <code>scripts\efx_run.py:184</code> includes <code>sta_tclsh</code>; <code>-t/--tcl_script</code> names the script (<code>:194</code>); <code>run_pnr(args, run_sta_tclsh=True)</code> (<code>:1273</code>) appends <code>--sta_tclsh</code> to the pnr command line and passes the user's Tcl script via <code>--sta_tclsh_script &lt;file&gt;</code> (<code>:1326-1330</code>) — i.e. after pnr finishes place-and-route, the same Tcl/STA environment opens directly on the result database.</li>
+</ol>
+<p><strong>Extension point</strong>: user-defined STA Tcl scripts can use every timing/SDC command of §7.2 plus the object-group iteration facilities; the typical skeleton is <code>efx_run -t my_sta.tcl --prj xxx.xml --flow sta_tclsh</code> (or interactive exploration in an <code>efx_sta -t</code> session). SDC command semantics: see toolchain-reference.md and design-rules.md.</p>
+<hr />
+<h2 id="8-debugger-bin-efx_dbg-overview">8. debugger\bin\efx_dbg overview</h2>
+<p><code>debugger\bin\efx_dbg\</code> is the Python engine of the Efinity debugger (39 modules), pulled into <code>PYTHONPATH</code> by <code>pgm\bin\ftdi_pgm.bat</code> (§2.1), so the programming scripts and the debugger share the same JTAG foundation. Core modules (sampled 2026-09-25):</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility (evidence)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rtl_gen.py</code></td>
+<td>Debug soft-core RTL generator. Entries <code>DbgTopGenerator.gen_veri_top_str</code> / <code>gen_veri_template_str</code>; adding a generator class named <code>{Type}Generator</code> is auto-discovered by <code>get_generator_cls</code> and matched against the spec's <code>type</code> field (docstring <code>:12-33</code>); spec types are defined in <code>efx_dbg.define</code> (<code>CoreSpec/LogicNSpec/VioSpec</code>, <code>:43-44</code>)</td>
+</tr>
+<tr>
+<td><code>jtag.py</code></td>
+<td>The JTAG API entry point: the singleton <code>JtagManager</code> provides all JTAG access (the TAP is a Trion hard IP; the soft cores live in the fabric); <code>{Vio\|LogicN}Controller</code> implements each debug core's communication protocol (docstring <code>:10-16</code>)</td>
+</tr>
+<tr>
+<td><code>flash.py</code></td>
+<td>Flash operations: built on <code>pyftdi.spi</code> + <code>spiflash.serialflash</code>; reuses <code>efx_pgm.efinix_flash</code> / <code>get_flashdb_json</code> / <code>header_processor</code> (imports <code>:23-40</code>), sharing the flash database with the programmer</td>
+</tr>
+<tr>
+<td><code>openocd_manager.py</code></td>
+<td>OpenOCD subprocess lifecycle management (subprocess/multiprocessing/socket, <code>efx_pgm.usb_resolver.UsbResolver</code>, <code>:42-49</code>)</td>
+</tr>
+<tr>
+<td><code>jcf.xsd</code></td>
+<td>The XML Schema of the JCF (debug configuration file), located at <code>debugger\bin\efx_dbg\xmlschema\jcf.xsd</code> (found via Glob); the corresponding parser is <code>jcf.py:JcfParser</code> (referenced at <code>flash.py:30</code>)</td>
+</tr>
+<tr>
+<td>Others</td>
+<td><code>engine.py</code> (DebugEngine), <code>jtag_chain_detector.py</code>/<code>jtag_scanner.py</code> (chain scanning), <code>jtag2apb.py</code>, <code>efx_vcd_writer.py</code> (VCD export), <code>programmer.py</code>; the GUI layer is <code>gui.py</code>/<code>DbgWizard.py</code>/<code>Ui_*.py</code> (PyQt generated code)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Relationship to the SDK</strong>: the SDK-side Efinity adapter's CLI debug bridge (LA capture / VIO read-write / device scan) is implemented by calling exactly this <code>efx_dbg</code> library. Usage details for LA/VIO/trigger configuration are covered by debugger-reference.md and are not expanded here.</p>
+<hr />
+<h2 id="9-cross-references">9. Cross-references</h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Scope split</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>toolchain-reference.md</code></td>
+<td>The main compile-chain command lines: full parameters and flows of <code>efx_map</code> / <code>efx_pt*</code> / <code>efx_pnr</code> / <code>efx_pgm</code> / <code>efx_run --flow</code>; the call relationships in §2/§6/§7 of this document assume it as background</td>
+</tr>
+<tr>
+<td><code>device-db-and-architecture.md</code></td>
+<td>Deep dives into <code>arch\</code> architecture data and the device databases (including the database file family beyond the §5.2 <code>device_db.xml</code>)</td>
+</tr>
+<tr>
+<td><code>debugger-reference.md</code></td>
+<td>The full debugger reference: the <code>mark_debug</code> flow, LA/VIO configuration, triggers, JCF field details (continuing from §8 here)</td>
+</tr>
+<tr>
+<td><code>design-rules.md</code> / <code>isf-syntax-reference.md</code> / <code>xml-project-schema.md</code></td>
+<td>RTL/constraint/project-XML authoring rules, complementary to the script assets in this document</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Maintenance note</strong>: every behavioral claim in this document is anchored to Efinity 2026.1. After a toolchain upgrade, re-verify first: ① the <code>ftdi_program.py</code> parameter table (§2.3); ② whether the 7-file hash set of <code>scripts\</code> vs <code>pt\bin\</code> still matches (§6.1); ③ new dies in <code>device_db.xml</code> and new loaders in <code>fli\</code> (§5.3).</p>
+</blockquote></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

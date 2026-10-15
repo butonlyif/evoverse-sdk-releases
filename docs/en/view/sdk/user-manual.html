@@ -1,0 +1,3342 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SDK Function Reference Manual</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
+<span>Look things up by function once you know the main flow; not required onboarding reading.</span>
+<code>sdk/user-manual.md</code>
+<a href="../../../sdk/user-manual.md">Markdown source</a></p>
+<h1>SDK Function Reference Manual</h1></header>
+<main class="article"><h1 id="evoverse-sdk-user-manual">EvoVerse SDK — User Manual</h1>
+<blockquote>
+<p><strong>Version</strong>: v1.0.0
+<strong>Last updated</strong>: 2026-09-30
+<strong>Applies to SDK version</strong>: v1.0.0
+<strong>Supported platforms</strong>: Trae IDE / VS Code 1.80+ · Windows · macOS · Linux</p>
+<p><strong>Agent Runtime (v0.7.1+)</strong>: Timing Diagnosis, Build Report, and the native <code>@evoverse</code> share one persistent session. The model can be the host <code>vscode.lm</code> or an OpenAI-compatible endpoint; the model ID must be configured explicitly, remote content can be previewed and confirmed before it is sent, and the API Key is stored only in SecretStorage.
+<strong>Prerequisites</strong>: Python 3.11+ (auto-detected), Efinity 2026.1+ (required for builds and programming), Icarus Verilog or QuestaSim (required for simulation)</p>
+<p><strong>Design-flow selection (2026-09-30)</strong>: Trae natural language and Workbench Control share the server-side current-action envelope. Reliable/free mode is stored per design iteration; it is not a project-wide switch. A new conversation restores the current revision, the recommended action, and the evidence boundary from <code>project_next</code>. Free mode does not block ordinary Builds, but controlled changes show <code>UNVERIFIED_CHANGES</code>; at any time you can choose "bring the current changes into the reliable flow" to incrementally re-run the affected gates.</p>
+</blockquote>
+<p>If the reliable flow hits an MCP transport interruption, it recovers automatically at most once and re-checks capabilities and server-side digests before continuing; when the state cannot be reconciled, it stops instead of falling back to running through the CLI. Assurance, simulation, Native Build, programming, and on-board results are reported separately—a PASS at one boundary never substitutes for another.</p>
+<p>If design, system integration, or project-file generation is interrupted, simply state in natural language "what to keep, what to replace, what to discard, and where you want to return to". The Agent shows the recovery description the server generated for the current revision; after you confirm, it executes one recovery step at a time and re-reads the state. If <code>project_next</code> returns <code>RECOVERY_REQUIRED</code> with <code>recovery.open</code>, the Agent must submit the action's <code>inputPreview</code> verbatim and must not edit the recovery scope; after the record is persisted, execute the server-provided <code>recovery.quarantine</code>. Quarantine preserves the trusted baseline, the facts, and the failure evidence and releases the affected scope, but it does not count as task success. Do not delete <code>.evoverse</code> state by hand. An initial design can also be safely abandoned and the Intent re-created.</p>
+<p>System-integration commits are recoverable transactions: if the IDE, the Agent, or a process is interrupted after the merge, reopening the project or reading the state triggers identity reconciliation. Only when the commit, tree, request, and verification digests all match are the baseline and the completion facts filled in; the system never repeats the merge and never treats half-committed facts or a half-generated baseline as success. On an identity conflict it stops and preserves the scene—do not delete <code>.evoverse</code> or the Git journal by hand.</p>
+<p>If the real smoke test, license check, startup, compilation, run, or event parsing of the selected Questa/Icarus fails, the flow stops at <code>WAITING_FOR_USER</code>. After fixing the environment, choose to re-probe, or explicitly reselect the toolchain; the system does not silently switch backends or keep producing PASS.</p>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-quick-start">Quick start</a></li>
+<li><a href="#2-system-architecture">System architecture</a></li>
+<li><a href="#3-installation-and-configuration">Installation and configuration</a></li>
+<li><a href="#4-ui-overview">UI overview</a></li>
+<li><a href="#5-project-management">Project management</a></li>
+<li><a href="#6-catalog-material-management">Catalog material management</a></li>
+<li><a href="#7-building">Building</a></li>
+<li><a href="#8-build-report">Build report</a></li>
+<li><a href="#9-simulation">Simulation</a></li>
+<li><a href="#10-timing-analysis-and-optimization">Timing analysis and optimization</a></li>
+<li><a href="#11-debug-and-programming">Debug and programming</a></li>
+<li><a href="#12-code-style-check">Code style check</a></li>
+<li><a href="#13-ip-management">IP management</a></li>
+<li><a href="#14-interface-design-designapi-new-in-v072">Interface design (DesignAPI, new in v0.7.2)</a></li>
+<li><a href="#15-risc-v-software-development">RISC-V software development</a></li>
+<li><a href="#16-board-maintenance">Board maintenance</a></li>
+<li><a href="#17-ai-assisted-features">AI-assisted features</a></li>
+<li><a href="#18-knowledge-base">Knowledge base</a></li>
+<li><a href="#19-cli-command-line-tool">CLI command-line tool</a></li>
+<li><a href="#20-mcp-server-and-agent-conversations">MCP Server and Agent conversations</a></li>
+<li><a href="#21-configuration-reference">Configuration reference</a></li>
+<li><a href="#22-faq">FAQ</a></li>
+<li><a href="#appendix-a-version-evolution-history">Appendix A: Version evolution history</a></li>
+</ol>
+<hr />
+<h2 id="1-quick-start">1. Quick start</h2>
+<h3 id="1-1-the-fastest-path-30-minutes">1.1 The fastest path (30 minutes)</h3>
+<blockquote>
+<p><strong>If this is your first contact with the SDK</strong>, after completing 1.1 please walk the six-stage "Get Started" flow on the customer documentation portal end to end — 1.1 only verifies that "the toolchain is in place" and does not replace the engineering-contract awareness the tutorials build. The <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD→DDR→CSI-2 tutorial</a> is the hands-on part of the "walk through a complete tutorial" stage of that flow.</p>
+</blockquote>
+<pre><code>Install the extensions → Set Up → describe the goal in Trae natural language → confirm the Control action → write RTL → Sim → Build → Program
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Install the VSIX</td>
+<td><code>Extensions → ... → Install from VSIX</code></td>
+<td>1 min</td>
+</tr>
+<tr>
+<td>Initialize</td>
+<td><code>EvoVerse: Set Up</code></td>
+<td>2 min</td>
+</tr>
+<tr>
+<td>Create a project</td>
+<td>Welcome → pick a board → Generate</td>
+<td>1 min</td>
+</tr>
+<tr>
+<td>Write code</td>
+<td>edit <code>rtl/top.sv</code></td>
+<td>10 min</td>
+</tr>
+<tr>
+<td>Simulate</td>
+<td><code>EvoVerse: Simulate</code></td>
+<td>3 min</td>
+</tr>
+<tr>
+<td>Build</td>
+<td><code>EvoVerse: Build</code></td>
+<td>5 min</td>
+</tr>
+<tr>
+<td>Program</td>
+<td><code>EvoVerse: Program FPGA</code></td>
+<td>2 min</td>
+</tr>
+<tr>
+<td>See the result</td>
+<td>watch the LED blink</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-the-full-learning-path">1.2 The full learning path</h3>
+<p>Start with the linear onboarding path from the <a href="../START-HERE.html">customer documentation entry</a>; for a complete hands-on project, use the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 tutorial</a>. Traditional design and the controlled RTL flow can be combined, but promoting candidate RTL must always rest on the specification, the rules, and simulation evidence.</p>
+<hr />
+<h2 id="2-system-architecture">2. System architecture</h2>
+<h3 id="2-1-the-four-layer-model">2.1 The four-layer model</h3>
+<p>The EvoVerse SDK uses a four-layer architecture that abstracts the FPGA development toolchain into layers:</p>
+<pre><code>┌────────────────────────────────────────────────────────────────────┐
+│  L4: AI Intelligence                                                          │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐     │
+│  │ AI diagnosis    │  │ Copilot context │  │ NL→RTL generator│     │
+│  │ engine          │  │                 │  │                 │     │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘     │
+├────────────────────────────────────────────────────────────────────┤
+│  L3: System Orchestration                                                     │
+│  ┌───────────┐ ┌──────────────┐ ┌────────────────┐ ┌─────────────┐ │
+│  │BuildRunner│ │TimingAnalyzer│ │CodeStyle Checker│ │HealthChecker│ │
+│  │           │ │              │ │                 │ │             │ │
+│  └───────────┘ └──────────────┘ └────────────────┘ └─────────────┘ │
+├────────────────────────────────────────────────────────────────────┤
+│  L2: Vendor Adapter                                                           │
+│  ┌───────────────────┐  ┌───────────────────┐                        │
+│  │ EfinixAdapter     │  │ VendorAdapter     │                        │
+│  │ (Efinity-specific)│  │ (generic)         │                        │
+│  └───────────────────┘  └───────────────────┘                        │
+├────────────────────────────────────────────────────────────────────┤
+│  L1: Vendor Tools                                                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐                                  │
+│  │ Efinity  │  │ Icarus   │  │ xPack    │                                  │
+│  │ (build)  │  │ Verilog  │  │ RISC-V   │                                  │
+│  └──────────┘  └──────────┘  └──────────┘                                  │
+└────────────────────────────────────────────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Responsibility</th>
+<th>User-facing effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L1 Vendor tools</strong></td>
+<td>Efinity build/programming, Icarus simulation, RISC-V GCC</td>
+<td>You need these tools installed</td>
+</tr>
+<tr>
+<td><strong>L2 Adapter layer</strong></td>
+<td>Unifies vendor tools behind standard interfaces; currently supports the Efinix Titanium/Trion families</td>
+<td>Selected automatically; nothing to worry about</td>
+</tr>
+<tr>
+<td><strong>L3 Orchestration layer</strong></td>
+<td>Build-flow orchestration, timing analysis, code style checks, health checks</td>
+<td>Used through IDE commands and webviews</td>
+</tr>
+<tr>
+<td><strong>L4 Intelligence layer</strong></td>
+<td>AI error-fingerprint diagnosis, Copilot context building, natural-language RTL generation</td>
+<td>Triggered automatically in the diagnosis panel and the Agent</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-2-multi-chip-support">2.2 Multi-chip support</h3>
+<p>The SDK supports the following system-level scenarios:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FPGA + SoC</strong></td>
+<td>A single FPGA containing a RISC-V Sapphire SoC</td>
+</tr>
+<tr>
+<td><strong>Dual FPGA</strong></td>
+<td>Two FPGAs working together</td>
+</tr>
+<tr>
+<td><strong>FPGA + MCU</strong></td>
+<td>The FPGA acting as a peripheral co-processor</td>
+</tr>
+</tbody>
+</table>
+<p>Multi-chip topologies are managed uniformly through the <code>MultiChipProject</code> model.</p>
+<hr />
+<h2 id="3-installation-and-configuration">3. Installation and configuration</h2>
+<h3 id="3-1-install-the-extensions">3.1 Install the extensions</h3>
+<ol>
+<li>Obtain <code>evoverse-sdk-0.9.0.vsix</code></li>
+<li>Trae IDE or Visual Studio Code → the <code>Extensions</code> icon on the left → <code>...</code> at the top right → <code>Install from VSIX...</code></li>
+<li>Select the VSIX file</li>
+<li><strong>Reload Window</strong> (click it when the prompt appears)</li>
+</ol>
+<p>Trae, standard VS Code, and other VS Code forks use <strong>the same VSIX</strong>—no separate builds are needed. The host is detected only after the extension activates, and the matching Adapter is then selected.</p>
+<h3 id="3-1-1-workbench-adapter-plug-ins-v0-8-0">3.1.1 Workbench Adapter plug-ins (v0.8.0+)</h3>
+<p>Since v0.8.0, the EvoVerse SDK has used a <strong>core + optional Adapters</strong> plug-in architecture:</p>
+<table>
+<thead>
+<tr>
+<th>VSIX</th>
+<th>Extension ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse-sdk-*.vsix</code></td>
+<td><code>evoverse-hw.evoverse-sdk</code></td>
+<td>Core extension (required): provides the Workbench shell, Catalog, CLI, MCP</td>
+</tr>
+<tr>
+<td><code>evoverse-efinity-adapter-*.vsix</code></td>
+<td><code>evoverse-hw.evoverse-efinity-adapter</code></td>
+<td>Efinity Adapter (optional): provides the Efinity Workspace (6 tabs)</td>
+</tr>
+<tr>
+<td><code>evoverse-rk3588-adapter-*.vsix</code></td>
+<td><code>evoverse-hw.evoverse-rk3588-adapter</code></td>
+<td>RK3588 Adapter (optional): provides the RK3588 Workspace (8 tabs)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Installation combinations</strong>:
+- <strong>Core only</strong>: shows guidance for installing an Adapter; no fake vendor Workspace is displayed
+- <strong>Core + Efinity</strong>: hides the switcher and enters the Efinity Workspace directly
+- <strong>Core + RK3588</strong>: hides the switcher and enters the RK3588 Workspace directly
+- <strong>Core + both Adapters</strong>: shows the Workspace switcher and the System Workspace; the first entry opens System</p>
+<p>Adapters must be installed after the core (<code>extensionDependencies</code> resolves the dependency automatically).</p>
+<p>For the capability boundaries and usage of each Adapter, see:
+- <a href="sdk-overview.html">SDK In Depth</a>
+- <a href="../adapters/efinity-adapter-guide.html">Efinity Adapter Guide</a>
+- <a href="../adapters/rk3588-adapter-guide.html">RK3588 Adapter Guide</a></p>
+<h3 id="3-2-first-time-initialization-set-up">3.2 First-time initialization (Set Up)</h3>
+<p>On the first launch after installation, or when you run <code>EvoVerse: Set Up</code>, a wizard dialog appears:</p>
+<pre><code>┌───────────────────────────────────────────────────────────────┐
+│  EvoVerse SDK — Set up                                        │
+│                                                               │
+│  The runtime environment will be created at:                  │
+│    ~/evoverse-sdk/          ← Catalog + project root          │
+│    ~/.evoverse/runtime/     ← CLI + MCP Server                │
+│    %APPDATA%\Trae CN\User\mcp.json  ← Trae CN only: MCP registration │
+│    ~/.trae/user_rules/      ← Trae only: general + RTL Agent rules │
+│                                                               │
+│  [Yes, set up]  [Cancel]                                      │
+└───────────────────────────────────────────────────────────────┘
+</code></pre>
+<p>Clicking <strong>Yes, set up</strong> automatically:
+- Copies the CLI and MCP Server to the local runtime directory
+- Trae: registers the MCP Server and deploys <code>evoverse.md</code> and <code>evoverse-rtl-style.md</code>
+- Standard VS Code / unknown hosts: no <code>.trae</code> is created; host-specific integrations degrade safely
+- Deploys the sample Catalog (including the TJ180 core board)
+- Detects the Python version (3.11+ required)</p>
+<blockquote>
+<p>If the wizard does not appear automatically, run it manually: <code>Ctrl+Shift+P</code> → <code>EvoVerse: Set Up</code></p>
+</blockquote>
+<h3 id="3-3-configure-toolchain-paths">3.3 Configure toolchain paths</h3>
+<p><code>Ctrl/Cmd + ,</code> opens Settings; search for <code>evoverse</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Required</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.efinityPath</code></td>
+<td><strong>Yes</strong> (for builds)</td>
+<td>Efinity installation path</td>
+<td><code>C:\Efinity\2026.1</code></td>
+</tr>
+<tr>
+<td><code>evoverse.simulator</code></td>
+<td>Yes (for simulation)</td>
+<td>Backend for ordinary RTL simulation: <code>iverilog</code> or <code>questa</code></td>
+<td><code>iverilog</code></td>
+</tr>
+<tr>
+<td><code>evoverse.iverilogPath</code></td>
+<td>When Icarus is selected</td>
+<td>Directory containing <code>iverilog</code>/<code>vvp</code></td>
+<td><code>C:\iverilog\bin</code></td>
+</tr>
+<tr>
+<td><code>evoverse.questaPath</code></td>
+<td>When Questa is selected</td>
+<td>Directory containing <code>vlib</code>/<code>vlog</code>/<code>vsim</code></td>
+<td><code>C:\questasim64_2024.1\win64</code></td>
+</tr>
+<tr>
+<td><code>evoverse.pythonPath</code></td>
+<td>No</td>
+<td>Python interpreter (auto-detected when empty)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>evoverse.home</code></td>
+<td>No</td>
+<td>SDK working root (default <code>~/evoverse-sdk</code>)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>evoverse.model.provider</code></td>
+<td>Optional (AI)</td>
+<td><code>vscode-lm</code> or <code>openai-compatible</code></td>
+<td><code>vscode-lm</code></td>
+</tr>
+<tr>
+<td><code>evoverse.model.modelId</code></td>
+<td>Required (AI)</td>
+<td>Explicit model ID; the first model is never chosen by default</td>
+<td>provided by the host/endpoint</td>
+</tr>
+<tr>
+<td><code>evoverse.model.baseUrl</code></td>
+<td>Required (OpenAI-compatible)</td>
+<td>HTTPS API root URL</td>
+<td><code>https://api.openai.com/v1/</code></td>
+</tr>
+</tbody>
+</table>
+<p>The OpenAI-compatible API Key is written to SecretStorage by the command <code>EvoVerse: Set OpenAI-compatible API Key</code>; do not put it in <code>settings.json</code>.</p>
+<p>For the remaining optional settings, see <a href="#21-configuration-reference">Chapter 21</a>.</p>
+<h3 id="3-4-platform-differences">3.4 Platform differences</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Windows</th>
+<th>macOS</th>
+<th>Linux</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code authoring</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Simulation (Icarus)</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Build (Efinity)</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Programming</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Debug</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>RISC-V software</td>
+<td>✅</td>
+<td>partial</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>On macOS you can author code and simulate; building and programming require a Windows or Linux environment.</p>
+</blockquote>
+<hr />
+<h2 id="4-ui-overview">4. UI overview</h2>
+<h3 id="4-1-view-containers">4.1 View containers</h3>
+<p>The SDK registers <strong>3 view containers</strong> in the Activity Bar:</p>
+<table>
+<thead>
+<tr>
+<th>View</th>
+<th>Name</th>
+<th>Shown when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Workbench</strong></td>
+<td>EvoVerse SDK sidebar</td>
+<td>Always visible</td>
+</tr>
+<tr>
+<td><strong>Board Catalog</strong></td>
+<td>Material browser</td>
+<td>Always visible</td>
+</tr>
+<tr>
+<td><strong>Project Explorer</strong></td>
+<td>Project file tree</td>
+<td>Only after an EvoVerse project is opened</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-2-the-welcome-main-entry">4.2 The Welcome main entry</h3>
+<p><strong>How to open it</strong>: <code>EvoVerse: Show Welcome</code>, or click the EvoVerse icon in the Activity Bar</p>
+<p>Welcome is the starting point for daily use and contains four areas:</p>
+<h4 id="entry-actions-area">Entry actions area</h4>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open Workbench</strong></td>
+<td>View the Control / System / Adapter workspaces</td>
+</tr>
+<tr>
+<td><strong>Sync Catalog</strong></td>
+<td>Refresh the boards and IP materials licensed to the customer</td>
+</tr>
+<tr>
+<td><strong>Browse Demos</strong></td>
+<td>Browse the Demo projects in the Catalog</td>
+</tr>
+<tr>
+<td><strong>Rule Manager</strong></td>
+<td>Opens the Design Assurance rule-management panel (see <a href="#125-design-assurance-and-rule-management">§12.5</a>): rule-pack / single-rule switches plus custom rules</td>
+</tr>
+</tbody>
+</table>
+<h4 id="board-gallery">Board gallery</h4>
+<p>Shows a card for every available core board. Click any board → the detail panel <strong>expands inline</strong> (4 sub-tabs):</p>
+<table>
+<thead>
+<tr>
+<th>Sub-tab</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overview</strong></td>
+<td>FPGA model, package, LE/DSP/BRAM counts, speed grade</td>
+</tr>
+<tr>
+<td><strong>Documents</strong></td>
+<td>The board's linked document list (click to open)</td>
+</tr>
+<tr>
+<td><strong>Ecosystem</strong></td>
+<td>Compatible carriers, Jackets, and Demos</td>
+</tr>
+<tr>
+<td><strong>Pinout</strong></td>
+<td>Pin-constraint table (rendered from pinout.csv)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="recent-projects-list">Recent projects list</h4>
+<p>Shows recently opened projects with a status summary.</p>
+<h4 id="statistics-bar">Statistics bar</h4>
+<p>The bottom shows the local Catalog material counts: Boards / Carriers / Jackets / IPs / Demos</p>
+<h3 id="4-2-1-workspace-switching-with-multiple-adapters-installed">4.2.1 Workspace switching (with multiple Adapters installed)</h3>
+<p>With two or more Adapters installed, a Workspace switcher appears at the top of the Workbench:</p>
+<table>
+<thead>
+<tr>
+<th>Workspace</th>
+<th>Entry command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>System</strong></td>
+<td><code>EvoVerse: Open System Workspace</code></td>
+<td>Multi-chip topologies, bridges, joint builds</td>
+</tr>
+<tr>
+<td><strong>Efinity</strong></td>
+<td><code>EvoVerse: Open Efinity Workspace</code></td>
+<td>FPGA projects (6 tabs)</td>
+</tr>
+<tr>
+<td><strong>RK3588</strong></td>
+<td><code>EvoVerse: Open RK3588 Workspace</code></td>
+<td>SoC projects (8 tabs)</td>
+</tr>
+</tbody>
+</table>
+<p>With a single Adapter installed there is no switcher; you enter the corresponding Workspace directly.</p>
+<h3 id="4-3-the-workbench-6-tabs">4.3 The Workbench (6 tabs)</h3>
+<p>Once a project is open, the Workbench becomes the main operations hub:</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Icon</th>
+<th>Function</th>
+<th>Quick actions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Home</strong></td>
+<td>🏠</td>
+<td>Project dashboard</td>
+<td>Build / Report / Program / Sim / Debug / Diagnose</td>
+</tr>
+<tr>
+<td><strong>Build</strong></td>
+<td>🔨</td>
+<td>Build status and control</td>
+<td>Build / Open Report / Timing Diagnose / Tcl Console</td>
+</tr>
+<tr>
+<td><strong>Timing</strong></td>
+<td>⏱️</td>
+<td>Timing summary and critical paths</td>
+<td>Timing Diagnose / Tcl Console</td>
+</tr>
+<tr>
+<td><strong>Debug</strong></td>
+<td>🐛</td>
+<td>Hardware debug sessions</td>
+<td>Start / Reconnect</td>
+</tr>
+<tr>
+<td><strong>Software</strong></td>
+<td>💻</td>
+<td>RISC-V software development</td>
+<td>Build App / Flash App / GDB / Sync BSP</td>
+</tr>
+<tr>
+<td><strong>IP</strong></td>
+<td>📦</td>
+<td>IP instance management</td>
+<td>Add IP / IP List / Configure / Regenerate / Sync</td>
+</tr>
+</tbody>
+</table>
+<p>The tab bar shows the EVOVERSE brand logo and wordmark on the left; the active tab has an orange highlight line at the bottom.</p>
+<h4 id="home-tab-details">Home tab details</h4>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Project name</strong></td>
+<td>Current project ID and path</td>
+</tr>
+<tr>
+<td><strong>Device info</strong></td>
+<td>FPGA model, family, speed grade</td>
+</tr>
+<tr>
+<td><strong>Composition</strong></td>
+<td>Board / Carrier / Jacket / IP composition list</td>
+</tr>
+<tr>
+<td><strong>Quick Actions</strong></td>
+<td>One-click action row (Build / Report / Program / Sim / Debug / Diagnose)</td>
+</tr>
+<tr>
+<td><strong>Document list</strong></td>
+<td>The .md documents in the project</td>
+</tr>
+</tbody>
+</table>
+<h4 id="build-tab-details">Build tab details</h4>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Status badge</strong></td>
+<td>PASS (green) / FAIL (red) / IDLE (gray)</td>
+</tr>
+<tr>
+<td><strong>WNS/TNS</strong></td>
+<td>Worst negative slack / total negative slack</td>
+</tr>
+<tr>
+<td><strong>Device/Top</strong></td>
+<td>Target device name / top-level module name</td>
+</tr>
+<tr>
+<td><strong>Action buttons</strong></td>
+<td>Build / Open Report / Timing Diagnose / Tcl Console</td>
+</tr>
+</tbody>
+</table>
+<h4 id="timing-tab-details">Timing tab details</h4>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>KPI cards</strong></td>
+<td>WNS (three-color), TNS (three-color), Violated Clocks count</td>
+</tr>
+<tr>
+<td><strong>Top 5 critical paths</strong></td>
+<td>Slack / startpoint / endpoint / logic levels per path</td>
+</tr>
+<tr>
+<td><strong>Action buttons</strong></td>
+<td>Timing Diagnose / Tcl Console</td>
+</tr>
+</tbody>
+</table>
+<p>Color meaning: green = timing met, yellow = near critical (&lt; 1 ns), red = violation.</p>
+<h4 id="software-tab-details">Software tab details</h4>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Toolchain status</strong></td>
+<td>Whether xPack RISC-V GCC has been detected/downloaded</td>
+</tr>
+<tr>
+<td><strong>BSP status</strong></td>
+<td>Whether the BSP directory is ready</td>
+</tr>
+<tr>
+<td><strong>App list</strong></td>
+<td>Each app has its own action buttons: Build / Flash / GDB</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ip-tab-details">IP tab details</h4>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IP instance list</strong></td>
+<td>Obtained by scanning the XML <code>&lt;efx:ip_info&gt;</code> and the <code>ip/</code> directory</td>
+</tr>
+<tr>
+<td><strong>Per-instance actions</strong></td>
+<td><strong>Efinity</strong> (SoC-class IP such as RISC-V Sapphire — configured in Efinity's native multi-tab wizard) / <strong>Config</strong> (edit settings.json parameters inside VS Code) / <strong>Regen</strong> (regenerate the RTL)</td>
+</tr>
+<tr>
+<td><strong>Global actions</strong></td>
+<td>Add IP / IP List / Open in Efinity IP Manager / Sync from Efinity / Sync Project Files</td>
+</tr>
+</tbody>
+</table>
+<p>Cards for SoC/IP-class IP (<code>kind</code> containing sapphire/riscv/soc) show a <strong>CPU</strong> icon and an orange <strong>Efinity</strong> button; clicking it opens Efinity's native multi-tab IP Configuration Wizard in the Efinity GUI for the complex parameter setup. After configuring, use <strong>Sync from Efinity</strong> to sync the changes back into the project and regenerate.</p>
+<h3 id="4-4-the-board-catalog-view">4.4 The Board Catalog view</h3>
+<p>All Catalog materials are shown in a tree:</p>
+<pre><code>📦 Boards
+  ├── 📦 ws-e1 (TJ180A484S, C4)
+  │   └── 📦 ws-e1-base
+  │       ├── 📦 verified-reference
+  │       ├── 📦 sensor-fusion
+  │       └── 📦 stage0
+  └── ...
+📦 IPs
+  ├── 📦 evoverse-dma
+  └── 📦 mipi-rx
+</code></pre>
+<p>Every material entry (Board / Carrier / Jacket / Demo / IP) has a <strong>Files</strong> child node; expand it to browse the full contents of the material directory (documents, pin tables, RTL—every file); clicking a file opens it directly in the editor.</p>
+<p><strong>View title-bar buttons</strong>:
+- <strong>Sync Catalog</strong> (<code>EvoVerse: Sync Catalog</code>) — refresh local materials
+- Project creation and takeover go through Trae natural language into Workbench Control; the Catalog view no longer duplicates the project-status entry</p>
+<p><strong>Context menu</strong>:
+- <code>.md</code> / <code>.yaml</code> files → <code>Validate Manifest</code></p>
+<h3 id="4-5-the-project-explorer-view">4.5 The Project Explorer view</h3>
+<p>Shown only after an EvoVerse project is opened; it displays the project files as a tree. With a single project under the workspace root, the groups are shown flat; when the main directory contains multiple project subdirectories (one project per subdirectory), each project appears as its own root node:</p>
+<pre><code>📁 my-project                (with multiple projects: one root node per project)
+├── 📁 rtl/                  (RTL sources)
+├── 📁 sim/                  (testbenches)
+├── 📁 constraints/          (IO constraints + SDC)
+├── 📁 software/             (RISC-V firmware)
+├── 📁 ip/                   (IP instances)
+├── 📄 *.xml                 (project file)
+├── 📄 *.md                  (documents)
+└── 📁 Other Files           (all remaining files: .py / .tcl / .csv etc.—no longer hidden)
+</code></pre>
+<p>After a successful build, a <strong>Design Hierarchy</strong> node is attached to the top of the file tree (showing the module hierarchy expanded from the top-level module); the original file tree is always kept.</p>
+<p><strong>Multi-project workspaces</strong>: run <code>Efinity: Select Project</code> or <code>RK3588: Select Project</code> from the command palette to choose the active project from all projects discovered recursively under the workspace (the choice is written to <code>.evoverse/active-project.json</code>; the Workbench and the SDK-side build / diagnosis commands switch together).</p>
+<p><strong>View title-bar buttons</strong> (left to right):</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Command</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>▶️ Build</td>
+<td><code>Toolchain: Build</code></td>
+<td>Build the project</td>
+</tr>
+<tr>
+<td>📊 Report</td>
+<td><code>Toolchain: Open Build Report</code></td>
+<td>Open the build report</td>
+</tr>
+<tr>
+<td>🔍 Diagnose</td>
+<td><code>Toolchain: Diagnose Timing Violations</code></td>
+<td>Timing diagnosis</td>
+</tr>
+<tr>
+<td>💻 Tcl Console</td>
+<td><code>Toolchain: Open Timing Tcl Console</code></td>
+<td>Tcl console</td>
+</tr>
+<tr>
+<td>🧪 Simulate</td>
+<td><code>Toolchain: Simulate</code></td>
+<td>Run simulation</td>
+</tr>
+<tr>
+<td>🐛 Debug</td>
+<td><code>Toolchain: Debug</code></td>
+<td>Start debugging</td>
+</tr>
+<tr>
+<td>⚡ Program</td>
+<td><code>Toolchain: Program FPGA</code></td>
+<td>Program the FPGA</td>
+</tr>
+<tr>
+<td>📝 Software</td>
+<td><code>EvoVerse: New Software App…</code></td>
+<td>New software app</td>
+</tr>
+<tr>
+<td>🖥️ Efinity GUI</td>
+<td><code>Efinity: Open Project in Efinity GUI</code></td>
+<td>Open in Efinity</td>
+</tr>
+<tr>
+<td>🔄 Refresh</td>
+<td><code>Refresh Project Explorer</code></td>
+<td>Refresh the file tree</td>
+</tr>
+<tr>
+<td>✓ Check</td>
+<td><code>Toolchain: Check RTL Code Style</code></td>
+<td>Code style check</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-6-webview-panels">4.6 Webview panels</h3>
+<p>The SDK provides the following main webviews and workspace entries; the Workbench lives in the sidebar and the others open on demand:</p>
+<table>
+<thead>
+<tr>
+<th>Webview</th>
+<th>Purpose</th>
+<th>How to open</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Welcome</strong></td>
+<td>Main entry (board gallery + action entries)</td>
+<td><code>EvoVerse: Show Welcome</code></td>
+</tr>
+<tr>
+<td><strong>Workbench</strong></td>
+<td>The 6-tab workbench sidebar</td>
+<td>Shown automatically / <code>Open Workbench</code></td>
+</tr>
+<tr>
+<td><strong>Project Home</strong></td>
+<td>Project dashboard (large buttons + metadata)</td>
+<td>Embedded in the Home tab</td>
+</tr>
+<tr>
+<td><strong>Build Report</strong></td>
+<td>The 6-tab build report</td>
+<td>Pops up automatically after a build / <code>Open Build Report</code></td>
+</tr>
+<tr>
+<td><strong>Timing Diagnose</strong></td>
+<td>Rule-engine diagnosis + AI chat</td>
+<td><code>Diagnose Timing Violations</code></td>
+</tr>
+<tr>
+<td><strong>Video Sim</strong></td>
+<td>Opens the Video Sim workspace in a separate IDE window</td>
+<td><code>Toolchain: Simulate ISP (Video Sim)</code></td>
+</tr>
+<tr>
+<td><strong>Board Designer</strong></td>
+<td>Visual board-metadata editor</td>
+<td><code>Open Board Designer</code></td>
+</tr>
+<tr>
+<td><strong>Wizard: Board</strong></td>
+<td>New-board wizard</td>
+<td><code>New Board…</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-7-status-bar">4.7 Status bar</h3>
+<p>The bottom status bar of the IDE shows the build status indicator on the left:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Icon</th>
+<th>Text</th>
+<th>Tooltip</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ready</td>
+<td>✓</td>
+<td><code>Build: Ready</code></td>
+<td>Click to open the Build Report</td>
+</tr>
+<tr>
+<td>Running</td>
+<td>🔄</td>
+<td><code>Build: Running</code></td>
+<td>Shows the current stage</td>
+</tr>
+<tr>
+<td>Failed</td>
+<td>✗</td>
+<td><code>Build: Failed</code></td>
+<td>Shows an error summary + timing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-8-editor-title-bar-buttons">4.8 Editor title-bar buttons</h3>
+<p>When an RTL/SDC file is open inside an EvoVerse project, quick-action buttons appear on the right of the editor title bar:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Command</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>▶️ Build</td>
+<td><code>Toolchain: Build</code></td>
+<td>Build</td>
+</tr>
+<tr>
+<td>🧪 Sim</td>
+<td><code>Toolchain: Simulate</code></td>
+<td>Simulate</td>
+</tr>
+<tr>
+<td>🐛 Debug</td>
+<td><code>Toolchain: Debug</code></td>
+<td>Debug</td>
+</tr>
+<tr>
+<td>⚡ Program</td>
+<td><code>Toolchain: Program FPGA</code></td>
+<td>Program</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-project-management">5. Project management</h2>
+<h3 id="5-1-create-a-project-with-natural-language">5.1 Create a project with natural language</h3>
+<p>State the goal, the board, the carrier, and the Catalog materials you need in Trae Chat. The Agent first calls <code>project_status</code> and <code>project_next</code> and shows only the recommended action, the required user decisions, and the evidence boundary from the server envelope. Only after you confirm does it submit <code>project_execute</code> with the envelope's <code>actionId</code> and <code>expectedRevision</code>.</p>
+<p>After execution completes, <code>project_next</code> must be re-read to verify the new revision and the next recommended action. If the response is interrupted, first verify the receipt, then decide whether to retry with the same action identity; never create a new request to guess the state.</p>
+<p>Creating a project produces a manifest, constraints, and a minimal RTL/simulation skeleton. When you need a reference design, have the Agent list the available materials from the synced Catalog with their provenance; do not hard-code a fixed Jacket name as an entry point assumed to exist for every customer.</p>
+<p>Free-form development can still edit files directly and run ordinary Builds; only after the current iteration opts into reliable mode and the user selects FPGA_FUNCTIONAL, FPGA_INTEGRATION, or HIGH_ASSURANCE via <code>simulation.profile.select</code> do candidates, simulation, and promotion become gated by evidence. Simulation, Native Build, Program, and Hardware Validation are recorded separately; boundaries that have not run explicitly show <code>NOT_RUN</code> / <code>BOARD_VALIDATION_REQUIRED</code>.</p>
+<h3 id="5-2-take-over-an-existing-project">5.2 Take over an existing project</h3>
+<p>Describe the existing project directory and your takeover goal in Trae Chat. The Agent first reads <code>project_status</code> / <code>project_next</code> and submits only after confirming that the server recommends <code>asset.observe</code>, <code>asset.adopt</code>, or another legitimate action; upgrading a native Efinity project is still done by <code>EvoVerse: Adopt Project (upgrade native Efinity)</code>.</p>
+<p><strong>External project support</strong>: even without <code>evoverse-project.md</code>, as long as the directory contains Efinity's <code>&lt;project&gt;.xml</code> file, Build / Report / Diagnose / Program and related operations all work normally.</p>
+<h3 id="5-3-project-directory-layout">5.3 Project directory layout</h3>
+<pre><code>&lt;project-id&gt;/                      # project root
+├── &lt;project-id&gt;.xml               # Efinity project file (native layout, must contain &lt;efx:project&gt;)
+├── evoverse-project.md              # EvoVerse project metadata (optional, enhances IDE support)
+├── rtl/                           # RTL sources (.v/.sv)
+├── constraints/                   # constraint files
+│   ├── base.peri.isf / .peri.xml  # IO pin constraints
+│   └── base.sdc                  # timing constraints
+├── sim/                           # testbenches (tb_*.sv)
+├── ip/                            # IP instance directory (one subdirectory per IP)
+│   └── &lt;module-name&gt;/
+│       ├── settings.json          # IP parameter configuration
+│       └── *.v / *.sv             # generated RTL
+├── software/                      # RISC-V software (optional)
+│   ├── bsp/                       # BSP headers
+│   └── apps/                      # applications
+│       └── &lt;app-name&gt;/
+│           ├── src/main.c
+│           ├── makefile
+│           └── linker.ld
+├── outflow/                       # build output (generated automatically)
+│   ├── *.bit                     # bitstream
+│   ├── *.hex                     # HEX format
+│   ├── *.place.rpt               # place report
+│   ├── *.route.rpt.xml           # route report
+│   └── *.timing.rpt              # timing report
+├── work_syn/                      # synthesis intermediates
+├── work_pnr/                      # place-and-route intermediates
+└── .github/ / .trae/rules.md      # VS Code / Trae Agent rules (generated automatically)
+</code></pre>
+<h3 id="5-4-sync-project-files">5.4 Sync project files</h3>
+<p><strong>Command</strong>: <code>Toolchain: Sync HDL Sources to XML</code></p>
+<p>Scans <code>.v</code>/<code>.sv</code>/<code>.vhd</code> files under <code>rtl/</code>, <code>ip/</code>, <code>hdl/</code>, and <code>src/</code>, plus the IP instances under <code>ip/</code>, and syncs them automatically into the project XML's <code>&lt;efx:design_file&gt;</code> and <code>&lt;efx:ip_info&gt;</code> lists. Inside IP directories, only design sources declared by <code>external_source_*</code> are synced; <code>external_example_*</code> are vendor example projects and never enter the user design-file list.</p>
+<p><strong>CLI equivalent</strong>:</p>
+<pre><code class="language-bash">evoverse sync-sources --apply        # scan and write the XML
+evoverse sync-sources                 # preview only (dry-run)
+evoverse sync-sources --dir rtl --dir my_ip_dir  # specify scan directories
+</code></pre>
+<hr />
+<h2 id="6-catalog-material-management">6. Catalog material management</h2>
+<h3 id="6-1-catalog-structure">6.1 Catalog structure</h3>
+<p>The Catalog is the SDK's material hub and uses a five-layer model:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Type</th>
+<th>Location</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td><strong>Board</strong></td>
+<td><code>catalog/boards/&lt;id&gt;/</code></td>
+<td>FPGA module with pins and IO constraints</td>
+</tr>
+<tr>
+<td>L2</td>
+<td><strong>Carrier</strong></td>
+<td><code>.../carriers/&lt;carrier-id&gt;/</code></td>
+<td>Base carrier board</td>
+</tr>
+<tr>
+<td>L3</td>
+<td><strong>Jacket</strong></td>
+<td><code>.../carriers/&lt;carrier-id&gt;/jackets/&lt;id&gt;/</code></td>
+<td>Function mezzanine</td>
+</tr>
+<tr>
+<td>L4</td>
+<td><strong>IP</strong></td>
+<td><code>catalog/ips/&lt;id&gt;/</code></td>
+<td>RTL module + register table</td>
+</tr>
+<tr>
+<td>L5</td>
+<td><strong>Demo</strong></td>
+<td><code>.../carriers/&lt;carrier-id&gt;/demos/&lt;id&gt;/</code></td>
+<td>Complete example project</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-sync-the-catalog">6.2 Sync the Catalog</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Sync Catalog</code></p>
+<p>On first install the Catalog is empty and the CLI, MCP, and UI all clearly return <code>CATALOG_NOT_INSTALLED</code>. The customer must first accept the personal-GitHub-account read-only invitation to the unified private Catalog repository and complete local authentication via Git Credential Manager or the GitHub CLI. The repository URL is visible to VSIX users, but the content remains protected by GitHub authorization; team-shared PATs are forbidden.</p>
+<p>Sync pulls the latest official <code>catalog-v*</code> tag from the remote and mirrors the official content over the local <code>catalog/</code> (for same-named official entries, the remote version wins); a network or permission failure never affects existing local content.</p>
+<p>Customers may add their own Boards, IPs, Carriers, Jackets, or Demos under <code>evoverse.home/catalog/</code>; the CLI, MCP, and the workbench discover them all from this single root. Sync never deletes local-only entries—any directory or file at any layer that the official release does not have (for example <code>catalog/boards/customer-board/</code> or <code>catalog/ips/customer-ip/</code>) is kept as-is. Note: if a customer material has the same name and path as an official entry, the official version overwrites it during sync, so use a separate directory and ID for customer materials.</p>
+<p><strong>CLI equivalent</strong>:</p>
+<pre><code class="language-bash">evoverse sync --json
+evoverse catalog status --json
+</code></pre>
+<h3 id="6-3-browse-and-query">6.3 Browse and query</h3>
+<p><strong>CLI commands</strong>:</p>
+<pre><code class="language-bash"># List all core boards
+evoverse list boards
+
+# List a board's ecosystem
+evoverse list carriers --board ws-e1
+evoverse list jackets --board ws-e1
+evoverse list demos --board ws-e1
+
+# List all IPs
+evoverse list ips
+
+# View material details
+evoverse info ws-e1
+evoverse info &lt;reference-jacket-id&gt;
+evoverse info evoverse-dma
+
+# View the ecosystem tree
+evoverse tree                     # all boards
+evoverse tree ws-e1          # a specific board
+</code></pre>
+<h3 id="6-4-validate-materials">6.4 Validate materials</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Validate Manifest</code> (right-click a <code>.md</code>/<code>.yaml</code> file)</p>
+<p><strong>CLI equivalent</strong>: <code>evoverse validate &lt;path&gt;</code></p>
+<p>Checks that the directory exists and contains at least one <code>.md</code> file.</p>
+<hr />
+<h2 id="7-building">7. Building</h2>
+<h3 id="7-1-build-command-overview">7.1 Build command overview</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Category</th>
+<th>Flow scope</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Toolchain: Build</code></td>
+<td>Toolchain</td>
+<td>Full flow</td>
+<td>Synthesis → P&amp;R → Bitstream (recommended)</td>
+</tr>
+<tr>
+<td><code>Toolchain: Build (Full Flow)</code></td>
+<td>Toolchain</td>
+<td>Full flow</td>
+<td>Same as above (explicit full flow)</td>
+</tr>
+<tr>
+<td><code>Toolchain: Synthesize Only</code></td>
+<td>Toolchain</td>
+<td>Synthesis only</td>
+<td>Runs only <code>efx_map</code></td>
+</tr>
+<tr>
+<td><code>Toolchain: Place &amp; Route Only</code></td>
+<td>Toolchain</td>
+<td>P&amp;R only</td>
+<td>Runs only <code>efx_pnr</code> (synthesis must have run first)</td>
+</tr>
+<tr>
+<td><code>Toolchain: Generate Bitstream</code></td>
+<td>Toolchain</td>
+<td>Bitstream only</td>
+<td>Runs only <code>efx_pgm</code> (P&amp;R must have run first)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-2-build-modes">7.2 Build modes</h3>
+<p>Selected via the <code>evoverse.buildMode</code> setting:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CLI mode</strong> (recommended)</td>
+<td><code>cli</code></td>
+<td>Drives Efinity from the command line; supports report parsing and AI diagnosis</td>
+</tr>
+<tr>
+<td><strong>GUI mode</strong></td>
+<td><code>gui</code></td>
+<td>Launches the Efinity IDE GUI directly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-3-build-flow-details">7.3 Build flow details</h3>
+<blockquote>
+<p><strong>v0.7.1 behavior change (see <a href="#a1-build-and-health-check-behavior-changes-v071">Appendix A.A1</a>)</strong>: the SDK no longer sanitizes the project XML automatically and no longer runs the structural health check automatically before a build; the HDL file watcher no longer auto-runs <code>sync-sources</code>. All source syncing and health checks are now manual (see §5.4 and §10.6). AI diagnosis results are no longer applied automatically; user confirmation is required.</p>
+</blockquote>
+<p>In CLI mode the SDK executes the following steps:</p>
+<pre><code>1. Preprocessing (Pre-PT)
+   ├─ Parse the project XML
+   └─ Convert base.peri.isf → &lt;design&gt;.peri.xml (PT conversion)
+
+2. Synthesis — efx_map
+   ├─ Read the design file list (&lt;efx:design_file&gt;)
+   ├─ Run Verilog/SystemVerilog synthesis
+   └─ Write the mapped netlist to work_syn/
+
+3. Place &amp; Route — efx_pnr
+   ├─ Import the mapped netlist
+   ├─ Place logic cells
+   └─ Route connections
+
+4. Bitstream generation — efx_pgm
+   ├─ Generate the .bit file
+   └─ Generate the .hex file
+
+5. Post-processing
+   ├─ Parse the outflow/ reports
+   ├─ Parse into an in-memory BuildSummary and update the report view
+   └─ Update the status bar (restored from native reports when the project is reopened)
+</code></pre>
+<h3 id="7-4-parallel-builds">7.4 Parallel builds</h3>
+<p>By default a build does not override Efinity project parameters. Only when <code>evoverse.build.parallelJobs</code> is explicitly enabled does the SDK override the synthesis/PNR parallel thread count from the command line.</p>
+<h3 id="7-5-sdc-pre-check">7.5 SDC pre-check</h3>
+<p>Checks such as missing/empty SDC and clock coverage have been folded into <a href="#106-project-health-check">§10.6 Project Health Check</a> and <strong>run only when triggered manually</strong>; they no longer block builds (v0.7.1 behavior change, see <a href="#a1-build-and-health-check-behavior-changes-v071">Appendix A.A1</a>):</p>
+<ul>
+<li><code>sdc-missing-or-empty</code> (SDC missing or empty)</li>
+<li><code>sdc-clock-coverage</code> (clock-constraint coverage)</li>
+</ul>
+<p>If <code>Toolchain: Build</code> runs without an SDC, Efinity uses automatically inferred clocks; run <code>Toolchain: Project Health Check</code> once before building to catch this early.</p>
+<h3 id="7-6-build-parameter-panel">7.6 Build parameter panel</h3>
+<p>The Workbench Build page provides Efinity-native parameter overrides for the current workspace. Empty/disabled entries inject no override into Efinity:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synthesis options</td>
+<td>empty</td>
+<td>One <code>name=value</code> per line, passed to <code>--map_opts</code></td>
+</tr>
+<tr>
+<td>PNR options</td>
+<td>empty</td>
+<td>One <code>name=value</code> per line, passed to <code>--pnr_opts</code></td>
+</tr>
+<tr>
+<td>Interface/PT options</td>
+<td>empty</td>
+<td>One <code>name=value</code> per line, passed to <code>--pt_opts</code></td>
+</tr>
+<tr>
+<td>Bitstream/PGM options</td>
+<td>empty</td>
+<td>One <code>name=value</code> per line, passed to <code>--pgm_opts</code></td>
+</tr>
+<tr>
+<td>Parallel jobs</td>
+<td>not enabled</td>
+<td>When explicitly enabled, overrides the Efinity parallel thread count; must be a positive integer</td>
+</tr>
+<tr>
+<td>Build timeout</td>
+<td>not enabled</td>
+<td>When explicitly enabled, sets the cumulative build timeout in seconds</td>
+</tr>
+<tr>
+<td>Unified netlist flow</td>
+<td>not enabled</td>
+<td>When explicitly enabled, passes on/off; otherwise the project XML is followed</td>
+</tr>
+</tbody>
+</table>
+<p>Clicking save writes the workspace <code>evoverse.build.*</code> settings. The SDK provides no Skip PT/Skip PGM bypass switches; when you need individual stages, use the corresponding native commands or <code>Build (Full Flow)</code> / <code>Synthesize Only</code> / <code>Place &amp; Route Only</code> / <code>Generate Bitstream</code>.</p>
+<h3 id="7-7-open-in-the-efinity-gui">7.7 Open in the Efinity GUI</h3>
+<p><strong>Command</strong>: <code>Efinity: Open Project in Efinity GUI</code></p>
+<p>Opens the current project directly in the Efinity GUI (for scenarios such as manually tuning parameters).</p>
+<hr />
+<h2 id="8-build-report">8. Build report</h2>
+<h3 id="8-1-open-the-report">8.1 Open the report</h3>
+<p><strong>Command</strong>: <code>Toolchain: Open Build Report</code></p>
+<p>Pops up automatically when the build finishes (disable it via <code>evoverse.build.autoOpenReport</code>); it can also be opened manually.</p>
+<h3 id="8-2-report-tabs">8.2 Report tabs</h3>
+<p>The Build Report contains <strong>6 tabs</strong>:</p>
+<h4 id="overview">Overview</h4>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build status</td>
+<td>PASS / FAIL badge</td>
+</tr>
+<tr>
+<td>Elapsed time</td>
+<td>Per-stage time statistics</td>
+</tr>
+<tr>
+<td>Device info</td>
+<td>FPGA model, family, speed grade</td>
+</tr>
+<tr>
+<td>Top module</td>
+<td>Top module name</td>
+</tr>
+<tr>
+<td>P&amp;R status</td>
+<td>Whether place-and-route succeeded</td>
+</tr>
+</tbody>
+</table>
+<h4 id="resources">Resources</h4>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Visualization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LUT usage</td>
+<td>Donut + bar chart</td>
+</tr>
+<tr>
+<td>FF (flip-flops)</td>
+<td>Donut + bar chart</td>
+</tr>
+<tr>
+<td>BRAM</td>
+<td>Donut + bar chart</td>
+</tr>
+<tr>
+<td>DSP</td>
+<td>Donut + bar chart</td>
+</tr>
+<tr>
+<td>GPIO</td>
+<td>Count statistics</td>
+</tr>
+<tr>
+<td>Clock Domains</td>
+<td>Clock-domain count</td>
+</tr>
+<tr>
+<td>Global Buffers</td>
+<td>Global buffer count</td>
+</tr>
+</tbody>
+</table>
+<h4 id="i-o-clock-summary">I/O &amp; Clock Summary</h4>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actual IO pin count</td>
+<td>Parsed from the map/PNR reports</td>
+</tr>
+<tr>
+<td>PLL count and configuration</td>
+<td>Clock resources</td>
+</tr>
+<tr>
+<td>Per-clock-domain WNS</td>
+<td>Timing overview per clock domain</td>
+</tr>
+</tbody>
+</table>
+<h4 id="timing">Timing</h4>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WNS</td>
+<td>Worst negative slack (ns)</td>
+</tr>
+<tr>
+<td>TNS</td>
+<td>Total negative slack (ns)</td>
+</tr>
+<tr>
+<td>Per-clock status</td>
+<td>Met/violated status per clock domain (color-coded)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="critical-paths">Critical Paths</h4>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Interaction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Top 20 violating paths</td>
+<td>Sorted by slack, ascending</td>
+</tr>
+<tr>
+<td>Per-path details</td>
+<td>Startpoint → hop-by-hop → endpoint</td>
+</tr>
+<tr>
+<td>Source locating</td>
+<td>Click to jump to the corresponding RTL line</td>
+</tr>
+<tr>
+<td>Hop delay breakdown</td>
+<td>Logic delay / routing delay / register delay</td>
+</tr>
+<tr>
+<td>Mermaid diagram</td>
+<td>Path topology visualization</td>
+</tr>
+</tbody>
+</table>
+<h4 id="optimization">Optimization</h4>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Strategy suggestion list</td>
+<td>8 build-strategy categories (see Chapter 10)</td>
+</tr>
+<tr>
+<td>Apply &amp; Rebuild</td>
+<td>Adopt a suggestion and rebuild in one click</td>
+</tr>
+<tr>
+<td>Before/After comparison</td>
+<td>WNS before vs. after adoption</td>
+</tr>
+<tr>
+<td>Historical effectiveness</td>
+<td>Effect score recorded per adoption</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tcl-console">Tcl Console</h4>
+<p>An interactive Efinity Tcl shell where you can type STA commands directly (see §10.2).</p>
+<hr />
+<h2 id="9-simulation">9. Simulation</h2>
+<h3 id="9-1-run-a-simulation">9.1 Run a simulation</h3>
+<p><strong>Command</strong>: <code>Toolchain: Simulate</code></p>
+<p>The SDK simulates with <strong>Icarus Verilog</strong>:</p>
+<pre><code class="language-bash"># Commands executed internally (equivalent):
+iverilog -g2012 -o sim_test.vvp rtl/*.v sim/tb_*.sv
+vvp sim_test.vvp
+</code></pre>
+<ul>
+<li>Auto-detects <code>tb_*.sv</code> testbenches under <code>sim/</code></li>
+<li>Compiles all <code>.v</code>/<code>.sv</code> files under <code>rtl/</code></li>
+<li>Produces a VCD waveform file</li>
+</ul>
+<h3 id="9-2-view-waveforms">9.2 View waveforms</h3>
+<p>After simulation the VCD file opens automatically in the <strong>VaporView</strong> extension (<code>lramseyer.vaporview</code> must be installed).</p>
+<h3 id="9-3-pipeline-regression-simulation">9.3 Pipeline regression simulation</h3>
+<p><strong>Command</strong>: <code>Toolchain: Pipeline Regression Sim</code></p>
+<p>Verifies that inserting pipeline registers does not change functionality:</p>
+<ol>
+<li><strong>Capture the baseline</strong>: before touching the RTL, save the current simulation's output signature</li>
+<li><strong>Compare against the baseline</strong>: after the RTL change, re-simulate and compare with the baseline</li>
+<li>Result: PASS (identical) or FAIL (different, with the concrete differences reported)</li>
+</ol>
+<h3 id="9-4-isp-image-simulation-vip-sim">9.4 ISP image simulation (VIP Sim)</h3>
+<p><strong>Command</strong>: <code>Toolchain: Simulate ISP (Video Sim)</code></p>
+<p>Since v0.9.0, image simulation has been handled by the <strong>VIP Sim platform</strong> (embedded in the SDK core extension; no separate installation):</p>
+<ol>
+<li>When the workspace is a VIP image-simulation project (containing a <code>Makefile</code> and <code>scripts/gen_stimulus.py</code>), the command opens the VIP simulation console (<code>vipsim.console</code>) directly</li>
+<li>From the VIP console/welcome page you can create or import a VIP project: <code>gen_stimulus.py</code> generates image stimuli, the simulation is compared bit-by-bit against the <code>golden.py</code> golden reference, and <code>compare.py</code> outputs the differences and a quality report</li>
+<li>If a VIP project directory is configured in the <code>evoverse.simIspWorkspace</code> setting, the command opens that project in a new window</li>
+</ol>
+<p>See the <a href="../video-sim/platform-overview.html">Video Sim Platform Overview</a> and the offline customer documentation portal for the current entries; the retired VIP01–VIP10 tutorial tree is no longer distributed with the SDK working directory.</p>
+<hr />
+<h2 id="10-timing-analysis-and-optimization">10. Timing analysis and optimization</h2>
+<h3 id="10-1-timing-diagnosis">10.1 Timing diagnosis</h3>
+<p><strong>Command</strong>: <code>Toolchain: Diagnose Timing Violations</code></p>
+<p>Opens a standalone <strong>Timing Diagnosis webview</strong> panel containing:</p>
+<h4 id="knowledge-base-engine-diagnosis">Knowledge-base engine diagnosis</h4>
+<p>The SDK ships a built-in timing knowledge base (~30 diagnostic entries) that automatically analyzes the root cause of every violating path and suggests fixes:</p>
+<table>
+<thead>
+<tr>
+<th>Diagnosis category</th>
+<th>What it diagnoses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CDC (clock-domain crossing)</td>
+<td>Missing synchronizers, asynchronous signals crossing domains</td>
+</tr>
+<tr>
+<td>Combinational logic</td>
+<td>Excessively deep logic levels, long combinational paths</td>
+</tr>
+<tr>
+<td>Fanout</td>
+<td>High-fanout signals driving too many loads</td>
+</tr>
+<tr>
+<td>IO paths</td>
+<td>Insufficient IO delay constraints, input/output delay violations</td>
+</tr>
+<tr>
+<td>Clocks</td>
+<td>Missing clock definitions, improper clock grouping</td>
+</tr>
+<tr>
+<td>Routing</td>
+<td>Routing congestion, long routed paths</td>
+</tr>
+<tr>
+<td>Resource bottlenecks</td>
+<td>BRAM/DSP path violations</td>
+</tr>
+</tbody>
+</table>
+<h4 id="diagnosis-result-display">Diagnosis result display</h4>
+<p>Each diagnosis contains:
+- <strong>Violating path details</strong>: startpoint module → endpoint module → slack value
+- <strong>Root-cause analysis</strong>: which rules fired
+- <strong>Evidence grid</strong>: Cells / Routes / Logic% / Net% / Cross-clock / Slack
+- <strong>Confidence</strong>: high / medium / low
+- <strong>Fix suggestion</strong>: a concrete RTL modification
+- <strong>Mermaid flow diagram</strong>: path-hop visualization
+- <strong>Source jump</strong>: click to open the corresponding RTL line</p>
+<h4 id="ai-copilot-chat">AI Copilot chat</h4>
+<p>The diagnosis panel embeds an AI chat area (since v0.7.1 it shares one persistent session with <code>@evoverse</code>; see <a href="#a2-ai-diagnosis-behavior-changes-v071">Appendix A.A2</a>):</p>
+<ul>
+<li>Automatic packaging: RTL snippets + SDC constraints + diagnosis results</li>
+<li>Follow-up questions: keep drilling down within the conversation</li>
+<li><strong>Suggestions are advisory only</strong>: since v0.7.1 the AI no longer applies fixes automatically; RTL changes must be made by the user manually or confirmed through the Agent</li>
+</ul>
+<h3 id="10-2-tcl-console">10.2 Tcl console</h3>
+<p><strong>Command</strong>: <code>Toolchain: Open Timing Tcl Console</code></p>
+<p>Provides an interactive Tcl console for typing Efinity STA commands directly:</p>
+<pre><code class="language-tcl"># Common command examples
+report_timing                            # global timing report
+get_paths -setup -slack_less_than 0.0      # get all violating paths
+report_clocks                           # clock report
+report_timing -from [get_ports clk] -to * # paths starting from clk
+</code></pre>
+<p>The Tcl process stays resident in memory; repeated queries do not reload the design data.</p>
+<h3 id="10-3-datapath-tracing">10.3 Datapath tracing</h3>
+<p><strong>Command</strong>: <code>Toolchain: Trace Data Path</code></p>
+<p>Performs a deep delay breakdown of the selected critical path:</p>
+<table>
+<thead>
+<tr>
+<th>Analysis dimension</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Delay distribution</strong></td>
+<td>Logic vs. routing vs. register delay share</td>
+</tr>
+<tr>
+<td><strong>Hop reclassification</strong></td>
+<td>Reclassifies path hops as: LUT / Carry / MUX / Register / IO</td>
+</tr>
+<tr>
+<td><strong>Module boundaries</strong></td>
+<td>Annotates the Verilog module each hop belongs to</td>
+</tr>
+<tr>
+<td><strong>Mermaid topology</strong></td>
+<td>Path topology visualization (nodes = modules/hop types, edges = connections)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-4-pipeline-depth-analysis">10.4 Pipeline depth analysis</h3>
+<p><strong>Command</strong>: (integrated into the timing diagnosis panel)</p>
+<p>Three-stage redundant-register analysis:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>What is analyzed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Timing feasibility</strong></td>
+<td>Whether the violation count/severity justifies inserting pipelines</td>
+</tr>
+<tr>
+<td><strong>Signal dependency analysis</strong></td>
+<td>Scans 7 dependency classes (reset chains, enable chains, select chains, address chains, data chains, state machines, cross-module)</td>
+</tr>
+<tr>
+<td><strong>Equivalence verdict</strong></td>
+<td>Whether inserting registers changes the circuit's functional behavior</td>
+</tr>
+</tbody>
+</table>
+<p>Outputs two example projects:
+- <strong>td04-over-pipelined</strong>: over-pipelined (too many registers inserted)
+- <strong>td04-trimmed</strong>: the optimal version with redundancy removed</p>
+<h3 id="10-5-build-strategy-suggestions-buildstrategyadvisor">10.5 Build strategy suggestions (BuildStrategyAdvisor)</h3>
+<p><strong>Location</strong>: Build Report → Optimization tab</p>
+<p>Analyzes the build report and suggests strategies across the following categories:</p>
+<table>
+<thead>
+<tr>
+<th>Suggestion</th>
+<th>Parameter</th>
+<th>When it applies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Flow selection</strong></td>
+<td>Different synthesis modes</td>
+<td>Default speed / area / balanced</td>
+</tr>
+<tr>
+<td><strong>AOE</strong></td>
+<td>Area Optimization Engine</td>
+<td>High-utilization designs</td>
+</tr>
+<tr>
+<td><strong>Retiming</strong></td>
+<td>Register retiming</td>
+<td>Designs with deep combinational logic</td>
+</tr>
+<tr>
+<td><strong>Effort Level</strong></td>
+<td>PNR effort level</td>
+<td>Default 2, adjustable to 3-5</td>
+</tr>
+<tr>
+<td><strong>Seed Sweep</strong></td>
+<td>Seed sweeping</td>
+<td>Nearly closed but not fully closed</td>
+</tr>
+<tr>
+<td><strong>DSP Packing</strong></td>
+<td>DSP utilization strategy</td>
+<td>Designs with multipliers</td>
+</tr>
+<tr>
+<td><strong>BRAM Register</strong></td>
+<td>BRAM output registers</td>
+<td>BRAM-related path violations</td>
+</tr>
+<tr>
+<td><strong>Constraint</strong></td>
+<td>IO delay constraint supplement</td>
+<td>IO path violations</td>
+</tr>
+<tr>
+<td>Area Optimization</td>
+<td>Area optimization</td>
+<td>Area-constrained designs</td>
+</tr>
+<tr>
+<td>FSM Encoding</td>
+<td>FSM encoding</td>
+<td>Designs with many state machines</td>
+</tr>
+<tr>
+<td>Clock Gating</td>
+<td>Clock gating</td>
+<td>Power-sensitive designs</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>The actual strategy engine supports 14 strategy categories; the table above lists the commonly used ones.</p>
+</blockquote>
+<p>Every suggestion can be applied and rebuilt in one click via <strong>Apply &amp; Rebuild</strong>; the historical effect is recorded.</p>
+<h3 id="10-6-project-health-check">10.6 Project health check</h3>
+<p><strong>Command</strong>: <code>Toolchain: Project Health Check</code></p>
+<blockquote>
+<p><strong>v0.7.1 behavior change (see <a href="#a1-build-and-health-check-behavior-changes-v071">Appendix A.A1</a>)</strong>: the project health check moved from "runs automatically before build" to <strong>manually triggered, informational, read-only</strong>—it does not block builds and does not modify project files (no automatic source syncing, no automatic XML sanitizing).</p>
+</blockquote>
+<p>An informational structural checkup of the project; the checks include:</p>
+<table>
+<thead>
+<tr>
+<th>Check category</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project structure</td>
+<td><code>xml-missing-design-file</code> (file missing), <code>xml-top-module-missing</code> (top module missing), <code>xml-duplicate-ip-module</code> (duplicate IP module definition)</td>
+</tr>
+<tr>
+<td>Constraint completeness</td>
+<td><code>sdc-missing-or-empty</code> (SDC missing/empty), <code>sdc-clock-coverage</code> (clock-constraint coverage)</td>
+</tr>
+<tr>
+<td>File consistency</td>
+<td><code>xml-relative-design-file</code> (relative-path risk), <code>peri-xml-stale</code> (ISF vs. peri.xml timestamp drift)</td>
+</tr>
+<tr>
+<td>IP instances</td>
+<td><code>ip-unregistered-in-xml</code> (IP not registered), <code>ip-design-file-missing</code> (IP RTL not listed in design_file)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>9 health-check rules in total, <strong>manually triggered</strong>, read-only results, no effect on the build flow.</p>
+</blockquote>
+<hr />
+<h2 id="11-debug-and-programming">11. Debug and programming</h2>
+<h3 id="11-1-program-the-fpga">11.1 Program the FPGA</h3>
+<p><strong>Command</strong>: <code>Toolchain: Program FPGA</code></p>
+<p>Programs the bitstream onto the FPGA over the FTDI JTAG interface:</p>
+<ul>
+<li>Automatically enumerates all FTDI devices (a selection list pops up with multiple devices)</li>
+<li>Supports both JTAG and SPI modes (controlled by <code>evoverse.program.defaultMode</code>)</li>
+<li>Programming progress is shown live</li>
+</ul>
+<h3 id="11-2-on-chip-debug-redone-in-v0-9-0-pure-cli">11.2 On-chip debug (redone in v0.9.0, pure CLI)</h3>
+<p><strong>Entry point</strong>: Workbench → Debug tab, or the command <code>Efinity: Open Debug Workspace</code></p>
+<p>Since v0.9.0, debugging has been done entirely through the CLI (<code>evoverse_dbg.py</code> → the Efinity <code>efx_dbg</code> API); the Efinity GUI debugger is never launched. The Debug tab provides the complete 6-step workflow:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Section</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Debug Profile</strong></td>
+<td>Shows the profile status and auto-instantiation; Build / Program FPGA buttons</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Device Connection</strong></td>
+<td>Scan Device scans FTDI/JTAG and shows the number of connected cores</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Debug Cores</strong></td>
+<td>Probe table (name / width / core / LA or VIO / probe type)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Logic Analyzer Capture</strong></td>
+<td>Per-probe trigger configuration (compare mode / pattern / mask); Trigger Capture or Immediate</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Virtual I/O</strong></td>
+<td>Read VIO values; output probes can be safely written (confirmation receipt required)</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Results</strong></td>
+<td>Sample count, VCD path (click to open)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Command overview</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Efinity: Open Debug Workspace</code></td>
+<td>Opens the Debug tab</td>
+</tr>
+<tr>
+<td><code>Efinity: Scan Debug Device</code></td>
+<td>FTDI/JTAG device scan</td>
+</tr>
+<tr>
+<td><code>Efinity: Trigger Capture</code></td>
+<td>LA capture with trigger conditions</td>
+</tr>
+<tr>
+<td><code>Efinity: Immediate Capture</code></td>
+<td>Unconditional immediate capture</td>
+</tr>
+<tr>
+<td><code>Efinity: Read VIO</code> / <code>Write VIO</code></td>
+<td>VIO read / safe write</td>
+</tr>
+</tbody>
+</table>
+<h3 id="11-3-mark-debug-signals-editor-right-click">11.3 Mark debug signals (editor right-click)</h3>
+<p>Select a signal declaration in the RTL editor → right-click:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Add Signal to Efinity Debug</strong></td>
+<td>Writes the <code>(* mark_debug *)</code> attribute before the declaration</td>
+</tr>
+<tr>
+<td><strong>Remove Signal from Efinity Debug</strong></td>
+<td>Removes the mark_debug attribute</td>
+</tr>
+<tr>
+<td><strong>Prepare Selection for Efinity Debug</strong></td>
+<td>Marks it and opens the Debug tab directly</td>
+</tr>
+</tbody>
+</table>
+<p>After marking, enable auto-instantiation in the Build tab and rebuild; Efinity then generates the debug cores (.dbg.vdb) automatically.</p>
+<h3 id="11-4-natural-language-debug-plans-debug-intent">11.4 Natural-language debug plans (Debug Intent)</h3>
+<p>The "Debug Assist · Natural Language" area of the Debug tab lets you describe debug intent in natural language (for example, "trigger when the data bus equals 0x1FF and valid is high"):</p>
+<ol>
+<li><strong>Generate Plan</strong> — generates a structured operation plan (mark signals / change triggers / update settings)</li>
+<li><strong>Preview Selected Operations</strong> — per-file diff preview with checkboxes for the operations to apply</li>
+<li><strong>Confirm and Apply Preview</strong> — applies transactionally after confirmation; never auto-Builds/Programs/Captures</li>
+</ol>
+<p>In Trae prepared mode you can paste an externally generated JSON plan and validate it with <strong>Validate Pasted JSON</strong> (a snapshot hash guards against tampering).</p>
+<p><strong>Safety boundary</strong>: every write operation (VIO writes, plan application) requires explicit confirmation; applying a plan only changes files and never triggers compilation or hardware operations.</p>
+<hr />
+<h2 id="12-code-style-check">12. Code style check</h2>
+<h3 id="12-1-whole-project-check">12.1 Whole-project check</h3>
+<p><strong>Command</strong>: <code>Toolchain: Check RTL Code Style</code></p>
+<p>Scans all <code>.v</code> / <code>.sv</code> / <code>.vh</code> / <code>.sdc</code> files in the project and checks them against the <strong>21 enabled rule IDs</strong> in the current implementation.</p>
+<h3 id="12-2-single-file-check">12.2 Single-file check</h3>
+<p><strong>Option 1</strong>: command palette → <code>Toolchain: Check This File's Code Style</code></p>
+<p><strong>Option 2</strong>: right-click an RTL or SDC file in the editor → <code>EvoVerse: Check This File's Code Style</code></p>
+<h3 id="12-3-check-results">12.3 Check results</h3>
+<p>Results appear in the VS Code-native <strong>Problems</strong> panel (<code>Ctrl+Shift+M</code>):</p>
+<ul>
+<li>Every violation carries a severity icon: 🔴 Error / 🟡 Warning | 🔵 Info</li>
+<li>Click to jump to the corresponding line</li>
+<li>The Output Channel prints a summary report</li>
+</ul>
+<h3 id="12-4-rule-categories-21-rules">12.4 Rule categories (21 rules)</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Rules</th>
+<th>What is checked</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Naming conventions</strong></td>
+<td>3</td>
+<td>File/module name matching, port-suffix conventions</td>
+</tr>
+<tr>
+<td><strong>Structural conventions</strong></td>
+<td>2</td>
+<td><code>default_nettype</code> spelling, module comment header</td>
+</tr>
+<tr>
+<td><strong>Reset strategy</strong></td>
+<td>1</td>
+<td>Async-assert/sync-release reset chains</td>
+</tr>
+<tr>
+<td><strong>Timing friendliness</strong></td>
+<td>1</td>
+<td>Divided-clock detection (a PLL should be used)</td>
+</tr>
+<tr>
+<td><strong>Synthesis friendliness</strong></td>
+<td>4</td>
+<td>case without default, if without else, FSM encoding style, mixed blocking/non-blocking</td>
+</tr>
+<tr>
+<td><strong>Clock-domain crossing</strong></td>
+<td>1</td>
+<td>Synchronizers missing the <code>ASYNC_REG</code> attribute</td>
+</tr>
+<tr>
+<td><strong>Resource utilization</strong></td>
+<td>2</td>
+<td>BRAM missing <code>ram_style</code>, DSP missing <code>use_dsp</code></td>
+</tr>
+<tr>
+<td><strong>SDC constraints</strong></td>
+<td>6</td>
+<td>Clock definitions, clock grouping, IO delays, virtual clocks, exceptions</td>
+</tr>
+<tr>
+<td><strong>Anti-patterns</strong></td>
+<td>1</td>
+<td>Verilog/SystemVerilog keyword conflicts</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-5-design-assurance-and-rule-management">12.5 Design Assurance and rule management</h3>
+<blockquote>
+<p>The style checker in 12.1–12.4 is heuristic, based on the Efinity coding-style documents; the <strong>Design Assurance</strong> in this section is a separate deterministic rule engine (<code>sdk/design-assurance</code>) that checks RTL structural rules and protocol contracts and reports three states (pass / fail / incomplete—missing evidence is incomplete, not pass). The two do not affect each other.</p>
+</blockquote>
+<p><strong>Command-line check</strong>:</p>
+<pre><code class="language-bash"># Check a project (RTL sources are auto-discovered by default and the rtl-baseline rule pack runs; testbench-style files are skipped by default)
+evoverse assurance check ./my-project
+
+# To also include testbenches (tb_*/sim/) in the analysis
+evoverse assurance check ./my-project --include-testbench
+
+# Restrict the analysis to sources under rtl/
+evoverse assurance check ./my-project --include-glob 'rtl/*.sv'
+
+# View the rule catalog and switch states
+evoverse assurance rules --format text
+</code></pre>
+<p><code>rtl-baseline@1</code> analyzes only the synthesizable subset; testbench files (initial/$task/#delay/@event etc.) are out of scope, and auto-discovery skips them by default via <code>**/sim/**</code>, <code>**/testbench/**</code>, <code>**/tb/**</code>, <code>tb_*.*</code>, <code>*_tb.*</code>, <code>sim_*</code>, <code>test_*</code>; internally the scanner skips whole <code>initial ... end</code> blocks as testbench code (recorded as info, not counted as unverified). MCP <code>assurance_check</code> likewise supports the three inputs <code>include_testbench</code> / <code>include_glob</code> / <code>exclude_glob</code>.</p>
+<p>Exit codes: 0=pass, 1=fail, 2=incomplete, 64=usage/configuration error. For the detailed contract (request JSON, evidence, exceptions) see <code>docs-en/design-assurance/README.md</code>.</p>
+<h4 id="rule-manager-rule-manager-ui">Rule manager (Rule Manager UI)</h4>
+<p><strong>Entry point</strong>: Welcome page → <strong>Assure</strong> card → <strong>Rule Manager</strong> (or the command <code>EvoVerse: Assurance Rules</code>).</p>
+<p>Manages the switches of all assurance rules and applies to every check (the CLI / MCP are equally affected):</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Master switch (All checks)</td>
+<td>When off, all checks are skipped and the report becomes <strong>incomplete</strong> (it does not masquerade as pass)</td>
+</tr>
+<tr>
+<td>Rule-pack switches</td>
+<td>Enable/disable whole packs: <code>rtl-baseline@1</code> / <code>amba.axis@1</code> / <code>custom@1</code></td>
+</tr>
+<tr>
+<td>Single-rule switches</td>
+<td>Disable one rule at a finer granularity than disabling the pack</td>
+</tr>
+<tr>
+<td>Add a custom rule</td>
+<td>Declarative regex lint: rule id, severity (error/warning/info), description, Python regex pattern; matched lines are reported as violations</td>
+</tr>
+<tr>
+<td>Delete a custom rule</td>
+<td>✕ in the custom-rule list deletes it</td>
+</tr>
+<tr>
+<td>Save / Reload / Reset</td>
+<td>Saves to the global configuration and validates via an engine read-back; Reset restores the all-enabled default state in one click</td>
+</tr>
+</tbody>
+</table>
+<p>The configuration persists in <code>&lt;EVOVERSE_HOME&gt;/assurance-rules.json</code> (the path is shown in the panel header) and can also be edited by hand—see the "Rule management" chapter of <code>docs-en/design-assurance/README.md</code> for the format and constraints.</p>
+<hr />
+<h2 id="13-ip-management">13. IP management</h2>
+<h3 id="13-1-two-configuration-paths">13.1 Two configuration paths</h3>
+<p>The EvoVerse SDK provides two ways to configure IP:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>When to use</th>
+<th>Entry point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Config inside VS Code</strong></td>
+<td>Simple IP (FIFO, GPIO, and other low-parameter modules)</td>
+<td>IP tab → <strong>Config</strong> button</td>
+</tr>
+<tr>
+<td><strong>Efinity native IP Configuration Wizard</strong></td>
+<td>Complex IP (RISC-V Sapphire SoC, DDR controllers, etc.—many parameters, many tabs)</td>
+<td>IP tab → orange <strong>Efinity</strong> button (shown only for SoC-class IP)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-2-configure-complex-ip-in-efinity">13.2 Configure complex IP in Efinity</h3>
+<p>For IP like the RISC-V Sapphire SoC with dozens of parameters spread over multiple configuration tabs, use Efinity's native IP Configuration Wizard:</p>
+<h4 id="open-the-efinity-ip-manager">Open the Efinity IP Manager</h4>
+<p><strong>Option 1</strong>: IP tab → click the orange <strong>Efinity</strong> button on a SoC-class IP card</p>
+<p><strong>Option 2</strong>: IP tab → the <strong>Open in Efinity IP Manager</strong> button at the bottom</p>
+<p><strong>Command</strong>: <code>Efinity: Open IP in Efinity IP Manager (native GUI wizard)</code></p>
+<h4 id="the-efinity-configuration-wizard">The Efinity configuration wizard</h4>
+<p>It loads the current project automatically and switches to the Efinity GUI. In Efinity:
+1. Find the IP to configure in the <strong>IP Catalog</strong> panel (e.g. Sapphire RISC-V SoC)
+2. Double-click to open the <strong>IP Configuration Wizard</strong>
+3. The wizard contains multiple tabs (Core / Cache / Peripherals / Memory / Interrupts / Boot / Debug, etc.); configure as needed
+4. Click <strong>Generate</strong> to generate the IP</p>
+<h4 id="sync-back-into-the-project">Sync back into the project</h4>
+<p>After configuring and generating the IP in Efinity, return to VS Code:</p>
+<p><strong>Command</strong>: <code>Efinity: Sync IP Changes from Efinity GUI</code></p>
+<p>Or click the <strong>Sync from Efinity</strong> button at the bottom of the IP tab.</p>
+<p>Sync flow:
+1. Scans every <code>settings.json</code> under <code>ip/</code> and shows modification times
+2. Check the IP you changed in Efinity
+3. For each selected IP, shows a summary of the current configuration parameters
+4. Choose <strong>Regenerate IP</strong> to regenerate the RTL (same logic as <code>ipRegenerate</code>)
+5. Automatically invokes <code>Sync Project Files</code> to update the project XML</p>
+<h3 id="13-3-browse-available-ip">13.3 Browse available IP</h3>
+<p><strong>Command</strong>: <code>Toolchain: List Available IPs (IPM)</code></p>
+<p>Lists every available IP in the Efinity IP Manager catalog:</p>
+<pre><code class="language-bash"># CLI equivalent
+evoverse ip list                                    # use the default device
+evoverse ip list --device TJ180A484S --family Titanium  # specify a device
+evoverse ip list --filter fifo                     # filter by IP name
+</code></pre>
+<p>Output format:</p>
+<pre><code>Efinity IPM — 42 IP(s) available
+  efinixinc.com/memory/efx_fifo  v2026.1
+  efinixinc.com/mipi/efx_csi2_rx v2026.1
+  efinixinc.com/uart/efx_uart   v2026.1
+  ...
+</code></pre>
+<h3 id="13-4-view-ip-parameters">13.4 View IP parameters</h3>
+<p><strong>CLI command</strong>:</p>
+<pre><code class="language-bash">evoverse ip describe --vlnv efinixinc.com/fifo/efx_fifo
+</code></pre>
+<p>Returns all configurable parameters of the IP with their defaults (JSON format).</p>
+<h3 id="13-5-add-ip-to-a-project">13.5 Add IP to a project</h3>
+<p><strong>Command</strong>: <code>Toolchain: Add IP from Catalog…</code></p>
+<p>Generates an IP instance through the Efinity IP Manager and registers it in the project:</p>
+<pre><code class="language-bash"># CLI equivalent
+evoverse ip add \
+  --module my_fifo \
+  --vlnv efinixinc.com/fifo/efx_fifo \
+  --params '{&quot;DATA_WIDTH&quot;:&quot;32&quot;,&quot;FIFO_DEPTH&quot;:&quot;256&quot;}'
+</code></pre>
+<p>Generated files:
+- <code>ip/my_fifo/settings.json</code> — parameter configuration
+- <code>ip/my_fifo/*.v</code> — generated RTL
+- The project XML is updated automatically with <code>&lt;efx:design_file&gt;</code> and <code>&lt;efx:ip_info&gt;</code></p>
+<h3 id="13-6-configure-ip-parameters-inside-vs-code">13.6 Configure IP parameters inside VS Code</h3>
+<p><strong>Command</strong>: <code>Toolchain: Configure IP Instance…</code></p>
+<p>Opens a webview parameter editor for visually editing the IP configuration parameters. After saving, click <strong>Regenerate</strong> to regenerate the RTL.</p>
+<h3 id="13-7-regenerate-an-ip">13.7 Regenerate an IP</h3>
+<p><strong>Command</strong>: <code>Toolchain: Regenerate IP Instance…</code></p>
+<p>Calls the Efinity IP Manager again with the current <code>settings.json</code> configuration to regenerate the RTL.</p>
+<hr />
+<h2 id="14-interface-design-designapi-new-in-v0-7-2">14. Interface design (DesignAPI, new in v0.7.2)</h2>
+<p>The SDK no longer depends on the Efinity GUI to modify the interface design. Three IDE commands plus a set of CLI subcommands manage the Efinity-native <code>peri.xml</code> / <code>peri.isf</code> directly.</p>
+<blockquote>
+<p><strong>Design principle</strong>: the SDK defines no new interface file format. All reads and writes treat the Efinity-native ISF / peri.xml as the truth; all writes go only through the native ISF file the user explicitly specifies—the base ISF is never merged or overwritten. See the <a href="../efinity/designapi-integration.html">DesignAPI integration design document</a>.</p>
+</blockquote>
+<h3 id="14-1-how-the-three-interface-files-relate">14.1 How the three interface files relate</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+<th>Version control recommended?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;project&gt;.xml</code></td>
+<td>Efinity project database</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><code>constraints/base.peri.isf</code></td>
+<td>Interface Designer Python API commands; can reconstruct the design</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.peri.xml</code></td>
+<td>Interface Designer design database (generated)</td>
+<td>⚠️ Manage as a generated artifact</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-2-open-the-native-design">14.2 Open the native design</h3>
+<p><strong>Command</strong>: <code>Efinity: Open Native Design</code> (<code>evoverse.openDesign</code>)</p>
+<p>Opens a webview showing the current interface design:</p>
+<ul>
+<li><strong>Capabilities</strong>: block types / versions / IO bank list</li>
+<li><strong>Inspect</strong>: current interface-instance list + properties + resource assignments</li>
+<li><strong>DRC panel</strong>: live DesignAPI DRC results; erroneous instances map automatically to the ISF source lines</li>
+<li><strong>Actions</strong>: Add Interface / Delete Interface / Edit Property / Auto Assign</li>
+</ul>
+<p>On first open, if <code>&lt;project&gt;.peri.xml</code> does not exist, a dialog asks whether to rebuild from the ISF (clicking <strong>Rebuild</strong> triggers one <code>efx_map</code> run).</p>
+<h3 id="14-3-run-the-designapi-drc">14.3 Run the DesignAPI DRC</h3>
+<p><strong>Command</strong>: <code>Efinity: Validate Native Design (DesignAPI DRC)</code> (<code>evoverse.validateDesign</code>)</p>
+<p>The SDK calls <code>design.check_design()</code> and posts the results to the Problems panel:</p>
+<ul>
+<li>Every issue contains severity / rule / message / instance</li>
+<li>Clicking an issue jumps to the line in <code>base.peri.isf</code> where the instance was first created</li>
+</ul>
+<p><strong>CLI equivalent</strong>:</p>
+<pre><code class="language-bash">evoverse design validate --peri my_proj.peri.xml
+evoverse design validate --peri my_proj.peri.xml --isf constraints/base.peri.isf
+</code></pre>
+<h3 id="14-4-add-and-remove-interface-blocks">14.4 Add and remove interface blocks</h3>
+<p>Click <strong>Add Interface</strong> in the webview:</p>
+<ol>
+<li>Pick the block type (GPIO / PLL / DDR / MIPI, etc.; varies with device and Efinity version)</li>
+<li>Enter the instance name (a Verilog identifier)</li>
+<li>GPIO types require a direction (INPUT / OUTPUT / INOUT)</li>
+<li>The SDK generates a native ISF patch (<code># EVOVERSE MANAGED BEGIN/END</code> section)</li>
+<li>Confirm in the dialog → <strong>Apply and Rebuild</strong> → re-run Pre-PT to generate the new <code>peri.xml</code></li>
+</ol>
+<p>Deleting works the same way: click delete on an instance card → confirm → apply the patch.</p>
+<h3 id="14-5-edit-interface-properties">14.5 Edit interface properties</h3>
+<p>Click the property-edit icon on an instance card in the webview:</p>
+<ol>
+<li>Enter the new property value (drive strength, PLL input frequency, etc.)</li>
+<li>The SDK runs the DesignAPI DRC on an isolated copy</li>
+<li>On success, exports a native ISF patch to <code>constraints/&lt;project&gt;.&lt;instance&gt;.&lt;property&gt;.peri.isf</code></li>
+<li>A dialog offers <strong>Apply and Rebuild</strong> or <strong>Open Patch</strong></li>
+</ol>
+<p><strong>Automatic rollback on failure</strong>: if Pre-PT fails after Apply, the SDK automatically restores <code>base.peri.isf</code> and <code>peri.xml</code> to their pre-change state and shows the dialog <code>Design change failed; the project ISF and native PT artifacts were restored.</code></p>
+<h3 id="14-6-preview-automatic-resource-assignment">14.6 Preview automatic resource assignment</h3>
+<p><strong>Command</strong>: <code>Efinity: Preview Automatic Resource Assignment</code> (<code>evoverse.previewDesignAutoAssign</code>)</p>
+<p>Click <strong>Auto Assign</strong> in the webview (preview only) / <strong>Export &amp; Apply</strong> (generate a patch and apply it):</p>
+<pre><code class="language-bash">evoverse design auto-assign --peri my_proj.peri.xml
+evoverse design auto-assign --peri my_proj.peri.xml --apply --output my_proj.auto_asg.isf
+</code></pre>
+<p>Preview mode shows each instance's <code>resource</code> field change (before → after) and writes no files.</p>
+<h3 id="14-7-complete-list-of-cli-subcommands">14.7 Complete list of CLI subcommands</h3>
+<pre><code class="language-bash"># Query
+evoverse design capabilities --peri &lt;project&gt;.peri.xml [--include-resources]
+evoverse design inspect     --peri &lt;project&gt;.peri.xml
+
+# DRC
+evoverse design validate    --peri &lt;project&gt;.peri.xml [--isf constraints/base.peri.isf]
+
+# Export
+evoverse design export-isf  --peri &lt;project&gt;.peri.xml --output exported.peri.isf
+
+# Automatic resource assignment
+evoverse design auto-assign --peri &lt;project&gt;.peri.xml [--apply --output &lt;file&gt;]
+
+# ISF diff preview
+evoverse design preview-isf --peri &lt;project&gt;.peri.xml --isf candidate.peri.isf
+
+# Generate a native ISF patch (not applied directly)
+evoverse design property-patch --peri &lt;project&gt;.peri.xml --instance &lt;name&gt; --type &lt;block&gt; --property &lt;key&gt; --value &lt;value&gt; --output patch.peri.isf
+evoverse design create-patch  --peri &lt;project&gt;.peri.xml --instance &lt;name&gt; --type &lt;block&gt; --mode &lt;INPUT|OUTPUT|INOUT&gt; --output patch.peri.isf
+evoverse design delete-patch  --peri &lt;project&gt;.peri.xml --instance &lt;name&gt; --type &lt;block&gt; --output patch.peri.isf
+</code></pre>
+<p><code>capabilities</code> / <code>inspect</code> / <code>validate</code> load a temporary isolated copy so that DesignAPI's automatic database-version upgrade never rewrites the user's <code>peri.xml</code>. All <code>--output</code> writes go to standalone ISF files; the base ISF is never merged or overwritten.</p>
+<h3 id="14-8-common-issues">14.8 Common issues</h3>
+<ul>
+<li><strong>"No native peri.xml exists"</strong>: the project has never run Pre-PT; click <strong>Rebuild</strong> to trigger one <code>efx_map</code> run.</li>
+<li><strong>"GPIO exists" but it is missing from the inspect list</strong>: the base ISF and the current <code>peri.xml</code> are out of sync; rebuild <code>peri.xml</code> from <code>base.peri.isf</code>.</li>
+<li><strong>Apply fails although the ISF is fine</strong>: check the Pre-PT log in the EvoVerse output panel; the DesignAPI flow first runs a full PT to generate <code>peri.xml</code>—if the Efinity installation is broken or the license has expired, PT fails.</li>
+<li><strong>The block-type list is missing the one I want</strong>: the <code>doc/pdf/efinity-python-api.pdf</code> in the current Efinity installation is authoritative; the SDK keeps no copy of the properties.</li>
+</ul>
+<hr />
+<h2 id="15-risc-v-software-development">15. RISC-V software development</h2>
+<h3 id="15-1-create-a-risc-v-soc-hardware-project">15.1 Create a RISC-V SoC hardware project</h3>
+<p><strong>Command</strong>: <code>EvoVerse: New RISC-V Project…</code></p>
+<p>Adds an Efinix Sapphire SoC (RISC-V processor core) to the project:</p>
+<pre><code class="language-bash"># CLI equivalent
+evoverse new-riscv-project my-soc --board ws-e1
+evoverse new-riscv-project my-soc --board T120F576_devkit  # T120 dev kit
+evoverse new-riscv-project my-soc --board ws-e1 --force   # overwrite an existing one
+</code></pre>
+<p><strong>Supported board presets</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Board ID</th>
+<th>FPGA</th>
+<th>Family</th>
+<th>SoC module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ws-e1</code></td>
+<td>TJ180A484S</td>
+<td>Titanium</td>
+<td>soc_ti180</td>
+</tr>
+<tr>
+<td><code>T120F576_devkit</code></td>
+<td>T120F576</td>
+<td>Trion</td>
+<td>soc_t120</td>
+</tr>
+</tbody>
+</table>
+<p>What it does:
+1. Creates/reuses the project directory and XML
+2. Calls the Efinity IP Manager to generate the SoC IP
+3. Registers the generated RTL in the project XML
+4. Generates the <code>rtl/top.v</code> top-level wrapper (your customization starting point)
+5. When no RISC-V toolchain is found, asks whether to download or browse manually (the download is ~450 MB and, after confirmation, is cached under <code>~/.evoverse/toolchain/</code>)</p>
+<h3 id="15-2-configure-the-risc-v-toolchain">15.2 Configure the RISC-V toolchain</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Download &amp; Install RISC-V Toolchain</code></p>
+<p>After you choose <code>Download &amp; Install</code>, the xPack RISC-V GCC toolchain is downloaded to <code>~/.evoverse/toolchain/</code>.</p>
+<p>You can also configure the path manually: <code>evoverse.riscvToolchainPath</code></p>
+<h3 id="15-3-create-a-software-application">15.3 Create a software application</h3>
+<p><strong>Command</strong>: <code>EvoVerse: New Software App…</code></p>
+<p>Choose the application type:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Generated files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Standalone</strong></td>
+<td>Bare-metal firmware</td>
+<td><code>main.c</code> + <code>makefile</code> + <code>linker.ld</code></td>
+</tr>
+<tr>
+<td><strong>FreeRTOS</strong></td>
+<td>Multitasking RTOS</td>
+<td><code>main.c</code> (FreeRTOS template) + <code>makefile</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># CLI equivalent
+evoverse new-software blinky --type standalone
+evoverse new-software my-rtos --type freertos
+</code></pre>
+<p>Software directory layout:</p>
+<pre><code>software/
+├── bsp/                    # BSP (copied from Efinity)
+│   └── EfxSapphireSoc/     # SoC headers, linker scripts, libraries
+└── apps/
+    └── blinky/             # application
+        ├── src/main.c     # entry point
+        ├── makefile       # build script
+        ├── linker.ld      # linker script
+        └── evoverse-software.md
+</code></pre>
+<h3 id="15-4-build-flash-software">15.4 Build/flash software</h3>
+<p>Operate from the Workbench <strong>Software tab</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Build</strong></td>
+<td>Compiles the firmware (<code>make</code>) → produces <code>.elf</code> / <code>.hex</code> / <code>.bin</code></td>
+</tr>
+<tr>
+<td><strong>Flash</strong></td>
+<td>Builds and flashes to the FPGA over JTAG</td>
+</tr>
+<tr>
+<td><strong>GDB</strong></td>
+<td>Starts an OpenOCD + GDB debug session</td>
+</tr>
+<tr>
+<td><strong>Sync BSP</strong></td>
+<td>Re-syncs the BSP headers</td>
+</tr>
+</tbody>
+</table>
+<h3 id="15-5-regenerate-the-bsp">15.5 Regenerate the BSP</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Regenerate BSP from Regmaps</code></p>
+<p>Generates the C header <code>bsp/ws_bsp.h</code> automatically from the IP register maps (regmap.md) referenced by the project:</p>
+<pre><code class="language-bash"># CLI equivalent
+evoverse gen-bsp ~/evoverse-sdk/projects/my-project
+</code></pre>
+<p>Generated header format:</p>
+<pre><code class="language-c">#define MY_DMA_BASE  0xA0000000UL
+#define MY_DMA_CTRL (*(volatile uint32_t *)(MY_DMA_BASE + 0x00))
+#define MY_DMA_STATUS (*(volatile uint32_t *)(MY_DMA_BASE + 0x04))
+#define MY_DMA_CTRL_BIT (1u &lt;&lt; 0)
+</code></pre>
+<hr />
+<h2 id="15-5-rk3588-soc-workspace-v0-8-0">15.5 RK3588 SoC Workspace (v0.8.0+)</h2>
+<p>After installing the RK3588 Adapter, <code>EvoVerse: Open RK3588 Workspace</code> opens a dedicated panel with 8 tabs:</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Function</th>
+<th>First-release status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overview</strong></td>
+<td>Build-flow chain, G0/G1 gating, blockers, recent builds</td>
+<td>✅ Available</td>
+</tr>
+<tr>
+<td><strong>Board</strong></td>
+<td>BSP manifest/commit, container/toolchain digests, SHA-256</td>
+<td>✅ Read-only</td>
+</tr>
+<tr>
+<td><strong>Build</strong></td>
+<td>U-Boot/Kernel/Rootfs/Package four-stage builds, live output, cancel</td>
+<td>✅ Available</td>
+</tr>
+<tr>
+<td><strong>Firmware</strong></td>
+<td>Package manifest, file sizes/SHA-256</td>
+<td>✅ Read-only</td>
+</tr>
+<tr>
+<td><strong>Boot Chain</strong></td>
+<td>Read-only view of the bootloader configuration</td>
+<td>✅ Read-only</td>
+</tr>
+<tr>
+<td><strong>Device Tree</strong></td>
+<td>Device Tree file browsing</td>
+<td>✅ Read-only</td>
+</tr>
+<tr>
+<td><strong>Software</strong></td>
+<td>Applications</td>
+<td>Empty state</td>
+</tr>
+<tr>
+<td><strong>Debug</strong></td>
+<td>Serial/ADB/SSH/HIL</td>
+<td>❌ Not supported (reason shown only)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="build-flow">Build flow</h3>
+<p>RK3588 uses a four-stage build:</p>
+<pre><code>G0 Preflight (hash locking + path safety)
+  ↓
+U-Boot → Kernel → Rootfs → Package
+  ↓
+build-report.json + artifact SHA-256
+</code></pre>
+<ul>
+<li>Each stage can run independently or as a full build</li>
+<li>A build in progress can be canceled (a new runId is issued; old runs are not polluted)</li>
+<li>After a refresh, the state is restored from build-report.json + events.jsonl</li>
+</ul>
+<h3 id="profile-discovery">Profile discovery</h3>
+<p>The RK3588 Adapter detects the BSP profile in this priority order:
+1. <code>&lt;workspace&gt;/evoverse-rk3588-profile.json</code>
+2. <code>&lt;workspace&gt;/.evoverse/rk3588-profile.json</code>
+3. <code>&lt;workspace&gt;/profile.json</code> (requires schemaVersion='1')</p>
+<h3 id="flash-debug-notes">Flash/Debug notes</h3>
+<p>The first RK3588 release <strong>does not support Flash or Debug</strong> (serial/ADB/SSH/HIL are all disabled). The related tabs only show the reason and provide no actionable buttons.</p>
+<h2 id="15-6-system-workspace-multi-chip-topologies">15.6 System Workspace (multi-chip topologies)</h2>
+<p>With two or more Adapters installed, the System Workspace appears automatically. It manages multi-chip projects (FPGA + SoC, etc.).</p>
+<h3 id="functions">Functions</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chip topology</strong></td>
+<td>Shows every chip in the project and its role (fpga-primary/soc/companion-mcu)</td>
+</tr>
+<tr>
+<td><strong>Bridge view</strong></td>
+<td>Physical/logical connections between chips (AXI/SPI/I2C, etc.)</td>
+</tr>
+<tr>
+<td><strong>Build matrix</strong></td>
+<td>Build order shown in layers by buildOrder</td>
+</tr>
+<tr>
+<td><strong>Joint build</strong></td>
+<td>Invokes each chip Adapter's build command in topology order</td>
+</tr>
+<tr>
+<td><strong>Missing-Adapter recovery</strong></td>
+<td>Chips referencing an uninstalled Adapter are marked unavailable and joint builds are disabled</td>
+</tr>
+</tbody>
+</table>
+<h3 id="multi-chip-project-manifest">Multi-chip project manifest</h3>
+<p>Declare the <code>chips</code> array in the <code>evoverse-project.md</code> front matter:</p>
+<pre><code class="language-yaml">---
+manifestVersion: 2
+kind: project
+id: my-fpga-soc-board
+board: ws-e1
+chips:
+  - id: fpga-main
+    role: fpga-primary
+    vendor: efinix
+    part: TJ180A484S
+    subsystemDir: .
+    buildEnabled: true
+    buildOrder: 0
+  - id: soc-rk3588
+    role: soc
+    vendor: rockchip
+    part: RK3588
+    subsystemDir: soc/
+    buildEnabled: true
+    buildOrder: 1
+bridges:
+  - id: fpga-soc-axi
+    fromChip: fpga-main
+    toChip: soc-rk3588
+    type: axi
+    width: 32
+---
+</code></pre>
+<h3 id="15-7-specification-driven-risc-v-software-verification-loop-in-development-on-the-v0-9-x-branch">15.7 Specification-driven RISC-V software verification loop (in development on the v0.9.x branch)</h3>
+<p>Unlike the free-form software development of 15.1–15.6, this loop is driven by a <strong>frozen executable specification package</strong>: software candidates, BSP binding, host tests, cross-compilation, promotion, and board tests are all receipt-based; any step that cannot be bound to the same <code>specPackageDigest</code> is rejected.</p>
+<p><strong>Command chain (source CLI)</strong>: the <code>expectedStateDigest</code> in the legacy software-chain input is read only as a historical compatibility alias; new control-plane write operations uniformly use <code>expectedRevision</code>.</p>
+<pre><code class="language-bash"># Seal and register (registered after the Skills script seals, yielding specPackageDigest)
+evoverse verification fpga-start --project &lt;abs&gt; --input payload.json --json
+evoverse verification spec-register-design-package --project &lt;abs&gt; --input payload.json --json
+evoverse verification fpga-milestone ...          # MATERIALS_READY→SCAFFOLD_READY→SPEC_APPROVED→IP_READY
+evoverse verification software-task-start ...     # spec-derived writable/promotable sets
+evoverse verification software-task-bind-bsp ...  # adapter inspectBsp; only MATCH may bind
+evoverse verification software-task-prepare ...   # writes engine-derived generated files + application sources
+evoverse verification software-task-check-interface ...
+evoverse verification software-task-test-host ...
+evoverse verification software-task-build ...     # validates ELF class/memory regions/unresolved symbols
+evoverse verification software-task-promote ...
+evoverse verification fpga-milestone ...          # RTL_PROMOTED→INTEGRATION_READY→BUILD_COMPLETE
+evoverse verification software-task-board-test ...  # PASS or HARDWARE_UNAVAILABLE
+evoverse verification fpga-milestone ...          # REVIEW_READY (review.md evidence footer)
+evoverse verification next / build-eligibility ...
+</code></pre>
+<p><strong>MCP tools</strong>: <code>software_task_start / status / bind_bsp / prepare / check_interface / test_host / build / promote / board_test</code>—9 tools in total, dispatched to the same engine as the CLI; receipts and the next action bind to the same specification package.</p>
+<p><strong>Artifacts</strong>: the <code>candidate / bsp-binding / host-test / interface / build / promotion / board-test</code> JSON receipts under <code>.evoverse/verification/scoped-software/runs/&lt;taskId&gt;/</code>; host/board-test <code>requiredTestIds</code>, the expected ELF class, and memory regions are all derived server-side from the frozen specification—the caller cannot self-report them.</p>
+<p><strong>States</strong>: <code>BUILD_COMPLETE</code> (next step <code>RUN_PROJECT_REVIEW</code>) → <code>REVIEW_READY</code> (evidence footer <code>hardwareStatus ∈ {NOT_RUN, PASS, FAIL, INCOMPLETE}</code> with evidence covering every recorded milestone).</p>
+<p><strong>Boundaries and assertion rules</strong> (measured on the development machine, 2026-09-12):</p>
+<table>
+<thead>
+<tr>
+<th>Boundary</th>
+<th>Measured conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automated fixture</td>
+<td>Contract stub adapters over the real headless protocol; the standalone chain reaches <code>REVIEW_READY/COMPLETE</code> end to end</td>
+</tr>
+<tr>
+<td>Real MCP session</td>
+<td>The server's <code>tools/list</code> exposes exactly 9 <code>software_task_*</code> tools; the full freertos software chain dispatches through <code>tools/call</code></td>
+</tr>
+<tr>
+<td>Native build</td>
+<td>No <code>riscv-none-elf-gcc</code> on the machine (Efinity 2026.1 ships no gcc either) → <code>VENDOR_TOOL_UNAVAILABLE</code> (before make)</td>
+</tr>
+<tr>
+<td>Installation</td>
+<td>The 2026.1 <code>efx_hard_soc</code> BSP's OpenOCD config uses the <code>ftdi_ti/debug_ti</code> variant name, <code>soc.h</code> uses the <code>SYSTEM_RISCV_ISA_RV32I</code> dialect (no <code>RISCV_XLEN</code>), and the <code>ipm/ip/efx_soc/...</code> discovery path does not exist → <code>inspectBsp</code> reports <code>INVALID_REQUEST</code>, <code>syncBsp --listOnly</code> finds no source</td>
+</tr>
+<tr>
+<td>Physical hardware</td>
+<td>A real OpenOCD scan of FTDI/JTAG finds no device → receipt <code>HARDWARE_UNAVAILABLE</code>, the project stops at <code>BUILD_COMPLETE</code>; <strong>without an on-board receipt, on-board verification must not be claimed as passed</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Co-simulation is optional; its absence is not a failure. Automated coverage is in <code>sdk/verification-engine/tests/test_riscv_software_e2e.py</code> (standalone/freertos dual fixtures: success chain, stale-digest rejection, missing hardware, no co-simulation).</p>
+<hr />
+<h2 id="16-board-maintenance">16. Board maintenance</h2>
+<h3 id="16-1-create-a-new-board">16.1 Create a new board</h3>
+<p><strong>Command</strong>: <code>EvoVerse: New Board…</code></p>
+<p>Opens the Board Wizard and creates a new core-board directory:</p>
+<pre><code class="language-bash"># CLI equivalent
+evoverse new-board my-board                    # basic empty directory
+evoverse new-board my-board --from-board ws-e1  # inherit from an existing board
+evoverse new-board my-board --jackets cam,gps  # pre-create jacket placeholders
+evoverse new-board my-board --carrier-name base  # pre-create a carrier placeholder
+</code></pre>
+<p>Standard directory layout created:</p>
+<pre><code>catalog/boards/my-board/
+├── my-board.md           # board description matching the directory name
+├── docs/                  # documents (.md / .pdf)
+├── pinout/                # schematic / manually checked CSV
+├── constraints/           # board-native .interface.isf/.pins.isf/.sdc
+├── generated/             # Efinity generated artifacts
+├── jackets/
+└── demo/
+</code></pre>
+<p>Module boards use <code>carriers/&lt;carrier-id&gt;/</code>; pinout, constraints, generated, jackets, and demo live in the carrier directory—the module root contains no constraints.</p>
+<h3 id="16-2-import-a-board">16.2 Import a board</h3>
+<h4 id="import-from-github">Import from GitHub</h4>
+<p><strong>Command</strong>: <code>EvoVerse: Import Board from GitHub URL…</code></p>
+<pre><code class="language-bash">evoverse import-board https://github.com/user/board-repo
+</code></pre>
+<h4 id="import-from-a-local-folder">Import from a local folder</h4>
+<p><strong>Command</strong>: <code>EvoVerse: Import Board from Local Folder…</code></p>
+<p>Supports several input formats:</p>
+<table>
+<thead>
+<tr>
+<th>Input type</th>
+<th>How it is handled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Folder</strong></td>
+<td>Imported wholesale; files are routed automatically to the standard subdirectories</td>
+</tr>
+<tr>
+<td><strong>.zip</strong></td>
+<td>Extracted, then imported</td>
+</tr>
+<tr>
+<td><strong>.tar.gz / .tgz</strong></td>
+<td>Extracted, then imported</td>
+</tr>
+<tr>
+<td><strong>Single .md</strong></td>
+<td>Creates a board directory with that file as the manifest</td>
+</tr>
+<tr>
+<td><strong>Single .pdf</strong></td>
+<td>Creates a board directory; the PDF goes to docs/</td>
+</tr>
+</tbody>
+</table>
+<p><strong>File routing rules</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>File type</th>
+<th>Target directory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*.md</code> / README*</td>
+<td>Board root</td>
+</tr>
+<tr>
+<td><code>*.pdf</code></td>
+<td><code>docs/</code></td>
+</tr>
+<tr>
+<td><code>*.csv</code> (with pin/ball columns)</td>
+<td><code>hardware/pinout.csv</code></td>
+</tr>
+<tr>
+<td><code>*.peri.isf</code> / <code>*.peri.xml</code></td>
+<td><code>constraints/</code></td>
+</tr>
+<tr>
+<td><code>*.sdc</code></td>
+<td><code>constraints/</code></td>
+</tr>
+<tr>
+<td><code>*.xml</code> (containing <code>&lt;efx:project&gt;</code>)</td>
+<td>Project root as <code>base.xml</code></td>
+</tr>
+<tr>
+<td><code>*.sv</code> / <code>*.v</code> / <code>*.vhd</code></td>
+<td><code>rtl/</code></td>
+</tr>
+<tr>
+<td>Others</td>
+<td><code>docs/</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># CLI equivalent
+evoverse import-local ./my-board-files --id my-board
+evoverse import-local ./archive.zip --id my-board --force
+evoverse import-local ./datasheet.pdf --id ref-board
+</code></pre>
+<h4 id="import-from-an-archive">Import from an archive</h4>
+<p><strong>Command</strong>: <code>EvoVerse: Import Board from Archive (.zip/.tar.gz/.pdf)…</code></p>
+<p>Same as above, but the archive file is picked through a file-selection dialog.</p>
+<h3 id="16-3-board-designer">16.3 Board Designer</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Open Board Designer</code></p>
+<p>A visual board-metadata editor with <strong>4 tabs</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overview</strong></td>
+<td>Edit basic board metadata (ID, name, FPGA model, package, etc.)</td>
+</tr>
+<tr>
+<td><strong>Pinout</strong></td>
+<td>Visual pin map (rendered from pinout.csv)</td>
+</tr>
+<tr>
+<td><strong>Schematic &amp; Docs</strong></td>
+<td>Embedded viewing of schematics and documents</td>
+</tr>
+<tr>
+<td><strong>Constraints</strong></td>
+<td>Preview of the IO constraint files</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-4-view-the-current-manifest">16.4 View the current manifest</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Open Current Manifest</code></p>
+<p>Opens the <code>evoverse.md</code> / <code>evoverse.yaml</code> / <code>regmap.md</code> file at the cursor or currently selected.</p>
+<h3 id="16-5-validate-a-manifest">16.5 Validate a manifest</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Validate Manifest</code></p>
+<p>Validates the structural integrity of a material directory.</p>
+<h3 id="16-6-browse-demos">16.6 Browse Demos</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Browse Demos…</code></p>
+<p>Browse the reference-design projects in the Catalog; they work as learning starting points or templates for new projects.</p>
+<hr />
+<h2 id="17-ai-assisted-features">17. AI-assisted features</h2>
+<h3 id="17-1-ai-error-diagnosis">17.1 AI error diagnosis</h3>
+<p>When a build fails and <code>evoverse.aiDiagnosis</code> is enabled (on by default), the SDK automatically:</p>
+<ol>
+<li><strong>Identifies the error</strong>: parses the error messages from the build output</li>
+<li><strong>Matches fingerprints</strong>: compares against the known error-pattern library (Error Fingerprints)</li>
+<li><strong>Generates a diagnosis</strong>: outputs root-cause analysis and fix suggestions</li>
+<li><strong>Surfaces it</strong>: shows the diagnosis in the Output Channel</li>
+</ol>
+<p>Covered error types include:
+- Syntax errors (Verilog/SystemVerilog)
+- Constraint-file errors (SDC/ISF format problems)
+- Missing paths/files
+- IP configuration errors
+- Device mismatches
+- License problems</p>
+<h3 id="17-2-copilot-context-building">17.2 Copilot context building</h3>
+<p>When you ask about the project in an AI conversation, the SDK builds the context automatically:</p>
+<ul>
+<li>Project structure and Composition</li>
+<li>Report data from the most recent build</li>
+<li>Timing diagnosis results</li>
+<li>RTL source snippets</li>
+<li>SDC constraint contents</li>
+</ul>
+<p>This lets the AI assistant give precise advice for the current project.</p>
+<h3 id="17-3-video-ip-assurance">17.3 Video IP Assurance</h3>
+<p>Video IP RTL is written by the designer or an Agent. The controlled flow declares the <code>evoverse.video@1</code> module, image width, pixel bit width, parallelism, and line-buffer depth in the frozen specification's <code>assurance.contracts</code>, then validates the register interface, port-group order, and BRAM budget with <code>evoverse assurance</code> or MCP <code>assurance_check</code>. Port names are never inferred automatically; missing parameters must go back to specification decisions.</p>
+<h3 id="17-4-rtl-dependency-tracking">17.4 RTL dependency tracking</h3>
+<p><strong>CLI command</strong>:</p>
+<pre><code class="language-bash"># Analyze module dependencies across the whole rtl/ directory
+evoverse rtl-deps
+
+# Specify a directory
+evoverse rtl-deps --dir ./my-ip
+
+# Analyze the blast radius of a file change
+evoverse rtl-deps --changed top.v
+
+# JSON output (for tooling)
+evoverse rtl-deps --json
+</code></pre>
+<p>The output includes:
+- A module instantiation graph (who instantiates whom)
+- A file dependency graph (which file is included by which files)
+- Change-impact analysis (which downstream files a change affects)</p>
+<hr />
+<h2 id="18-knowledge-base">18. Knowledge base</h2>
+<h3 id="18-1-view-the-knowledge-base">18.1 View the knowledge base</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Show Knowledge Base</code></p>
+<p>Opens the knowledge-base panel showing experience rules distilled from historical diagnosis records.</p>
+<p>The knowledge base is organized by category (CATEGORY_LABELS) and covers:
+- Typical timing-violation patterns and solutions
+- Common build-error causes
+- Best-practice advice</p>
+<h3 id="18-2-capture-knowledge-entries">18.2 Capture knowledge entries</h3>
+<p><strong>Command</strong>: <code>EvoVerse: Capture Knowledge Entry…</code></p>
+<p>Manually records a current diagnosis result or lesson into the knowledge base for later automatic matching.</p>
+<hr />
+<h2 id="19-cli-command-line-tool">19. CLI command-line tool</h2>
+<p>The SDK ships a zero-dependency Python CLI (<code>evoverse</code>) that runs directly in a terminal. All 30 subcommands are documented one by one (collected automatically from <code>--help</code>) on the "CLI Reference" page of the documentation portal.</p>
+<h3 id="19-1-query-commands">19.1 Query commands</h3>
+<pre><code class="language-bash"># List core boards
+evoverse list boards
+
+# List IPs
+evoverse list ips
+
+# List a board's carriers
+evoverse list carriers --board ws-e1
+
+# List a board's jackets
+evoverse list jackets --board ws-e1
+
+# List Demos
+evoverse list demos --board ws-e1
+
+# View details
+evoverse info ws-e1
+evoverse info &lt;reference-jacket-id&gt;
+evoverse info evoverse-dma
+
+# View the ecosystem tree
+evoverse tree
+evoverse tree ws-e1
+</code></pre>
+<h3 id="19-2-project-commands">19.2 Project commands</h3>
+<pre><code class="language-bash"># Create a new FPGA project
+evoverse new-project my-led --board ws-e1 --carrier ws-e1-base
+
+# Create a new RISC-V SoC project
+evoverse new-riscv-project my-soc --board ws-e1
+
+# Create a new software application
+evoverse new-software blinky --type standalone
+evoverse new-software my-rtos --type freertos
+
+# Generate the BSP
+evoverse gen-bsp ./my-project
+
+# Sync project files
+evoverse sync-sources --apply
+
+# Add a single file to the project XML
+evoverse add-file rtl/my_module.v
+
+# Analyze RTL dependencies
+evoverse rtl-deps
+evoverse rtl-deps --changed top.v
+</code></pre>
+<h3 id="19-3-ip-management">19.3 IP management</h3>
+<pre><code class="language-bash"># List available IPs
+evoverse ip list
+evoverse ip list --filter fifo
+
+# View IP parameters
+evoverse ip describe --vlnv efinixinc.com/fifo/efx_fifo
+
+# Add an IP
+evoverse ip add --module my_fifo --vlnv efinixinc.com/fifo/efx_fifo
+</code></pre>
+<h3 id="19-4-video-ip-assurance">19.4 Video IP Assurance</h3>
+<p>After declaring the <code>evoverse.video@1</code> contract in a frozen specification, check the candidate RTL with <code>evoverse assurance</code>. Free-form development is not blocked by this controlled flow; only candidate promotion under the reliable flow requires the frozen specification and the corresponding Assurance receipts.</p>
+<h3 id="19-5-material-management">19.5 Material management</h3>
+<pre><code class="language-bash"># Create a new board
+evoverse new-board my-board
+evoverse new-board my-board --from-board ws-e1  # inherit
+evoverse new-board my-board --jackets cam,gps          # pre-create jackets
+
+# Create a new carrier/jacket/Demo
+evoverse new-carrier my-base --board ws-e1
+evoverse new-jacket my-cam --board ws-e1
+evoverse new-demo my-ref --board ws-e1
+
+# Import
+evoverse import-local ./files --id my-board
+evoverse import-board https://github.com/...
+
+# Validate
+evoverse validate catalog/boards/ws-e1
+</code></pre>
+<h3 id="19-6-metadata-tools">19.6 Metadata tools</h3>
+<pre><code class="language-bash"># Extract the manifest for AI analysis
+evoverse extract catalog/boards/ws-e1
+
+# Save AI-extracted metadata
+echo '{&quot;display_name&quot;: &quot;My Board&quot;}' | evoverse set-meta catalog/boards/ws-e1 --stdin
+
+# Sync the Catalog
+evoverse sync
+</code></pre>
+<h3 id="19-7-design-assurance-assurance">19.7 Design Assurance (assurance)</h3>
+<pre><code class="language-bash"># Check a project (testbenches skipped by default; see §12.5)
+evoverse assurance check ./my-project --format json
+
+# Include testbenches too (for checking the TB files themselves)
+evoverse assurance check ./my-project --include-testbench --format json
+
+# Check with an explicit request and configuration
+evoverse assurance check ./my-project --request ./my-project/.evoverse/assurance.json --config team-rules.json
+
+# Rule catalog (all packs + each rule's switch/severity/description)
+evoverse assurance rules --format text
+</code></pre>
+<p>Exit codes: 0=pass, 1=fail, 2=incomplete, 64=invalid usage or rule configuration, 70=internal engine error.</p>
+<h3 id="19-8-help">19.8 Help</h3>
+<pre><code class="language-bash">evoverse --help           # overall help
+evoverse &lt;cmd&gt; --help     # subcommand help
+evoverse --help           # shows the CLI version banner and the currently available subcommands
+</code></pre>
+<hr />
+<h2 id="20-mcp-server-and-agent-conversations">20. MCP Server and Agent conversations</h2>
+<h3 id="20-1-mcp-server-tools">20.1 MCP Server tools</h3>
+<p>The MCP Server exposes the following tools to Agents (callable by the Trae Agent or any MCP client):</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list_boards</code></td>
+<td>List all core boards</td>
+</tr>
+<tr>
+<td><code>list_ecosystem</code></td>
+<td>List a board's carriers/jackets/Demos</td>
+</tr>
+<tr>
+<td><code>list_ips</code></td>
+<td>List all IP cores</td>
+</tr>
+<tr>
+<td><code>info</code></td>
+<td>View material details</td>
+</tr>
+<tr>
+<td><code>tree</code></td>
+<td>View the ecosystem tree</td>
+</tr>
+<tr>
+<td><code>validate_manifest</code></td>
+<td>Validate the directory structure</td>
+</tr>
+<tr>
+<td><code>new_project</code></td>
+<td>Create an FPGA project</td>
+</tr>
+<tr>
+<td><code>new_software</code></td>
+<td>Create a software application</td>
+</tr>
+<tr>
+<td><code>regenerate_bsp</code></td>
+<td>Regenerate the BSP</td>
+</tr>
+<tr>
+<td><code>sync_catalog</code></td>
+<td>Sync the Catalog</td>
+</tr>
+<tr>
+<td><code>read_manifest_prose</code></td>
+<td>Read manifest prose</td>
+</tr>
+<tr>
+<td><code>save_extracted_metadata</code></td>
+<td>Save AI-extracted metadata</td>
+</tr>
+<tr>
+<td><code>import_local_board</code></td>
+<td>Import a board from a local folder</td>
+</tr>
+<tr>
+<td><code>check_rtl_code_style</code></td>
+<td>Check RTL code style</td>
+</tr>
+<tr>
+<td><code>check_sdc_constraints</code></td>
+<td>Check SDC constraint completeness</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>The MCP Server actually exposes <strong>97 tools</strong> grouped by domain: Catalog and knowledge base / reliable design and evidence / projects and code generation / build, software, and IP / debug, programming, and timing, etc. The complete list with per-tool required/optional parameters is on the "MCP Tool Reference" page of the documentation portal. <code>new_riscv_project</code>, <code>ip list</code>, <code>ip add</code>, and <code>sync_sources</code> are CLI subcommands, not MCP tools.</p>
+</blockquote>
+<p>The "reliable design and evidence" domain is the core capability for reliable code generation: the control plane keeps only 4 stable interfaces—<code>project_status</code> / <code>project_next</code> / <code>project_execute</code> / <code>evoverse_health</code>. <code>project_next</code> returns the current action envelope (recommended action, user decisions, evidence boundary, recovery info, and <code>terminalState</code>); exactly one action advances at a time: read the current <code>revision</code> → verify the envelope's <code>{actionId, intentId, expectedRevision}</code> → submit <code>project_execute</code> → re-read <code>project_next</code> and the new revision. If a response is lost, first verify the receipt, then decide whether to retry with the same identity; advancing from memory is not allowed.</p>
+<p>Execution identity is unified as <code>ExecutionIdentity</code>: the UI shows only the abbreviated <code>executionIdentityDigest</code> read-only; users are never asked to fill in component digests such as candidate/spec/Test IR/environment. Providers verify the real tool environment at the <code>prepare → freeze → execute</code> boundaries; status/next/Workbench projections reuse sealed manifests and receipts instead of re-hashing the candidate tree or large images. File bytes are still re-verified at trust boundaries—freeze, execute, promote, install, and release—so what is reduced is redundant computation, not integrity checking.</p>
+<p><strong>The simulation profile precedes the specification (user choice)</strong>: once a reliable iteration exists, and before <code>spec.draft</code> starts drafting, the control plane requires the simulation profile to be confirmed first (otherwise drafting is blocked with <code>SIMULATION_PROFILE_REQUIRED</code>). The AI recommends one based on fixed risk rules, and the user chooses: <code>FPGA_FUNCTIONAL</code> (single-clock simple functions such as a stopwatch or blinking LED—at most 3 core blocking scenarios + 1 key boundary + 1 integration smoke), <code>FPGA_INTEGRATION</code> (protocol/FIFO/CDC/backpressure/cross-line cross-frame state, such as a windowed ISP or DMA), <code>HIGH_ASSURANCE</code> (high-speed complex protocols, memory control, irreversible control, safety-related), or <code>CUSTOM</code> to explicitly divide blocking/deferred obligations. Choosing below the recommended minimum requires recording <code>acceptedRisks</code>; exceeding the profile budget forces a re-confirmation from the control plane. The specification is written within the selected profile's budget; the profile binds to the design iteration, and changing it requires a new iteration. The <code>packagePath</code> submitted by <code>spec.draft</code> must point to a sealed executable 2.0 specification-package directory: the server seals it and records the <code>specPackageDigest</code> as the reliable identity; <code>specification.md</code> is deterministically generated by the sealing script and is for human review only; Markdown files are rejected, and legacy Markdown specifications must be re-drafted and migrated from the executable package. Simulation passes are profile-qualified (<code>FPGA_FUNCTIONAL_PASS</code> etc.), and deferred items never produce fake PASS; <code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> and the simulation status are always reported separately—a functional-level simulation pass does not mean a native-build or hardware pass.</p>
+<p>In reliable mode, <code>candidate.deliver</code> only freezes the candidate—it does not promote the baseline—and runs RTL Design Assurance (structure, clocks, reset, CDC, FSM, FIFO, completeness, and protocol contracts); the service first checks the complete HDL/include/module/testbench closure, writes no candidate facts on failure, and can be retried safely after a fix. <code>verification.simulate</code> explicitly selects the <code>iverilog</code> or <code>questa</code> backend; the required identity digests are generated server-side from the frozen state, and it runs layer by layer—elaboration, module-smoke, requirement, module-regression, subsystem, system—stopping at the first failing layer. Only when the current candidate's simulation achieves a valid PASS and satisfies qualification does <code>candidate.promote</code> install the baseline. On <code>DUT_FAIL</code> or <code>CANDIDATE_COMPILE_FAILED</code>, the Agent records the failed requirements and a bounded diagnosis; a single well-evidenced cause may be fixed once in a targeted way, while multiple causes or a still-failing fix call for engineering options (rationale, next checks, cost, and uncertainty) for the engineer to choose from or answer with their own judgment. <code>CAPABILITY_UNAVAILABLE</code> is reported only when a simulator or a vendor model is missing. Human judgment is a hypothesis to be verified; when new evidence conflicts, it must be explicitly fed back and renegotiated—it must never be treated as PASS. An automated fixture passing is not the same as real Questa, Efinity Native Build, programming, or on-board passing—the evidence of <code>build.native</code>, <code>hardware.program</code>, and <code>hardware.validate</code> is mutually independent and must be reported separately.</p>
+<p><strong>Module contracts and controlled integration (module candidates)</strong>: a reliable module iteration freezes one more layer beneath the specification—a module contract. The executable specification package embeds the canonical module contract (closed RTL/test lists, top, dependency digests, budgets, and candidate-writable paths) and deterministically renders the <code>CONTRACT.md</code> for human review: it consistently presents system/internal module relationships, interfaces, clock/reset/state and data structures, algorithm formulas and pseudocode, budgets, requirement traceability, simulation and evidence definitions (simulation boundaries, clock/reset stimuli, BFM roles, normal/boundary/exception/recovery scenarios, oracles and coverage), Harness scenarios, plus risks and decided items; the machine contract is the single truth—missing, stale, or inconsistent document sections block qualification. After the user approves <code>CONTRACT.md</code>, <code>contract.qualify</code> (<code>moduleId</code> + <code>approvedDocumentDigest</code>) completes contract qualification: structural completeness, requirement/clause/orphan-test traceability, simulation-definition completeness, and interface/clock/reset/budget system-compatibility and feasibility checks; unresolved trade-offs produce DecisionRequests decided by the engineer, never auto-chosen by the Agent. Qualification also compiles and elaborates the contract-declared sources in isolation on a real simulation provider via the Contract Harness under the frozen execution identity—that evidence proves only compilability/elaboratability and constitutes no algorithmic-functional, Native Build, programming, or hardware evidence. A contract-digest change invalidates existing Harnesses, candidates, and un-promoted combination evidence and forces re-qualification; without qualification, <code>candidate.deliver</code> is blocked by <code>CONTRACT_QUALIFICATION_REQUIRED</code>, inputs labeled Discovery Spike are rejected at planning time, and no reusable PASS is produced. The RTL Module is the contract's single top design unit; the unit of qualification and integration is the Qualification Component, which may contain multiple cycle-coupled RTL Modules, and cross-component private-hierarchy references are rejected at candidate freeze. After a MODULE candidate is delivered, <code>candidate.promote</code> only reaches <code>READY_FOR_INTEGRATION</code> (the Workbench candidate row shows readiness) and no longer installs the baseline directly; the system-integration Intent freezes components, interfaces, and the topology combination, and after completing the system simulation and the policy-required Native Build gates, the control plane is the only path that promotes the <code>BASELINE_PROMOTED</code> baseline (state ladder QUALIFIED → READY_FOR_INTEGRATION → INTEGRATION_CANDIDATE → BASELINE_PROMOTED). No in-place fixes inside integration staging: pre-integration failures and post-promotion defects are all handled through new candidates, new combinations, and new baselines, with append-only historical facts. A macOS session can fully verify the control plane and the Icarus simulation chain; when Efinity Native Build, programming, and hardware validation have not actually run, honest states such as <code>NATIVE_BUILD_PENDING</code> are kept, and the Workbench evidence vector (the seven fields assurance / moduleSimulation / systemSimulation / nativeBuild / programming / hardwareValidation / maturity) is presented independently with no cross-upgrading.</p>
+<h3 id="20-2-agent-slash-commands">20.2 Agent slash commands</h3>
+<p>When using the EvoVerse Agent in the Trae AI sidebar, the following slash commands are supported:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/evoverse build</code></td>
+<td>Build the current project</td>
+</tr>
+<tr>
+<td><code>/evoverse flash</code></td>
+<td>Build and program the connected board</td>
+</tr>
+<tr>
+<td><code>/evoverse sim</code></td>
+<td>Run simulation</td>
+</tr>
+<tr>
+<td><code>/evoverse debug</code></td>
+<td>Open the Debug Workspace (Workbench Debug tab)</td>
+</tr>
+<tr>
+<td><code>/evoverse timing-diagnose</code></td>
+<td>Diagnose timing violations</td>
+</tr>
+<tr>
+<td><code>/evoverse regmap</code></td>
+<td>View the register map</td>
+</tr>
+<tr>
+<td><code>/evoverse new-board</code></td>
+<td>Scaffold a new core board</td>
+</tr>
+<tr>
+<td><code>/evoverse import-board</code></td>
+<td>Import a board from a local folder</td>
+</tr>
+<tr>
+<td><code>/evoverse list</code></td>
+<td>List Catalog materials</td>
+</tr>
+<tr>
+<td><code>/evoverse info</code></td>
+<td>View material details</td>
+</tr>
+<tr>
+<td><code>/evoverse tree</code></td>
+<td>View the ecosystem tree</td>
+</tr>
+<tr>
+<td><code>/evoverse new-project</code></td>
+<td>Create an FPGA project</td>
+</tr>
+<tr>
+<td><code>/evoverse validate</code></td>
+<td>Validate a material directory</td>
+</tr>
+<tr>
+<td><code>/evoverse bsp</code></td>
+<td>Generate BSP headers</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>14 Agent slash commands in total.</p>
+</blockquote>
+<hr />
+<h2 id="21-configuration-reference">21. Configuration reference</h2>
+<h3 id="21-1-core-settings">21.1 Core settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.home</code></td>
+<td>string</td>
+<td><code>~/evoverse-sdk</code></td>
+<td>SDK working root</td>
+</tr>
+<tr>
+<td><code>evoverse.pythonPath</code></td>
+<td>string</td>
+<td><em>(auto)</em></td>
+<td>Python 3.11+ path (auto-detected when empty)</td>
+</tr>
+<tr>
+<td><code>evoverse.efinityPath</code></td>
+<td>string</td>
+<td>—</td>
+<td><strong>Efinity installation path</strong> (required for builds)</td>
+</tr>
+<tr>
+<td><code>evoverse.simulator</code></td>
+<td><code>iverilog</code>|<code>questa</code></td>
+<td><code>iverilog</code></td>
+<td>Backend for ordinary RTL simulation; does not change Video Sim's Icarus flow</td>
+</tr>
+<tr>
+<td><code>evoverse.iverilogPath</code></td>
+<td>string</td>
+<td>—</td>
+<td>Directory containing <code>iverilog</code> and <code>vvp</code></td>
+</tr>
+<tr>
+<td><code>evoverse.questaPath</code></td>
+<td>string</td>
+<td>—</td>
+<td>Directory containing QuestaSim <code>vlib</code>, <code>vlog</code>, and <code>vsim</code></td>
+</tr>
+<tr>
+<td><code>evoverse.simIspWorkspace</code></td>
+<td>string</td>
+<td>—</td>
+<td>Video Sim standalone app/workspace path; auto-detected or user-selected when empty</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Project review has no independent switch: when the default design flow is "reliable design flow", review guidance is injected automatically into the project's <code>AGENTS.md</code>, and the Agent invokes the <code>evoverse-project-review</code> skill at milestones/pauses/completion to record into <code>project-review/</code>; switching to "free-form development" removes it automatically. Nothing is ever uploaded automatically.</p>
+</blockquote>
+<h3 id="21-2-build-settings">21.2 Build settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.buildMode</code></td>
+<td><code>cli</code>|<code>gui</code></td>
+<td><code>cli</code></td>
+<td>Build mode: CLI (command line) or GUI (launches the Efinity IDE)</td>
+</tr>
+<tr>
+<td><code>evoverse.build.mapOptions</code></td>
+<td>string[]</td>
+<td><code>[]</code></td>
+<td><code>name=value</code> list passed to Efinity <code>--map_opts</code></td>
+</tr>
+<tr>
+<td><code>evoverse.build.pnrOptions</code></td>
+<td>string[]</td>
+<td><code>[]</code></td>
+<td><code>name=value</code> list passed to Efinity <code>--pnr_opts</code></td>
+</tr>
+<tr>
+<td><code>evoverse.build.ptOptions</code></td>
+<td>string[]</td>
+<td><code>[]</code></td>
+<td><code>name=value</code> list passed to Efinity <code>--pt_opts</code></td>
+</tr>
+<tr>
+<td><code>evoverse.build.pgmOptions</code></td>
+<td>string[]</td>
+<td><code>[]</code></td>
+<td><code>name=value</code> list passed to Efinity <code>--pgm_opts</code></td>
+</tr>
+<tr>
+<td><code>evoverse.build.parallelJobs</code></td>
+<td>number</td>
+<td>unset</td>
+<td>Explicitly overrides the synthesis/PNR parallel thread count; uses the Efinity project value when unset</td>
+</tr>
+<tr>
+<td><code>evoverse.build.timeout</code></td>
+<td>number</td>
+<td>unset</td>
+<td>Cumulative build timeout in seconds; the SDK injects no timeout when unset</td>
+</tr>
+<tr>
+<td><code>evoverse.build.unifiedFlow</code></td>
+<td>boolean</td>
+<td>unset</td>
+<td>Explicitly overrides <code>--un_flow</code>; follows the project XML when unset</td>
+</tr>
+<tr>
+<td><code>evoverse.build.autoOpenReport</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Open the Build Report automatically after a successful build</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-3-timing-settings">21.3 Timing settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.timing.highlightSlackBelow</code></td>
+<td>number</td>
+<td><code>1.0</code></td>
+<td>Retained setting; the report page does not read this value yet—do not rely on it as a threshold</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-4-programming-settings">21.4 Programming settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.program.defaultMode</code></td>
+<td><code>jtag</code>|<code>spi</code></td>
+<td><code>jtag</code></td>
+<td>Default programming mode</td>
+</tr>
+<tr>
+<td><code>evoverse.programmerPath</code></td>
+<td>string</td>
+<td>—</td>
+<td>Retained setting; Program resolves the native tools from <code>evoverse.efinityPath</code> and does not read this override</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-5-debug-settings">21.5 Debug settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.debuggerPath</code></td>
+<td>string</td>
+<td>—</td>
+<td>Retained setting; since v0.9.0 debugging goes through <code>evoverse_dbg.py</code> (efx_dbg API), located from <code>evoverse.efinityPath</code>; this override is not read</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-6-risc-v-settings">21.6 RISC-V settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.riscvToolchainPath</code></td>
+<td>string</td>
+<td>—</td>
+<td>RISC-V GCC toolchain path (prompts to download or browse when empty and undetected)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-7-ai-feature-settings">21.7 AI feature settings</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse.aiDiagnosis</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable AI error diagnosis automatically on build failure</td>
+</tr>
+<tr>
+<td><code>evoverse.codeStyle.enabled</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Enable RTL/SDC style diagnostics</td>
+</tr>
+<tr>
+<td><code>evoverse.codeStyle.validateOnOpen</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Check when a file becomes the active editor</td>
+</tr>
+<tr>
+<td><code>evoverse.codeStyle.validateOnSave</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Check when saving RTL/SDC</td>
+</tr>
+<tr>
+<td><code>evoverse.model.allowLocalHttp</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Allow HTTP only for localhost/loopback development endpoints; remote endpoints still require HTTPS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="22-faq">22. FAQ</h2>
+<h3 id="q1-no-evoverse-icon-after-installation">Q1: No EvoVerse icon after installation?</h3>
+<p><strong>A</strong>: Press <code>Ctrl+Shift+P</code> → type <code>EvoVerse: Set Up</code> → confirm the initialization. If it still does not appear, press <code>Ctrl+Shift+P</code> → <code>Developer: Reload Window</code>.</p>
+<h3 id="q2-the-build-reports-efinity-not-found">Q2: The build reports "Efinity not found"?</h3>
+<p><strong>A</strong>: Open Settings (<code>Ctrl/Cmd + ,</code>), search for <code>evoverse.efinityPath</code>, and enter the Efinity installation path, for example:
+- Windows: <code>C:\Efinity\2026.1</code>
+- Linux: <code>/opt/Efinity/2026.1</code></p>
+<h3 id="q3-simulation-reports-iverilog-not-found">Q3: Simulation reports "iverilog not found"?</h3>
+<p><strong>A</strong>: Set <code>evoverse.iverilogPath</code>. On Windows, download the precompiled package from the <a href="https://github.com/steveicarus/iverilog">Icarus website</a> or install via <code>scoop install iverilog</code> / <code>choco install iverilog</code>.</p>
+<h3 id="q4-how-do-i-migrate-an-existing-efinity-project-to-evoverse">Q4: How do I migrate an existing Efinity project to EvoVerse?</h3>
+<p><strong>A</strong>: Open the project directory and run <code>EvoVerse: Adopt Project (upgrade native Efinity)</code>. The SDK generates <code>evoverse-project.md</code> automatically and registers it with the IDE. You can also just open it directly—as long as the directory contains <code>&lt;project&gt;.xml</code>, Build/Report/Diagnose/Program all work normally.</p>
+<h3 id="q5-the-workbench-ip-tab-shows-no-instances-found">Q5: The Workbench IP tab shows "No instances found"?</h3>
+<p><strong>A</strong>: IP instances are discovered in two ways: (1) the <code>&lt;efx:ip_info&gt;</code> tags in the project XML; (2) subdirectories under <code>ip/</code>. If you added an IP but it does not show up, click <strong>Sync Project Files</strong>.</p>
+<h3 id="q6-the-timing-diagnosis-panel-shows-no-timing-data">Q6: The timing diagnosis panel shows "No timing data"?</h3>
+<p><strong>A</strong>: Timing diagnosis requires one complete build first. After the build, the SDK parses the timing report in <code>outflow/</code>. If the build failed or P&amp;R never ran, there is no data to analyze.</p>
+<h3 id="q7-the-evoverse-cli-command-is-not-found">Q7: The <code>evoverse</code> CLI command is not found?</h3>
+<p><strong>A</strong>: The CLI is installed to <code>~/.evoverse/runtime/</code> during Set Up. Make sure that directory is in your PATH, or use the full path: <code>~/.evoverse/runtime/evoverse</code>.</p>
+<h3 id="q8-how-do-i-update-the-sdk-to-a-new-version">Q8: How do I update the SDK to a new version?</h3>
+<p><strong>A</strong>: 
+1. Obtain the new VSIX file
+2. Extensions panel → find EvoVerse SDK → uninstall
+3. <code>Install from VSIX...</code> → select the new VSIX
+4. <code>Reload Window</code></p>
+<h3 id="q9-what-works-on-macos">Q9: What works on macOS?</h3>
+<p><strong>A</strong>: macOS supports development (code authoring), Icarus simulation, AI collaboration, CLI queries, Catalog management, and document viewing. Icarus <code>iverilog</code> / <code>vvp</code> are executed directly through argument arrays; paths with spaces and non-UTF-8 tool output are handled with macOS/POSIX semantics, with no <code>cmd.exe</code> dependency. The host and deployment are cross-platform (the customer package ships both <code>deploy.ps1</code> and <code>deploy.sh</code>, and the extensions are the same set of VSIXes); full Efinity build/programming still requires a Windows or Linux environment.</p>
+<h3 id="q10-how-does-a-team-sync-the-catalog">Q10: How does a team sync the Catalog?</h3>
+<p><strong>A</strong>: Do not put the runtime <code>catalog/</code> directory back under version control in the SDK or customer projects. Each member obtains read-only access to the unified private Catalog with their own GitHub identity, completes local authentication, then runs <code>EvoVerse: Sync Catalog</code>; use <code>evoverse catalog status --json</code> to align the version, commit, and tree digest.</p>
+<h3 id="q11-can-multiple-intents-advance-at-the-same-time">Q11: Can multiple Intents advance at the same time?</h3>
+<p><strong>A</strong>: Yes, but the first design is itself the <code>INITIAL_DESIGN</code> system-integration Intent on the mainline, with no feature worktree; no second Intent may open until it completes the full specification, generation, system simulation, and document confirmation and establishes the first baseline. Afterwards at most 4 feature Intents run concurrently, each with its own branch and worktree; passing local verification only shows "Module verified, waiting for system integration". The mainline Workbench splits into <strong>Feature Intents</strong> and <strong>System Integration</strong>: system integration absorbs one branch at a time in FIFO order, and promotes the baseline only after re-confirming the composite specification, system simulation, and documents. A conflict or failed system validation aborts the merge and keeps the branch/worktree; after entering some Intent's worktree, <strong>Current Intent</strong> still shows only that Intent.</p>
+<hr />
+<h2 id="appendix-a-version-evolution-history">Appendix A: Version evolution history</h2>
+<p>Records the key behavior changes mentioned in this manual and the versions that introduced them, for reference during upgrades. All "behavior change" notes in the chapters above refer to this appendix.</p>
+<h3 id="a1-build-and-health-check-behavior-changes-v0-7-1">A1. Build and health-check behavior changes (v0.7.1)</h3>
+<p>v0.7.1 (main release 2026-07-15, repackaged 2026-07-18) made four major adjustments to the build flow and the project health check, aiming to reduce the SDK's implicit background modifications to user projects:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Before v0.7.1</th>
+<th>Since v0.7.1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>XML sanitize</strong></td>
+<td>The SDK sanitized the project XML automatically (could modify entries such as <code>&lt;efx:design_file&gt;</code>)</td>
+<td>No longer sanitized automatically; what you edit is what you get</td>
+</tr>
+<tr>
+<td><strong>Structural health check</strong></td>
+<td>Ran automatically before Build and auto-fixed problems</td>
+<td>No longer runs before Build; moved to the manual <a href="#106-project-health-check">§10.6</a> command</td>
+</tr>
+<tr>
+<td><strong>HDL watcher auto sync-sources</strong></td>
+<td>HDL file changes were synced to the project XML automatically</td>
+<td>No longer auto-synced; trigger manually via <a href="#54-sync-project-files">§5.4</a></td>
+</tr>
+<tr>
+<td><strong>SDC pre-check blocking builds</strong></td>
+<td>A missing/empty SDC blocked Build directly</td>
+<td>The check was folded into the health check, manually triggered, and does not block builds</td>
+</tr>
+</tbody>
+</table>
+<p>Where it applies: <a href="#73-build-flow-details">§7.3 Build flow details</a>, <a href="#75-sdc-pre-check">§7.5 SDC pre-check</a>, <a href="#106-project-health-check">§10.6 Project health check</a>.</p>
+<h3 id="a2-ai-diagnosis-behavior-changes-v0-7-1">A2. AI diagnosis behavior changes (v0.7.1)</h3>
+<p>Since v0.7.1, AI diagnosis has moved from "auto-fix" to "advisory suggestions only", preventing a background Agent from rewriting RTL without user confirmation:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Before v0.7.1</th>
+<th>Since v0.7.1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Persistent AI session</strong></td>
+<td>Timing Diagnosis, Build Report, and <code>@evoverse</code> each used a separate session</td>
+<td>All three share one persistent session; AI context carries across panels</td>
+</tr>
+<tr>
+<td><strong>Auto-applying fixes</strong></td>
+<td>AI diagnosis could modify RTL directly</td>
+<td>AI suggestions are advisory only; RTL changes need manual user action or Agent confirmation</td>
+</tr>
+<tr>
+<td><strong>Remote content preview</strong></td>
+<td>No unified rules for API Keys and remote content</td>
+<td>Remote content can be previewed and confirmed before sending; the API Key is written only to SecretStorage</td>
+</tr>
+<tr>
+<td><strong>Model selection</strong></td>
+<td>The SDK defaulted to the first available model</td>
+<td><code>evoverse.model.modelId</code> must be configured explicitly; the host <code>vscode.lm</code> or an OpenAI-compatible endpoint may be chosen</td>
+</tr>
+</tbody>
+</table>
+<p>Where it applies: <a href="#101-timing-diagnosis">§10.1 Timing diagnosis</a>, <a href="#33-configure-toolchain-paths">§3.3 Configure toolchain paths</a>.</p>
+<h3 id="a3-build-parameter-panel-introduced-in-v0-7-1-adjusted-in-v0-8-0">A3. Build parameter panel (introduced in v0.7.1, adjusted in v0.8.0)</h3>
+<p>v0.7.1 provided a per-run override panel; v0.8.0 turned it into workspace settings on the Workbench Build page, allowing only Map/PNR/PT/PGM <code>name=value</code> options, parallel threads, cumulative timeout, and unified flow. The current version provides no Skip PT/Skip PGM or post-build auto-attach switches.</p>
+<h3 id="a4-hdl-watcher-behavior-changes-v0-7-1">A4. HDL watcher behavior changes (v0.7.1)</h3>
+<p>Since v0.7.1, the HDL file watcher no longer calls <code>sync-sources</code> automatically, avoiding background XML mutations. All syncing of source files and IP instances into the project XML must be triggered manually via the <a href="#54-sync-project-files">§5.4</a> command.</p>
+<h3 id="a5-interface-design-paradigm-change-new-in-v0-7-2">A5. Interface design paradigm change (new in v0.7.2)</h3>
+<p>v0.7.2 (2026-07-19) introduced the native DesignAPI integration; the SDK no longer depends on the Efinity GUI to modify interface designs. See <a href="#14-interface-design-designapi-new-in-v072">§14 Interface design</a>.</p>
+<hr />
+<blockquote>
+<p><strong>End of document</strong></p>
+<p>For questions or issues, please give feedback through GitHub Issues.
+Choose the current tutorial or reference material you need from the <a href="../START-HERE.html">customer documentation entry</a>.</p>
+</blockquote></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

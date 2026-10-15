@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity On-Chip Debug Guide</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The complete loop: marking signals, the two-pass build, trigger capture, VIO and debug-residue cleanup.</span>
+<code>efinity/on-chip-debug-guide.md</code>
+<a href="../../../efinity/on-chip-debug-guide.md">Markdown source</a></p>
+<h1>Efinity On-Chip Debug Guide</h1></header>
+<main class="article"><h1 id="efinity-on-chip-debug-guide">Efinity On-Chip Debug Guide</h1>
+<blockquote>
+<p><strong>Version</strong>: v1.0　<strong>Applies to SDK</strong>: v1.0.0 (Efinity Adapter)
+<strong>Last updated</strong>: 2026-09-30</p>
+</blockquote>
+<p>The Debug tab of the Efinity Adapter provides a closed-loop on-chip debug flow without opening the Efinity GUI: mark signals → compile twice → program → scan the device → configure trigger conditions → capture waveforms. The whole flow bridges the official Efinity debug API through <code>evoverse_dbg.py</code>, and the results are delivered as VCD waveform files.</p>
+<h2 id="1-two-core-concepts">1. Two Core Concepts</h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Full name</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LA (logic analyzer)</strong></td>
+<td>Logic Analyzer</td>
+<td>Like an oscilloscope inside the FPGA: it continuously records signal values on the sample clock, and when the trigger condition is met, exports the entire history of the waveform as a VCD. Use it to answer "how does a signal change over time".</td>
+</tr>
+<tr>
+<td><strong>VIO (virtual I/O)</strong></td>
+<td>Virtual I/O</td>
+<td>Virtual switches / indicators that do not consume board pins: output probes can be written at runtime to drive internal FPGA signals, and input probes can read current values in real time. Use it to "flip something by hand and watch the reaction".</td>
+</tr>
+</tbody>
+</table>
+<p>The mark_debug flow uses LA by default (sampled recording per signal); VIO cores must be defined manually in the debug configuration file, or generated with AI assistance.</p>
+<h2 id="2-prerequisites">2. Prerequisites</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extensions</td>
+<td>evoverse-sdk and evoverse-efinity-adapter installed</td>
+</tr>
+<tr>
+<td>Efinity</td>
+<td>2026.1+, path configured in the core setting <code>evoverse.efinityPath</code></td>
+</tr>
+<tr>
+<td>Hardware</td>
+<td>Board JTAG connected, download cable driver working</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>An Efinity FPGA project open (with compilable RTL)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-the-complete-flow-seven-steps">3. The Complete Flow (Seven Steps)</h2>
+<p>The top of the Debug tab shows the same flow guide. Every step can also be delegated directly to AI (see §5).</p>
+<h3 id="step-1-mark-signals">Step 1 · Mark signals</h3>
+<p>In the RTL editor, <strong>select a signal name</strong> (<code>pattern</code>, <code>data_valid</code>, etc.), right-click → <strong>Add Signal to Efinity Debug</strong>. The command writes a synthesis attribute before the declaration:</p>
+<pre><code class="language-verilog">(* mark_debug = &quot;true&quot; *) wire [7:0] pattern;
+</code></pre>
+<ul>
+<li>Running it again on the same signal reports that it already exists; <code>Remove Signal from Efinity Debug</code> undoes the mark (keeping other synthesis attributes such as <code>keep</code>).</li>
+<li>Writing <code>(* mark_debug = "true" *)</code> by hand has the same effect — the right-click command is just an automated edit.</li>
+<li>The context menu requires: selected text present + file extension <code>.v/.sv/.vh/.svh</code>.</li>
+<li><code>Prepare Selection for Efinity Debug</code> = mark, then jump straight to the Debug tab.</li>
+</ul>
+<h3 id="step-2-first-compile-generates-the-debug-configuration-file">Step 2 · First compile (generates the debug configuration file)</h3>
+<p>Click Build. The synthesizer (the <code>enable-mark-debug</code> option) collects all marked signals and generates the debug configuration in <code>outflow/debug_profile.mark_debug.json</code>: it contains the probe list, bit widths, sample clock, and the default sample depth.</p>
+<blockquote>
+<p><strong>Why a first compile is mandatory</strong>: auto-instantiation of the debug cores requires the configuration file to already exist before the compile starts (an Efinity mechanism, see <a href="debugger-reference.html">Efinity Debugger Reference</a> §8). Enabling auto-instantiation on the very first compile crashes the build (<code>elab.vdb</code> missing). The Adapter already front-loads a validation that blocks this usage.</p>
+</blockquote>
+<h3 id="step-3-enable-debug-debug-tab-1-debug-configuration">Step 3 · Enable debug (Debug tab · 1 · Debug Configuration)</h3>
+<ul>
+<li>Check <strong>Auto Instantiation</strong>; the configuration file path auto-fills to <code>outflow/debug_profile.mark_debug.json</code>. You can "Preview Configuration Changes" first, then "Apply".</li>
+<li><strong>Sample depth</strong> (default 1024): the number of samples one LA buffer capture records; larger values consume more BRAM. Changes take effect after a recompile.</li>
+<li><strong>Sample clock</strong>: auto-detected from the synthesis result (the clock domain the probes belong to); read-only display.</li>
+</ul>
+<h3 id="step-4-second-compile-compiles-the-debug-cores-into-hardware">Step 4 · Second compile (compiles the debug cores into hardware)</h3>
+<p>Click Build again. When the compile finishes, the Debug tab profile status should show <strong>✓ debug cores compiled</strong>, and the <code>work_dbg/</code> directory contains the debug core RTL.</p>
+<h3 id="step-5-program-and-scan-the-device">Step 5 · Program and scan the device</h3>
+<p>Debug tab <strong>2 · Program</strong> downloads the bitstream; <strong>3 · Scan Device</strong> scans the FTDI/JTAG chain and confirms the number of debug cores in hardware. The probe table now shows the marked signals.</p>
+<h3 id="step-6-configure-trigger-conditions-and-capture">Step 6 · Configure trigger conditions and capture</h3>
+<p><strong>4 · Debug Probes</strong>, one signal per row:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compare condition</td>
+<td><code>equal to</code> / <code>not equal to</code> / <code>&lt;</code> / <code>&lt;=</code> / <code>&gt;</code> / <code>&gt;=</code>; 1-bit signals additionally offer <code>no trigger</code> (this signal does not participate)</td>
+</tr>
+<tr>
+<td>Match value</td>
+<td>The comparison target, e.g. <code>0xA5</code></td>
+</tr>
+<tr>
+<td>Mask</td>
+<td>All 1s by default (all bits participate); bits set to 0 are ignored</td>
+</tr>
+</tbody>
+</table>
+<p><strong>5 · Capture</strong>:
+- <strong>Conditional trigger capture</strong>: on click, the conditions in the table are collected and sent to hardware; recording starts only when all conditions are simultaneously met, and on completion the VCD is exported and opened automatically.
+- <strong>Immediate capture</strong>: skips the conditions and records the current state right away — use it first when checking "is this signal changing at all".</p>
+<p>Multiple signal conditions are ANDed: the trigger fires only when all signal conditions hold simultaneously.</p>
+<h3 id="step-7-wrap-up-debug-version-management">Step 7 · Wrap up (debug version management)</h3>
+<ul>
+<li><strong>Clean debug traces</strong>: one click back to the no-debug baseline — removes all <code>(* mark_debug *)</code> attributes, resets the debug configuration (auto-instantiation=off, profile=NONE), and deletes the debug configuration file and the <code>work_dbg/</code> directory. A confirmation dialog appears; debug cores already in a programmed bitstream disappear only after a recompile.</li>
+<li><strong>Branch clean baseline</strong>: copies the project to a new folder and cleans the copy's debug traces while the original debug-enabled project is left untouched — ideal for "keep one debug-enabled version and start fresh to test something else".</li>
+</ul>
+<h2 id="4-debug-tab-block-quick-reference">4. Debug Tab Block Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debug flow guide</td>
+<td>Seven-step flow + AI-assist notes</td>
+</tr>
+<tr>
+<td>1 · Debug configuration</td>
+<td>profile status, auto-instantiation, sample clock/sample depth, preview/apply</td>
+</tr>
+<tr>
+<td>2 · Program</td>
+<td>Download the bitstream to the FPGA</td>
+</tr>
+<tr>
+<td>3 · Scan device</td>
+<td>FTDI/JTAG scan, read hardware debug cores</td>
+</tr>
+<tr>
+<td>4 · Debug probes</td>
+<td>LA/VIO probe table + trigger conditions (compare/match value/mask)</td>
+</tr>
+<tr>
+<td>5 · Capture</td>
+<td>Conditional trigger capture / immediate capture</td>
+</tr>
+<tr>
+<td>6 · Virtual IO (VIO)</td>
+<td>Read all probe values; output probe writes (with direction and width validation + confirmation)</td>
+</tr>
+<tr>
+<td>Capture results</td>
+<td>Sample count, status, timestamp, VCD path</td>
+</tr>
+<tr>
+<td>Debug version management</td>
+<td>Clean debug traces / branch clean baseline</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-ai-assisted-path">5. AI-Assisted Path</h2>
+<p>The Debug tab only handles status viewing, trigger configuration, and capture; editing RTL, changing configuration, and running compiles can all be driven directly in a Trae conversation using natural language, for example:</p>
+<blockquote>
+<p>"Add debug marks to pattern and data_valid, change the sample depth to 4096, then compile and program."</p>
+<p>"Clean all debug traces from this project, then branch off a clean copy named blink_test."</p>
+</blockquote>
+<p>The AI edits RTL/the project XML directly and invokes the SDK compile commands; hazardous operations (VIO writes, applying configuration) still go through the command channel with confirmation.</p>
+<h2 id="6-command-quick-reference">6. Command Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Entry point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Add Signal to Efinity Debug</code></td>
+<td>Editor context menu (text must be selected)</td>
+</tr>
+<tr>
+<td><code>Remove Signal from Efinity Debug</code></td>
+<td>Editor context menu</td>
+</tr>
+<tr>
+<td><code>Prepare Selection for Efinity Debug</code></td>
+<td>Editor context menu (mark and jump to the Debug tab)</td>
+</tr>
+<tr>
+<td><code>EvoVerse: Open Efinity Workspace</code></td>
+<td>Command palette (Debug tab in the left Workbench)</td>
+</tr>
+<tr>
+<td><code>Efinity: Scan Debug Device</code></td>
+<td>Command palette</td>
+</tr>
+<tr>
+<td><code>Efinity: Trigger Capture</code> / <code>Immediate Capture</code></td>
+<td>Command palette</td>
+</tr>
+<tr>
+<td><code>Efinity: Read VIO</code> / <code>Write VIO</code></td>
+<td>Command palette</td>
+</tr>
+<tr>
+<td><code>EvoVerse: Clean Efinity Debug Traces</code></td>
+<td>Command palette (equivalent to the Clean Debug Traces button)</td>
+</tr>
+<tr>
+<td><code>EvoVerse: Branch Clean Efinity Debug Project</code></td>
+<td>Command palette (equivalent to the Branch Clean Baseline button)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-artifact-files">7. Artifact Files</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Generated when</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>outflow/debug_profile.mark_debug.json</code></td>
+<td>First compile</td>
+<td>Debug configuration: probes, bit widths, sample clock, sample depth</td>
+</tr>
+<tr>
+<td><code>work_dbg/</code></td>
+<td>Second compile</td>
+<td>Debug core RTL and related intermediate files</td>
+</tr>
+<tr>
+<td><code>outflow/&lt;project_name&gt;.bit</code></td>
+<td>Compile finished</td>
+<td>Bitstream including the debug cores</td>
+</tr>
+<tr>
+<td><code>&lt;project_name&gt;_&lt;timestamp&gt;.vcd</code></td>
+<td>Every capture</td>
+<td>Waveform file, opened automatically; any VCD viewer works too</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-faq">8. FAQ</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause and handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compile crashes, log contains <code>No such file: ...elab.vdb</code></td>
+<td>Auto-instantiation was enabled on the very first compile. Follow the correct order: compile once without auto-instantiation to generate the configuration file, then enable it and compile a second time. The Adapter already blocks this; when you hit it, redo in the prompted order.</td>
+</tr>
+<tr>
+<td>No Add Signal entry in the context menu</td>
+<td>No text selected, or the file is not <code>.v/.sv/.vh/.svh</code>. Select the signal name in the editor first.</td>
+</tr>
+<tr>
+<td>Debug tab state is stale</td>
+<td>It refreshes automatically after compile/apply; if the project was not ready when it opened, reopen the Debug tab.</td>
+</tr>
+<tr>
+<td>Probe table is empty</td>
+<td>The device has not been scanned, or the bitstream contains no debug cores (check whether the profile status is ✓ and the second compile has completed).</td>
+</tr>
+<tr>
+<td>Sample depth change had no effect</td>
+<td>The depth is baked into hardware at compile time; after changing it, recompile and reprogram.</td>
+</tr>
+<tr>
+<td>Stuck waiting after trigger</td>
+<td>The condition never becomes true. Use "Immediate Capture" first to confirm the signal is changing, then relax the condition or change the mask.</td>
+</tr>
+<tr>
+<td>Want to restore a clean project</td>
+<td>Use "Clean Debug Traces"; to keep the debug version at the same time, use "Branch Clean Baseline".</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>For the underlying mechanisms (the elab.vdb dependency behind the two compiles, XML debugger block fields, the profile JSON format), see the <a href="debugger-reference.html">Efinity Debugger Reference</a>.</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

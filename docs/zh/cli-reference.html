@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CLI 参考 · evoverse 命令</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}</style></head><body>
+<div class="topbar"><a class="brand" href="customer-portal.html"><img src="assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="tutorials.html">教程中心</a><a class="pnav-item" href="efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="video-sim.html">Video Sim</a><a class="pnav-item" href="skills.html">Skills</a><a class="pnav-item" href="boards.html">板卡与物料</a><a class="pnav-item on" href="cli-reference.html">CLI 参考</a><a class="pnav-item" href="mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0 · Trae 优先</p><h1>CLI 参考 · evoverse 命令</h1><p>全部子命令逐条说明：用途、参数与完整用法，自动与 CLI 保持同步。</p>
+<label><span class="sr-only">搜索文档</span><input id="search" class="search" type="search" placeholder="搜索当前产品文档…"></label></header>
+<main><section class="group"><h2>evoverse CLI · 32 个子命令</h2><p>本页自动采集自 CLI 的 --help 输出，与随扩展安装的 CLI 保持一致。左侧目录按任务域分类，点击跳转，也可自上而下逐条阅读。</p></section><div class="book"><aside class="book-toc" aria-label="目录"><h4>工程与板卡创建</h4><a href="#cli-new-board">new-board</a><a href="#cli-new-carrier">new-carrier</a><a href="#cli-new-jacket">new-jacket</a><a href="#cli-new-demo">new-demo</a><a href="#cli-new-project">new-project</a><a href="#cli-new-riscv-project">new-riscv-project</a><a href="#cli-new-software">new-software</a><a href="#cli-import-board">import-board</a><a href="#cli-import-local">import-local</a><h4>构建与工程文件</h4><a href="#cli-build">build</a><a href="#cli-add-file">add-file</a><a href="#cli-sync-sources">sync-sources</a><a href="#cli-rtl-deps">rtl-deps</a><a href="#cli-ip">ip</a><a href="#cli-design">design</a><a href="#cli-gen-bsp">gen-bsp</a><h4>验证与设计保证</h4><a href="#cli-validate">validate</a><a href="#cli-harness">harness</a><a href="#cli-assurance">assurance</a><a href="#cli-verification">verification</a><a href="#cli-baseline">baseline</a><a href="#cli-adapter">adapter</a><h4>Catalog 同步与物料</h4><a href="#cli-sync">sync</a><a href="#cli-catalog">catalog</a><a href="#cli-migrate-catalog-branding">migrate-catalog-branding</a><h4>元数据与查询</h4><a href="#cli-extract">extract</a><a href="#cli-set-meta">set-meta</a><a href="#cli-list">list</a><a href="#cli-tree">tree</a><a href="#cli-info">info</a><h4>其他命令</h4><a href="#cli-bind-system-project">bind-system-project</a><a href="#cli-program">program</a></aside><div class="book-main"><h2 class="entry-group">工程与板卡创建</h2><section class="entry" id="cli-new-board" data-search="new-board 脚手架生成新的核心板卡，可选继承自既有板卡"><h3><code>evoverse new-board</code></h3><p>脚手架生成新的核心板卡，可选继承自既有板卡</p><pre>usage: evoverse new-board [-h] [--from-board FROM_BOARD]
+                          [--carrier-name CARRIER_NAME] [--jackets JACKETS]
+                          [--force]
+                          id
+
+positional arguments:
+  id
+
+options:
+  -h, --help            show this help message and exit
+  --from-board FROM_BOARD
+                        从该板卡继承 docs/hardware/constraints/rtl
+  --carrier-name CARRIER_NAME
+                        预创建 carriers/&lt;name&gt;/ 占位目录
+  --jackets JACKETS     以逗号分隔的 Jacket 名称列表，预创建为占位目录
+  --force               覆盖已存在的板卡</pre></section><section class="entry" id="cli-new-carrier" data-search="new-carrier 在指定板卡下创建底板"><h3><code>evoverse new-carrier</code></h3><p>在指定板卡下创建底板</p><pre>usage: evoverse new-carrier [-h] --board BOARD id
+
+positional arguments:
+  id
+
+options:
+  -h, --help     show this help message and exit
+  --board BOARD</pre></section><section class="entry" id="cli-new-jacket" data-search="new-jacket 在独立板卡或模块底板下创建 Jacket 参考设计 bind qualified FPGA and BUILD_READY RK3588 evidence to one interface contract"><h3><code>evoverse new-jacket</code></h3><p>在独立板卡或模块底板下创建 Jacket 参考设计 bind qualified FPGA and BUILD_READY RK3588 evidence to one interface contract</p><pre>usage: evoverse new-jacket [-h] --board BOARD [--carrier CARRIER]
+                           [--slot SLOT]
+                           id
+
+positional arguments:
+  id
+
+options:
+  -h, --help         show this help message and exit
+  --board BOARD
+  --carrier CARRIER  当 --board 指向模块时必填
+  --slot SLOT        （已废弃；被忽略 — 目录将创建为空）</pre></section><section class="entry" id="cli-new-demo" data-search="new-demo 在指定板卡/底板下创建 Demo 工程"><h3><code>evoverse new-demo</code></h3><p>在指定板卡/底板下创建 Demo 工程</p><pre>usage: evoverse new-demo [-h] --board BOARD [--carrier CARRIER] id
+
+positional arguments:
+  id
+
+options:
+  -h, --help         show this help message and exit
+  --board BOARD
+  --carrier CARRIER  当 --board 指向模块时必填</pre></section><section class="entry" id="cli-new-project" data-search="new-project 从板卡（可含 Jacket/IP/Demo）创建新工程"><h3><code>evoverse new-project</code></h3><p>从板卡（可含 Jacket/IP/Demo）创建新工程</p><pre>usage: evoverse new-project [-h] --board BOARD [--carrier CARRIER]
+                            [--target {fpga,rk3588,system}]
+                            [--jackets JACKETS] [--ips IPS] [--demo DEMO]
+                            [--parent-dir PARENT_DIR]
+                            [--output-dir OUTPUT_DIR]
+                            [--rk3588-profile RK3588_PROFILE]
+                            [--rk3588-dts-dir RK3588_DTS_DIR]
+                            id
+
+positional arguments:
+  id
+
+options:
+  -h, --help            show this help message and exit
+  --board BOARD
+  --carrier CARRIER     模块必填；独立板卡请省略
+  --target {fpga,rk3588,system}
+                        v1 物料生成目标（默认：fpga）
+  --jackets JACKETS
+  --ips IPS
+  --demo DEMO
+  --parent-dir PARENT_DIR
+                        已存在的父目录；将创建 &lt;parent&gt;/&lt;id&gt; （默认：当前目录；SDK 安装库只读）
+  --output-dir OUTPUT_DIR
+                        要填充的指定空工作区目录
+  --rk3588-profile RK3588_PROFILE
+                        Phase 2 已绑定的 evoverse-rk3588-profile.json
+  --rk3588-dts-dir RK3588_DTS_DIR
+                        与已绑定 profile 同一 BSP commit 的 DTS candidate 目录</pre></section><section class="entry" id="cli-new-riscv-project" data-search="new-riscv-project 为工程添加 Sapphire RISC-V SoC（已有或新建工程）"><h3><code>evoverse new-riscv-project</code></h3><p>为工程添加 Sapphire RISC-V SoC（已有或新建工程）</p><pre>usage: evoverse new-riscv-project [-h] [--board BOARD] [--module MODULE]
+                                  [--params PARAMS] [--project PROJECT]
+                                  [--force]
+                                  id
+
+positional arguments:
+  id                 工程 ID 或 SoC 实例名
+
+options:
+  -h, --help         show this help message and exit
+  --board BOARD      板卡名称：ws-e1 或 T120F576_devkit。省略则列出可选板卡。
+  --module MODULE    SoC 模块名（默认：依据板卡选择 soc_ti180 / soc_t120）
+  --params PARAMS    SoC 的 JSON 配置参数，例如 &#x27;{&quot;DEBUG&quot;:&quot;1&#x27;b1&quot;}&#x27;
+  --project PROJECT  工程目录（默认为当前目录；若不是工程则新建）
+  --force            若工程目录已存在则覆盖</pre></section><section class="entry" id="cli-new-software" data-search="new-software 脚手架生成新的 RISC-V 软件应用（Efinity 原生目录布局）"><h3><code>evoverse new-software</code></h3><p>脚手架生成新的 RISC-V 软件应用（Efinity 原生目录布局）</p><pre>usage: evoverse new-software [-h] [--type {standalone,freertos}]
+                             [--category CATEGORY] [--project PROJECT]
+                             [--force]
+                             name
+
+positional arguments:
+  name                  应用名（小写字母、数字、连字符、下划线）
+
+options:
+  -h, --help            show this help message and exit
+  --type {standalone,freertos}
+                        应用类型（默认：standalone）
+  --category CATEGORY   分类子目录（默认：&#x27;user&#x27;）。例如 &#x27;i2c&#x27;、&#x27;uart&#x27;、&#x27;spi&#x27;
+  --project PROJECT     工程目录路径（默认为当前目录）
+  --force               覆盖同名的既有应用</pre></section><section class="entry" id="cli-import-board" data-search="import-board 从 GitHub URL 导入板卡（占位实现）"><h3><code>evoverse import-board</code></h3><p>从 GitHub URL 导入板卡（占位实现）</p><pre>usage: evoverse import-board [-h] url
+
+positional arguments:
+  url
+
+options:
+  -h, --help  show this help message and exit</pre></section><section class="entry" id="cli-import-local" data-search="import-local 从本地文件夹、.zip、.tar.gz、.md 或 .pdf 导入板卡"><h3><code>evoverse import-local</code></h3><p>从本地文件夹、.zip、.tar.gz、.md 或 .pdf 导入板卡</p><pre>usage: evoverse import-local [-h] [--id ID] [--force] source
+
+positional arguments:
+  source      源文件夹或文件路径
+
+options:
+  -h, --help  show this help message and exit
+  --id ID     覆盖推导出的板卡 id
+  --force     覆盖同 id 的既有板卡</pre></section><h2 class="entry-group">构建与工程文件</h2><section class="entry" id="cli-build" data-search="build 通过 Efinity CLI（efx_run）构建 FPGA 比特流"><h3><code>evoverse build</code></h3><p>通过 Efinity CLI（efx_run）构建 FPGA 比特流</p><pre>usage: evoverse build [-h] [--project PROJECT] [--project-file PROJECT_FILE]
+                      [--flow FLOW]
+                      ...
+
+positional arguments:
+  efx_args              -- 之后的参数将原样传递给 efx_run
+
+options:
+  -h, --help            show this help message and exit
+  --project PROJECT     工程目录（默认为当前目录）
+  --project-file PROJECT_FILE
+                        精确的 Efinity 工程 XML（当目录下存在多个工程时必填）
+  --flow FLOW           原样传递给 efx_run 的流程（默认：compile）</pre></section><section class="entry" id="cli-add-file" data-search="add-file 将源文件添加到工程 Efinity XML 的 design_file 列表"><h3><code>evoverse add-file</code></h3><p>将源文件添加到工程 Efinity XML 的 design_file 列表</p><pre>usage: evoverse add-file [-h] [--project PROJECT] path
+
+positional arguments:
+  path               .v/.sv/.vhd 文件路径（相对当前目录）
+
+options:
+  -h, --help         show this help message and exit
+  --project PROJECT  工程目录（默认为当前目录）</pre></section><section class="entry" id="cli-sync-sources" data-search="sync-sources 扫描 rtl/ip 目录并同步 Efinity XML 源文件列表"><h3><code>evoverse sync-sources</code></h3><p>扫描 rtl/ip 目录并同步 Efinity XML 源文件列表</p><pre>usage: evoverse sync-sources [-h] [--project PROJECT] [--dir DIR] [--apply]
+
+options:
+  -h, --help         show this help message and exit
+  --project PROJECT  工程目录（默认为当前目录）
+  --dir DIR          要扫描的目录（可重复；默认：rtl + ip）
+  --apply            写入变更（默认为 dry-run）</pre></section><section class="entry" id="cli-rtl-deps" data-search="rtl-deps 分析 RTL 模块级依赖（P1.5）"><h3><code>evoverse rtl-deps</code></h3><p>分析 RTL 模块级依赖（P1.5）</p><pre>usage: evoverse rtl-deps [-h] [--dir DIR] [--project PROJECT] [--json]
+                         [--changed CHANGED]
+
+options:
+  -h, --help         show this help message and exit
+  --dir DIR          要扫描的 RTL/IP 目录（默认：./rtl）
+  --project PROJECT  工程目录（默认为当前目录）
+  --json             以 JSON 输出结果
+  --changed CHANGED  显示受该文件变更影响的文件 （传递闭包）</pre></section><section class="entry" id="cli-ip" data-search="ip Efinity IP Manager 向导（驱动 IPMDesignAPI）"><h3><code>evoverse ip</code></h3><p>Efinity IP Manager 向导（驱动 IPMDesignAPI）</p><pre>usage: evoverse ip [-h] {list,describe,add} ...
+
+positional arguments:
+  {list,describe,add}
+    list               列出可用的 Efinity IP
+    describe           获取 IP 的默认可配置参数（实例化之前）
+    add                通过 Efinity IPM 生成 IP 并添加到工程
+
+options:
+  -h, --help           show this help message and exit</pre></section><section class="entry" id="cli-design" data-search="design 检查 Efinity 原生 Interface Designer 文件（DesignAPI）"><h3><code>evoverse design</code></h3><p>检查 Efinity 原生 Interface Designer 文件（DesignAPI）</p><pre>usage: evoverse design [-h]
+                       {capabilities,create-patch,delete-patch,inspect,validate,export-isf,auto-assign,preview-isf,property-patch}
+                       ...
+
+positional arguments:
+  {capabilities,create-patch,delete-patch,inspect,validate,export-isf,auto-assign,preview-isf,property-patch}
+    capabilities        列出块类型、版本、I/O bank 及可选资源
+    create-patch        创建并验证接口实例，然后导出原生 ISF
+    delete-patch        删除并验证接口实例，然后导出原生 ISF
+    inspect             检查实例、属性及已分配资源
+    validate            运行原生 DesignAPI DRC
+    export-isf          将 peri.xml 设计导出为 Efinity 原生 ISF
+    auto-assign         预览或显式导出原生资源分配
+    preview-isf         将候选原生 ISF 应用到临时设计并显示差异
+    property-patch      单独验证属性编辑并导出原生 ISF
+
+options:
+  -h, --help            show this help message and exit</pre></section><section class="entry" id="cli-gen-bsp" data-search="gen-bsp 为工程生成 BSP（板级支持包）"><h3><code>evoverse gen-bsp</code></h3><p>为工程生成 BSP（板级支持包）</p><pre>usage: evoverse gen-bsp [-h] project
+
+positional arguments:
+  project
+
+options:
+  -h, --help  show this help message and exit</pre></section><h2 class="entry-group">验证与设计保证</h2><section class="entry" id="cli-validate" data-search="validate 校验工程 manifest 与目录结构"><h3><code>evoverse validate</code></h3><p>校验工程 manifest 与目录结构</p><pre>usage: evoverse validate [-h] path
+
+positional arguments:
+  path
+
+options:
+  -h, --help  show this help message and exit</pre></section><section class="entry" id="cli-harness" data-search="harness 检查、分类、验证并安全应用 FPGA 工程变更"><h3><code>evoverse harness</code></h3><p>检查、分类、验证并安全应用 FPGA 工程变更</p><pre>usage: evoverse harness [-h] ...
+
+positional arguments:
+  harness_args
+
+options:
+  -h, --help    show this help message and exit</pre></section><section class="entry" id="cli-assurance" data-search="assurance 运行确定性的设计保证检查（RTL 基线、协议契约）"><h3><code>evoverse assurance</code></h3><p>运行确定性的设计保证检查（RTL 基线、协议契约）</p><pre>usage: evoverse assurance [-h] ...
+
+positional arguments:
+  assurance_args
+
+options:
+  -h, --help      show this help message and exit</pre></section><section class="entry" id="cli-verification" data-search="verification 运行规格驱动的分层验证操作"><h3><code>evoverse verification</code></h3><p>运行规格驱动的分层验证操作</p><pre>usage: evoverse verification [-h]
+                             {project-status,project-next,project-execute,state,facts,reconcile}
+                             ...
+
+positional arguments:
+  {project-status,project-next,project-execute,state,facts,reconcile}
+
+options:
+  -h, --help            show this help message and exit</pre></section><section class="entry" id="cli-baseline" data-search="baseline RTL 基线台账操作（register 子模式） ==SUPPRESS=="><h3><code>evoverse baseline</code></h3><p>RTL 基线台账操作（register 子模式） ==SUPPRESS==</p><pre>usage: evoverse baseline [-h] {register,jackets,demos,ips,all} ...
+
+positional arguments:
+  {register,jackets,demos,ips,all}
+    register            将 register RTL 登记为只读基线
+    jackets             将 jackets RTL 登记为只读基线
+    demos               将 demos RTL 登记为只读基线
+    ips                 将 ips RTL 登记为只读基线
+    all                 将 all RTL 登记为只读基线
+
+options:
+  -h, --help            show this help message and exit</pre></section><section class="entry" id="cli-adapter" data-search="adapter 发现并诊断 headless 工具适配器"><h3><code>evoverse adapter</code></h3><p>发现并诊断 headless 工具适配器</p><pre>usage: evoverse adapter [-h] {list,doctor} ...
+
+positional arguments:
+  {list,doctor}
+    list         列出已安装的受信适配器
+    doctor       报告过期或无效的适配器描述符
+
+options:
+  -h, --help     show this help message and exit</pre></section><h2 class="entry-group">Catalog 同步与物料</h2><section class="entry" id="cli-sync" data-search="sync 安装经过验证的 EvoVerse 私有 Catalog 发布版"><h3><code>evoverse sync</code></h3><p>安装经过验证的 EvoVerse 私有 Catalog 发布版</p><pre>usage: evoverse sync [-h] [--channel {stable,preview}] [--json]
+
+options:
+  -h, --help            show this help message and exit
+  --channel {stable,preview}
+  --json</pre></section><section class="entry" id="cli-catalog" data-search="catalog 检查或同步 Catalog"><h3><code>evoverse catalog</code></h3><p>检查或同步 Catalog</p><pre>usage: evoverse catalog [-h] {status} ...
+
+positional arguments:
+  {status}
+
+options:
+  -h, --help  show this help message and exit</pre></section><section class="entry" id="cli-migrate-catalog-branding" data-search="migrate-catalog-branding 内部迁移工具（不在帮助中列出）"><h3><code>evoverse migrate-catalog-branding</code></h3><p>内部迁移工具（不在帮助中列出）</p><pre>usage: evoverse migrate-catalog-branding [-h]
+
+options:
+  -h, --help  show this help message and exit</pre></section><h2 class="entry-group">元数据与查询</h2><section class="entry" id="cli-extract" data-search="extract 导出清单正文，供调用方通过 LLM 提取元数据"><h3><code>evoverse extract</code></h3><p>导出清单正文，供调用方通过 LLM 提取元数据</p><pre>usage: evoverse extract [-h] path
+
+positional arguments:
+  path
+
+options:
+  -h, --help  show this help message and exit</pre></section><section class="entry" id="cli-set-meta" data-search="set-meta 将 LLM 提取的元数据持久化到 SDK 私有缓存 （&lt;EVOVERSE_HOME&gt;/.cache/board-meta/...）"><h3><code>evoverse set-meta</code></h3><p>将 LLM 提取的元数据持久化到 SDK 私有缓存 （&lt;EVOVERSE_HOME&gt;/.cache/board-meta/...）</p><pre>usage: evoverse set-meta [-h] [--json JSON] [--stdin] path
+
+positional arguments:
+  path         Catalog 条目目录
+
+options:
+  -h, --help   show this help message and exit
+  --json JSON  包含提取字段的 JSON 字符串
+  --stdin      改为从 stdin 读取 JSON</pre></section><section class="entry" id="cli-list" data-search="list 列出 catalog 中指定类别的板卡/物料"><h3><code>evoverse list</code></h3><p>列出 catalog 中指定类别的板卡/物料</p><pre>usage: evoverse list [-h] [--board BOARD] [--carrier CARRIER] kind
+
+positional arguments:
+  kind
+
+options:
+  -h, --help         show this help message and exit
+  --board BOARD
+  --carrier CARRIER</pre></section><section class="entry" id="cli-tree" data-search="tree 树状列出板卡/物料层级"><h3><code>evoverse tree</code></h3><p>树状列出板卡/物料层级</p><pre>usage: evoverse tree [-h] [board]
+
+positional arguments:
+  board
+
+options:
+  -h, --help  show this help message and exit</pre></section><section class="entry" id="cli-info" data-search="info 显示指定 ID 的板卡/物料详情"><h3><code>evoverse info</code></h3><p>显示指定 ID 的板卡/物料详情</p><pre>usage: evoverse info [-h] [--json] id
+
+positional arguments:
+  id
+
+options:
+  -h, --help  show this help message and exit
+  --json</pre></section><h2 class="entry-group">其他命令</h2><section class="entry" id="cli-bind-system-project" data-search="bind-system-project "><h3><code>evoverse bind-system-project</code></h3><p></p><pre>usage: evoverse bind-system-project [-h] --project PROJECT
+
+options:
+  -h, --help         show this help message and exit
+  --project PROJECT</pre></section><section class="entry" id="cli-program" data-search="program 通过原生 Efinity 编程器（ftdi_program.py）烧录 FPGA 比特流"><h3><code>evoverse program</code></h3><p>通过原生 Efinity 编程器（ftdi_program.py）烧录 FPGA 比特流</p><pre>usage: evoverse program [-h] [--project PROJECT] [--bitstream BITSTREAM]
+                        [--mode {jtag,spi}]
+
+options:
+  -h, --help            show this help message and exit
+  --project PROJECT     工程目录（默认为当前目录）
+  --bitstream BITSTREAM
+                        显式的 .bit 比特流路径（默认取 outflow/ 下唯一的 .bit）
+  --mode {jtag,spi}     编程模式（默认：jtag）</pre></section></div></div></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+<script>
+const input=document.getElementById('search');input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();document.querySelectorAll('[data-search]').forEach(e=>e.classList.toggle('hidden',q&&!e.dataset.search.toLowerCase().includes(q)));});
+</script></body></html>

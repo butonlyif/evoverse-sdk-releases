@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 常见编译错误</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>按错误现象查询原因和原生修复路径。</span>
+<code>efinity/Efinity常见编译错误排查.md</code>
+<a href="../../../efinity/Efinity常见编译错误排查.md">Markdown 源文件</a></p>
+<h1>Efinity 常见编译错误</h1></header>
+<main class="article"><h1 id="efinity-常见编译错误排查">Efinity 常见编译错误排查</h1>
+<blockquote>
+<p>版本: v1.0 | 基于 Efinity 2026.1 (efx_map / efx_pnr / IP Manager / Design Check)</p>
+</blockquote>
+<h2 id="1-错误体系概述">1. 错误体系概述</h2>
+<p>Efinity 工具链的编译错误按来源分为六大类：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>来源</th>
+<th>典型阶段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>综合错误</td>
+<td>efx_map</td>
+<td>map</td>
+</tr>
+<tr>
+<td>XML 配置错误</td>
+<td>efx_map / efx_pnr</td>
+<td>map / pnr</td>
+</tr>
+<tr>
+<td>接口设计检查错误</td>
+<td>Interface Designer (Design Check)</td>
+<td>pnr</td>
+</tr>
+<tr>
+<td>IP 管理器错误</td>
+<td>IP Manager (efxIP.log)</td>
+<td>工程初始化</td>
+</tr>
+<tr>
+<td>P&amp;R 错误</td>
+<td>efx_pnr</td>
+<td>pnr</td>
+</tr>
+<tr>
+<td>编程器错误</td>
+<td>efx_pgm</td>
+<td>pgm</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_map --help</code> 错误码；<code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>；Design Check 规则</p>
+</blockquote>
+<hr />
+<h2 id="2-综合错误">2. 综合错误</h2>
+<h3 id="2-1-efx-0002-命令行非法">2.1 EFX-0002：命令行非法</h3>
+<pre><code>EFX-0002 (ERROR): Illegal command line
+</code></pre>
+<p><strong>含义</strong>：传递给 efx_map 的命令行参数格式错误或不被识别。</p>
+<p><strong>排查</strong>：
+- 检查命令行帮助 <code>efx_map --help</code>
+- 确认参数名拼写正确、格式符合 <code>name=value</code> 规范</p>
+<blockquote>
+<p>来源：<code>efx_map --help</code> — EFX-0002</p>
+</blockquote>
+<h3 id="2-2-efx-0003-源文件分析失败">2.2 EFX-0003：源文件分析失败</h3>
+<pre><code>EFX-0003 (ERROR): Analysis of source file '&lt;file&gt;' failed
+</code></pre>
+<p><strong>含义</strong>：Verilog/VHDL 源文件的语法分析或语义解析（elaboration）失败。</p>
+<p><strong>排查</strong>：
+- 查看该错误之前的其他错误消息，定位具体的语法/语义问题
+- 检查文件中是否存在未声明的信号、缺失的模块定义、语法错误</p>
+<blockquote>
+<p>来源：<code>efx_map --help</code> — EFX-0003</p>
+</blockquote>
+<h3 id="2-3-黑盒模块未定义">2.3 黑盒模块未定义</h3>
+<p>当设计中引用了未定义的模块时，默认会报错。</p>
+<p><strong>控制参数：</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--blackbox-error arg</code></td>
+<td><code>1</code></td>
+<td>设为 <code>0</code> 可将黑盒从 ERROR 降级为 WARNING</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_map --help</code> — <code>--blackbox-error</code></p>
+</blockquote>
+<h3 id="2-4-调高日志详细程度">2.4 调高日志详细程度</h3>
+<p>当错误信息不够明确时，可增加详细输出：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--message-verbosity arg</code></td>
+<td><code>0</code></td>
+<td>增大该值以获取更详细的错误上下文</td>
+</tr>
+<tr>
+<td><code>--suppress_warning_msgs arg</code></td>
+<td><code>0</code></td>
+<td>设为 <code>1</code> 可抑制警告（但不推荐在排查时使用）</td>
+</tr>
+<tr>
+<td><code>--msg_config_file arg</code></td>
+<td>—</td>
+<td>指定自定义消息过滤配置文件</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-powershell"># 通过 efx_run 传递详细日志选项
+efx_run.bat my_design --map_opts message-verbosity=1
+</code></pre>
+<blockquote>
+<p>来源：<code>efx_map --help</code> — <code>--message-verbosity</code>、<code>--suppress_warning_msgs</code>、<code>--msg_config_file</code></p>
+</blockquote>
+<hr />
+<h2 id="3-xml-工程文件配置错误">3. XML 工程文件配置错误</h2>
+<h3 id="3-1-元素顺序导致-efx_map-失败">3.1 元素顺序导致 efx_map 失败</h3>
+<p>在 <code>--un_flow</code>（Unified Netlist Flow）模式下，XML 元素出现顺序不正确会导致综合失败：</p>
+<ul>
+<li><strong>现象</strong>：efx_map 拒绝处理，可能报解析错误</li>
+<li><strong>根因</strong>：XML schema 对元素顺序有严格要求，某些元素前后位置错误会导致流程序列不匹配</li>
+<li><strong>排查</strong>：参考工程 XML Schema（<code>Efinity-XML工程文件Schema参考.md</code>）检查元素顺序</li>
+</ul>
+<blockquote>
+<p>来源：EvoVerse SDK 工程实践（project_memory.md）</p>
+</blockquote>
+<h3 id="3-2-peri_file-位置错误">3.2 peri_file 位置错误</h3>
+<p><code>&lt;efx:peri_file&gt;</code> 元素必须放在 <code>&lt;efx:constraint_info&gt;</code> 中，而非 <code>&lt;efx:interface_info&gt;</code>：</p>
+<pre><code class="language-xml">&lt;!-- 正确 --&gt;
+&lt;efx:constraint_info&gt;
+    &lt;efx:peri_file name=&quot;output/design.peri.xml&quot; /&gt;
+&lt;/efx:constraint_info&gt;
+
+&lt;!-- 错误：peri_file 不应在 interface_info 中 --&gt;
+&lt;efx:interface_info&gt;
+    &lt;efx:peri_file name=&quot;output/design.peri.xml&quot; /&gt;
+&lt;/efx:interface_info&gt;
+</code></pre>
+<ul>
+<li><code>&lt;efx:interface_info&gt;</code> 只应包含 <code>&lt;efx:default_peri_file&gt;</code>（通常 name 为空）</li>
+<li><code>&lt;efx:constraint_info&gt;</code> 包含 SDC、ISF、peri 文件</li>
+</ul>
+<blockquote>
+<p>来源：EvoVerse SDK 工程实践（project_memory.md）；Efinity-XML工程文件Schema参考 §4、§5</p>
+</blockquote>
+<h3 id="3-3-ooc_info-元素非法">3.3 ooc_info 元素非法</h3>
+<p><code>&lt;efx:ooc_info /&gt;</code> 元素在某些流程中不可用（例如 Unified Netlist Flow）：</p>
+<ul>
+<li><strong>现象</strong>：包含此元素的工程 XML 在特定流程中产生配置非法错误</li>
+<li><strong>排查</strong>：如果工程不涉及 OOC（Out-of-Context）综合，移除 <code>&lt;efx:ooc_info /&gt;</code> 元素</li>
+<li><strong>注意</strong>：空元素（如 <code>&lt;efx:ooc_info /&gt;</code>）也可能触发该问题</li>
+</ul>
+<blockquote>
+<p>来源：EvoVerse SDK 工程实践（project_memory.md）</p>
+</blockquote>
+<h3 id="3-4-inter_file-空元素">3.4 inter_file 空元素</h3>
+<p><code>&lt;efx:inter_file name="" /&gt;</code> 如 name 为空且不需要，应直接移除该行，而非保留空元素：</p>
+<pre><code class="language-xml">&lt;!-- 错误：空的 inter_file 元素 --&gt;
+&lt;efx:inter_file name=&quot;&quot; /&gt;
+
+&lt;!-- 正确：不写该元素 --&gt;
+</code></pre>
+<blockquote>
+<p>来源：EvoVerse SDK 工程实践（project_memory.md）；Efinity-XML工程文件Schema参考 §5</p>
+</blockquote>
+<hr />
+<h2 id="4-接口设计检查错误-design-check">4. 接口设计检查错误（Design Check）</h2>
+<p>Interface Designer 的 Design Check 在 P&amp;R 阶段之前执行，对时钟和时钟复用器进行规则校验。</p>
+<blockquote>
+<p>来源：Titanium Design Check Error Messages</p>
+</blockquote>
+<h3 id="4-1-时钟规则-clock_rule">4.1 时钟规则（clock_rule）</h3>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clock_rule_capacity</code></td>
+<td>不能在一个区域内连接超过 N 个不同时钟</td>
+</tr>
+<tr>
+<td><code>clock_rule_max_count</code></td>
+<td>使用的核心时钟数量超过最大限制（32 个）</td>
+</tr>
+<tr>
+<td><code>clock_rule_lvds_rx_clock_source</code></td>
+<td>PLL 输出的时钟驱动了不同边的 LVDS Rx</td>
+</tr>
+<tr>
+<td><code>clock_rule_pll_ref_clock_lvds_rx</code></td>
+<td>PLL 参考时钟的边与 LVDS Rx 所在的边不匹配</td>
+</tr>
+<tr>
+<td><code>clock_rule_undefined_name</code></td>
+<td>未定义时钟源</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：Design Check <code>clock_rule_*</code> 错误消息</p>
+</blockquote>
+<h3 id="4-2-时钟复用器规则-clkmux_rule">4.2 时钟复用器规则（clkmux_rule）</h3>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clkmux_rule_clocks_routed</code></td>
+<td>未布线的引脚驱动了时钟复用器的输入端</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_core_clock_pin</code></td>
+<td>核心时钟引脚只能在启用动态复用器时使用</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_core_clock_static_mux</code></td>
+<td>核心时钟引脚不能通过静态复用器连接</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_dynamic_clock_pin</code></td>
+<td>动态时钟引脚名称为空</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_dynamic_clock_select_pin</code></td>
+<td>动态时钟选择引脚名称为空</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_global_regional_pin</code></td>
+<td>缺少用于区域连接的全局引脚名称</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_global_regional_resource</code></td>
+<td>区域缓冲器不支持全局连接</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_pll_output_clock</code></td>
+<td>PLL 输出时钟被重复布线</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_regional_conn_type</code></td>
+<td>区域缓冲器需要 <code>rclk</code> 或 <code>rctrl</code> 连接类型</td>
+</tr>
+<tr>
+<td><code>clkmux_rule_type_config</code></td>
+<td>MIPI/GPIO/LVDS 资源不允许连接到动态复用器</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：Design Check <code>clkmux_rule_*</code> 错误消息</p>
+</blockquote>
+<h3 id="4-3-sdc-约束错误">4.3 SDC 约束错误</h3>
+<p>SDC 约束配置不当会导致时序分析阶段出错：</p>
+<ul>
+<li><strong>unconstrained endpoints</strong>：缺失 SDC 约束导致大量端点未被约束</li>
+<li><strong>排查</strong>：确认工程 XML 中 <code>&lt;efx:sdc_file name="..." /&gt;</code> 路径正确且文件存在</li>
+<li>确保所有时钟域都有 <code>create_clock</code> 或 <code>create_generated_clock</code> 定义</li>
+</ul>
+<blockquote>
+<p>来源：EvoVerse SDK 工程实践（project_memory.md）</p>
+</blockquote>
+<h3 id="4-4-gpio-分配冲突">4.4 GPIO 分配冲突</h3>
+<p>Board image（板卡镜像）与 ISF 文件冲突时，Interface Designer 的 GPIO 分配出错：</p>
+<ul>
+<li><strong>现象</strong>：引脚分配失败，提示已分配或冲突</li>
+<li><strong>排查</strong>：检查 ISF 文件中手动分配的引脚是否与 board image 自动分配的引脚重叠</li>
+</ul>
+<blockquote>
+<p>来源：EvoVerse SDK 工程实践（project_memory.md）</p>
+</blockquote>
+<hr />
+<h2 id="5-ip-管理器错误">5. IP 管理器错误</h2>
+<p>IP Manager 日志位于 <code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>。</p>
+<table>
+<thead>
+<tr>
+<th>错误模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PICKLE_LOAD-ERROR</code></td>
+<td>IP 参数反序列化失败——IP 配置文件损坏或格式不兼容</td>
+</tr>
+<tr>
+<td><code>VALIDATE_PARAM-ERROR</code></td>
+<td>IP 参数校验失败——参数值超出允许范围或类型不匹配</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>C:\Efinity\2026.1\ipm\log\efxIP.log</code></p>
+</blockquote>
+<hr />
+<h2 id="6-p-r-错误">6. P&amp;R 错误</h2>
+<h3 id="6-1-布线拥塞-routing-congestion">6.1 布线拥塞（Routing Congestion）</h3>
+<p>布线拥塞是 P&amp;R 阶段常见问题：</p>
+<ul>
+<li><strong>现象</strong>：efx_pnr 报告无法完成布线或部分 net 未布线</li>
+<li><strong>排查</strong>：</li>
+<li>使用 <code>--optimization_level CONGESTION_1/2/3</code> 提高拥塞优化级别</li>
+<li>考虑分散关键模块布局</li>
+</ul>
+<blockquote>
+<p>来源：<code>efx_pnr --help-verbose</code> — <code>--optimization_level</code></p>
+</blockquote>
+<h3 id="6-2-时序违规-timing-violations">6.2 时序违规（Timing Violations）</h3>
+<ul>
+<li><strong>现象</strong>：WNS（Worst Negative Slack）为负值，关键路径时序不满足</li>
+<li><strong>相关参数</strong>：<code>--print_critical_path N</code>（默认 <code>10</code>）</li>
+<li><strong>排查</strong>：检查关键路径报告，分析是否有不必要的长组合逻辑路径</li>
+</ul>
+<blockquote>
+<p>来源：<code>efx_pnr --help</code> — <code>--print_critical_path</code></p>
+</blockquote>
+<hr />
+<h2 id="7-编程器错误">7. 编程器错误</h2>
+<p>编程器错误通常发生在比特流生成（pgm）或烧录阶段：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>可能原因</th>
+<th>检查项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flash 未检测到</td>
+<td>型号不在数据库中</td>
+<td>检查 <code>pgm/bin/flash_db/</code></td>
+</tr>
+<tr>
+<td>比特流过大</td>
+<td>未启用压缩</td>
+<td>确认 <code>--bitstream_compression on</code>（默认开启）</td>
+</tr>
+<tr>
+<td>SPI Active 配置失败</td>
+<td>时钟分频过高</td>
+<td>增大 <code>--oscillator_clock_divider</code></td>
+</tr>
+<tr>
+<td>多镜像不工作</td>
+<td>CBSEL 引脚未正确配置</td>
+<td>确认 <code>--enable_cbsel on</code> 且地址合法</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code></p>
+</blockquote>
+<hr />
+<h2 id="8-排查工作流">8. 排查工作流</h2>
+<h3 id="8-1-标准排查步骤">8.1 标准排查步骤</h3>
+<pre><code>1. 确认错误来源（map / pnr / pgm / PT）
+      │
+2. 检查上一条错误消息（EFX-0003 的前置错误）
+      │
+3. 启用详细日志：--map_opts message-verbosity=1
+      │
+4. 检查 XML 工程文件：元素顺序、peri_file 位置
+      │
+5. 检查 SDC 约束：时钟定义、unconstrained endpoints
+      │
+6. 检查 Design Check 报告：clock/clkmux 规则
+      │
+7. 检查 IP Manager 日志：efxIP.log
+</code></pre>
+<blockquote>
+<p>来源：综合 efx_map --help、Design Check 规则、EvoVerse SDK 工程实践</p>
+</blockquote>
+<h3 id="8-2-常用诊断命令">8.2 常用诊断命令</h3>
+<pre><code class="language-powershell"># 提高综合日志详细度
+efx_run.bat my_design --map_opts message-verbosity=1
+
+# 仅运行综合（跳过后续步骤，快速迭代）
+efx_run.bat my_design --flow map --map_opts message-verbosity=1
+
+# 仅运行 P&amp;R，打印更多关键路径
+efx_run.bat my_design --flow pnr --pnr_opts print_critical_path=50
+
+# 抑制黑盒错误（临时排查用，不推荐发布）
+efx_run.bat my_design --map_opts blackbox-error=0
+
+# 自定义消息过滤
+efx_run.bat my_design --map_opts msg_config_file=my_filter.cfg
+</code></pre>
+<blockquote>
+<p>来源：<code>efx_map --help</code>；<code>efx_pnr --help</code>；<code>efx_run --help</code></p>
+</blockquote>
+<hr />
+<h2 id="9-与-evoverse-sdk-集成">9. 与 EvoVerse SDK 集成</h2>
+<h3 id="9-1-sdk-中的错误处理">9.1 SDK 中的错误处理</h3>
+<p>EvoVerse SDK 的 CLI 与 IDE Build 都把原始工程 XML 交给 Efinity 官方 runner：</p>
+<pre><code class="language-powershell">call &lt;Efinity&gt;/bin/setup.bat
+&lt;Efinity&gt;/bin/efx_run.bat &lt;project.xml&gt; --flow compile
+</code></pre>
+<ul>
+<li>XML 所在目录作为工作目录；SDK 不拆分 flow、不预运行 PT、不生成替代 XML</li>
+<li>默认不注入线程数、超时、<code>--un_flow</code> 或 MAP/PNR 参数；只有用户显式覆盖才追加</li>
+<li>SDK 健康检查只提供提示，不能阻止 Efinity 判断工程是否合法</li>
+<li>stdout、stderr 和退出码由厂商 runner 原样返回</li>
+<li>SDK 的 Build Report 面板展示解析后的结构化错误信息</li>
+<li>Efinity 2026.1 是已验证基线；其他版本保持原生直通并标记为未验证</li>
+</ul>
+<blockquote>
+<p>注意：Efinity 2026.1 自身可能更新工程 XML 的版本、同步状态或格式。SDK 不应在构建前后另外改写或恢复这些厂商行为。</p>
+<p>来源：EvoVerse SDK <code>buildRunner.ts</code></p>
+</blockquote>
+<h3 id="9-2-报告增强">9.2 报告增强</h3>
+<ul>
+<li>efinity-adapter 的 <code>src/capabilities/report.ts</code> 解析 map/P&amp;R/timing 报告，提取资源使用和时序摘要</li>
+<li><code>timingDiagnoser.ts</code> 基于六类错误指纹做根因分类诊断</li>
+<li>LLM 上下文注入（copilotContext.ts）可将 RTL + SDC + 诊断结果发送给 AI 辅助分析</li>
+</ul>
+<blockquote>
+<p>来源：EvoVerse SDK <code>toolchain/</code> 模块</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>文档版本：</strong> v1.0<br />
+<strong>适用工具链：</strong> Efinity 2026.1<br />
+<strong>数据来源：</strong> <code>efx_map --help</code>（EFX-0002/0003, --blackbox-error, --message-verbosity）、<code>efx_pnr --help</code>/<code>--help-verbose</code>（--print_critical_path, --optimization_level）、<code>efx_pgm --help</code>、Design Check 错误消息、<code>C:\Efinity\2026.1\ipm\log\efxIP.log</code>、EvoVerse SDK 工程实践（project_memory.md）、Efinity-XML工程文件Schema参考</p>
+</blockquote></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

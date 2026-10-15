@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity RTL 编码风格</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>Verilog/SystemVerilog 规则速查。</span>
+<code>efinity/Efinity编码风格.md</code>
+<a href="../../../efinity/Efinity编码风格.md">Markdown 源文件</a></p>
+<h1>Efinity RTL 编码风格</h1></header>
+<main class="article"><h1 id="efinix-fpga-verilog-systemverilog-编码风格指南">Efinix FPGA Verilog/SystemVerilog 编码风格指南</h1>
+<blockquote>
+<p><strong>版本</strong>: v1.0
+<strong>更新日期</strong>: 2026-07-30
+<strong>适用工具</strong>: Efinity IDE (Titanium / Trion / Quantum 系列)
+<strong>适用场景</strong>: EvoVerse SDK 项目中的所有 RTL 开发，包括 Vibe Coding 生成的代码
+<strong>来源</strong>: Efinity Synthesis Coding Style / Coding Reliability PPTX、Intel AN-1016、AMD UG949、现有 EvoVerse RTL 实践</p>
+<p><strong>关联文档</strong>:
+- EVOVERSE-SDK-完整设计说明书.md（主设计文档）
+- <a href="Efinity优化设计.html">efinity-optimization-design.md</a>（优化设计——方向一：代码风格指导系统的权威来源）
+- <a href="../sdk/用户使用手册.html">用户使用手册.md</a>（§10 代码风格检查——基于本指南的 25 条自动检查规则）</p>
+</blockquote>
+<hr />
+<h2 id="1-文件组织与命名">1. 文件组织与命名</h2>
+<h3 id="1-1-文件命名">1.1 文件命名</h3>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一个模块一个文件</td>
+<td>文件名 = 模块名，如 <code>ws_clock_mgr.v</code></td>
+</tr>
+<tr>
+<td>扩展名 <code>.v</code>（Verilog）或 <code>.sv</code>（SystemVerilog）</td>
+<td>推荐 <code>.sv</code> 用于新代码</td>
+</tr>
+<tr>
+<td>小写 + 下划线</td>
+<td><code>mipi_csi_rx.sv</code>、<code>ddr3_controller.sv</code></td>
+</tr>
+<tr>
+<td>不要用连字符</td>
+<td><code>mipi-csi-rx.sv</code> ❌ → <code>mipi_csi_rx.sv</code> ✅</td>
+</tr>
+<tr>
+<td>Top-level 命名以 <code>_top</code> 结尾</td>
+<td><code>ws_golden_top.v</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-目录结构-模块内">1.2 目录结构（模块内）</h3>
+<pre><code>rtl/
+├── top/            # 顶层集成
+├── clk_rst/        # 时钟与复位管理
+├── data_path/      # 数据通路（按功能分子目录）
+├── ctrl/           # 控制逻辑 / 状态机
+├── cdc/            # 跨时钟域模块
+└── ip_wrappers/    # 第三方 IP 封装
+</code></pre>
+<hr />
+<h2 id="2-模块编写规范">2. 模块编写规范</h2>
+<h3 id="2-1-模块头部模板">2.1 模块头部模板</h3>
+<pre><code class="language-systemverilog">`default_nettype none
+`timescale 1ns / 1ps
+
+//============================================================================
+// 模块名称: &lt;module_name&gt;
+// 功能描述: &lt;一句话说明做什么&gt;
+// 接口说明: &lt;关键接口协议，如 AXI-Stream / Avalon-MM / 自定义握手&gt;
+// 设计约束: &lt;时钟频率、延迟要求、吞吐率等&gt;
+// 关联文档: &lt;引用的设计文档、IP datasheet&gt;
+//============================================================================
+module module_name #(
+    parameter DATA_WIDTH = 16,
+    parameter ADDR_WIDTH = 10
+)(
+    input  wire                    clk_i,
+    input  wire                    rst_n_i,
+    // 数据输入
+    input  wire [DATA_WIDTH-1:0]   data_i,
+    input  wire                    valid_i,
+    output wire                    ready_o,
+    // 数据输出
+    output wire [DATA_WIDTH-1:0]   data_o,
+    output wire                    valid_o,
+    input  wire                    ready_i
+);
+
+    //----------------------------------------------------------
+    // 内部信号声明
+    //----------------------------------------------------------
+    // ...
+
+    //----------------------------------------------------------
+    // 逻辑实现
+    //----------------------------------------------------------
+    // ...
+
+endmodule
+
+`default_nettype wire
+</code></pre>
+<h3 id="2-2-端口命名">2.2 端口命名</h3>
+<table>
+<thead>
+<tr>
+<th>方向</th>
+<th>后缀</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入</td>
+<td><code>_i</code></td>
+<td><code>clk_i</code>, <code>data_i</code>, <code>valid_i</code></td>
+</tr>
+<tr>
+<td>输出</td>
+<td><code>_o</code></td>
+<td><code>data_o</code>, <code>valid_o</code>, <code>led_o</code></td>
+</tr>
+<tr>
+<td>双向</td>
+<td><code>_io</code></td>
+<td><code>sda_io</code></td>
+</tr>
+<tr>
+<td>低有效</td>
+<td><code>_n</code> 前缀或后缀</td>
+<td><code>rst_n_i</code>, <code>cs_n_o</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-3-内部信号命名">2.3 内部信号命名</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>命名方式</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>寄存器</td>
+<td>描述性名称 + <code>_r</code> 或不加后缀</td>
+<td><code>cnt_r</code>, <code>state</code>, <code>data_reg</code></td>
+</tr>
+<tr>
+<td>连线</td>
+<td>描述性名称</td>
+<td><code>fifo_full</code>, <code>buf_sel</code></td>
+</tr>
+<tr>
+<td>状态机状态</td>
+<td><code>ST_</code> 大写前缀</td>
+<td><code>ST_IDLE</code>, <code>ST_READ</code>, <code>ST_WRITE</code></td>
+</tr>
+<tr>
+<td>参数/常量</td>
+<td>大写 + 下划线</td>
+<td><code>DATA_WIDTH</code>, <code>MAX_BURST</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-4-禁止事项">2.4 禁止事项</h3>
+<ul>
+<li>❌ 不要使用 <code>inout</code> 双向口，除非顶层 IO（用 <code>_io</code> 后缀标记清楚）</li>
+<li>❌ 不要在顶层模块内部写复杂逻辑（仅做实例化 + 简单连线）</li>
+<li>❌ 不要用 <code>*</code> 通配端口连接（<code>.data_i(data_i)</code> 而不是 <code>.*</code>）</li>
+</ul>
+<hr />
+<h2 id="3-时钟与复位">3. 时钟与复位</h2>
+<h3 id="3-1-复位策略">3.1 复位策略</h3>
+<p><strong>统一使用异步复位、同步释放：</strong></p>
+<pre><code class="language-systemverilog">// 标准 3 级同步释放复位
+reg [2:0] rst_sync;
+always @(posedge clk or negedge rst_n_i) begin
+    if (!rst_n_i)
+        rst_sync &lt;= 3'b000;
+    else
+        rst_sync &lt;= {rst_sync[1:0], 1'b1};
+end
+wire rst_n = rst_sync[2];
+</code></pre>
+<p><strong>规则：</strong>
+- 顶层对外提供一个 <code>rst_n_i</code>（异步低有效）
+- 每个时钟域独立生成同步释放后的 <code>rst_n</code>
+- 复位释放链至少 2 级（推荐 3 级）
+- ❌ 不要用纯异步复位（<code>always @(posedge clk or negedge rst_n_i)</code> 的代码里不能只有异步释放逻辑而没有同步器）
+- ❌ 不要在数据通路上用全局复位（只复位控制逻辑，数据寄存器用 valid 控制）</p>
+<h3 id="3-2-时钟命名">3.2 时钟命名</h3>
+<table>
+<thead>
+<tr>
+<th>信号</th>
+<th>命名</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入参考时钟</td>
+<td><code>clk_&lt;freq&gt;m_i</code></td>
+<td><code>clk_50m_i</code>, <code>clk_100m_i</code></td>
+</tr>
+<tr>
+<td>系统工作时钟</td>
+<td><code>sys_clk</code></td>
+<td><code>sys_clk</code></td>
+</tr>
+<tr>
+<td>视频/像素时钟</td>
+<td><code>&lt;domain&gt;_clk</code></td>
+<td><code>video_clk</code>, <code>pixel_clk</code></td>
+</tr>
+<tr>
+<td>PLL 输出</td>
+<td><code>pll_&lt;freq&gt;m</code></td>
+<td><code>pll_200m</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-时钟使能-替代分频时钟">3.3 时钟使能（替代分频时钟）</h3>
+<p><strong>不要</strong>用分频后的时钟去驱动逻辑：</p>
+<pre><code class="language-systemverilog">// ❌ 不要这样
+always @(posedge clk_div2) begin
+    cnt &lt;= cnt + 1;
+end
+</code></pre>
+<p><strong>用时钟使能</strong>替代：</p>
+<pre><code class="language-systemverilog">// ✅ 应该这样
+reg clk_en;
+always @(posedge sys_clk) begin
+    clk_en &lt;= ~clk_en;  // 2 分频使能
+end
+
+always @(posedge sys_clk) begin
+    if (clk_en)
+        cnt &lt;= cnt + 1;
+end
+</code></pre>
+<hr />
+<h2 id="4-时序友好编码">4. 时序友好编码</h2>
+<h3 id="4-1-寄存器输出">4.1 寄存器输出</h3>
+<p>每个模块的输出尽量打一拍再出去：</p>
+<pre><code class="language-systemverilog">// ✅ 推荐：输出寄存器化
+always @(posedge clk) begin
+    data_o  &lt;= data_next;
+    valid_o &lt;= valid_next;
+end
+</code></pre>
+<p><strong>规则：</strong>
+- 模块输出通常应经过寄存器
+- 如果有跨模块的时序违例，优先在<strong>发送端</strong>加输出寄存器
+- 数据与伴生控制信号（valid/last/user）必须在同一拍寄存</p>
+<h3 id="4-2-流水线插入原则">4.2 流水线插入原则</h3>
+<p>当一条组合路径上连续 LUT 级数 ≥ 3 且逻辑延迟 &gt; 周期的 60% 时，考虑插入流水线寄存器：</p>
+<pre><code class="language-systemverilog">// ❌ 长组合链
+assign result = stage3(stage2(stage1(data)));
+
+// ✅ 流水线化
+reg [W-1:0] pipe1, pipe2;
+always @(posedge clk) begin
+    pipe1 &lt;= stage1(data);
+    pipe2 &lt;= stage2(pipe1);
+end
+assign result = stage3(pipe2);
+</code></pre>
+<h3 id="4-3-高扇出控制">4.3 高扇出控制</h3>
+<p>大于 200 扇出的控制信号，用 <code>(* max_fanout *)</code> 属性约束：</p>
+<pre><code class="language-systemverilog">(* max_fanout = 100 *) reg shared_enable;
+</code></pre>
+<p>或手动复制驱动：</p>
+<pre><code class="language-systemverilog">// 把一个使能信号复制 4 份，每份驱动 1/4 的负载
+reg [3:0] en_replica;
+always @(posedge clk) en_replica &lt;= {4{en_src}};
+</code></pre>
+<hr />
+<h2 id="5-综合友好编码">5. 综合友好编码</h2>
+<h3 id="5-1-fsm-编码">5.1 FSM 编码</h3>
+<p><strong>推荐 one-hot 编码</strong>（Efinix 推荐，LUT 结构友好）：</p>
+<pre><code class="language-systemverilog">(* fsm_encoding = &quot;one-hot&quot; *)
+reg [3:0] state, state_next;
+
+localparam ST_IDLE  = 4'b0001;
+localparam ST_READ  = 4'b0010;
+localparam ST_PROC  = 4'b0100;
+localparam ST_WRITE = 4'b1000;
+</code></pre>
+<h3 id="5-2-case-语句">5.2 Case 语句</h3>
+<pre><code class="language-systemverilog">// ✅ 完整 case
+always @(*) begin
+    case (state)
+        ST_IDLE:  next = ST_READ;
+        ST_READ:  next = data_valid ? ST_PROC : ST_READ;
+        default:  next = ST_IDLE;  // 必须有 default
+    endcase
+end
+</code></pre>
+<ul>
+<li>所有 <code>case</code> 必须有 <code>default</code></li>
+<li><code>if-else</code> 链必须有最后的 <code>else</code></li>
+<li>避免在组合逻辑 <code>always @(*)</code> 块中产生 latch</li>
+</ul>
+<h3 id="5-3-避免意外-latch">5.3 避免意外 Latch</h3>
+<p>产生 latch 的常见情况和修复：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>错误示例</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>组合 always 块中信号未在所有分支赋值</td>
+<td><code>if (en) y = a;</code></td>
+<td>加 <code>else y = 0;</code> 或在开头赋默认值</td>
+</tr>
+<tr>
+<td>case 缺少 default</td>
+<td><code>case (sel) 2'b00: y=a; ...</code></td>
+<td>加 <code>default: y = 0;</code></td>
+</tr>
+<tr>
+<td>非阻塞赋值在组合逻辑块</td>
+<td><code>always @(*) y &lt;= a;</code></td>
+<td>改 <code>=</code> 或改 <code>always @(posedge clk)</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-跨时钟域-cdc">6. 跨时钟域（CDC）</h2>
+<h3 id="6-1-同步器模板">6.1 同步器模板</h3>
+<p><strong>单比特控制信号 — 2/3 级同步器：</strong></p>
+<pre><code class="language-systemverilog">(* ASYNC_REG = &quot;TRUE&quot; *) reg [2:0] sync_ff;
+
+always @(posedge clk_dst) begin
+    sync_ff &lt;= {sync_ff[1:0], src_signal};
+end
+wire signal_synced = sync_ff[2];
+</code></pre>
+<p><strong>多比特总线 — MUX 同步（valid 同步后采样）：</strong></p>
+<pre><code class="language-systemverilog">// 发送侧（clk_src 域）
+reg        valid_toggle;
+reg [31:0] data_bus;
+
+always @(posedge clk_src) begin
+    if (send) begin
+        data_bus      &lt;= new_data;
+        valid_toggle  &lt;= ~valid_toggle;
+    end
+end
+
+// 接收侧（clk_dst 域）
+(* ASYNC_REG = &quot;TRUE&quot; *) reg [2:0] toggle_sync;
+reg toggle_prev;
+
+always @(posedge clk_dst) begin
+    toggle_sync &lt;= {toggle_sync[1:0], valid_toggle};
+    toggle_prev &lt;= toggle_sync[2];
+    if (toggle_sync[2] != toggle_prev)
+        captured_data &lt;= data_bus;  // data_bus 此时已经稳定
+end
+</code></pre>
+<h3 id="6-2-cdc-规则">6.2 CDC 规则</h3>
+<ul>
+<li>任何跨时钟域的信号必须经过同步器</li>
+<li>❌ 不要在 SDC 里对 CDC 路径简单地设 <code>set_false_path</code></li>
+<li>先确认 <code>set_clock_groups -asynchronous</code>，再对同步器本身 <code>set_false_path -from sync_ff_0 -to sync_ff_2</code></li>
+<li>同步链加 <code>(* ASYNC_REG = "TRUE" *)</code> 防止被综合器挪动或优化掉</li>
+<li>快域→慢域单周期脉冲要先拉伸再同步</li>
+</ul>
+<hr />
+<h2 id="7-资源利用">7. 资源利用</h2>
+<h3 id="7-1-bram-推断">7.1 BRAM 推断</h3>
+<pre><code class="language-systemverilog">// ✅ BRAM 推断友好写法
+(* ram_style = &quot;block&quot; *)
+reg [DATA_W-1:0] mem [0:DEPTH-1];
+reg [DATA_W-1:0] mem_rd;
+
+always @(posedge clk) begin
+    if (wr_en)
+        mem[wr_addr] &lt;= wr_data;
+    mem_rd &lt;= mem[rd_addr];  // 读也打一拍（output register）
+end
+</code></pre>
+<ul>
+<li>用 <code>(* ram_style = "block" *)</code> 显式告知综合器</li>
+<li>读数据用寄存器输出（BRAM 有内置 output register，免费）</li>
+<li>深度 ≥ 128 时优先用 BRAM 而非分布式 RAM</li>
+</ul>
+<h3 id="7-2-dsp-推断">7.2 DSP 推断</h3>
+<pre><code class="language-systemverilog">// ✅ DSP 推断友好写法
+(* use_dsp = &quot;yes&quot; *)
+reg [17:0] mult_result;
+
+always @(posedge clk) begin
+    mult_result &lt;= $signed(a) * $signed(b);
+end
+</code></pre>
+<ul>
+<li>乘法器输入/输出都加寄存器（利用 DSP 内置 pipeline register）</li>
+<li>使用 <code>$signed()</code> 明确告知是有符号乘法</li>
+</ul>
+<h3 id="7-3-pll-配置">7.3 PLL 配置</h3>
+<p>PLL 应通过 Efinity Interface Designer 配置为硬核，不在 RTL 中例化：</p>
+<pre><code class="language-systemverilog">// ✅ PLL 通过 Interface Designer 配置
+// 在 RTL 中只声明 PLL 输出的时钟端口和锁定信号
+input  wire pll_clk_out,   // PLL 输出的工作时钟
+input  wire pll_locked,    // PLL 锁定指示
+</code></pre>
+<hr />
+<h2 id="8-efinix-特有属性">8. Efinix 特有属性</h2>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>用途</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(* ASYNC_REG = "TRUE" *)</code></td>
+<td>CDC 同步链标记</td>
+<td><code>(* ASYNC_REG = "TRUE" *) reg [2:0] sync;</code></td>
+</tr>
+<tr>
+<td><code>(* max_fanout = N *)</code></td>
+<td>扇出控制</td>
+<td><code>(* max_fanout = 100 *) reg en;</code></td>
+</tr>
+<tr>
+<td><code>(* ram_style = "block" *)</code></td>
+<td>BRAM 推断</td>
+<td><code>(* ram_style = "block" *) reg [15:0] mem [0:511];</code></td>
+</tr>
+<tr>
+<td><code>(* use_dsp = "yes" *)</code></td>
+<td>DSP 推断</td>
+<td><code>(* use_dsp = "yes" *) reg [35:0] p;</code></td>
+</tr>
+<tr>
+<td><code>(* syn_keep = "true" *)</code></td>
+<td>防止优化</td>
+<td><code>(* syn_keep = "true" *) wire debug_sig;</code></td>
+</tr>
+<tr>
+<td><code>(* fsm_encoding = "one-hot" *)</code></td>
+<td>状态机编码</td>
+<td><code>(* fsm_encoding = "one-hot" *) reg [3:0] state;</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-sdc-约束配套">9. SDC 约束配套</h2>
+<h3 id="9-1-时钟命名与-rtl-对应">9.1 时钟命名与 RTL 对应</h3>
+<p>SDC 中的时钟名必须与 RTL 中的端口名或 PLL 输出名匹配：</p>
+<pre><code class="language-tcl"># RTL:    input wire clk_50m_i
+# 或 PLL: 输出名为 sys_clk
+create_clock -period 20.0 -name clk_50m [get_ports clk_50m_i]
+create_clock -period 5.0  -name sys_clk [get_pins {u_pll/sys_clk}]
+</code></pre>
+<h3 id="9-2-时钟分组">9.2 时钟分组</h3>
+<pre><code class="language-tcl"># 异步时钟域
+set_clock_groups -asynchronous \
+    -group [get_clocks clk_50m] \
+    -group [get_clocks sys_clk] \
+    -group [get_clocks video_clk]
+</code></pre>
+<h3 id="9-3-io-延迟">9.3 IO 延迟</h3>
+<pre><code class="language-tcl">set_input_delay  -clock sys_clk -max 2.0 [get_ports {data_in[*]}]
+set_output_delay -clock sys_clk -max 1.5 [get_ports {led_o[*]}]
+</code></pre>
+<hr />
+<h2 id="10-反模式清单-禁止事项">10. 反模式清单（禁止事项）</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>反模式</th>
+<th>说明</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>纯组合逻辑 <code>always @(*)</code> 块中没有给所有输出赋默认值</td>
+<td>产生意外 latch</td>
+<td>在块开头给所有输出赋默认值</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>case</code> 没有 <code>default</code> / <code>if-else</code> 没有 <code>else</code></td>
+<td>产生意外 latch</td>
+<td>补齐缺省分支</td>
+</tr>
+<tr>
+<td>3</td>
+<td>用分频时钟驱动逻辑</td>
+<td>时钟域变多，约束变复杂</td>
+<td>用时钟使能替代</td>
+</tr>
+<tr>
+<td>4</td>
+<td>跨时钟域不加同步器</td>
+<td>亚稳态导致功能错误</td>
+<td>按 §6 加同步器</td>
+</tr>
+<tr>
+<td>5</td>
+<td>异步复位没有同步释放</td>
+<td>复位释放时产生亚稳态</td>
+<td>§3.1 的同步释放链</td>
+</tr>
+<tr>
+<td>6</td>
+<td>数据和控制信号不同拍寄存</td>
+<td>下游收到错位的 valid/data</td>
+<td>同 always 块内统一寄存</td>
+</tr>
+<tr>
+<td>7</td>
+<td>对大扇出信号不加复制</td>
+<td>布线拥塞导致违例</td>
+<td><code>max_fanout</code> 或手动复制</td>
+</tr>
+<tr>
+<td>8</td>
+<td>BRAM 读不用 output register</td>
+<td>浪费 BRAM 内置寄存器</td>
+<td>读地址和数据都打一拍</td>
+</tr>
+<tr>
+<td>9</td>
+<td>乘法器输入/输出不加寄存器</td>
+<td>关键路径变长</td>
+<td>DSP 前后都打拍</td>
+</tr>
+<tr>
+<td>10</td>
+<td>在一个 always 块里混用 <code>=</code> 和 <code>&lt;=</code></td>
+<td>仿真/综合行为不一致</td>
+<td>组合用 <code>=</code>，时序用 <code>&lt;=</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>inout</code> 端口不在顶层</td>
+<td>内部 logic 用 inout 非常规</td>
+<td>拆成 <code>_i</code>/<code>_o</code>/<code>_oe</code> 三信号</td>
+</tr>
+<tr>
+<td>12</td>
+<td>信号名与 Verilog 关键字冲突</td>
+<td>编译错误</td>
+<td>选不同名称</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-检查清单">11. 检查清单</h2>
+<p>编写或修改 RTL 后，逐项确认：</p>
+<p><strong>结构检查：</strong>
+- [ ] 文件名 = 模块名，小写 + 下划线
+- [ ] 模块头有功能说明注释
+- [ ] <code>default_nettype none</code> 开头 / <code>default_nettype wire</code> 结尾
+- [ ] 端口有 <code>_i</code> / <code>_o</code> 方向后缀</p>
+<p><strong>时序检查：</strong>
+- [ ] 模块输出经寄存器
+- [ ] 数据和控制信号在同一 always 块中寄存
+- [ ] 高扇出信号已加 <code>max_fanout</code> 或手动复制
+- [ ] 跨时钟域信号有同步器 + <code>ASYNC_REG</code> 属性</p>
+<p><strong>综合检查：</strong>
+- [ ] 所有 <code>case</code> 有 <code>default</code>
+- [ ] 组合 <code>always @(*)</code> 中所有输出在进入分支前有默认值
+- [ ] BRAM 读使用了 output register
+- [ ] 乘法器输入/输出有寄存器
+- [ ] FSM 使用 <code>fsm_encoding = "one-hot"</code></p>
+<p><strong>约束配套检查：</strong>
+- [ ] SDC 中有时钟定义（与 RTL 端口名匹配）
+- [ ] 异步时钟域有 <code>set_clock_groups</code>
+- [ ] IO 有 <code>set_input_delay</code> / <code>set_output_delay</code></p>
+<hr />
+<blockquote>
+<p><strong>本文档持续更新。</strong> 如果发现 Efinix 工具新的优化要点或反模式，请补充到此文档。所有 EvoVerse SDK 项目中的 Vibe Coding / LLM 生成代码必须遵循此风格。</p>
+</blockquote></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

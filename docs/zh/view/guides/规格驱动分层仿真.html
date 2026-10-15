@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>规格驱动的分层仿真与 Vibe Coding</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← 返回EvoVerse SDK</a>
+<span>冻结规格、生成候选 RTL、规则检查、仿真和提升的受控流程。</span>
+<code>guides/规格驱动分层仿真.md</code>
+<a href="../../../guides/规格驱动分层仿真.md">Markdown 源文件</a></p>
+<h1>规格驱动的分层仿真与 Vibe Coding</h1></header>
+<main class="article"><h1 id="规格驱动的分层仿真与-vibe-coding">规格驱动的分层仿真与 Vibe Coding</h1>
+<blockquote>
+<p>适用版本：EvoVerse SDK v1.0.0</p>
+</blockquote>
+<p>这套流程把设计规格书作为唯一行为权威。即使功能很小，也先建立并冻结规格，再生成 RTL。仿真代码、Oracle、测试向量和模型不从待测 RTL 反推，避免“代码和测试一起错但仍显示通过”。</p>
+<p>客户需要分阶段可靠流程时，以 <code>@evoverse</code> 开始规格或 RTL 设计需求，SDK Agent 会先确认工作方式：可靠设计流程或自由开发。普通 Agent 对话保持自由开发，不自动弹出选择。产品实际只有两种工作方式：选择可靠设计流程后必须逐阶段确认；选择自由开发则不进入本流程，直接编辑和 Build 不受影响。</p>
+<p><strong>RTL 设计规则验证不是 Coding Style Check。</strong> 它检查结构、时钟、复位、CDC、状态机、FIFO、数据完整性及协议契约；动态义务需要仿真证据，<code>incomplete</code> 不是 PASS。</p>
+<h2 id="1-规格分层与合适颗粒">1. 规格分层与合适颗粒</h2>
+<ul>
+<li><code>ModuleSpec</code>：单个可独立理解和验证的功能单元。它可以包含多个 HDL 文件，不要求“一份 RTL 一个模块规格”。</li>
+<li><code>SystemSpec</code>：描述模块组合、子系统边界、系统行为、依赖关系和硬核契约。</li>
+<li>验证单元只按功能边界切分为 <code>module</code>、<code>subsystem</code>、<code>system</code>，不把简单 glue logic 机械拆成过小颗粒。</li>
+</ul>
+<p>推荐目录：</p>
+<pre><code class="language-text">design/
+  modules/&lt;unit&gt;/rtl/              # 多文件 DUT
+  modules/&lt;unit&gt;/sim/{tb,models,assertions,vectors}/
+  subsystems/&lt;unit&gt;/rtl/
+  subsystems/&lt;unit&gt;/sim/{tb,models,assertions,scenarios}/
+  system/&lt;unit&gt;/rtl/
+  system/&lt;unit&gt;/sim/{tb,models,assertions,scenarios}/
+.evoverse/verification/             # 冻结规格、图、请求、证据和决策；不要手工改
+</code></pre>
+<h2 id="2-可靠设计流程的分阶段顺序">2. 可靠设计流程的分阶段顺序</h2>
+<ol>
+<li>选择具体板卡/载板，发现相关 Demo、IP、约束和 Efinity 模型；复制到 run-local 隔离区并生成精确字节 <code>baseline-manifest.json</code>。未修改的旧 RTL 可带着已记录的规则债务复用，任何字节变化都会失去豁免；加密代码只作为接口和模型契约黑盒。</li>
+<li><strong>确认仿真等级（用户选择，等级先于规格）</strong>：可靠迭代建立后、<code>spec.draft</code> 起草规格之前，必须先确认仿真等级，否则控制面以 <code>SIMULATION_PROFILE_REQUIRED</code> 阻塞起草。AI 从用户需求、材料清单和项目拓扑提取结构化风险事实（单时钟、CDC、FIFO、背压、跨行/跨帧状态、安全相关等）提交 <code>simulation.profile.select</code> 的 <code>riskFacts</code>；控制面按固定风险规则计算推荐等级，AI 不得代填推荐字段。三档预置等级：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>适用</th>
+<th>默认阻塞义务</th>
+<th>默认延期到板测</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FPGA_FUNCTIONAL</code></td>
+<td>单时钟、边界清晰、输出易观察的简单功能（计数器、流水灯、秒表、GPIO）</td>
+<td>编译展开、复位、1–3 个主路径场景、1 个关键边界、必要时的 1 个集成冒烟</td>
+<td>完整回绕、覆盖率配额、长时间回归、按键手感、显示观感、参数微调</td>
+</tr>
+<tr>
+<td><code>FPGA_INTEGRATION</code></td>
+<td>协议、缓存、跨行/跨帧状态、共享资源（FIFO、AXI/流接口、窗口化 ISP、DMA）</td>
+<td>功能级全部 + 握手/背压/帧边界、位宽/饱和/截断、FIFO 溢出保护、CDC、集成回归</td>
+<td>全输入组合、主观画质穷举</td>
+</tr>
+<tr>
+<td><code>HIGH_ASSURANCE</code></td>
+<td>高速复杂协议、存储控制、不可逆控制、安全相关</td>
+<td>冻结规格的全部义务（含恢复场景与覆盖闭合）</td>
+<td>无自动延期；主观调优仍可显式延期</td>
+</tr>
+</tbody>
+</table>
+<p>用户可以选择接受推荐、更高或更低等级，或用 <code>CUSTOM</code> 显式划分阻塞/延期义务；选择低于推荐最低等级时必须记录 <code>acceptedRisks</code>。等级绑定设计迭代：规格按所选等级的预算编写（场景数量从源头受控），同一迭代内规格修订不改变等级，改变等级需要新的设计迭代。超出等级预算（例如 <code>FPGA_FUNCTIONAL</code> 最多 3 个核心阻塞场景、1 个关键边界、1 个集成冒烟）时控制面要求超出预算重新确认，不得静默裁剪或扩大验证范围。秒表案例：按 <code>FPGA_FUNCTIONAL</code> 只需复位显示、启停保持、一次 <code>00:00.99 → 00:01.00</code> 边界和一次扫描轮转冒烟；完整 <code>59:59.99</code> 回绕、全数字覆盖、1000 次属性激活与窄毛刺注入默认延期。ISP 案例：黑电平偏移等功能级即可，Bayer 插值/窗口滤波/视频流集成按结构事实落入集成级，HDR/3A/安全成像推荐高保障级——按风险分级而不是按应用名硬编码。
+3. 从封存物料提取可读事实，再结合客户需求按所选等级的预算创建规格草案并完成自动审查；不能从旧 RTL 反推行为规格，有歧义时生成选项让客户选择，不猜测。
+4. 冻结规格，记录语义 digest；未冻结或 digest 过期时禁止生成代码。
+5. 只向 Agent 发放 DAG 中 <code>READY</code> 的叶子功能单元，响应只能修改声明的 <code>rtl/</code> 根。
+6. 自动生成并资格审查 testbench、Oracle、断言、向量和模型。编译、接口绑定、正向参考、变异检测、边界/关系、watchdog、事件完整性及模型兼容性任一失败，都记为 <code>TEST_ASSET_FAIL</code>，不能归因给 DUT。
+7. Design Assurance 的静态 violation 直接记为 <code>DESIGN_RULE_FAIL</code>；可执行的动态属性编入 Test IR，由仿真证据重新裁决。普通日志中的“PASS”不算证据。
+8. 功能仿真与 Design Assurance 同时 PASS 后才解锁依赖它的子系统；子系统 PASS 后才解锁系统。不会一次生成全部层级后再统一补测。仿真通过结果带等级限定（<code>FPGA_FUNCTIONAL_PASS</code> / <code>FPGA_INTEGRATION_PASS</code> / <code>HIGH_ASSURANCE_PASS</code>；接受过延期风险时附 <code>DEFERRED_RISKS_ACCEPTED</code>），延期事项不产生伪 PASS；<code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> 与仿真状态始终分开报告——功能级仿真通过不代表原生构建或硬件通过。
+9. 修改模块时自动失效该节点及其下游节点；上游无关节点保持有效。只有 <code>change-promote</code> 能写正式树；外部插件或人工改动会成为 <code>UNVERIFIED_EXTERNAL_CHANGE</code>。
+10. 客户确认准备进入 Build 前，读取 BuildEligibility 汇总全部节点、动态义务、注册资产和最终回执。结果不匹配时，可靠流程不建议进入下一阶段；客户仍可明确退出到自由开发，普通 Build 不受影响。</p>
+<h2 id="3-状态含义">3. 状态含义</h2>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PASS</code></td>
+<td>冻结规格、合格资产、完整覆盖和认证证据全部满足</td>
+</tr>
+<tr>
+<td><code>DESIGN_RULE_FAIL</code></td>
+<td>Design Assurance 静态或动态属性证据证明违反设计规则</td>
+</tr>
+<tr>
+<td><code>DUT_FAIL</code></td>
+<td>合格测试证据显示 DUT 与规格不一致</td>
+</tr>
+<tr>
+<td><code>TEST_ASSET_FAIL</code></td>
+<td>仿真代码或 Oracle/向量资格审查失败</td>
+</tr>
+<tr>
+<td><code>SIMULATOR_ERROR</code></td>
+<td>仿真器或基础设施失败，不归因 DUT</td>
+</tr>
+<tr>
+<td><code>ORACLE_BLOCKED</code> / <code>MODEL_BLOCKED</code></td>
+<td>需要客户选择 Oracle 或模型方向</td>
+</tr>
+<tr>
+<td><code>TIMEOUT_OR_DEADLOCK</code></td>
+<td>超时归因不唯一，需要选择或补证据</td>
+</tr>
+<tr>
+<td><code>INSUFFICIENT_EVIDENCE</code></td>
+<td>覆盖不足、证据缺失或证据被篡改</td>
+</tr>
+<tr>
+<td><code>WAIVED_PASS</code></td>
+<td>有显式、限定范围且未过期的客户 waiver；不是完整 PASS</td>
+</tr>
+</tbody>
+</table>
+<p>使用 <code>ASSUMPTION_MODEL</code> 得到的结果只能表述为“在已批准假设模型下通过”，不能称为无条件系统合规。</p>
+<h2 id="4-客户选择与重新冻结">4. 客户选择与重新冻结</h2>
+<p>遇到接口宽度、延迟、寄存器映射、架构边界、硬核模型或 Oracle 方向不明确时，系统给出有限选项、推荐理由、风险、受影响节点和失效范围。客户只能选择已有选项；选择记录是追加式证据。若选择改变规格，受影响规格必须重新审查并冻结后才能继续生成。</p>
+<p>仿真与 DUT 不允许静默修改规格、Oracle、测试、阈值、模型或历史证据。自动修复最多三次，每次只允许一个假设和 DUT-only 补丁；失败时字节级回滚。</p>
+<h2 id="5-efinity-硬核">5. Efinity 硬核</h2>
+<p>硬核仿真必须先从工程 XML、ISF、<code>peri.xml</code> 和 IP 配置识别实例与配置 digest，再按以下信任等级处理：</p>
+<ul>
+<li><code>VENDOR_MODEL</code>：配置匹配且可用的厂商模型。</li>
+<li><code>QUALIFIED_BEHAVIOR_MODEL</code>：没有可执行厂商模型时，经契约测试资格审查的行为模型。</li>
+<li><code>ASSUMPTION_MODEL</code>：只有明确客户批准才可用，结论必须带限制措辞。</li>
+</ul>
+<p>模型缺失、版本或配置不匹配时状态为 <code>MODEL_BLOCKED</code>，不得用空壳或常量模型伪造系统 PASS。Efinity 原生命令和模型事实以 <a href="../efinity/Efinity通用仿真流程.html">Efinity 通用仿真流程</a> 为准。</p>
+<h2 id="6-tb-编写检查清单">6. TB 编写检查清单</h2>
+<blockquote>
+<p>来自案例 2026-09-16-led-chaser-t20f256：首轮 3 处 FAIL 全部为 TB 缺陷（假 FAIL），DUT 无缺陷。</p>
+</blockquote>
+<ul>
+<li><strong>复位初值检查必须在同步释放沿（<code>posedge rst_n</code>）采样。</strong> DUT 使用异步复位、
+  同步释放（3 级同步链）时，复位释放点相对外部 <code>rst_n_i</code> 撤除有 2~3 拍延迟；
+  按固定拍数检查"复位期间初值未被改动"会与释放沿错位，产生假 FAIL。</li>
+<li><strong>覆盖计数器的判定语义必须与覆盖项定义逐字对齐。</strong> 例如覆盖项"相邻档切换"
+  不能实现为"两次周期计数相等"——若各档周期互异，该条件永假，覆盖率不可达。
+  实现前重读覆盖项定义，逐字核对比较运算。</li>
+<li>发现 TB FAIL 时先归因（TB 缺陷 or DUT 缺陷）再修改；FAIL 日志先快照再重跑，
+  不用裸 <code>&gt;</code> 重定向采集 vvp 输出（见 agent-rules harness 规则）。</li>
+</ul>
+<h2 id="7-使用入口">7. 使用入口</h2>
+<pre><code class="language-text">evoverse verification --help
+evoverse verification next --project &lt;project&gt; --json
+evoverse verification run --project &lt;project&gt; --input &lt;request.json&gt; --json
+evoverse verification integrity-scan --project &lt;project&gt; --json
+evoverse verification build-eligibility --project &lt;project&gt; --json
+</code></pre>
+<p>MCP 还提供 <code>verification_change_prepare/validate/promote</code>、<code>verification_integrity_register/scan</code> 和 <code>verification_build_eligibility</code>。IDE 的 System Workspace 显示同一状态和客户决策；命令面板中的 “Request Next Verification-Gated Work Item” 只发放已解锁工作。</p>
+<p>工具前提：客户自行安装系统 Python 3.11+；SDK 不自动安装，也不借用 Efinity 的旧 Python。规格、Design Assurance、仿真编排、CLI 和 MCP 使用系统 Python；Efinity Build、DesignAPI、IPM、Debug 则由 Adapter 在选中安装的 <code>setup.bat</code> 环境中调用厂商解释器，两个运行域的 <code>PYTHONHOME</code>、<code>PYTHONPATH</code> 和 PATH 互不继承。</p>
+<p>Workbench 会分别显示 System Python、Build、DesignAPI、IPM、Debug 的可用性。运行域探测通过只代表解释器/API 能启动：普通 RTL/Video Sim 可使用 Icarus Verilog；含 Efinity 硬核的厂商模型仿真仍需要匹配的 Efinity 安装和可用 Questa/ModelSim license。仿真通过也不等于原生 Efinity 编译、时序收敛或硬件验证通过。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

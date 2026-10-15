@@ -1,0 +1,1437 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Hard IP: DDR Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The full DDR hard-IP attribute table (including AXI port configuration) and the preset API.</span>
+<code>efinity/hard-ip-ddr.md</code>
+<a href="../../../efinity/hard-ip-ddr.md">Markdown source</a></p>
+<h1>Efinity Hard IP: DDR Reference</h1></header>
+<main class="article"><h1 id="efinity-hard-ip-reference-ddr">Efinity Hard IP Reference — DDR</h1>
+<blockquote>
+<p><strong>Applicable version</strong>: Efinity 2026.1 (verified against the installation at <code>C:\Efinity\2026.1</code>)
+<strong>Investigation date</strong>: 2026-09-25
+<strong>Evidence source</strong>: Every property name, legal value, and dependency relationship in this document was verified line by line against the Python source code inside the Efinity 2026.1 installation directory; each entry is annotated with <code>file:line</code>. Unless noted otherwise, the source root is <code>C:\Efinity\2026.1\pt\bin\</code> (abbreviated below as <code>pt\bin\</code>).
+<strong>Companion documents in this series</strong>: <em>Efinity ISF Syntax Reference</em> (<code>isf-syntax-reference.md</code>), <em>Efinity File Formats — peri.xml</em> (<code>file-formats-peri-xml.md</code>), <em>Efinity DesignAPI Method Reference</em> (<code>designapi-reference.md</code>), <em>Efinity Hard IP Reference — PLL and OSC</em> (<code>hard-ip-pll-osc.md</code>), <em>Efinity Hard IP — LVDS/MIPI/JTAG Interface Reference</em> (<code>hard-ip-interfaces-jtag.md</code>)</p>
+</blockquote>
+<hr />
+<h2 id="1-overview-and-positioning">1. Overview and positioning</h2>
+<p>The DDR hard IP is the <strong>hard memory-controller block</strong> (Hard Memory Controller + PHY) in Efinity devices, configured through the Interface Designer (PT) and instantiated at compile time by the unified build. The 2026.1 source has <strong>two generations of Prop classes</strong>; <code>build_ddr_prop</code> selects automatically by device (<code>pt\bin\api_service\property\ddr_prop.py:204-225</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Generation</th>
+<th>Prop class</th>
+<th>DB block_type</th>
+<th>ISF exporter</th>
+<th>Memory types covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic</td>
+<td><code>DDRProp</code> (ddr_prop.py:56)</td>
+<td><code>ddr</code></td>
+<td><code>DDRISFBuilder</code> (<code>pt\bin\api_service\exim\isf_exporter.py:2553</code>)</td>
+<td>DDR3, LPDDR2, LPDDR3</td>
+</tr>
+<tr>
+<td>Advanced</td>
+<td><code>DDRAdvProp</code> (ddr_prop.py:1360, inherits DDRProp)</td>
+<td><code>adv_ddr</code></td>
+<td><code>DDRAdvISFBuilder</code> (isf_exporter.py:2683)</td>
+<td>LPDDR4, LPDDR4x, etc.</td>
+</tr>
+</tbody>
+</table>
+<p>Selection logic (ddr_prop.py:215-225): if the device database supports <code>ddr</code> → basic; if it supports <code>adv_ddr</code> → advanced.</p>
+<p><strong>API block_type string</strong>: <code>"DDR"</code> (<code>pt\bin\api_service\common\object_db.py:51</code> API_BLOCK_TYPE, :130 otype2str_map).</p>
+<p><strong>This volume has the largest property count of the three</strong>: 88 PropIds in the basic version plus 153 in the advanced version, over half of them AXI port properties; §4.5/§7.3 list them one by one, as requested.</p>
+<hr />
+<h2 id="2-the-creation-trio">2. The creation trio</h2>
+<pre><code class="language-python">design.create_block(&quot;ddr_inst1&quot;, &quot;DDR&quot;)                          # 1. Create the block
+design.set_property(&quot;ddr_inst1&quot;, &quot;MEMORY_TYPE&quot;, &quot;DDR3&quot;, &quot;DDR&quot;)   # 2. Set properties one by one (4th argument &quot;DDR&quot;)
+design.assign_resource(&quot;ddr_inst1&quot;, &quot;&lt;DDR资源名&gt;&quot;, &quot;DDR&quot;)         # 3. Assign the DDR hard resource (device-dependent)
+</code></pre>
+<ul>
+<li>The legal block_type string list: object_db.py:35-59; <code>create_block</code> raises <code>PTBlkCreateException</code> for unsupported types (<code>pt\bin\api_service\design.py:229-231</code>).</li>
+<li><code>create_*</code> is a one-time bootstrap: it must be commented out after the bootstrap compile (AGENTS.md §15; the ISF has no delete command).</li>
+<li><strong>There is no DDR ISF sample in the official examples</strong> (a full search of the 2026.1 examples finds no <code>"DDR"</code> block instance); the §8 example in this document is constructed from the property tables. After constructing it, always self-check with <code>cli/import_gpio.bat --peri &lt;工程&gt;.peri.xml --input &lt;文件&gt;.isf --dry-run</code> (rules-efinity-hard.md §1).</li>
+</ul>
+<hr />
+<h2 id="3-preset-family-dedicated-apis-the-recommended-entry-point-for-ddr-configuration">3. Preset-family dedicated APIs (the recommended entry point for DDR configuration)</h2>
+<p>DDR is the only generic block in the whole toolchain <strong>with a preset mechanism</strong> (<code>get_all_preset_info</code> accepts only <code>DDR</code> and <code>PMA_DIRECT</code>, design.py:2067). Recommended flow: <strong>lay down a preset first, then override individual items</strong>.</p>
+<h3 id="3-1-api-signatures-pt-bin-api_service-design-py">3.1 API signatures (<code>pt\bin\api_service\design.py</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Signature/line</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_all_preset_info</code></td>
+<td><code>design.get_all_preset_info(name: str, block_type: str = "DDR") -&gt; List[Tuple[str, str]]</code> (design.py:2059)</td>
+<td>Lists every preset available for the device as (preset name, description) tuples; only <code>"DDR"</code>/<code>"PMA_DIRECT"</code> are legal for <code>block_type</code> (:2067)</td>
+</tr>
+<tr>
+<td><code>set_preset</code></td>
+<td><code>design.set_preset(...)</code> (design.py:2088)</td>
+<td>Applies a preset; under the hood it writes the <code>"PRESET"</code> property (:2101)</td>
+</tr>
+<tr>
+<td><code>get_preset</code></td>
+<td><code>design.get_preset(...)</code> (design.py:2105)</td>
+<td>Reads the current preset name</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-the-preset-five-tuple">3.2 The preset five-tuple</h3>
+<p>The preset data of <code>set_preset</code> is a <strong>five-tuple</strong>; candidates come from <code>DDRPresetService</code> (<code>ddr_prop.py:818-831</code> <code>_set_preset</code>; the service object is initialized at :187):</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Property</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>MEMORY_TYPE</code></td>
+<td>Memory type (DDR3 / LPDDR2 / LPDDR3 / LPDDR4 / LPDDR4x)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>DQ_WIDTH</code></td>
+<td>Controller data width (ctrl_width)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>MEMORY_WIDTH</code></td>
+<td>DRAM device width (dram_width)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>MEMORY_DENSITY</code></td>
+<td>DRAM density (dram_density)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>MEMORY_SPEED</code></td>
+<td>Speed bin / frequency (speedbin)</td>
+</tr>
+</tbody>
+</table>
+<p>After a preset is applied, the tool bulk-fills the timing parameters and related values with the preset's defaults for that memory type; individual items can then be overridden with <code>set_property</code>.</p>
+<hr />
+<h2 id="4-basic-version-ddrprop-property-tables">4. Basic version (DDRProp) property tables</h2>
+<p>Exact PropId list: <code>ddr_prop.py:71-175</code>. The tables below are grouped by function; the "internal parameter" column is the real parameter name the property maps to in the device database/controller (reader map, ddr_prop.py:485-649) — useful when correlating debug reports.</p>
+<h3 id="4-1-preset-and-memory-topology">4.1 Preset and memory topology</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values/source</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PRESET</code></td>
+<td>STR</td>
+<td>Listed by <code>get_all_preset_info</code></td>
+<td>Preset name; written via <code>set_preset</code></td>
+<td>ddr_prop.py:104; design.py:2101</td>
+</tr>
+<tr>
+<td><code>MEMORY_TYPE</code></td>
+<td>Enum</td>
+<td>DDR3 / LPDDR2 / LPDDR3 (basic); LPDDR4/LPDDR4x (advanced)</td>
+<td>Memory type. <strong>Must be set first</strong> (later legal values depend on it)</td>
+<td>ddr_prop.py:95; :241-443 (options come from DDRPresetService)</td>
+</tr>
+<tr>
+<td><code>DQ_WIDTH</code></td>
+<td>Enum</td>
+<td>Follows the preset (ctrl_width)</td>
+<td>Controller data width</td>
+<td>ddr_prop.py:80</td>
+</tr>
+<tr>
+<td><code>MEMORY_WIDTH</code></td>
+<td>Enum</td>
+<td>Follows the preset (dram_width)</td>
+<td>DRAM device width</td>
+<td>ddr_prop.py:82</td>
+</tr>
+<tr>
+<td><code>MEMORY_DENSITY</code></td>
+<td>Enum</td>
+<td>Follows the preset (dram_density)</td>
+<td>DRAM density</td>
+<td>ddr_prop.py:81</td>
+</tr>
+<tr>
+<td><code>MEMORY_SPEED</code></td>
+<td>Enum</td>
+<td>Follows the preset (speedbin)</td>
+<td>Speed bin</td>
+<td>ddr_prop.py:107</td>
+</tr>
+<tr>
+<td><code>ADV_DENSITY_EN</code></td>
+<td>BOOL</td>
+<td><code>"0"</code>/<code>"1"</code></td>
+<td>Enables advanced density options</td>
+<td>ddr_prop.py:72</td>
+</tr>
+<tr>
+<td><code>ROW_WIDTH</code> / <code>COLUMN_WIDTH</code></td>
+<td>INT</td>
+<td>— (INT validation, :241-443)</td>
+<td>Row/column address width</td>
+<td>ddr_prop.py:106 / :76</td>
+</tr>
+<tr>
+<td><code>BL</code></td>
+<td>Enum</td>
+<td>See §5</td>
+<td>Burst length (internal <code>BLEN</code>). Applies to: DDR3/LPDDR2/LPDDR4/LPDDR4x</td>
+<td>ddr_prop.py:90; dependency graph :651-760</td>
+</tr>
+<tr>
+<td><code>READ_BURST_TYPE</code></td>
+<td>Enum</td>
+<td>— (internal <code>BT</code>)</td>
+<td>Read burst type</td>
+<td>ddr_prop.py:105</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-2-timing-parameters-float-with-3-decimal-places-ranges-in-the-5-legal-value-tables">4.2 Timing parameters (FLOAT with 3 decimal places; ranges in the §5 legal-value tables)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Internal parameter</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TFAW</code></td>
+<td><code>tFAW</code></td>
+<td>Four-bank activation window</td>
+<td>ddr_prop.py:108; reader :485-649</td>
+</tr>
+<tr>
+<td><code>TRAS</code></td>
+<td><code>tRAS</code></td>
+<td>Row active time</td>
+<td>ddr_prop.py:109</td>
+</tr>
+<tr>
+<td><code>TRC</code></td>
+<td><code>tRC</code></td>
+<td>Row cycle</td>
+<td>ddr_prop.py:110</td>
+</tr>
+<tr>
+<td><code>TRCD</code></td>
+<td><code>tRCD</code></td>
+<td>RAS→CAS latency</td>
+<td>ddr_prop.py:111</td>
+</tr>
+<tr>
+<td><code>TREFI</code></td>
+<td><code>tREFI</code></td>
+<td>Refresh interval</td>
+<td>ddr_prop.py:112</td>
+</tr>
+<tr>
+<td><code>TRFC</code></td>
+<td><code>tRFC</code></td>
+<td>Refresh cycle</td>
+<td>ddr_prop.py:113</td>
+</tr>
+<tr>
+<td><code>TRP</code></td>
+<td><code>tRP</code></td>
+<td>Row precharge time</td>
+<td>ddr_prop.py:114</td>
+</tr>
+<tr>
+<td><code>TRRD</code></td>
+<td><code>tRRD</code></td>
+<td>Row-to-row activation delay</td>
+<td>ddr_prop.py:115</td>
+</tr>
+<tr>
+<td><code>TRTP</code></td>
+<td><code>tRTP</code></td>
+<td>Read-to-precharge delay</td>
+<td>ddr_prop.py:116</td>
+</tr>
+<tr>
+<td><code>TWTR</code></td>
+<td><code>tWTR</code></td>
+<td>Write-to-read delay</td>
+<td>ddr_prop.py:117</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Value formatting: <code>DDRPresenter</code> formats all FLOAT timings uniformly with 3 decimal places (ddr_prop.py:1082-1094).</p>
+</blockquote>
+<h3 id="4-3-latency-odt-and-drive-strength">4.3 Latency, ODT, and drive strength</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Internal parameter</th>
+<th>Applies to</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CL</code></td>
+<td><code>CL</code></td>
+<td>DDR3 only</td>
+<td>CAS read latency ('5'–'14')</td>
+<td>ddr_prop.py:91; ddr_api_options.py</td>
+</tr>
+<tr>
+<td><code>CWL</code></td>
+<td>—</td>
+<td>DDR3 only</td>
+<td>CAS write latency ('5'–'12')</td>
+<td>ddr_prop.py:92</td>
+</tr>
+<tr>
+<td><code>RL/WL</code></td>
+<td>—</td>
+<td>LPDDR2/LPDDR3 only</td>
+<td>Read/write latency pair, e.g. <code>RL=3/WL=1</code></td>
+<td>ddr_prop.py:101; LPDDR2 map :38-64</td>
+</tr>
+<tr>
+<td><code>RTT_WR</code></td>
+<td><code>RTT_WR</code></td>
+<td>DDR3 only</td>
+<td>Dynamic ODT (write): Off/RZQ/2, RZQ/4</td>
+<td>ddr_prop.py:94</td>
+</tr>
+<tr>
+<td><code>RTT_NOM</code></td>
+<td><code>RTT_NOM</code></td>
+<td>DDR3, LPDDR3</td>
+<td>Nominal ODT: Off/RZQ/12, RZQ/2, RZQ/4, RZQ/6, RZQ/8</td>
+<td>ddr_prop.py:97</td>
+</tr>
+<tr>
+<td><code>DQ_ODT</code></td>
+<td><code>mdq_odt</code></td>
+<td>LPDDR3 only</td>
+<td>DQ ODT setting</td>
+<td>ddr_prop.py:93</td>
+</tr>
+<tr>
+<td><code>MEM_OTERM</code></td>
+<td><code>MEM_OTERM</code></td>
+<td>DDR3 only</td>
+<td>Memory-side output drive (RZQ/6, RZQ/7)</td>
+<td>ddr_prop.py:98</td>
+</tr>
+<tr>
+<td><code>OUT_DRIVE_STR</code></td>
+<td>—</td>
+<td>—</td>
+<td>Device drive strength (moutput_device)</td>
+<td>ddr_prop.py:99</td>
+</tr>
+<tr>
+<td><code>SRT</code></td>
+<td><code>SRT</code></td>
+<td>DDR3 only</td>
+<td>Self-refresh temperature range</td>
+<td>ddr_prop.py:100</td>
+</tr>
+<tr>
+<td><code>ASR</code></td>
+<td><code>ASR</code></td>
+<td>DDR3 only</td>
+<td>Auto self-refresh</td>
+<td>ddr_prop.py:96</td>
+</tr>
+<tr>
+<td><code>PRECHARGE_PD</code></td>
+<td><code>PD_EXIT</code></td>
+<td>DDR3 only</td>
+<td>Precharge power-down exit mode</td>
+<td>ddr_prop.py:103</td>
+</tr>
+<tr>
+<td><code>POWER_DOWN_EN</code></td>
+<td><code>EN_AUTO_PWR_DN</code></td>
+<td>—</td>
+<td>Auto power-down: Active/Off/Pre-Charge</td>
+<td>ddr_prop.py:102</td>
+</tr>
+<tr>
+<td><code>FPGA_ITERM</code> / <code>FPGA_OTERM</code></td>
+<td>—</td>
+<td>—</td>
+<td>FPGA-side input/output termination (includes levels such as '120', 'OFF')</td>
+<td>ddr_prop.py:85 / :86</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-controller-and-calibration">4.4 Controller and calibration</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Internal parameter</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CONTROL_MAP</code></td>
+<td><code>AMAP</code></td>
+<td>Address mapping: <code>BANK-ROW-COL</code> / <code>ROW-BANK-COL</code> / <code>ROW-COL_HIGH-BANK-COL_LOW</code></td>
+<td>ddr_prop.py:77; DDR3 map :3-36</td>
+</tr>
+<tr>
+<td><code>CONTROL_TYPE</code></td>
+<td>—</td>
+<td>Controller mode: <code>Calibration</code> / <code>Disable</code> / <code>Reset and Calibration</code> / <code>User Reset</code>. <strong>Determines which control pins are visible</strong> (see §6)</td>
+<td>ddr_prop.py:79; presenter api2db mapping :1066-1080</td>
+</tr>
+<tr>
+<td><code>CONTROL_REFRESH_EN</code></td>
+<td><code>EN_AUTO_SELF_REF</code></td>
+<td>Auto self-refresh enable</td>
+<td>ddr_prop.py:78</td>
+</tr>
+<tr>
+<td><code>GDELAY_OVERRIDE_EN</code></td>
+<td><code>EN_DLY_OVR</code></td>
+<td>Manual gate-delay override enable (DB values 'Yes'/'No' ↔ API '1'/'0')</td>
+<td>ddr_prop.py:88; :1052-1164</td>
+</tr>
+<tr>
+<td><code>GCOARSE_DELAY</code> / <code>GFINE_DELAY</code></td>
+<td><code>GATE_C_DLY</code> / <code>GATE_F_DLY</code></td>
+<td>Coarse/fine gate delay (INT, 0–5 / 0–255)</td>
+<td>ddr_prop.py:87 / :89</td>
+</tr>
+<tr>
+<td><code>CLK_NAME</code> / <code>CLK_PIN</code> / <code>CLK_RESOURCE</code></td>
+<td>—</td>
+<td>Controller clock instance/pin/resource</td>
+<td>ddr_prop.py:73-75</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-5-the-complete-axi0_-set-basic-version-25-properties-listed-one-by-one">4.5 The complete AXI0_* set (basic version, 25 properties, listed one by one)</h3>
+<p>The following properties take effect once <code>TARGET0_EN</code> (ddr_prop.py:83) enables the AXI0 port (TARGET1_EN at :84 enables AXI1; the property names replace <code>AXI0_</code> with <code>AXI1_</code>, defined at :144-169). A <code>_BUS</code> suffix is a multi-bit bus signal name; a <code>_PIN</code> suffix is a single-bit signal name:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Property</th>
+<th>Direction</th>
+<th>Meaning</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>AXI0_CLK_INPUT_PIN</code></td>
+<td>Input</td>
+<td>AXI0 clock input signal</td>
+<td>:121</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>AXI0_CLK_INVERT_EN</code></td>
+<td>Config</td>
+<td>AXI0 clock inversion enable</td>
+<td>:120</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>AXI0_ABUS</code></td>
+<td>Bus</td>
+<td>Address bus</td>
+<td>:118</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>AXI0_AVALID_PIN</code></td>
+<td>Input</td>
+<td>Address-channel valid handshake</td>
+<td>:128</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>AXI0_AREADY_PIN</code></td>
+<td>Output</td>
+<td>Address-channel ready handshake</td>
+<td>:125</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>AXI0_AID_BUS</code></td>
+<td>Input</td>
+<td>Address-channel ID</td>
+<td>:122</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>AXI0_ABURST_LEN_BUS</code></td>
+<td>Input</td>
+<td>Burst length</td>
+<td>:123</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>AXI0_ABURST_SIZE_BUS</code></td>
+<td>Input</td>
+<td>Burst size</td>
+<td>:126</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>AXI0_ABURST_TYPE_BUS</code></td>
+<td>Input</td>
+<td>Burst type</td>
+<td>:119</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>AXI0_ALOCK_TYPE_BUS</code></td>
+<td>Input</td>
+<td>Lock type</td>
+<td>:124</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>AXI0_AOP_TYPE_PIN</code></td>
+<td>Input</td>
+<td>Operation type (read/write)</td>
+<td>:127</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>AXI0_RDATA_BUS</code></td>
+<td>Output</td>
+<td>Read data bus</td>
+<td>:132</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>AXI0_RID_BUS</code></td>
+<td>Output</td>
+<td>Read response ID</td>
+<td>:133</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>AXI0_RLAST_PIN</code></td>
+<td>Output</td>
+<td>Last beat of the read burst</td>
+<td>:134</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>AXI0_RRESP_BUS</code></td>
+<td>Output</td>
+<td>Read response code (source member name rstrobes)</td>
+<td>:136</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>AXI0_RVALID_PIN</code></td>
+<td>Output</td>
+<td>Read data valid</td>
+<td>:137</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>AXI0_RREADY_PIN</code></td>
+<td>Input</td>
+<td>Read ready</td>
+<td>:135</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>AXI0_WDATA_BUS</code></td>
+<td>Input</td>
+<td>Write data bus</td>
+<td>:138</td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>AXI0_WID_BUS</code></td>
+<td>Input</td>
+<td>Write ID</td>
+<td>:139</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>AXI0_WLAST_PIN</code></td>
+<td>Input</td>
+<td>Last beat of the write burst</td>
+<td>:140</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>AXI0_WSTRB_BUS</code></td>
+<td>Input</td>
+<td>Write byte strobes (source member name wstrobes)</td>
+<td>:142</td>
+</tr>
+<tr>
+<td>22</td>
+<td><code>AXI0_WVALID_PIN</code></td>
+<td>Input</td>
+<td>Write valid</td>
+<td>:143</td>
+</tr>
+<tr>
+<td>23</td>
+<td><code>AXI0_WREADY_PIN</code></td>
+<td>Output</td>
+<td>Write ready</td>
+<td>:141</td>
+</tr>
+<tr>
+<td>24</td>
+<td><code>AXI0_BID_BUS</code></td>
+<td>Output</td>
+<td>Write response ID</td>
+<td>:129</td>
+</tr>
+<tr>
+<td>25</td>
+<td><code>AXI0_BVALID_PIN</code> / <code>AXI0_BREADY_PIN</code></td>
+<td>Output/Input</td>
+<td>Write response valid/ready</td>
+<td>:131 / :130</td>
+</tr>
+</tbody>
+</table>
+<p>Internal AXI pin-type correspondence (reader map, ddr_prop.py:485-649): <code>ACLK/AID/AREADY/AVALID/AADDR/ALEN/ASIZE/ABURST/ALOCK/ATYPE/BID/BREADY/BVALID/RDATA/RID/RLAST/RREADY/RRESP/RVALID/WDATA/WID/WLAST/WREADY/WSTRB/WVALID</code> + target index (0/1).</p>
+<blockquote>
+<p><strong>Historical spelling bug (must-read for troubleshooting)</strong>: <code>AXI0_CLK_INOUT_PIN</code> / <code>AXI1_CLK_INOUT_PIN</code> is a spelling mistake introduced in 2022.1; 2026.1 auto-corrects it to <code>..._CLK_INPUT_PIN</code> via <code>convert_invalid_prop_name</code> (ddr_prop.py:198-202, original comment "Fix spelling mistake (Error in 2022.1)"). Old scripts and old documents containing INOUT still run unchanged, but new code should write INPUT directly.</p>
+</blockquote>
+<h3 id="4-6-configuration-i2c-sequence-pins">4.6 Configuration / I2C / sequence pins</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Internal pin type</th>
+<th>Description</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RESET_PIN</code></td>
+<td><code>RSTN</code></td>
+<td>Controller reset</td>
+<td>:175</td>
+</tr>
+<tr>
+<td><code>SCL_IN_PIN</code> / <code>SDA_IN_PIN</code> / <code>SDA_OUT_PIN</code></td>
+<td><code>CFG_SCL_IN</code> / <code>CFG_SDA_IN</code> / <code>CFG_SDA_OEN</code></td>
+<td>The three I2C configuration-port signals</td>
+<td>:170-172</td>
+</tr>
+<tr>
+<td><code>SEQ_RESET_PIN</code> / <code>SEQ_START_PIN</code></td>
+<td><code>CFG_SEQ_RST</code> / <code>CFG_SEQ_START</code></td>
+<td>Initialization-sequence reset/start</td>
+<td>:173-174</td>
+</tr>
+</tbody>
+</table>
+<p>Whether these pins must be set is decided by <code>CONTROL_TYPE</code> (dependency graph ddr_prop.py:651-760; cfg/controller pin-type construction also at :2104-2125).</p>
+<hr />
+<h2 id="5-legal-value-quick-reference-static-maps">5. Legal-value quick reference (static maps)</h2>
+<p>Legal values are read from the map matching the <code>MEMORY_TYPE</code> (<code>ddr_prop.py:231-232</code>: <code>getattr(ddr_ops, f'{mem_type}_enum2api_ops_map', {})</code> — <strong>a dynamic getattr; a missing map returns an empty dict</strong>). The static definitions live in <code>pt\bin\api_service\property\api_options\ddr_api_options.py</code> (92 lines in total):</p>
+<h3 id="5-1-ddr3-ddr3_enum2api_ops_map-ddr_api_options-py-3-36">5.1 DDR3 (DDR3_enum2api_ops_map, ddr_api_options.py:3-36)</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Legal values/range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>control_map (CONTROL_MAP)</td>
+<td><code>BANK-ROW-COL</code>, <code>ROW-BANK-COL</code>, <code>ROW-COL_HIGH-BANK-COL_LOW</code></td>
+</tr>
+<tr>
+<td>control_type (CONTROL_TYPE)</td>
+<td><code>Calibration</code>, <code>Disable</code>, <code>Reset and Calibration</code>, <code>User Reset</code></td>
+</tr>
+<tr>
+<td>CL / CWL</td>
+<td><code>'5'</code>–<code>'14'</code> / <code>'5'</code>–<code>'12'</code></td>
+</tr>
+<tr>
+<td>RTT_NOM (minput)</td>
+<td><code>Off</code>, <code>RZQ/12</code>, <code>RZQ/2</code>, <code>RZQ/4</code>, <code>RZQ/6</code>, <code>RZQ/8</code></td>
+</tr>
+<tr>
+<td>RTT_WR (mdynamic_odt)</td>
+<td><code>Off</code>, <code>RZQ/2</code>, <code>RZQ/4</code></td>
+</tr>
+<tr>
+<td>MEM_OTERM, OUT_DRIVE_STR</td>
+<td><code>RZQ/6</code>, <code>RZQ/7</code></td>
+</tr>
+<tr>
+<td>DQ_ODT (mdq_odt)</td>
+<td><code>Off</code>, <code>RZQ/12</code>, <code>RZQ/2</code>, <code>RZQ/4</code>, <code>RZQ/6</code>, <code>RZQ/8</code></td>
+</tr>
+<tr>
+<td>FPGA_ITERM (fpga_input)</td>
+<td><code>120</code>, <code>20</code>, <code>30</code>, <code>40</code>, <code>60</code></td>
+</tr>
+<tr>
+<td>FPGA_OTERM (fpga_output)</td>
+<td><code>34</code>, <code>40</code></td>
+</tr>
+<tr>
+<td>POWER_DOWN_EN</td>
+<td><code>Active</code>, <code>Off</code>, <code>Pre-Charge</code></td>
+</tr>
+<tr>
+<td>GCOARSE_DELAY / GFINE_DELAY</td>
+<td>0–5 / 0–255</td>
+</tr>
+<tr>
+<td>TFAW / TRAS / TRC</td>
+<td>20–100</td>
+</tr>
+<tr>
+<td>TRCD / TRRD / TRTP</td>
+<td>2–50</td>
+</tr>
+<tr>
+<td>TREFI</td>
+<td>2–30</td>
+</tr>
+<tr>
+<td>TRFC</td>
+<td>90–960</td>
+</tr>
+<tr>
+<td>TRP</td>
+<td>8–50</td>
+</tr>
+<tr>
+<td>TWTR</td>
+<td>2–100</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-lpddr2-lpddr3-ddr_api_options-py-38-64-66-92">5.2 LPDDR2 / LPDDR3 (ddr_api_options.py:38-64 / :66-92)</h3>
+<ul>
+<li>LPDDR2: <code>CL</code> uses the combined <code>RL=x/WL=y</code> format (<code>RL=3/WL=1</code> … <code>RL=8/WL=4</code>); <code>FPGA_ITERM</code> only <code>120</code>/<code>OFF</code>; <code>MEM_OTERM</code> levels <code>120</code>, <code>34.3</code>, <code>40</code>, <code>48</code>, <code>60</code>, <code>80</code>.</li>
+<li>LPDDR3: same family structure as LPDDR2; see ddr_api_options.py:66-92 for the exact levels.</li>
+<li><strong>LPDDR4/LPDDR4x have no static map</strong>: ddr_api_options.py ends at L92; LPDDR4 legal values are provided at run time by the device database (dynamic getattr; a missing map means an empty table). Before configuring LPDDR4, confirm device support with <code>get_all_preset_info</code>, then follow the preset.</li>
+</ul>
+<hr />
+<h2 id="6-property-memory-type-dependency-matrix-ddr_prop-py-651-760">6. Property ↔ memory-type dependency matrix (ddr_prop.py:651-760)</h2>
+<p>Check this before setting properties — <strong>setting a type-specific property on an unsupported memory type is rejected by the dependency graph or silently ignored</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Property group</th>
+<th style="text-align: center;">DDR3</th>
+<th style="text-align: center;">LPDDR2</th>
+<th style="text-align: center;">LPDDR3</th>
+<th style="text-align: center;">LPDDR4/4x</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PRECHARGE_PD</code>, <code>ASR</code>, <code>CL</code>, <code>CWL</code>, <code>RTT_WR</code>, <code>MEM_OTERM</code>, <code>SRT</code></td>
+<td style="text-align: center;">✅ exclusive</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td><code>RTT_NOM</code></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td><code>DQ_ODT</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅ exclusive</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td><code>RL/WL</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td><code>BL</code></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✅</td>
+</tr>
+</tbody>
+</table>
+<p>Other structural dependencies:</p>
+<ul>
+<li><code>CONTROL_TYPE</code> decides control-pin visibility (reset / calib / seq / I2C pins, ddr_prop.py:651-760).</li>
+<li><code>TARGET0_EN</code> / <code>TARGET1_EN</code> decide whether the corresponding <code>AXI0_*</code> / <code>AXI1_*</code> pin properties take effect (same source).</li>
+<li>ISF export dependency order: <strong>memory_type → physical_rank → axi0_enabled → axi1_enabled</strong>; the exporter emits commands in this order (ddr_prop.py:2360-2374). This explains why <code>MEMORY_TYPE</code> must be set first.</li>
+</ul>
+<hr />
+<h2 id="7-advanced-version-ddradvprop-lpddr4-4x-property-tables">7. Advanced version (DDRAdvProp, LPDDR4/4x) property tables</h2>
+<p>Exact PropId list: <code>ddr_prop.py:1374-1533</code>. Class structure: <code>class DDRAdvProp(DDRProp)</code> (:1360); fixed port counts <code>axi_num=2</code> and <code>num_of_dq_dm_gp=4</code> (:1540-1541).</p>
+<h3 id="7-1-memory-and-electrical-configuration">7.1 Memory and electrical configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MEMORY_TYPE</code> / <code>MEMORY_DENSITY</code> / <code>DQ_WIDTH</code></td>
+<td>Memory type/density/width</td>
+<td>:1406 / :1405 / :1393</td>
+</tr>
+<tr>
+<td><code>PHYSICAL_RANK</code></td>
+<td>Physical rank (prerequisite for CS0/CS1-related configuration)</td>
+<td>:1415</td>
+</tr>
+<tr>
+<td><code>BL</code></td>
+<td>Burst length (fixed family on LPDDR4)</td>
+<td>:1385</td>
+</tr>
+<tr>
+<td><code>CLKIN_SEL</code></td>
+<td>Clock input select</td>
+<td>:1392</td>
+</tr>
+<tr>
+<td><code>LP_AUTO_MODE</code></td>
+<td>Low-power auto mode</td>
+<td>:1401</td>
+</tr>
+<tr>
+<td><code>DQ_PD_DRV_STRENGTH</code> / <code>DQ_PD_ODT</code> / <code>DQ_PU_DRV_STRENGTH</code> / <code>DQ_PU_ODT</code></td>
+<td>DQ pull-down/pull-up drive and ODT</td>
+<td>:1396-1399</td>
+</tr>
+<tr>
+<td><code>PDDS_CS0</code> / <code>PDDS_CS1</code></td>
+<td>Drive level per CS</td>
+<td>:1413-1414</td>
+</tr>
+<tr>
+<td><code>DQ_ODT_CS0</code> / <code>DQ_ODT_CS1</code>, <code>CA_ODT_CS0</code> / <code>CA_ODT_CS1</code></td>
+<td>DQ/CA ODT per CS</td>
+<td>:1394-1395 / :1386-1387</td>
+</tr>
+<tr>
+<td><code>CK_ODTE_CS0/1</code>, <code>CS_ODTE_CS0/1</code>, <code>CA_ODTD_CS0/1</code></td>
+<td>ODT enables for CK/CS/CA (LPDDR4 ODTE family)</td>
+<td>:1409-1412 / :1407-1408</td>
+</tr>
+<tr>
+<td><code>DQ_VREF_SETTING</code> / <code>CA_VREF_SETTING</code> / <code>VREF_SETTING</code></td>
+<td>DQ/CA/FPGA-side VREF level</td>
+<td>:1400 / :1388 / :1437</td>
+</tr>
+<tr>
+<td><code>DQ_VREF_RANGE</code> / <code>CA_VREF_RANGE</code> / <code>VREF_RANGE</code></td>
+<td>Corresponding VREF range selection</td>
+<td>:1403 / :1402 / :1404</td>
+</tr>
+<tr>
+<td><code>DBI_READ_EN</code> / <code>DBI_WRITE_EN</code></td>
+<td>Read/write DBI enable</td>
+<td>:1422-1423</td>
+</tr>
+<tr>
+<td><code>PIN_SWIZZLE_EN</code> + <code>PIN_SWIZZLE_DQM0-3</code> + <code>PIN_SWIZZLE_CA</code></td>
+<td>Pin-swizzle master switch + 4 DQM groups + CA group</td>
+<td>:1421 / :1417-1420 / :1416</td>
+</tr>
+<tr>
+<td><code>CLK_NAME</code> / <code>CLK_PIN</code> / <code>CLK_RESOURCE</code></td>
+<td>Clock instance/pin/resource</td>
+<td>:1389-1391</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-2-timing-parameters-13-items-float-with-3-decimal-places">7.2 Timing parameters (13 items, FLOAT with 3 decimal places)</h3>
+<p><code>TCCD</code>, <code>TCCDMW</code>, <code>TFAW</code>, <code>TPPD</code>, <code>TRAS</code>, <code>TRCD</code>, <code>TRPAB</code>, <code>TRPPB</code>, <code>TRRD</code>, <code>TRTP</code>, <code>TSR</code>, <code>TWR</code>, <code>TWTR</code> (:1424-1436).</p>
+<p>The internal-name correspondence is <code>get_all_mem_timing_param_str</code> (ddr_prop.py:2031-2047): <code>tCCD</code>, <code>tCCDMW</code>, <code>tFAW</code>, <code>tPPD</code>, <code>tRAS</code>, <code>tRCD</code>, <code>tRPAB</code>, <code>tRPPB</code>, <code>tRRD</code>, <code>tRTP</code>, <code>tSR</code>, <code>tWR</code>, <code>tWTR</code> — LPDDR4 splits precharge into AB (all-bank)/PB (per-bank) variants, unlike the basic version's <code>TRP</code>.</p>
+<h3 id="7-3-the-complete-axi0_-set-advanced-version-37-properties-listed-one-by-one">7.3 The complete AXI0_* set (advanced version, 37 properties, listed one by one)</h3>
+<p>The advanced version names AXI signals with the <strong>fully split standard AXI4 read/write channels</strong> (different from the basic version's shared A-channel naming!). Enable with <code>TARGET0_EN</code> (:1382); <code>AXI0_DATA_WIDTH</code> selects the 512-bit width (BOOL semantics, DB value '512'↔False, :1169-1181; PropId :1381). AXI1 is isomorphic (:1479-1519).</p>
+<p>Read address channel (AR, 12):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Property</th>
+<th>Direction</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>AXI0_ARADDR_BUS</code></td>
+<td>Input</td>
+<td>:1440</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>AXI0_ARAPCMD_PIN</code></td>
+<td>Input</td>
+<td>:1441</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>AXI0_ARBURST_BUS</code></td>
+<td>Input</td>
+<td>:1442</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>AXI0_ARID_BUS</code></td>
+<td>Input</td>
+<td>:1443</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>AXI0_ARLEN_BUS</code></td>
+<td>Input</td>
+<td>:1444</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>AXI0_ARLOCK_PIN</code></td>
+<td>Input</td>
+<td>:1445</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>AXI0_ARQOS_PIN</code></td>
+<td>Input</td>
+<td>:1446</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>AXI0_ARREADY_PIN</code></td>
+<td>Output</td>
+<td>:1447</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>AXI0_ARSIZE_BUS</code></td>
+<td>Input</td>
+<td>:1448</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>AXI0_ARSTN_PIN</code></td>
+<td>Input</td>
+<td>:1449</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>AXI0_ARVALID_PIN</code></td>
+<td>Input</td>
+<td>:1450</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>AXI0_CLK_INPUT_PIN</code> + <code>AXI0_CLK_INVERT_EN</code></td>
+<td>Input/Config</td>
+<td>:1439 / :1438</td>
+</tr>
+</tbody>
+</table>
+<p>Write address channel (AW, 13):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Property</th>
+<th>Direction</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>13</td>
+<td><code>AXI0_AWADDR_BUS</code></td>
+<td>Input</td>
+<td>:1451</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>AXI0_AWALLSTRB_PIN</code></td>
+<td>Input</td>
+<td>:1452</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>AXI0_AWAPCMD_PIN</code></td>
+<td>Input</td>
+<td>:1453</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>AXI0_AWBURST_BUS</code></td>
+<td>Input</td>
+<td>:1454</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>AXI0_AWCACHE_BUS</code></td>
+<td>Input</td>
+<td>:1455</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>AXI0_AWCOBUF_PIN</code></td>
+<td>Input</td>
+<td>:1456</td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>AXI0_AWID_BUS</code></td>
+<td>Input</td>
+<td>:1457</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>AXI0_AWLEN_BUS</code></td>
+<td>Input</td>
+<td>:1458</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>AXI0_AWLOCK_PIN</code></td>
+<td>Input</td>
+<td>:1459</td>
+</tr>
+<tr>
+<td>22</td>
+<td><code>AXI0_AWQOS_PIN</code></td>
+<td>Input</td>
+<td>:1460</td>
+</tr>
+<tr>
+<td>23</td>
+<td><code>AXI0_AWREADY_PIN</code></td>
+<td>Output</td>
+<td>:1461</td>
+</tr>
+<tr>
+<td>24</td>
+<td><code>AXI0_AWSIZE_BUS</code></td>
+<td>Input</td>
+<td>:1462</td>
+</tr>
+<tr>
+<td>25</td>
+<td><code>AXI0_AWVALID_PIN</code></td>
+<td>Input</td>
+<td>:1463</td>
+</tr>
+</tbody>
+</table>
+<p>Write data/write response (W+B, 9):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Property</th>
+<th>Direction</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>26</td>
+<td><code>AXI0_WDATA_BUS</code></td>
+<td>Input</td>
+<td>:1474</td>
+</tr>
+<tr>
+<td>27</td>
+<td><code>AXI0_WLAST_PIN</code></td>
+<td>Input</td>
+<td>:1475</td>
+</tr>
+<tr>
+<td>28</td>
+<td><code>AXI0_WREADY_PIN</code></td>
+<td>Output</td>
+<td>:1476</td>
+</tr>
+<tr>
+<td>29</td>
+<td><code>AXI0_WSTRB_BUS</code></td>
+<td>Input</td>
+<td>:1477</td>
+</tr>
+<tr>
+<td>30</td>
+<td><code>AXI0_WVALID_PIN</code></td>
+<td>Input</td>
+<td>:1478</td>
+</tr>
+<tr>
+<td>31</td>
+<td><code>AXI0_BID_BUS</code></td>
+<td>Output</td>
+<td>:1464</td>
+</tr>
+<tr>
+<td>32</td>
+<td><code>AXI0_BREADY_PIN</code></td>
+<td>Input</td>
+<td>:1465</td>
+</tr>
+<tr>
+<td>33</td>
+<td><code>AXI0_BRESP_BUS</code></td>
+<td>Output</td>
+<td>:1466</td>
+</tr>
+<tr>
+<td>34</td>
+<td><code>AXI0_BVALID_PIN</code></td>
+<td>Output</td>
+<td>:1467</td>
+</tr>
+</tbody>
+</table>
+<p>Read data (R, 6):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Property</th>
+<th>Direction</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>35</td>
+<td><code>AXI0_RDATA_BUS</code> / <code>AXI0_RID_BUS</code></td>
+<td>Output</td>
+<td>:1468 / :1469</td>
+</tr>
+<tr>
+<td>36</td>
+<td><code>AXI0_RLAST_PIN</code> / <code>AXI0_RREADY_PIN</code></td>
+<td>Output/Input</td>
+<td>:1470 / :1471</td>
+</tr>
+<tr>
+<td>37</td>
+<td><code>AXI0_RRESP_BUS</code> / <code>AXI0_RVALID_PIN</code></td>
+<td>Output</td>
+<td>:1472 / :1473</td>
+</tr>
+</tbody>
+</table>
+<p>The complete set of internal AXI pin types is enumerated dynamically by <code>get_all_axi_pin_type</code> (ddr_prop.py:2049-2102).</p>
+<h3 id="7-4-controller-status-and-calibration-sequence-pins">7.4 Controller status and calibration-sequence pins</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CTRL_BUSY_PIN</code> / <code>CTRL_PORT_BUSY_PIN</code> / <code>CTRL_CMD_Q_ALMOST_FULL_PIN</code> / <code>CTRL_DP_IDLE_PIN</code></td>
+<td>Controller busy / port busy / command-queue-almost-full / idle indications</td>
+<td>:1520-1524</td>
+</tr>
+<tr>
+<td><code>CTRL_CKE_PIN</code> / <code>CTRL_CLK_PIN</code> / <code>CTRL_CLK_INVERT_EN</code></td>
+<td>CKE, controller clock, and inversion</td>
+<td>:1521-1522 / :1533</td>
+</tr>
+<tr>
+<td><code>CTRL_INT_PIN</code> / <code>CTRL_MEM_RST_VALID_PIN</code> / <code>CTRL_REFRESH_PIN</code></td>
+<td>Interrupt / memory-reset-valid / refresh indication</td>
+<td>:1525-1528</td>
+</tr>
+<tr>
+<td><code>CFG_DONE_PIN</code> / <code>CFG_RESET_PIN</code> / <code>CFG_SEL_PIN</code> / <code>CFG_START_PIN</code></td>
+<td>Calibration-sequence done/reset/select/start (cfg pin-type construction at :2104-2125)</td>
+<td>:1529-1532</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-complete-isf-configuration-example-ddr3-basic-version-constructed-from-the-property-tables">8. Complete ISF configuration example (DDR3, basic version; constructed from the property tables)</h2>
+<blockquote>
+<p>The 2026.1 examples contain no official DDR ISF sample; the following is constructed from the §4/§5 property tables and the creation-trio syntax. <strong>It must pass the <code>import_gpio.bat --dry-run</code> self-check before committing</strong> (rules-efinity-hard.md §1).</p>
+</blockquote>
+<pre><code class="language-python"># --- Bootstrap section (first run only; comment out after the bootstrap compile) ---
+design.create_block(&quot;ddr_inst1&quot;, &quot;DDR&quot;)
+
+# --- Replay-safe section: lay down the preset first (recommended: generate via the set_preset API, then export as set_property lines) ---
+design.set_property(&quot;ddr_inst1&quot;, &quot;MEMORY_TYPE&quot;, &quot;DDR3&quot;, &quot;DDR&quot;)       # must come first (first in ISF export order)
+design.set_property(&quot;ddr_inst1&quot;, &quot;DQ_WIDTH&quot;, &quot;32&quot;, &quot;DDR&quot;)            # ctrl_width (follows device/preset)
+design.set_property(&quot;ddr_inst1&quot;, &quot;MEMORY_WIDTH&quot;, &quot;16&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;MEMORY_DENSITY&quot;, &quot;4Gb&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;MEMORY_SPEED&quot;, &quot;800&quot;, &quot;DDR&quot;)       # five-tuple example values; real values come from get_all_preset_info
+
+# --- Controller ---
+design.set_property(&quot;ddr_inst1&quot;, &quot;CONTROL_TYPE&quot;, &quot;Reset and Calibration&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;CONTROL_MAP&quot;, &quot;BANK-ROW-COL&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;CONTROL_REFRESH_EN&quot;, &quot;1&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;POWER_DOWN_EN&quot;, &quot;Off&quot;, &quot;DDR&quot;)
+
+# --- Latency/ODT (DDR3-exclusive family) ---
+design.set_property(&quot;ddr_inst1&quot;, &quot;CL&quot;, &quot;9&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;CWL&quot;, &quot;7&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;BL&quot;, &quot;8&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;RTT_NOM&quot;, &quot;RZQ/6&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;RTT_WR&quot;, &quot;Off&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;MEM_OTERM&quot;, &quot;RZQ/7&quot;, &quot;DDR&quot;)
+
+# --- Timings (FLOAT with 3 decimal places) ---
+design.set_property(&quot;ddr_inst1&quot;, &quot;TRFC&quot;, &quot;260.000&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;TRAS&quot;, &quot;40.000&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;TRC&quot;, &quot;55.000&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;TRCD&quot;, &quot;13.000&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;TRP&quot;, &quot;13.000&quot;, &quot;DDR&quot;)
+
+# --- AXI0 port (bind RTL signal names one by one after TARGET0_EN enables it) ---
+design.set_property(&quot;ddr_inst1&quot;, &quot;TARGET0_EN&quot;, &quot;1&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_CLK_INPUT_PIN&quot;, &quot;ddr_axi_clk&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_ABUS&quot;, &quot;ddr_araddr&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_AVALID_PIN&quot;, &quot;ddr_arvalid&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_AREADY_PIN&quot;, &quot;ddr_arready&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_RDATA_BUS&quot;, &quot;ddr_rdata&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_RVALID_PIN&quot;, &quot;ddr_rvalid&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_WDATA_BUS&quot;, &quot;ddr_wdata&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_WVALID_PIN&quot;, &quot;ddr_wvalid&quot;, &quot;DDR&quot;)
+design.set_property(&quot;ddr_inst1&quot;, &quot;AXI0_WREADY_PIN&quot;, &quot;ddr_wready&quot;, &quot;DDR&quot;)
+# ...complete the remaining AXI0_* signals one by one per the §4.5 table
+
+# --- Resource assignment ---
+design.assign_resource(&quot;ddr_inst1&quot;, &quot;&lt;DDR资源名&gt;&quot;, &quot;DDR&quot;)   # the resource name follows the device package; look it up in the device database
+</code></pre>
+<p><strong>LPDDR4 (advanced version) differences</strong>: the block is still created with <code>create_block("x","DDR")</code> (the API layer only has <code>"DDR"</code>); the properties switch to the <code>DDRAdvProp</code> names from §7 (e.g. <code>TRPAB</code>/<code>TRPPB</code> replace <code>TRP</code>, and the AXI channels split into <code>AXI0_ARADDR_BUS</code>/<code>AXI0_AWADDR_BUS</code>).</p>
+<hr />
+<h2 id="9-common-errors-and-troubleshooting">9. Common errors and troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Root cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set_property</code> reports a nonexistent property</td>
+<td>Basic/advanced property mixing (e.g. <code>TRP</code> set on an LPDDR4 project, or <code>TCCDMW</code> on DDR3)</td>
+<td>Confirm the device generation first (ddr vs. adv_ddr); check the §4/§7 property tables</td>
+</tr>
+<tr>
+<td>Property value rejected</td>
+<td><code>MEMORY_TYPE</code> not set first, so the legal-value map is not loaded (getattr returns an empty dict)</td>
+<td><strong><code>MEMORY_TYPE</code> must be the first property set</strong> (ISF export order puts memory_type first, ddr_prop.py:2360-2374)</td>
+</tr>
+<tr>
+<td>LPDDR4 levels cannot be found</td>
+<td>LPDDR4 has no static legal-value map; they come dynamically from the device database</td>
+<td>Follow <code>get_all_preset_info</code> + the GUI; do not hard-code LPDDR4 levels</td>
+</tr>
+<tr>
+<td>Abnormal timing values</td>
+<td>FLOATs are formatted to 3 decimal places; integer properties (ROW_WIDTH etc.) use INT validation</td>
+<td>Give timings within the §5 ranges; <code>DDRPresenter</code> formatting rules at ddr_prop.py:1082-1094</td>
+</tr>
+<tr>
+<td><code>AXI0_CLK_INOUT_PIN</code> not found</td>
+<td>The historical name of the 2022.1 spelling bug</td>
+<td>2026.1 auto-corrects it to <code>AXI0_CLK_INPUT_PIN</code> (ddr_prop.py:198-202); write INPUT in new code</td>
+</tr>
+<tr>
+<td>AXI pins set but not taking effect</td>
+<td><code>TARGET0_EN</code>/<code>TARGET1_EN</code> not set to 1</td>
+<td>Enable the port first, then set the pins (dependency graph :651-760)</td>
+</tr>
+<tr>
+<td>RESET/I2C/SEQ pin errors as unrelated</td>
+<td><code>CONTROL_TYPE</code> mode and pin combination mismatch</td>
+<td>Check §6: control_type decides reset/calib/seq pin visibility</td>
+</tr>
+<tr>
+<td>Second compile fails with <code>DDR ... exists</code></td>
+<td>A replayed ISF still contains <code>create_block</code></td>
+<td>Comment out create_* (AGENTS.md §15)</td>
+</tr>
+<tr>
+<td>Individual parameters lost after applying a preset</td>
+<td>The preset overwrote hand-edited values</td>
+<td>Fixed order: <code>set_preset</code> first, then <code>set_property</code> overrides</td>
+</tr>
+<tr>
+<td>Gate delay changed but no effect</td>
+<td><code>GDELAY_OVERRIDE_EN</code> not enabled</td>
+<td>Set it to 1 first; note the DB values are 'Yes'/'No' (:1052-1164)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-cross-references">10. Cross-references</h2>
+<ul>
+<li><em>Efinity ISF Syntax Reference</em> (<code>isf-syntax-reference.md</code>) — the complete ISF command set, replay-safety rules, and <code>DDRISFBuilder</code>/<code>DDRAdvISFBuilder</code> serialization details</li>
+<li><em>Efinity File Formats — peri.xml</em> (<code>file-formats-peri-xml.md</code>) — peri.xml persistence and the ISF replay relationship</li>
+<li><em>Efinity DesignAPI Method Reference</em> (<code>designapi-reference.md</code>) — full signatures of <code>get_all_preset_info</code>/<code>set_preset</code>/<code>get_preset</code> and the <code>create_block</code> generic protocol</li>
+<li><em>Efinity Hard IP Reference — PLL and OSC</em> (<code>hard-ip-pll-osc.md</code>) — the DDR controller clock (<code>CLK_NAME</code>/<code>CLK_PIN</code>) usually comes from a PLL output</li>
+<li><code>rules-efinity-hard.md</code> §15 — the bootstrap/replay double-PASS acceptance flow</li>
+</ul></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

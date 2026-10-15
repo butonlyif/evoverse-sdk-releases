@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EvoVerse SDK in Depth</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
+<span>What the SDK is, its components, capability overview and the typical development loop.</span>
+<code>sdk/sdk-overview.md</code>
+<a href="../../../sdk/sdk-overview.md">Markdown source</a></p>
+<h1>EvoVerse SDK in Depth</h1></header>
+<main class="article"><h1 id="evoverse-sdk-in-depth">EvoVerse SDK In Depth</h1>
+<blockquote>
+<p><strong>Version</strong>: v1.0.0　<strong>Last updated</strong>: 2026-09-30
+<strong>Supported platforms</strong>: Trae IDE (recommended) / VS Code 1.80+ · Windows</p>
+</blockquote>
+<p>This document is the product-level description of the EvoVerse SDK: what it is, which components it consists of, what it can do, and how its capabilities connect. For step-by-step procedures, use it together with the <a href="user-manual.html">User Manual</a>, the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 project tutorial</a>, and the two controlled Skill documents.</p>
+<h3 id="design-iteration-control-2026-09-13">Design iteration control (2026-09-13)</h3>
+<p>The SDK uses server-side design iteration as the authorization source for reliability. Trae natural language and Workbench Control read the same <code>project_next</code> current-action envelope; a new conversation restores the revision, the current iteration, the recommended action, user decisions, evidence boundaries, and the receipt from the envelope instead of keeping a separate chat-state copy.</p>
+<p>The design, system-integration, and project-generation chains use registrable recovery contracts. Contracts are enforced at service-call time; any non-terminal state must expose a real, plannable completion or quarantine exit. If the control plane detects a managed Intent/Integration that has not terminated but has no executable action, <code>project_next</code> returns a revision-bound descriptor with a single <code>recovery.open</code>; once that descriptor is persisted verbatim, only recovery exits such as <code>recovery.quarantine</code> are exposed while normal business actions stay frozen. Recovery states and attempts are appended to the fact history, and quarantine preserves the trusted baseline, the facts, and the failure evidence—it does not count as success. Natural language only selects the recovery target; the server-side descriptor spells out <code>keep/replace/discard/steps/successChecks</code>. Abandoning the initial system design closes the Intent and the corresponding integration directly, without fabricating a worktree execution.</p>
+<p>System integration follows a commit-ahead-of-facts Saga. Every deferred feature merge persists the request, the branch head, and the verification summary before the commit, and binds the exact HEAD/tree after it; the baseline is fully constructed in quarantined staging and published through a single pointer, with the promotion/integration/execution facts committed under one batch marker. If the process is interrupted after the commit, the next state read completes the facts only when the Git and journal identities match exactly—the merge is never repeated; if the facts are committed but the queue is not yet updated, the registry converges automatically.</p>
+<p>Free-form development remains available and ordinary Builds are not constrained by reliability gates; as soon as a controlled asset changes, the current iteration shows <code>UNVERIFIED_CHANGES</code>. Bringing the change under management freezes the change set, computes the exact DAG impact, quarantines the candidate, and then requires <code>rtl.task.qualify</code> test-asset qualification, Design Assurance, six-layer simulation, and promotion in that order. Qualification identities and verdicts are held by the Verification Service—the host only submits execution inputs—and the previous baseline is never overwritten; audit receipts are always kept.</p>
+<p>Reliable external calls go through MCP only. One transport failure allows exactly one automatic recovery; after that, the required tools must be verified and the iteration/task/state/candidate/spec digests reconciled. Only read-only, idempotent, or confirmed-not-executed requests may be replayed safely. When reconciliation is impossible or the connection drops again, the flow fails closed—there is no CLI business fallback. Automated fixtures, real RTL simulation, Efinity Native Build, programming, and physical hardware each constitute an independent evidence boundary.</p>
+<p>Discovery for Icarus/Questa does not conclude availability from "the exe exists / the version string is readable": the same provider command contract runs a minimal compile, execute, and event-parse smoke test. When a selected toolchain fails, a <code>TOOLCHAIN_INVALID</code> stop receipt is written and <code>project_next</code> returns <code>WAITING_FOR_USER</code> with <code>toolchain.reprobe</code> / <code>toolchain.reselect</code>—no silent fallback, and no simulation evidence is produced.</p>
+<hr />
+<h2 id="1-what-the-sdk-is">1. What the SDK is</h2>
+<p>The EvoVerse SDK is an FPGA and SoC development workbench running inside Trae / VS Code. Built around Efinix Titanium FPGAs (WS E1/E3 boards), it provides a complete closed loop from <strong>project creation → RTL authoring and simulation → build and reports → timing closure → programming and debug → RISC-V software</strong>, and opens the same flow to the command line and AI agents through its CLI and MCP.</p>
+<p>It solves three problems:</p>
+<table>
+<thead>
+<tr>
+<th>Pain point</th>
+<th>How the SDK answers it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fragmented FPGA toolchains (editor, simulator, vendor IDE, and scripts each going their own way)</td>
+<td>All day-to-day operations happen in one IDE; vendor tools are invoked only in the background</td>
+</tr>
+<tr>
+<td>AI-generated code that "looks right" but cannot be verified</td>
+<td>Deterministic tool gates: simulation, style checks, builds, and timing diagnostics all produce reproducible evidence</td>
+</tr>
+<tr>
+<td>Board materials, IP, and project configuration scattered everywhere</td>
+<td>A single-source-of-truth Catalog: boards / carriers / reference designs / IP are registered and referenced in one place</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-design-principles">2. Design principles</h2>
+<ol>
+<li><strong>Determinism first.</strong> Every critical operation (build, simulate, check, diagnose) invokes real tools and retains evidence (reports, waveforms, diffs); an AI's claim of "done" must be bound to that evidence.</li>
+<li><strong>Single source of truth.</strong> Board specifications, IP documentation, and reference designs are maintained exactly once (in the Catalog); the documentation portal renders with the delivery package, and board documents sync to the local machine with the Catalog—no copies are spawned.</li>
+<li><strong>Core + Adapter layering.</strong> The SDK core extension provides the generic shell and shared facilities; each target platform gets one Adapter extension, installed and evolving independently. Platforms you do not use consume no resources and never appear in the UI.</li>
+<li><strong>Agent-native.</strong> An MCP server, a structured plan channel (generate → preview → confirm → transactional apply), and Skill packages let an LLM operate on the project within controlled boundaries.</li>
+</ol>
+<h2 id="3-components-and-installation-combinations">3. Components and installation combinations</h2>
+<h3 id="3-1-component-inventory">3.1 Component inventory</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>VSIX</th>
+<th>Required?</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDK core extension</td>
+<td><code>evoverse-sdk-&lt;version&gt;.vsix</code></td>
+<td>Required</td>
+<td>Workbench shell · AdapterRegistry · Welcome / project / board wizards · Catalog sync · simulation and style checks · build and timing orchestration · CLI (<code>evoverse</code>) · MCP server · knowledge base</td>
+</tr>
+<tr>
+<td>Efinity Adapter</td>
+<td><code>evoverse-efinity-adapter-&lt;version&gt;.vsix</code></td>
+<td>Required for FPGA development</td>
+<td>All Efinity vendor capabilities: Build / Timing / pure-CLI Debug / Program / RISC-V SW / IP / DesignAPI, plus the six-tab Efinity Workbench UI</td>
+</tr>
+<tr>
+<td>RK3588 Adapter</td>
+<td><code>evoverse-rk3588-adapter-&lt;version&gt;.vsix</code></td>
+<td>Optional</td>
+<td>RK3588 BSP profile validation plus the four-stage U-Boot / Kernel / Rootfs / Package cross-compilation and firmware packaging</td>
+</tr>
+<tr>
+<td>Video Sim</td>
+<td>Embedded in <code>evoverse-sdk-&lt;version&gt;.vsix</code></td>
+<td>Ships with the core extension</td>
+<td>A video / image algorithm simulation platform (the VIP series) running in its own window</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-installation-combinations">3.2 Installation combinations</h3>
+<table>
+<thead>
+<tr>
+<th>Combination</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core only</td>
+<td>Shows guidance for installing an Adapter; no fake vendor Workspace is displayed</td>
+</tr>
+<tr>
+<td>Core + Efinity</td>
+<td>Enters the Efinity Workspace directly</td>
+</tr>
+<tr>
+<td>Core + RK3588</td>
+<td>Enters the RK3588 Workspace directly</td>
+</tr>
+<tr>
+<td>Core + both Adapters</td>
+<td>A Workspace switcher and the System root appear in the sidebar; the first entry opens System</td>
+</tr>
+</tbody>
+</table>
+<p>Install order: the core extension before the Adapters (<code>extensionDependencies</code> resolves the dependency automatically). For step-by-step installation, see the <a href="../installation/trae-install-guide.html">Trae install guide</a>.</p>
+<h3 id="3-3-how-the-core-and-adapters-relate">3.3 How the core and Adapters relate</h3>
+<ul>
+<li>Adapters register capabilities with the core's AdapterRegistry (build / timing / debug / program / software / ip / designApi / workspace)</li>
+<li>A user request (such as Build) is routed by the core to the matching Adapter; the Adapter invokes the real toolchain (for example <code>efx_run --flow compile</code>) and posts structured results back to the Workbench for display</li>
+<li>Each Adapter owns its Workbench tab content; the core handles loading, resource injection, and the unified look-and-feel</li>
+</ul>
+<h2 id="4-capability-overview">4. Capability overview</h2>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Entry point</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project creation and takeover</td>
+<td>Trae natural language / Workbench Control</td>
+<td>The <code>project_next</code> envelope names the single currently recommended action; the revision is re-read after every execution, and existing folders or archives can also be taken over</td>
+</tr>
+<tr>
+<td>Board wizard</td>
+<td><code>EvoVerse: New Board</code></td>
+<td>Creates a new board definition from a schematic PDF / pinout data and registers it in the Catalog</td>
+</tr>
+<tr>
+<td>Catalog materials</td>
+<td><code>EvoVerse: Sync Catalog</code></td>
+<td>Syncs boards / carriers / Jackets / IP from the private Catalog; tutorial materials count only as evidence-backed sources and never replace a new project's specification</td>
+</tr>
+<tr>
+<td>RTL editing</td>
+<td>Native editor</td>
+<td>Verilog / SystemVerilog syntax, snippets, and a right-click <code>(* mark_debug *)</code> marker</td>
+</tr>
+<tr>
+<td>Simulation</td>
+<td><code>EvoVerse: Simulate</code></td>
+<td>One-click Icarus Verilog / QuestaSim runs with VCD waveforms opened automatically; regression and ISP image simulation supported</td>
+</tr>
+<tr>
+<td>Code style check</td>
+<td><code>EvoVerse: Check Code Style</code></td>
+<td>Surfaces deterministic RTL issues (reset, CDC, naming, and more) before the build</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>Build tab / <code>EvoVerse: Build</code></td>
+<td>Invokes the native Efinity unified flow (PT → map → pnr → pgm) with live output and cancellation</td>
+</tr>
+<tr>
+<td>Build reports</td>
+<td>Build tab / <code>EvoVerse: Open Report</code></td>
+<td>Structured views of resource utilization, clock domains, I/O, and timing summaries</td>
+</tr>
+<tr>
+<td>Timing diagnostics</td>
+<td><code>EvoVerse: Diagnose Timing</code></td>
+<td>A 12-rule engine reports a cause and confidence per violating endpoint; datapath tracing, pipeline-depth analysis, and a Tcl console</td>
+</tr>
+<tr>
+<td>On-chip debug</td>
+<td>Debug tab</td>
+<td>A pure-CLI six-step closed loop (see §6.3); the Efinity GUI is never launched</td>
+</tr>
+<tr>
+<td>Programming</td>
+<td><code>EvoVerse: Program FPGA</code></td>
+<td>Calls efx_pgm to download the bitstream over FTDI/JTAG</td>
+</tr>
+<tr>
+<td>RISC-V software</td>
+<td>SW tab / <code>EvoVerse: New RISC-V Project</code></td>
+<td>Sapphire SoC application creation, BSP generation, build, download, and GDB debugging</td>
+</tr>
+<tr>
+<td>IP management</td>
+<td>IP tab</td>
+<td>Form-based configuration for simple IP; complex IP (DDR/MIPI) is configured in the Efinity IP Manager and synced back into the project</td>
+</tr>
+<tr>
+<td>Interface design (DesignAPI)</td>
+<td><code>EvoVerse: Open Design</code></td>
+<td>Transactional edits to ISF interface constraints: preview → confirm → apply → DRC</td>
+</tr>
+<tr>
+<td>Knowledge base</td>
+<td><code>EvoVerse: Knowledge Base</code></td>
+<td>Accumulates verified toolchain behavior and fixes, queryable by humans and agents</td>
+</tr>
+<tr>
+<td>AI assistance</td>
+<td>Timing tab "Ask AI" and others</td>
+<td>Packages RTL + SDC + path analysis as context for the LLM; structured plans are persisted only after confirmation</td>
+</tr>
+<tr>
+<td>Spec-driven design</td>
+<td><code>/evoverse-design-spec</code></td>
+<td>Organizes intent and runtime evidence into a freezable <code>design-package/</code>; does not generate RTL directly</td>
+</tr>
+<tr>
+<td>Controlled RTL</td>
+<td><code>/evoverse-rtl</code></td>
+<td>Runs candidates, Assurance, simulation, quarantine, and promotion for one closed RTL task; ordinary Builds are never blocked</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>the <code>evoverse</code> command line</td>
+<td>Reuses the same projects, Catalog, and verification flow in a terminal; shares one local SDK runtime with MCP. Per-command details are on the "CLI Reference" page of the documentation portal</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>MCP server</td>
+<td>The agent entry point for Catalog, projects, verification, builds, debug, and evidence; 97 tools grouped by domain, with per-tool parameter details on the "MCP Tool Reference" page of the documentation portal</td>
+</tr>
+<tr>
+<td>Reliable software tasks</td>
+<td>MCP <code>software_task_*</code></td>
+<td>A controlled closed loop for RISC-V software: BSP binding, host tests, cross-builds, and board tests are all gated by receipts; injecting PASS is forbidden</td>
+</tr>
+</tbody>
+</table>
+<p>For the detailed inputs, outputs, stop conditions, and MCP receipts of the controlled agent paths, see the <a href="../skills/design-spec-skill.html">EvoVerse Design Spec Skill</a> and the <a href="../skills/rtl-skill.html">EvoVerse RTL Skill</a>.</p>
+<h2 id="5-the-workbench">5. The Workbench</h2>
+<p>The Workbench is a sidebar workspace: the core provides the shell and the System root (a cross-platform overview), while the Efinity Adapter contributes the six tabs for FPGA development.</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Home</strong></td>
+<td>Project dashboard: Build button, board information, toolchain actions, health checks</td>
+</tr>
+<tr>
+<td><strong>Build</strong></td>
+<td>Build options (Map / PNR / PT / PGM), live output stream, cancel, result summary</td>
+</tr>
+<tr>
+<td><strong>Timing</strong></td>
+<td>Timing reports, 12-rule diagnostics, datapath and pipeline analysis, Tcl console</td>
+</tr>
+<tr>
+<td><strong>Debug</strong></td>
+<td>The six-step pure-CLI debug loop (§6.3)</td>
+</tr>
+<tr>
+<td><strong>SW</strong></td>
+<td>RISC-V application list, BSP regeneration, new software projects</td>
+</tr>
+<tr>
+<td><strong>IP</strong></td>
+<td>Browse / add IP, jump to the Efinity IP Manager, sync back into the project</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-typical-development-loops">6. Typical development loops</h2>
+<h3 id="6-1-the-fpga-mainline-first-run">6.1 The FPGA mainline (first run)</h3>
+<pre><code>Set Up → describe the project goal in Trae → confirm the action recommended by Control → write RTL → Simulate (inspect the waveform)
+→ Check Code Style → Build (read the report) → Program FPGA (watch the board)
+</code></pre>
+<p>For a complete first-run experience, follow the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 project tutorial</a>: discover materials and freeze the specification first, then generate and verify the RTL, and finally integrate and build. You never leave the IDE.</p>
+<h3 id="6-2-the-timing-closure-loop">6.2 The timing-closure loop</h3>
+<pre><code>Build → Diagnose Timing (the 12 rules report cause and confidence)
+→ datapath tracing / pipeline analysis to locate the bottleneck
+→ adjust the build strategy or modify the RTL → Build again to verify WNS/TNS
+</code></pre>
+<p>Every step is backed by native report evidence; AI suggestions should carry the current RTL, SDC, and path context, and the WNS/TNS results of a fresh Build are the final verdict.</p>
+<h3 id="6-3-the-on-chip-debug-loop-v0-9-0-pure-cli">6.3 The on-chip debug loop (v0.9.0, pure CLI)</h3>
+<ol>
+<li>Mark signals: right-click in the editor and choose <code>Add Signal to Efinity Debug</code> (writes <code>(* mark_debug *)</code>)</li>
+<li>Build (auto-instantiation generates the debug cores) → Program FPGA</li>
+<li>Scan Device: FTDI/JTAG scan showing the core connections</li>
+<li>Configure the trigger (compare / pattern / mask) → Trigger or Immediate Capture</li>
+<li>The VCD is generated and opened automatically; VIO supports reads and safe writes (a write requires a confirmation receipt)</li>
+</ol>
+<p>Everything is bridged through <code>evoverse_dbg.py</code> to the Efinity <code>efx_dbg</code> API; the Efinity GUI never opens. You can also describe a debug intent in natural language to generate a plan that is applied transactionally after preview and confirmation.</p>
+<h3 id="6-4-the-risc-v-software-loop">6.4 The RISC-V software loop</h3>
+<pre><code>Confirm the Sapphire SoC / memory / debug interface → create or refresh the software project in the SW tab → Regen BSP
+→ Build Software → download according to what the project actually supports → GDB debugging
+</code></pre>
+<h3 id="6-5-vibe-coding-agent-assisted">6.5 Vibe coding (agent-assisted)</h3>
+<pre><code>`/evoverse-design-spec` confirm the simulation level and draft the specification within the level budget → approve the specification
+→ `/evoverse-rtl` deliver candidate RTL → Design Assurance and level-limited simulation evidence
+→ native Efinity Build
+</code></pre>
+<p>On the reliable path, every agent claim of "passed/promoted" is bound by a control-plane action receipt to the scope, the real project diff, Design Assurance, and simulation evidence. <strong>The simulation level precedes the specification (the user chooses)</strong>: once a reliable iteration is established, the simulation level must be confirmed before <code>spec.draft</code> drafts the specification (<code>simulation.profile.select</code>; otherwise the control plane blocks drafting with <code>SIMULATION_PROFILE_REQUIRED</code>). The AI recommends one of the three levels <code>FPGA_FUNCTIONAL</code> / <code>FPGA_INTEGRATION</code> / <code>HIGH_ASSURANCE</code> (or an explicit user <code>CUSTOM</code>) under fixed risk rules; the user makes the choice. Selecting below the recommended minimum requires <code>acceptedRisks</code> to be recorded, and exceeding the level budget requires reconfirmation. The specification is written to the budget of the selected level, and the level is bound to the design iteration. The <code>packagePath</code> submitted by <code>spec.draft</code> must point to a sealed executable-2.0 specification package directory: the server seals it and records a <code>specPackageDigest</code> as its trusted identity, while <code>specification.md</code> is deterministically rendered by the sealing script for human review only. A bare Markdown file is rejected, with the workspace, the input/parsing paths, and the reason returned; legacy Markdown specifications must be re-drafted from the executable package and migrated. <code>candidate.deliver</code> validates the complete HDL/include/module/testbench closure before the manifest and the facts are persisted; a failure forms no authoritative candidate, and it is safe to retry after the fix. <code>verification.simulate</code> derives the candidate, the source closure, the Test IR, and the spec digest from server-side state and runs module/Intent-scope verification in the feature worktree; a local pass only moves the candidate to <code>READY_FOR_INTEGRATION</code>. Compile or elaboration failures are recorded as the repairable <code>CANDIDATE_COMPILE_FAILED</code>; only a missing backend or vendor model is <code>CAPABILITY_UNAVAILABLE</code>. The mainline system-integration Intent then runs composite specification checks, system simulation, and document confirmation, and only when all of them pass is the baseline promoted atomically. A level-limited simulation pass (<code>FPGA_FUNCTIONAL_PASS</code> and the like) does not change the evidence boundary: <code>NATIVE_BUILD_PENDING</code> and <code>BOARD_VALIDATION_REQUIRED</code> are reported independently, automated fixtures are not real Questa evidence, and Efinity Native Build, timing, programming, and on-board results still have to be reported separately (<code>build.native</code> / <code>hardware.program</code> / <code>hardware.validate</code>).</p>
+<h3 id="6-6-multi-intent-worktrees">6.6 Multi-Intent worktrees</h3>
+<ul>
+<li>Before a project baseline exists, the first design is itself the <code>INITIAL_DESIGN</code> system-integration Intent, completing the full specification, generation, system simulation, and document confirmation on the mainline; it has no feature worktree. Until it finishes, a second Intent is blocked with <code>BASELINE_INITIALIZATION_IN_PROGRESS</code>.</li>
+<li>Once the baseline exists, the SDK creates a <code>codex/intent-&lt;id&gt;</code> branch and a dedicated Git worktree per Intent; the active limit is fixed at 4.</li>
+<li>After verification and commit, a feature Intent only reaches <code>READY_FOR_INTEGRATION</code> and enters a FIFO queue. The mainline creates one worktree-less system-integration Intent at a time, absorbs the branches with <code>merge --no-commit --no-ff</code>, composes the system specification, and runs system simulation and document verification; only on success does it commit, promote the baseline, and clean up the worktree.</li>
+<li>Conflicts or failed system validation abort the uncommitted merge, restore a clean mainline, and keep the branches/worktrees. The main Workbench shows <strong>Feature Intents</strong> and <strong>System Integration</strong> separately; an Intent worktree shows only itself.</li>
+</ul>
+<h3 id="6-7-module-candidates-and-controlled-integration-module-contracts">6.7 Module candidates and controlled integration (module contracts)</h3>
+<p>Reliable module iteration freezes one more <strong>module contract</strong> boundary beneath the specification: qualify the contract first, deliver candidates next, and let controlled system integration promote the single baseline last.</p>
+<ul>
+<li><strong>The contract and <code>CONTRACT.md</code></strong>: the executable specification package embeds the canonical module contract (the closed RTL/test inventory, the top module, the dependency summary, budgets, and candidate-writable paths) and deterministically renders <code>CONTRACT.md</code> for human review. The document always presents system/internal module relationships, interfaces, clock/reset/state and data structures, algorithm formulas and pseudocode/pipeline stages, budgets, requirements traceability, simulation and evidence definitions (simulation boundaries, clock/reset stimulus, BFM roles, normal/boundary/exception/recovery scenarios, oracles, and coverage), harness scenarios, and risks plus already-decided items. The machine contract is the single source of truth; the document exists only for review approval. Missing sections, stale content, or inconsistencies all block qualification, and approval binds both <code>moduleContractDigest</code> and <code>contractDocumentDigest</code>.</li>
+<li><strong>Contract qualification</strong>: <code>contract.qualify</code> (<code>moduleId</code> + the user-approved <code>approvedDocumentDigest</code>) runs the deterministic qualification engine—structural completeness; requirement/clause/orphan-test traceability; simulation-definition completeness; interface/clock/reset/budget compatibility with the system; and feasibility-contradiction checks. Outstanding engineering trade-offs produce a DecisionRequest for the user to decide; the agent never chooses on their behalf. Qualification includes the Contract Harness: a real simulation provider compiles and elaborates the contract-declared sources in isolation under a frozen ExecutionIdentity, producing only <code>CONTRACT_HARNESS</code> evidence—which proves compilability/elaboratability and nothing more; it is not algorithm, Native Build, programming, or hardware evidence. On success the intent records <code>CONTRACT_QUALIFIED</code>; any change to the contract digest invalidates existing harness runs, candidates, and unpromoted composite evidence, forcing requalification. Without qualification, <code>candidate.deliver</code> is blocked by <code>CONTRACT_QUALIFICATION_REQUIRED</code>; a Discovery Spike produces no reusable PASS.</li>
+<li><strong>RTL Module vs. Qualification Component</strong>: an RTL Module is the single top design unit declared by the contract; the unit of qualification and integration is the Qualification Component, which may consist of multiple genuinely cycle-coupled RTL Modules. Cross-component references into private hierarchies are rejected when the candidate is frozen.</li>
+<li><strong>Readiness is separated from promotion</strong>: after a MODULE candidate is delivered, <code>candidate.promote</code> only reaches <code>READY_FOR_INTEGRATION</code> (the Workbench shows candidate readiness); it does not install a baseline. The system-integration Intent freezes the components, interfaces, and topological composition, completes system simulation and the Native Build gates required by policy, and then the control plane performs the sole promotion to a <code>BASELINE_PROMOTED</code> baseline. The state ladder is <code>QUALIFIED → READY_FOR_INTEGRATION → INTEGRATION_CANDIDATE → BASELINE_PROMOTED</code>. No in-place fixes happen inside integration staging—pre-integration failures and post-promotion defects are both handled through a new candidate, a new composition, and a new baseline, and historical facts are append-only.</li>
+<li><strong>Evidence boundary (macOS / Efinity)</strong>: the control plane and the Icarus simulation chain support full development and verification on macOS; until Efinity Native Build, programming, or hardware validation has actually run, honest states such as <code>NATIVE_BUILD_PENDING</code> are kept. Workbench Control presents each intent's evidence state independently as an evidence vector (seven fields: assurance, moduleSimulation, systemSimulation, nativeBuild, programming, hardwareValidation, maturity), and no simulation pass is ever upgraded into a native or hardware conclusion.</li>
+</ul>
+<h2 id="7-project-layout-and-the-catalog">7. Project layout and the Catalog</h2>
+<h3 id="7-1-project-directory-after-skeleton-generation">7.1 Project directory (after skeleton generation)</h3>
+<pre><code>my-project/
+├── evoverse-project.json   # Project manifest: board, source files, IP, software applications
+├── rtl/                  # RTL sources (the top module lives here)
+├── sim/                  # Simulation testbenches and scripts
+├── constraints/          # SDC / ISF constraints
+└── soc/                  # RISC-V SoC configuration and software applications (optional)
+</code></pre>
+<h3 id="7-2-catalog-layout-single-source-of-truth">7.2 Catalog layout (single source of truth)</h3>
+<pre><code>${EVOVERSE_HOME}/catalog/
+├── boards/ws-e1/            # E1 core board: specification, datasheet, pinout
+│   ├── carriers/ws-e1-base/ # E1 Base carrier: specification and carrier materials
+│   └── ...
+├── boards/ws-e3/            # E3 board
+├── demos/                    # Reference demos fetched via Sync Catalog
+└── ips/                      # General-purpose IP fetched via Sync Catalog
+</code></pre>
+<p>The Catalog syncs into the local runtime via <code>EvoVerse: Sync Catalog</code>; board specifications, demos, and IP are traceable material sources. A new project must be generated from a frozen specification—copying an entire reference project as a baseline is not allowed.</p>
+<h2 id="8-system-requirements">8. System requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>Trae IDE (recommended) or VS Code 1.80+</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3.11+ (auto-detected by Set Up)</td>
+</tr>
+<tr>
+<td>Efinity</td>
+<td>2026.1+ (required for build / programming / debug; path configured via <code>evoverse.efinityPath</code>)</td>
+</tr>
+<tr>
+<td>Simulator</td>
+<td>Icarus Verilog or QuestaSim (required for simulation)</td>
+</tr>
+<tr>
+<td>Operating system</td>
+<td>Windows</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-upgrades-uninstallation-and-faq">9. Upgrades, uninstallation, and FAQ</h2>
+<ul>
+<li><strong>Upgrading</strong>: the core and the installed Adapters stay on the same version number (for example, all at 0.9.0); when upgrading the core, upgrade the Adapters at the same time.</li>
+<li><strong>Uninstalling an Adapter</strong>: the core keeps working; the corresponding Workspace tabs disappear and everything else is unaffected.</li>
+</ul>
+<p><strong>Q: I only do FPGA development—do I need to install the RK3588 Adapter?</strong>
+No. An uninstalled Adapter consumes no resources and never appears in the UI.</p>
+<p><strong>Q: Can both Adapters be installed at the same time?</strong>
+Yes. A Workspace switcher appears at the top of the sidebar, and the System root gives a cross-platform overview.</p>
+<p><strong>Q: Does on-chip debug require the Efinity GUI?</strong>
+No. Since v0.9.0 the debug flow is pure CLI throughout and only calls the efx_dbg API in the background.</p>
+<p><strong>Q: Do I need to reinstall an Adapter after upgrading Efinity?</strong>
+Adapter versions are independent of the Efinity version; an occasional major Efinity release may require an Adapter update—defer to the Release Notes.</p>
+<hr />
+<h2 id="related-documents">Related documents</h2>
+<ul>
+<li><a href="user-manual.html">User Manual</a> — the complete reference, organized by feature</li>
+<li><a href="../adapters/efinity-adapter-guide.html">Efinity Adapter guide</a> — the six tabs and the command list</li>
+<li><a href="../START-HERE.html">Start Here</a> — pick a learning path by role</li>
+</ul></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

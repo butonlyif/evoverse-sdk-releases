@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VS Code Installation Differences</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
+<span>Host steps to adjust when using VS Code.</span>
+<code>installation/vscode-install-guide.md</code>
+<a href="../../../installation/vscode-install-guide.md">Markdown source</a></p>
+<h1>VS Code Installation Differences</h1></header>
+<main class="article"><h1 id="evoverse-sdk-visual-studio-code-from-a-bare-machine-to-full-feature-use">EvoVerse SDK: Visual Studio Code — From a Bare Machine to Full-Feature Use</h1>
+<blockquote>
+<p>Applicable version: v1.0.0　Updated: 2026-09-30
+Goal: starting from a computer with no development environment installed, get to RTL editing, rules and constraints, simulation, Efinity builds, timing diagnosis, programming, the MCP Agent, AI chat, and optional RISC-V software debugging.</p>
+</blockquote>
+<h2 id="1-first-pin-down-the-scope-of-full-functionality">1. First pin down the scope of “full functionality”</h2>
+<p>In this guide, full functionality covers:</p>
+<ul>
+<li>The EvoVerse Workbench, Catalog, project creation, and health checks;</li>
+<li>Verilog/SystemVerilog editing, RTL coding rules, and Agent workflows;</li>
+<li>Icarus Verilog functional simulation and VCD waveform viewing;</li>
+<li>Efinity synthesis, place-and-route (PNR), bitstream generation, resource reports, and timing reports;</li>
+<li>Timing Diagnosis, Build AI, and the multi-turn Conversation Runtime;</li>
+<li>Programming Efinix FPGAs over USB/JTAG;</li>
+<li>VS Code Chat querying the Catalog, creating projects, and checking RTL/SDC through the EvoVerse MCP;</li>
+<li>Optional Sapphire/RISC-V software compilation, flashing, and GDB debugging.</li>
+</ul>
+<h3 id="1-1-recommended-operating-systems">1.1 Recommended operating systems</h3>
+<p>To get all of the capabilities above, use one of the following:</p>
+<ul>
+<li><strong>Windows 10/11, 64-bit</strong>: the first choice for customer desktop environments;</li>
+<li><strong>Ubuntu 20.04 or later</strong>;</li>
+<li><strong>RHEL 8.8 or later</strong>.</li>
+</ul>
+<p>macOS can run VS Code, EvoVerse, MCP, AI, and Icarus simulation, but it cannot serve as a complete Efinity build/programming workstation as defined in this guide. For Efinity's current official installation requirements and USB driver steps, see the <a href="https://www.efinixinc.com/docs/efinity-installation-v4.0.pdf">Efinity Software Installation User Guide</a>.</p>
+<h3 id="1-2-recommended-hardware-configuration">1.2 Recommended hardware configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th style="text-align: right;">Bare minimum to launch</th>
+<th style="text-align: right;">Recommended full-feature customer workstation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td style="text-align: right;">64-bit dual-core</td>
+<td style="text-align: right;">8 cores or more</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td style="text-align: right;">VS Code 1 GB; ~8 GB for the Efinity design flow</td>
+<td style="text-align: right;">16 GB; 32 GB recommended for larger designs</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td style="text-align: right;">10 GB of free space</td>
+<td style="text-align: right;">30 GB or more of free SSD space</td>
+</tr>
+<tr>
+<td>USB</td>
+<td style="text-align: right;">1 free USB port</td>
+<td style="text-align: right;">2 or more; avoid unpowered hubs</td>
+</tr>
+<tr>
+<td>Network</td>
+<td style="text-align: right;">Optional for offline installation</td>
+<td style="text-align: right;">Required for the first download of VS Code, Efinity, extensions, models, and toolchains</td>
+</tr>
+</tbody>
+</table>
+<p>For VS Code's own official minimum requirements, see <a href="https://code.visualstudio.com/docs/supporting/requirements">VS Code Requirements</a>. For Efinity memory and system requirements, defer to the official documentation of the version you install.</p>
+<h2 id="2-hardware-preparation">2. Hardware preparation</h2>
+<p>At minimum, prepare:</p>
+<ol>
+<li>An EvoVerse/Efinix FPGA core module — for example <code>ws-e1</code> in the Catalog;</li>
+<li>A carrier board matching the core module, or a customer-built board;</li>
+<li>A power supply that matches the board specification; never guess voltage and polarity from connector shape alone;</li>
+<li>A USB cable that carries data; charge-only cables cannot be used for JTAG/serial;</li>
+<li>An on-board FTDI debug interface, or a compatible FT2232H/FT4232H JTAG module;</li>
+<li>For serial logs, an on-board USB-UART or a standalone 3.3 V USB-UART adapter;</li>
+<li>For sensors, MIPI, display, or networking, the corresponding Jackets, cables, and peripherals.</li>
+</ol>
+<p>Before connecting anything, read the board specification in the Catalog (available after installation):</p>
+<pre><code class="language-text">${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
+${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/docs/
+${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/carriers/
+</code></pre>
+<p>Never connect a custom board while I/O voltage, JTAG levels, or power direction are unknown. Efinix officially notes that development boards typically use an FT232H, FT2232H, or FT4232H; for a custom board, the board schematic remains authoritative.</p>
+<h2 id="3-install-the-base-software">3. Install the base software</h2>
+<h3 id="3-1-install-visual-studio-code">3.1 Install Visual Studio Code</h3>
+<ol>
+<li>Download the Stable 64-bit build from the <a href="https://code.visualstudio.com/download">official VS Code download page</a>.</li>
+<li>On Windows, the User Installer is recommended; during installation, check “Add to PATH” and the Explorer “Open with Code” option.</li>
+<li>Launch VS Code and run:</li>
+</ol>
+<pre><code class="language-powershell">code --version
+</code></pre>
+<p>If the terminal cannot find <code>code</code>, reopen the terminal or reinstall with the PATH option enabled.</p>
+<h3 id="3-2-install-python-3-11">3.2 Install Python 3.11+</h3>
+<p>The EvoVerse CLI and MCP Server use only the Python standard library; no <code>pip install</code> of other packages is required.</p>
+<p>Windows:</p>
+<ol>
+<li>Install 64-bit Python 3.11 or newer from <a href="https://www.python.org/downloads/">python.org</a>;</li>
+<li>Check <strong>Add Python to PATH</strong>;</li>
+<li>Verify:</li>
+</ol>
+<pre><code class="language-powershell">py -3 --version
+python --version
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">python3 --version
+</code></pre>
+<p>The output must show <code>3.10</code> or newer. Customers installing from the VSIX do not need Node.js or npm; those are only used to build the extension from source.</p>
+<h3 id="3-3-install-efinity">3.3 Install Efinity</h3>
+<ol>
+<li>Get the Efinity installer that matches your target device and license from the Efinix Support Center;</li>
+<li>Follow that version's installation guide to complete the installation and license configuration;</li>
+<li>On Windows, install the Microsoft Visual C++ 2022 x64 Runtime; some IP Managers (for example Sapphire SoC) additionally require 64-bit Java 8 or 11;</li>
+<li>On Linux, install the GUI libraries and Java per the official requirements and make sure Java is on the <code>PATH</code>;</li>
+<li>Note the Efinity root directory, for example:</li>
+</ol>
+<pre><code class="language-text">Windows: C:\Efinity\2026.1
+Linux:   /opt/efinity/2026.1
+</code></pre>
+<p>Verify that the root directory contains:</p>
+<pre><code class="language-text">bin/setup.bat             # Windows
+bin/setup.sh              # Linux
+bin/efx_run.bat or efx_run.py
+bin/efinity.exe or bin/efinity
+</code></pre>
+<p>Every time EvoVerse runs a tool it sets up the child-process environment using Efinity's setup script, so permanent changes to the system PATH are normally not required.</p>
+<h3 id="3-4-install-the-fpga-usb-jtag-drivers">3.4 Install the FPGA USB/JTAG drivers</h3>
+<p>Windows: use Zadig or the designated driver per the target board's user manual and the Efinity installation guide. Do not blindly replace every interface of a composite FTDI device; first confirm which interface the board documentation requires.</p>
+<p>Linux: disconnect the board, then run:</p>
+<pre><code class="language-bash">sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+</code></pre>
+<p>Reconnect the board. For Efinity's official USB driver instructions, see the “Installing USB Drivers” section of its installation guide.</p>
+<h3 id="3-5-install-icarus-verilog">3.5 Install Icarus Verilog</h3>
+<p>Full simulation functionality requires <code>iverilog</code> and <code>vvp</code>.</p>
+<p>Prebuilt binaries are available for Windows; on Linux, for example:</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install iverilog
+</code></pre>
+<p>Verify:</p>
+<pre><code class="language-bash">iverilog -V
+vvp -V
+</code></pre>
+<h3 id="3-6-optional-the-risc-v-software-toolchain">3.6 Optional: the RISC-V software toolchain</h3>
+<p>Only needed when you use the Sapphire/RISC-V SoC:</p>
+<ul>
+<li>xPack GNU RISC-V Embedded GCC;</li>
+<li>GDB;</li>
+<li>The board support package (BSP) generated by Efinity;</li>
+<li>The VS Code Cortex-Debug extension;</li>
+<li>The board's debugger/OpenOCD configuration.</li>
+</ul>
+<p>You can run <code>EvoVerse: Download &amp; Install RISC-V Toolchain</code>, or install manually and then set <code>evoverse.riscvToolchainPath</code>.</p>
+<h2 id="4-install-the-vs-code-extensions">4. Install the VS Code extensions</h2>
+<h3 id="4-1-required">4.1 Required</h3>
+<ol>
+<li><strong>EvoVerse SDK</strong>: install the delivered <code>evoverse-sdk-0.9.0.vsix</code>.</li>
+</ol>
+<p>A Chat Agent is not a hard dependency of the EvoVerse VSIX. The VS Code native Chat Agent is recommended; if you only use the <code>openai-compatible</code> Provider of the EvoVerse built-in Runtime, you do not need GitHub Copilot.</p>
+<p>Use only the VS Code native Chat Agent to write files and run terminal commands, so that multiple agents never auto-modify the same workspace concurrently.</p>
+<p>To install the VSIX:</p>
+<pre><code class="language-powershell">code --install-extension D:\packages\evoverse-sdk-0.9.0.vsix
+</code></pre>
+<p>You can also use Extensions → <code>...</code> → <strong>Install from VSIX...</strong>.</p>
+<h3 id="4-2-install-per-feature">4.2 Install per feature</h3>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Purpose</th>
+<th>Declared as an EvoVerse dependency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GitHub Copilot</td>
+<td>VS Code native Chat Agent, VS Code MCP, and <code>vscode-lm</code></td>
+<td>No; install and sign in when using the native Chat Agent</td>
+</tr>
+<tr>
+<td>VaporView</td>
+<td>Opens VCD waveforms produced by simulation</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Cortex-Debug</td>
+<td>RISC-V/MCU GDB debugging</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Verilog/SystemVerilog language plugin</td>
+<td>Syntax highlighting, navigation, and lint</td>
+<td>No; choose per your license and team standards</td>
+</tr>
+</tbody>
+</table>
+<p>For agent conversations, MCP tool calls, and project rules, use the VS Code native Chat Agent. Without GitHub Copilot installed, the built-in EvoVerse Timing Diagnosis/Build AI still works through the OpenAI-compatible Provider described in section 10.3.</p>
+<p>Offline environments require an administrator to prepare the dependency-extension VSIX files in advance. If the Marketplace is unreachable, the main EvoVerse VSIX cannot necessarily download dependency extensions on the customer's behalf.</p>
+<h2 id="5-initialize-evoverse">5. Initialize EvoVerse</h2>
+<ol>
+<li>Reload VS Code;</li>
+<li>Run <code>EvoVerse: Set Up (re-run bootstrap)</code>;</li>
+<li>Choose <strong>Yes, set up</strong>;</li>
+<li>Confirm that Output → <strong>EvoVerse SDK</strong> shows:</li>
+</ol>
+<pre><code class="language-text">EVOVERSE_HOME ready
+Vendored CLI + MCP server
+Seeded catalog
+CLI works
+</code></pre>
+<p>After initialization, the main directories are:</p>
+<pre><code class="language-text">~/evoverse-sdk/                 Catalog, projects, CLI, MCP Server, and shared rule assets
+~/evoverse-sdk/cli/             EvoVerse CLI
+~/evoverse-sdk/mcp-server/      MCP Server
+</code></pre>
+<p>Standard VS Code never creates or writes <code>~/.trae</code>.</p>
+<h2 id="6-configure-vs-code-settings">6. Configure VS Code settings</h2>
+<p>Open Settings, search for <code>evoverse</code>, or fill in your user <code>settings.json</code>:</p>
+<pre><code class="language-jsonc">{
+  &quot;evoverse.home&quot;: &quot;D:\\EvoVerse&quot;,
+  &quot;evoverse.pythonPath&quot;: &quot;C:\\Users\\&lt;user&gt;\\AppData\\Local\\Programs\\Python\\Python312\\python.exe&quot;,
+  &quot;evoverse.efinityPath&quot;: &quot;C:\\Efinity\\2026.1&quot;,
+  &quot;evoverse.simulator&quot;: &quot;iverilog&quot;,
+  &quot;evoverse.iverilogPath&quot;: &quot;C:\\iverilog\\bin&quot;,
+  &quot;evoverse.buildMode&quot;: &quot;cli&quot;,
+  &quot;evoverse.build.parallelJobs&quot;: 4,
+  &quot;evoverse.build.autoOpenReport&quot;: true,
+  &quot;evoverse.program.defaultMode&quot;: &quot;jtag&quot;
+}
+</code></pre>
+<p>Linux example:</p>
+<pre><code class="language-jsonc">{
+  &quot;evoverse.home&quot;: &quot;/home/&lt;user&gt;/evoverse-sdk&quot;,
+  &quot;evoverse.pythonPath&quot;: &quot;/usr/bin/python3&quot;,
+  &quot;evoverse.efinityPath&quot;: &quot;/opt/efinity/2026.1&quot;,
+  &quot;evoverse.simulator&quot;: &quot;iverilog&quot;,
+  &quot;evoverse.iverilogPath&quot;: &quot;/usr/bin&quot;,
+  &quot;evoverse.buildMode&quot;: &quot;cli&quot;
+}
+</code></pre>
+<p>Replace the paths with the real ones on the customer machine. <code>evoverse.iverilogPath</code> must point directly at the directory that contains <code>iverilog</code> and <code>vvp</code>.</p>
+<p>To use QuestaSim:</p>
+<pre><code class="language-jsonc">{
+  &quot;evoverse.simulator&quot;: &quot;questa&quot;,
+  &quot;evoverse.questaPath&quot;: &quot;C:\\questasim64_2024.1\\win64&quot;
+}
+</code></pre>
+<p><code>evoverse.questaPath</code> must directly contain <code>vlib</code>, <code>vlog</code>, and <code>vsim</code>. This setting only affects the ordinary <code>EvoVerse: Simulate</code>; Video Sim keeps using its own built-in Icarus automation.</p>
+<h2 id="7-environment-variables">7. Environment variables</h2>
+<h3 id="7-1-recommended-principles">7.1 Recommended principles</h3>
+<p>Prefer <code>evoverse.*</code> settings; set system environment variables only when the CLI, MCP, or an enterprise deployment needs paths shared across processes.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Required?</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EVOVERSE_HOME</code></td>
+<td>Recommended for MCP</td>
+<td>Root of the Catalog and projects</td>
+</tr>
+<tr>
+<td><code>EVOVERSE_CLI</code></td>
+<td>Recommended for MCP</td>
+<td>Absolute path of the EvoVerse CLI</td>
+</tr>
+<tr>
+<td><code>PYTHONUTF8=1</code></td>
+<td>Recommended for Windows MCP</td>
+<td>Keeps JSON/logs UTF-8 for both Chinese and English</td>
+</tr>
+<tr>
+<td><code>EFINITY_HOME</code></td>
+<td>Usually no need to set permanently</td>
+<td>Efinity root; the extension builds the child-process environment from the setting</td>
+</tr>
+<tr>
+<td><code>PATH</code></td>
+<td>As needed</td>
+<td>Lets terminals find Python, Icarus, Java, and the RISC-V GCC directly</td>
+</tr>
+</tbody>
+</table>
+<p>Example for the current user in Windows PowerShell:</p>
+<pre><code class="language-powershell">[Environment]::SetEnvironmentVariable('EVOVERSE_HOME', &quot;$HOME\evoverse-sdk&quot;, 'User')
+[Environment]::SetEnvironmentVariable('PYTHONUTF8', '1', 'User')
+</code></pre>
+<p>Linux shell example:</p>
+<pre><code class="language-bash">export EVOVERSE_HOME=&quot;$HOME/evoverse-sdk&quot;
+export PYTHONUTF8=1
+</code></pre>
+<p>If you write these into a shell profile, reopen VS Code after the change so the MCP child process inherits the new environment.</p>
+<h2 id="8-configure-the-evoverse-mcp-in-vs-code">8. Configure the EvoVerse MCP in VS Code</h2>
+<h3 id="8-0-automatic-registration-recommended">8.0 Automatic registration (recommended)</h3>
+<p>Since v0.9.0, running <code>EvoVerse: Set Up</code> automatically merges <code>servers.evoverse</code> into the VS Code user-level <code>mcp.json</code> (on Windows, <code>%APPDATA%\Code\User\mcp.json</code>; it automatically backs up <code>mcp.json.evoverse.bak</code> before writing, and existing entries for other servers are left untouched). Reload VS Code and confirm with <strong>MCP: List Servers</strong> — no manual JSON editing required.</p>
+<p>If automatic registration does not take effect (for example, an enterprise policy locks the configuration directory), merge manually per 8.1/8.2.</p>
+<h3 id="8-1-windows-user-level-configuration-manual-fallback">8.1 Windows user-level configuration (manual fallback)</h3>
+<p>First confirm Python and the file paths (note: the CLI and MCP Server are actually installed under <code>~/evoverse-sdk/</code>):</p>
+<pre><code class="language-powershell">py -3 --version
+Test-Path &quot;$HOME\evoverse-sdk\mcp-server\server.py&quot;
+Test-Path &quot;$HOME\evoverse-sdk\cli\evoverse&quot;
+</code></pre>
+<p>Merge the following into the <code>mcp.json</code> opened by <strong>MCP: Open User Configuration</strong>:</p>
+<pre><code class="language-json">{
+  &quot;servers&quot;: {
+    &quot;evoverse&quot;: {
+      &quot;command&quot;: &quot;py&quot;,
+      &quot;args&quot;: [
+        &quot;-3&quot;,
+        &quot;C:\\Users\\&lt;user&gt;\\evoverse-sdk\\mcp-server\\server.py&quot;
+      ],
+      &quot;env&quot;: {
+        &quot;EVOVERSE_HOME&quot;: &quot;C:\\Users\\&lt;user&gt;\\evoverse-sdk&quot;,
+        &quot;EVOVERSE_CLI&quot;: &quot;C:\\Users\\&lt;user&gt;\\evoverse-sdk\\cli\\evoverse&quot;,
+        &quot;PYTHONUTF8&quot;: &quot;1&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>If the machine has no <code>py</code> launcher, set <code>command</code> to the absolute path of <code>python.exe</code> and remove <code>-3</code> from <code>args</code>.</p>
+<h3 id="8-2-linux-user-level-configuration">8.2 Linux user-level configuration</h3>
+<pre><code class="language-json">{
+  &quot;servers&quot;: {
+    &quot;evoverse&quot;: {
+      &quot;command&quot;: &quot;/usr/bin/python3&quot;,
+      &quot;args&quot;: [
+        &quot;/home/&lt;user&gt;/evoverse-sdk/mcp-server/server.py&quot;
+      ],
+      &quot;env&quot;: {
+        &quot;EVOVERSE_HOME&quot;: &quot;/home/&lt;user&gt;/evoverse-sdk&quot;,
+        &quot;EVOVERSE_CLI&quot;: &quot;/home/&lt;user&gt;/evoverse-sdk/cli/evoverse&quot;,
+        &quot;PYTHONUTF8&quot;: &quot;1&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<h3 id="8-3-user-level-or-workspace-level">8.3 User-level or workspace-level</h3>
+<ul>
+<li>User-level: the server is available in every workspace — a good fit for a dedicated development workstation;</li>
+<li>Workspace-level: saved as <code>&lt;project&gt;/.vscode/mcp.json</code> — good for team sharing, but never commit customer usernames or absolute paths;</li>
+<li>Remote/SSH/WSL: the MCP runs in the environment where the configuration lives; you must use remote paths and the remote Python.</li>
+</ul>
+<p>On first launch, check the configuration and accept the VS Code MCP Trust dialog. Then run <strong>MCP: List Servers</strong>:</p>
+<ol>
+<li>The <code>evoverse</code> server shows as Running;</li>
+<li>The tools list shows <code>list_boards</code>, <code>validate_manifest</code>, <code>check_rtl_code_style</code>, and so on;</li>
+<li>In Chat Agent mode, ask: “Use the EvoVerse tools to list the available boards”;</li>
+<li>If MCP reports errors, inspect the logs via <strong>MCP: List Servers → evoverse → Show Output</strong>.</li>
+</ol>
+<p>Never write a model API key into <code>mcp.json</code>.</p>
+<h3 id="8-4-recommended-setup-use-the-evoverse-mcp-in-the-vs-code-native-chat-agent">8.4 Recommended setup: use the EvoVerse MCP in the VS Code native Chat Agent</h3>
+<p>After completing 8.1 or 8.2, run <strong>MCP: List Servers</strong> in VS Code and confirm that <code>evoverse</code> is running with its tool list visible. Then open native Chat, switch to Agent mode, and allow it to use the EvoVerse MCP tools.</p>
+<p>With that configured, run the following acceptance question in the VS Code native Chat Agent:</p>
+<pre><code class="language-text">Use EvoVerse's list_boards tool to list the available boards, and state that the result comes from the tool rather than model memory.
+</code></pre>
+<p>If the native Chat Agent can see <code>list_boards</code>, <code>validate_manifest</code>, and <code>check_rtl_code_style</code>, you can ask questions about your project and invoke EvoVerse tools. The customer should still approve the first tool call or terminal command; do not enable unrestricted auto-approval.</p>
+<h2 id="9-install-project-rules-rtl-coding-rules-and-workflows">9. Install project rules, RTL coding rules, and workflows</h2>
+<p>This step is mandatory for a full-featured VS Code installation, not an optional nicety.</p>
+<h3 id="9-1-create-an-evoverse-project">9.1 Create an EvoVerse project</h3>
+<p>Describe the new or take-over target in natural language in Chat; the Agent shows the current action via the <code>project_next</code> envelope of Workbench Control and executes after you confirm. When the project is created, VS Code instructions are generated from the following authoritative rule assets:</p>
+<pre><code class="language-text">~/evoverse-sdk/agent-rules/rules.md
+~/evoverse-sdk/agent-rules/rules-rtl-style.md
+</code></pre>
+<p>This generates <code>.github/copilot-instructions.md</code> and <code>.github/instructions/rtl.instructions.md</code>. The former carries the general engineering workflow; the latter carries the full RTL, CDC, reset, Efinity-format, and verification rules. On both Trae and VS Code, the generated content comes from the SDK's host-independent authoritative <code>agent-rules/</code> sources — it does not depend on <code>.trae</code> or the deprecated <code>CLAUDE.md</code>. VS Code officially supports <code>.github/copilot-instructions.md</code>, a root <code>AGENTS.md</code>, and <code>.github/instructions/*.instructions.md</code>; see <a href="https://code.visualstudio.com/docs/agent-customization/custom-instructions">Use custom instructions in VS Code</a>.</p>
+<h3 id="9-2-existing-projects">9.2 Existing projects</h3>
+<p>Build the VS Code instructions from the shared rule assets produced by initialization:</p>
+<p>Windows:</p>
+<pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;.github\instructions&quot; | Out-Null
+Copy-Item &quot;$HOME\evoverse-sdk\agent-rules\rules.md&quot; &quot;.github\copilot-instructions.md&quot;
+$header = &quot;---`nname: EvoVerse RTL rules`ndescription: Mandatory RTL, CDC, reset and verification rules`napplyTo: `&quot;**/*.{v,sv,vh,sdc}`&quot;`n---`n`n&quot;
+$header + (Get-Content &quot;$HOME\evoverse-sdk\agent-rules\rules-rtl-style.md&quot; -Raw) | Set-Content &quot;.github\instructions\rtl.instructions.md&quot; -Encoding utf8
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">mkdir -p .github/instructions
+cp &quot;$HOME/evoverse-sdk/agent-rules/rules.md&quot; .github/copilot-instructions.md
+printf '%s\n' '---' 'name: EvoVerse RTL rules' 'description: Mandatory RTL, CDC, reset and verification rules' 'applyTo: &quot;**/*.{v,sv,vh,sdc}&quot;' '---' '' &gt; .github/instructions/rtl.instructions.md
+cat &quot;$HOME/evoverse-sdk/agent-rules/rules-rtl-style.md&quot; &gt;&gt; .github/instructions/rtl.instructions.md
+</code></pre>
+<p>The generated <code>.github/copilot-instructions.md</code> comes from the authoritative general rules; do not create or maintain a <code>CLAUDE.md</code> as well. Its key approval boundaries include:</p>
+<pre><code class="language-markdown"># EvoVerse project instructions
+
+- Before changing RTL, inspect `evoverse-project.md`, constraints and relevant board/IP manifests.
+- Follow the naming, reset, CDC, handshake, synthesis and timing rules in the RTL instruction file.
+- Run RTL style checks and simulation before build.
+- Do not claim timing closure without a successful Efinity build and timing report.
+- Do not program hardware or apply an optimization candidate without explicit user approval.
+</code></pre>
+<p>Teams may also let other agents read the root <code>AGENTS.md</code>, but do not duplicate and maintain full rule sets that contradict each other; the authoritative sources are always <code>agent-rules/rules.md</code> and <code>agent-rules/rules-rtl-style.md</code> in the SDK repository, and project files are generated by the CLI in the matching host format.</p>
+<h3 id="9-3-verify-the-native-chat-agent-s-project-rules">9.3 Verify the native Chat Agent's project rules</h3>
+<p>The VS Code native Chat Agent uses <code>.github/copilot-instructions.md</code> and <code>.github/instructions/*.instructions.md</code> from the project. EvoVerse generates these files automatically for new projects; for existing projects, create them per section 9.2:</p>
+<pre><code class="language-text">.github/copilot-instructions.md
+.github/instructions/rtl.instructions.md
+</code></pre>
+<p>The authoritative sources of the two files, after initialization, are respectively:</p>
+<pre><code class="language-text">~/evoverse-sdk/agent-rules/rules.md
+~/evoverse-sdk/agent-rules/rules-rtl-style.md
+</code></pre>
+<p>Do not copy rules from the deprecated <code>CLAUDE.md</code>. Open Customizations/Diagnostics in VS Code Chat and confirm that both the general rules and the dedicated RTL rules are loaded.</p>
+<h3 id="9-4-recommended-dedicated-rtl-instructions">9.4 Recommended dedicated RTL instructions</h3>
+<p>Create <code>.github/instructions/rtl.instructions.md</code>:</p>
+<pre><code class="language-markdown">---
+name: EvoVerse RTL rules
+description: Mandatory RTL, CDC, reset and verification rules
+applyTo: &quot;**/*.{v,sv,vh,sdc}&quot;
+---
+
+Before proposing or editing RTL:
+1. identify clock/reset domains and interface latency;
+2. preserve explicit port connections and the project's naming rules;
+3. treat CDC and constraints as deterministic verification items;
+4. run `EvoVerse: Check This File's RTL Code Style` and the relevant simulation;
+5. never treat model output as proof of functional or timing correctness.
+</code></pre>
+<p>Confirm in VS Code Settings:</p>
+<pre><code class="language-jsonc">{
+  &quot;chat.useAgentsMdFile&quot;: true,
+  &quot;chat.instructionsFilesLocations&quot;: {
+    &quot;.github/instructions&quot;: true
+  }
+}
+</code></pre>
+<p>Open Customizations/Diagnostics in Chat and confirm that <code>copilot-instructions.md</code> and the RTL instruction are loaded. Custom instructions influence Chat/Agent behavior but are not guaranteed to influence verbatim inline completion in the editor, so the EvoVerse deterministic checks must still be run in the end.</p>
+<h2 id="10-configure-the-model">10. Configure the model</h2>
+<h3 id="10-1-how-the-two-q-a-entry-points-relate">10.1 How the two Q&amp;A entry points relate</h3>
+<p>Both the VS Code native Chat Agent and the EvoVerse built-in Conversation Runtime can answer project questions, but they are currently two independent sessions:</p>
+<table>
+<thead>
+<tr>
+<th>Entry point</th>
+<th>Model configuration</th>
+<th>Source of EvoVerse tools</th>
+<th>Shared session history?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS Code native Chat Agent</td>
+<td>VS Code Chat model picker</td>
+<td>EvoVerse MCP configured in VS Code</td>
+<td>No</td>
+</tr>
+<tr>
+<td>EvoVerse Timing Diagnosis / Build AI</td>
+<td><code>evoverse.model.*</code></td>
+<td>Extension-internal context and toolchain</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>The VS Code native Chat Agent cannot act directly as <code>evoverse.model.provider</code>. If you want both entry points to use the same host model, select the target model in native Chat and configure the EvoVerse built-in Runtime as <code>vscode-lm</code>; the built-in Runtime can also use <code>openai-compatible</code> on its own. Credentials belong in each side's secure storage and must not be shared through project files.</p>
+<h3 id="10-2-vs-code-host-models">10.2 VS Code host models</h3>
+<p>This fits customers who already use GitHub Copilot / the VS Code Language Model API and whose required model already appears in the VS Code model picker. Configuration steps:</p>
+<ol>
+<li>Install and sign in to GitHub Copilot;</li>
+<li>Confirm in VS Code Chat that the target model is available and complete the authorization the model provider requires;</li>
+<li>Set <code>evoverse.model.provider</code> to <code>vscode-lm</code> in user Settings;</li>
+<li>Run <strong>EvoVerse: Select AI Model</strong> and pick from the models the host actually returns; the command saves the exact Model ID;</li>
+<li>Reload the VS Code window, or wait for the configuration to refresh automatically.</li>
+</ol>
+<p>You can also set it manually:</p>
+<pre><code class="language-jsonc">{
+  &quot;evoverse.model.provider&quot;: &quot;vscode-lm&quot;,
+  &quot;evoverse.model.modelId&quot;: &quot;&lt;exact model id exposed by VS Code&gt;&quot;
+}
+</code></pre>
+<p>EvoVerse never silently picks the first model in the list. If you do not know the exact ID, first check the available models in the host model picker, or use the OpenAI-compatible Provider.</p>
+<p>The model list here is determined by your VS Code/Copilot account, license, region, and current service. Only models actually exposed by the VS Code Language Model API appear in the <code>vscode-lm</code> list.</p>
+<h3 id="10-3-openai-compatible-provider">10.3 OpenAI-compatible Provider</h3>
+<p>This fits customers who bring their own OpenAI, DeepSeek, Zhipu, MiniMax, or corporate model-gateway API key. The current implementation calls the standard <code>POST &lt;baseUrl&gt;/chat/completions</code> and requires the service to support the OpenAI Chat Completions format; tool calling and structured output further depend on how compatible the specific model is.</p>
+<p>Configuration steps:</p>
+<ol>
+<li>Obtain the API key, Base URL, and exact Model ID from your model provider;</li>
+<li>Fill the following three values into user Settings;</li>
+<li>Run <strong>EvoVerse: Set OpenAI-compatible API Key</strong> to store the key in VS Code SecretStorage;</li>
+<li>Run <strong>Developer: Reload Window</strong>;</li>
+<li>On the first question, review the outgoing-size prompt and choose <strong>Send</strong>.</li>
+</ol>
+<pre><code class="language-jsonc">{
+  &quot;evoverse.model.provider&quot;: &quot;openai-compatible&quot;,
+  &quot;evoverse.model.modelId&quot;: &quot;&lt;endpoint-model-id&gt;&quot;,
+  &quot;evoverse.model.baseUrl&quot;: &quot;https://&lt;provider-host&gt;/v1/&quot;,
+  &quot;evoverse.model.allowLocalHttp&quot;: false
+}
+</code></pre>
+<p>Run <strong>EvoVerse: Set OpenAI-compatible API Key</strong> and enter the key. The key is stored in VS Code SecretStorage — do not put it into settings, MCP, prompts, or the project repository. Before any remote request, EvoVerse shows the message count and character size and asks for confirmation.</p>
+<p>A local development endpoint can use HTTP only when the address is a localhost/loopback address and <code>evoverse.model.allowLocalHttp</code> is explicitly enabled.</p>
+<p>Examples of common services (model names must follow the list actually enabled for the customer account):</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th><code>evoverse.model.baseUrl</code></th>
+<th>Example <code>evoverse.model.modelId</code></th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAI API</td>
+<td><code>https://api.openai.com/v1/</code></td>
+<td>OpenAI model IDs actually available to the account</td>
+<td>Uses an OpenAI API key; not the same as automatically reusing a Codex subscription</td>
+</tr>
+<tr>
+<td>DeepSeek</td>
+<td><code>https://api.deepseek.com/v1/</code></td>
+<td><code>deepseek-chat</code></td>
+<td>Uses a DeepSeek API key</td>
+</tr>
+<tr>
+<td>Zhipu BigModel</td>
+<td><code>https://open.bigmodel.cn/api/paas/v4/</code></td>
+<td>GLM model IDs actually available to the account</td>
+<td>Zhipu offers an OpenAI-compatible API; coding plans may use a dedicated endpoint</td>
+</tr>
+<tr>
+<td>MiniMax</td>
+<td><code>https://api.minimaxi.com/v1/</code></td>
+<td>MiniMax model IDs actually available to the account</td>
+<td>MiniMax offers an OpenAI-compatible API</td>
+</tr>
+<tr>
+<td>Corporate aggregation gateway</td>
+<td>The HTTPS <code>/v1/</code> or compatible root URL provided by the company</td>
+<td>Model IDs published by the gateway</td>
+<td>Can forward models such as Claude, but Chat Completions compatibility must be confirmed</td>
+</tr>
+</tbody>
+</table>
+<p>The built-in Runtime currently has <strong>no native Anthropic Messages API Provider</strong>. There are two workable routes to Claude: select a Claude model actually exposed by VS Code under <code>vscode-lm</code>, or use a gateway with OpenAI-compatible Chat Completions offered by your company, OpenRouter, or similar. Do not paste an Anthropic-native Base URL directly into this section's configuration.</p>
+<h3 id="10-4-verify-timing-diagnosis-and-build-ai">10.4 Verify Timing Diagnosis and Build AI</h3>
+<p>After configuring either Provider, verify in this order:</p>
+<ol>
+<li>Open an EvoVerse project that has already built successfully and contains a timing report;</li>
+<li>Run <strong>Toolchain: Diagnose Timing Violations</strong>;</li>
+<li>On the Timing Diagnose page, click <strong>Ask AI</strong>; confirm that the send-confirmation dialog appears and that the analysis streams back once you approve;</li>
+<li>Ask one follow-up question in the input box and confirm that the Conversation Runtime keeps the multi-turn context of this entry point;</li>
+<li>Open the Build Report, click <strong>Ask AI Agent</strong>, and confirm you receive an answer with a build summary;</li>
+<li>Check whether the answer cites WNS/TNS, clock domains, or critical paths from the current report. Model suggestions are for analysis only and cannot replace actual simulation, CDC checks, and the Efinity timing report.</li>
+</ol>
+<p>If it fails, check Output → <strong>EvoVerse SDK</strong> first, then verify: the Provider name, the Model ID, whether the Base URL already contains <code>chat/completions</code>, API key permissions, account balance, and any corporate proxy. Put only the API root path in <code>baseUrl</code>; EvoVerse appends <code>chat/completions</code> itself.</p>
+<h2 id="11-first-project-and-step-by-step-acceptance">11. First project and step-by-step acceptance</h2>
+<p>Do not jump straight to programming the board. Work in order and continue only after each step passes.</p>
+<h3 id="11-1-basics-and-the-catalog">11.1 Basics and the Catalog</h3>
+<ol>
+<li>Open the EvoVerse Activity Bar;</li>
+<li>Confirm that <code>ws-e1</code> appears in the Board Catalog;</li>
+<li>Run <code>EvoVerse: Show Knowledge Base</code>;</li>
+<li>Describe a minimal project goal in Chat, confirm the <code>project_next</code> envelope, and create the project;</li>
+<li>Confirm the project contains <code>evoverse-project.md</code>, <code>.github/copilot-instructions.md</code>, and <code>.github/instructions/rtl.instructions.md</code>.</li>
+</ol>
+<h3 id="11-2-rules-and-mcp">11.2 Rules and MCP</h3>
+<ol>
+<li>Open an RTL file;</li>
+<li>Run <code>Toolchain: Check This File's Code Style</code>;</li>
+<li>In VS Code Chat's Customizations/Diagnostics, confirm the rule files are loaded;</li>
+<li>Run <strong>MCP: List Servers</strong> and confirm <code>evoverse</code> is Running;</li>
+<li>Have the Agent call <code>list_boards</code>; the result must come from the actual Catalog, not from model memory.</li>
+</ol>
+<h3 id="11-3-simulation">11.3 Simulation</h3>
+<ol>
+<li>The project contains a testbench;</li>
+<li>Run <code>EvoVerse: Simulate</code>;</li>
+<li><code>iverilog</code> and <code>vvp</code> report success in Output;</li>
+<li>When a VCD is produced, open it with VaporView and check the clock, reset, and output behavior.</li>
+</ol>
+<h3 id="11-4-efinity-build-and-timing">11.4 Efinity build and timing</h3>
+<ol>
+<li>Run <code>Toolchain: Project Health Check</code>;</li>
+<li>Fix any missing SDC, device, or source-file issues;</li>
+<li>Run <code>Toolchain: Build (Full Flow)</code>;</li>
+<li>In the Build Report, confirm that Resources, I/O/Clock, Timing, and Critical Paths are readable;</li>
+<li>Run <code>Toolchain: Diagnose Timing Violations</code>;</li>
+<li>Treat AI suggestions as hypotheses only; WNS/TNS, CDC, simulation, and build results are the verification evidence.</li>
+</ol>
+<h3 id="11-5-programming">11.5 Programming</h3>
+<ol>
+<li>While the board is powered off, confirm jumpers, voltages, JTAG, and boot mode;</li>
+<li>Connect power and the USB data cable;</li>
+<li>In the Efinity Programmer, first confirm the target device enumerates;</li>
+<li>Return to VS Code and run <code>Toolchain: Program FPGA</code>;</li>
+<li>If you see “no FTDI device”, check the data cable, drivers, permissions, hubs, and board power.</li>
+</ol>
+<h3 id="11-6-optional-risc-v">11.6 Optional RISC-V</h3>
+<ol>
+<li>Configure the Sapphire SoC IP and sync it from Efinity;</li>
+<li>Run <code>Software: Sync BSP from SoC IP</code>;</li>
+<li>Run <code>Software: Build App</code>;</li>
+<li>Run <code>Software: Program FPGA</code>;</li>
+<li>After confirming the Cortex-Debug, GDB, and debugger paths, run <code>Software: Debug App</code>.</li>
+</ol>
+<h2 id="12-troubleshooting">12. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set Up cannot find Python</td>
+<td>Set <code>evoverse.pythonPath</code> to the interpreter's absolute path, reload the window, and rerun Set Up</td>
+</tr>
+<tr>
+<td>MCP exits immediately on start</td>
+<td>Check <code>command</code>, server.py, <code>EVOVERSE_HOME</code>, and JSON escaping; open the MCP Output</td>
+</tr>
+<tr>
+<td>MCP has a server but no tools</td>
+<td>Restart the server, confirm the running <code>server.py</code> is the one extracted from the VSIX, and check Python stderr</td>
+</tr>
+<tr>
+<td>Chat ignores the RTL rules</td>
+<td>Check <code>.github/copilot-instructions.md</code>, the RTL instruction, Customizations/Diagnostics, and the <code>applyTo</code> glob</td>
+</tr>
+<tr>
+<td>Build cannot find Efinity</td>
+<td>Check that <code>evoverse.efinityPath</code> points at the installation root rather than <code>bin</code>, and that the setup script exists</td>
+</tr>
+<tr>
+<td>IP Manager fails to start</td>
+<td>Check the 64-bit Java version, PATH, and the Efinity version requirements</td>
+</tr>
+<tr>
+<td>Simulation cannot find executables</td>
+<td>Check <code>evoverse.simulator</code> and point the matching path directly at the directory containing <code>iverilog</code>/<code>vvp</code> or <code>vlib</code>/<code>vlog</code>/<code>vsim</code></td>
+</tr>
+<tr>
+<td>FPGA/FTDI not found</td>
+<td>Check the USB data cable, drivers, udev/Zadig, board power, and JTAG mode</td>
+</tr>
+<tr>
+<td>AI shows model unavailable</td>
+<td>Set the exact <code>evoverse.model.modelId</code> explicitly; check authorization or the endpoint's model names</td>
+</tr>
+<tr>
+<td>MCP paths invalid under Remote/WSL</td>
+<td>The MCP runs in the environment where the configuration lives; use the remote Python and remote file paths</td>
+</tr>
+</tbody>
+</table>
+<h2 id="13-customer-delivery-acceptance-checklist">13. Customer delivery acceptance checklist</h2>
+<ul>
+<li>[ ] VS Code Stable 64-bit launches;</li>
+<li>[ ] The EvoVerse VSIX and the required dependency extensions are installed;</li>
+<li>[ ] Python 3.11+ is executable;</li>
+<li>[ ] Set Up and the CLI smoke test succeed;</li>
+<li>[ ] Efinity, the license, Java, and the USB drivers are done;</li>
+<li>[ ] Icarus <code>iverilog</code>/<code>vvp</code> are executable;</li>
+<li>[ ] <code>evoverse.*</code> paths point at the real installation locations;</li>
+<li>[ ] The EvoVerse MCP is Running and its tools are callable;</li>
+<li>[ ] Both VS Code custom instruction files — general and RTL — are loaded;</li>
+<li>[ ] The RTL style check passes;</li>
+<li>[ ] The minimal simulation passes and waveforms can be viewed;</li>
+<li>[ ] The full build succeeds and produces resource/timing reports;</li>
+<li>[ ] Timing Diagnosis opens;</li>
+<li>[ ] Efinity enumerates the FPGA and EvoVerse programming succeeds;</li>
+<li>[ ] If RISC-V is needed, the full BSP, GCC, GDB, and Cortex-Debug chain passes;</li>
+<li>[ ] The customer understands that model inference cannot replace simulation, STA, CDC, and hardware verification.</li>
+</ul>
+<p>Only after every box is checked may the workstation be considered to have reached the “full-feature use” defined in this guide.</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

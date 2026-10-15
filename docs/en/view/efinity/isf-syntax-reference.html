@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity ISF Syntax Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Interface, pin and resource-constraint syntax.</span>
+<code>efinity/isf-syntax-reference.md</code>
+<a href="../../../efinity/isf-syntax-reference.md">Markdown source</a></p>
+<h1>Efinity ISF Syntax Reference</h1></header>
+<main class="article"><h1 id="efinity-isf-syntax-reference">Efinity ISF Syntax Reference</h1>
+<blockquote>
+<p><strong>Applies to</strong>: Efinity 2026.1 (<code>C:\Efinity\2026.1</code>)
+<strong>Updated</strong>: 2026-09-25
+<strong>Evidence baseline</strong>: Every claim in this document is taken directly from the Python sources inside the Efinity 2026.1 installation, the official <code>examples/helloworld-unified</code> sample, and the EvoVerse SDK's bundled <code>sdk/cli/import_gpio.*</code> self-check tool. Each claim is annotated with its evidence in <code>(path:line)</code> form.</p>
+</blockquote>
+<hr />
+<h2 id="0-document-scope">0. Document scope</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Problem it solves</td>
+<td>Writing ISF constraint scripts, judging whether an ISF file is "replay-safe", and debugging <code>GPIO ... already exists</code>-type build failures</td>
+</tr>
+<tr>
+<td>Evidence source code</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> (DesignAPI, ~2810 lines), <code>...\api_service\exim\isf_importer.py</code>, <code>...\api_service\exim\isf_exporter.py</code>, <code>...\api_service\isf_command.py</code></td>
+</tr>
+<tr>
+<td>Official samples</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code> (a pair of ISF files for each of 9 devices)</td>
+</tr>
+<tr>
+<td>SDK self-check tool</td>
+<td><code>c:\work\awesomsdk\sdk\cli\import_gpio.bat</code> + <code>import_gpio_cli.py</code></td>
+</tr>
+<tr>
+<td>Companion documents</td>
+<td>toolchain-reference.md (command line), design-rules.md (RTL/SDC), xml-project-schema.md (project XML)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>One-sentence conclusion (remember this first)</strong>:
+An ISF is <strong>Python source code executed line by line by <code>exec()</code></strong>, with the execution context binding the <code>design</code> variable to an Efinity DesignAPI instance. It has exactly two legal usages: the <strong>one-shot bootstrap</strong> (containing <code>create_*</code>) and the <strong>replay-safe</strong> form (set/assign only). The project XML may reference only replay-safe ISF files.</p>
+<hr />
+<h2 id="1-what-an-isf-really-is-python-api-source-executed-by-exec">1. What an ISF really is: Python API source executed by exec()</h2>
+<h3 id="1-1-execution-model">1.1 Execution model</h3>
+<p>Every line of an ISF file is extracted and handed to Python <code>exec()</code> for execution:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Line-by-line <code>exec(code)</code></td>
+<td><code>isf_importer.py:236</code></td>
+</tr>
+<tr>
+<td>Before execution, <code>design = self.design_api</code> is injected (binding the DesignAPI instance)</td>
+<td><code>isf_importer.py:217</code></td>
+</tr>
+<tr>
+<td>The module-mode execution path injects the same: <code>setattr(module, "design", self.design_api)</code></td>
+<td><code>isf_importer.py:287</code></td>
+</tr>
+<tr>
+<td>Lines written by the exporter likewise start with <code>design.</code> (<code>design_api_handle="design"</code>)</td>
+<td><code>isf_exporter.py:94</code></td>
+</tr>
+</tbody>
+</table>
+<p>Therefore, what you can write in an ISF is exactly <strong>the Python method calls exposed by DesignAPI</strong> (the complete set in Chapter 2), plus whatever comments and blank lines the Python language itself permits. There is no "ISF-specific syntax" — the so-called ISF syntax is simply the textual serialization format of DesignAPI method signatures.</p>
+<h3 id="1-2-pre-filtering-rules">1.2 Pre-filtering rules</h3>
+<p>Before exec, the importer pre-screens every line (<code>isf_importer.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Behavior</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blank line or full-line <code>#</code> comment</td>
+<td>Skipped, not executed</td>
+<td><code>isf_importer.py:227</code> (<code>code == "" or code.startswith("#")</code>)</td>
+</tr>
+<tr>
+<td>When <code>--skip-resasg</code> is enabled, lines starting with <code>design.assign</code></td>
+<td>Skipped (used when consuming <code>.auto_asg.isf</code> to take only the properties, not the assignments)</td>
+<td><code>isf_importer.py:231-233</code></td>
+</tr>
+<tr>
+<td>All other lines</td>
+<td>Handed to <code>exec()</code></td>
+<td><code>isf_importer.py:236</code></td>
+</tr>
+</tbody>
+</table>
+<p>Corollary: <strong>comments must be written as Python comments</strong> (<code>#</code>); trailing comments are legal Python and execute as such. But to stay consistent with exporter output (see §5.5), use only full-line comments.</p>
+<h3 id="1-3-error-severity-and-abort-behavior-what-decides-how-far-one-bad-line-wrecks-the-file">1.3 Error severity and abort behavior (what decides how far "one bad line" wrecks the file)</h3>
+<p>The importer classifies exceptions by type (<code>isf_importer.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>Level</th>
+<th>Continues with subsequent lines?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PTException</code> (Efinity semantic error, e.g. instance does not exist)</td>
+<td>warning</td>
+<td><strong>yes</strong></td>
+<td>importer exception branch</td>
+</tr>
+<tr>
+<td><code>AttributeError</code> (method name does not exist → typo)</td>
+<td>error</td>
+<td><strong>yes</strong></td>
+<td>importer exception branch</td>
+</tr>
+<tr>
+<td><code>SyntaxError</code> / <code>UnicodeError</code> / <code>TypeError</code> / other Exception</td>
+<td>fatal</td>
+<td><strong>no — break, aborts the entire import</strong></td>
+<td>importer exception branch</td>
+</tr>
+</tbody>
+</table>
+<p>Key semantics: <code>import_isf</code> returns False whenever the issue registry is <strong>non-empty</strong> (even if every issue is warning-level) (around <code>isf_importer.py:191</code>). In other words —</p>
+<blockquote>
+<p><strong>warning ≠ pass.</strong> A single issue of any kind fails the import, and the unified flow aborts immediately (§7.2).</p>
+</blockquote>
+<p>Post-processing follows the import: PLL frequencies are recalculated and the <code>APIPropertyChecker</code> design check runs (<code>isf_importer.py:414-431</code>); issues found there also count toward the registry.</p>
+<h3 id="1-4-isf-is-not-xml-and-not-a-pin-table">1.4 ISF is not XML, and not a pin table</h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>What it is</th>
+<th>Consumer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.isf</code> (ISF)</td>
+<td>Python API source: <code>design.create_input_gpio(...)</code> etc.</td>
+<td><code>efx_run_pt_unified.py</code> / <code>DesignAPI.import_design()</code></td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;.peri.xml</code></td>
+<td>A <strong>project source file</strong> (database) in the <code>efxpt:design_db</code> namespace; can only be produced by the Efinity PT tools</td>
+<td>PT tools / GUI</td>
+</tr>
+<tr>
+<td>3-column GPIO <code>.csv</code></td>
+<td>A pin list only; goes through the <code>ImportGPIODesign</code> backend (the same one as the GUI wizard)</td>
+<td><code>import_gpio_cli.py:154</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Never</strong> write XML such as <code>&lt;efx:gpio&gt;</code> into a <code>.isf</code> file; <strong>never</strong> hand-write <code>&lt;design&gt;.peri.xml</code> (the namespace is <code>efxpt:design_db</code>, the schema is <code>peri_design_db.xsd</code>, as the header of the official <code>helloworld.peri.xml</code> proves). Historically the SDK once produced a 46 KB <code>&lt;EFX_PERI_INTERFACE&gt;</code> XML named <code>*.peri.isf</code>, which the ISF importer rejected outright with "invalid syntax" — that lesson is now enshrined as a mandatory self-check (§6).</p>
+<h3 id="1-5-isf-vs-peri-xml-the-prerequisite-for-understanding-replay">1.5 ISF vs. peri.xml (the prerequisite for understanding replay)</h3>
+<p>In the unified flow:</p>
+<ol>
+<li><code>&lt;design&gt;.peri.xml</code> is the <strong>persisted project source file</strong> (all official unified samples ship one); it is loaded at build time;</li>
+<li>every <code>.isf</code> referenced by the project XML is <strong>replayed</strong> (imported) onto this existing database;</li>
+<li><code>design_api.save()</code> writes the merged result back to peri.xml (<code>efx_run_pt_unified.py:281</code>).</li>
+</ol>
+<p>So every ISF command runs under the assumption "the database already exists" — this is the root of the replay-safety contract in §3.</p>
+<hr />
+<h2 id="2-designapi-method-reference-the-complete-isf-command-set">2. DesignAPI method reference (the complete ISF command set)</h2>
+<p>All methods are defined in <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code>; line numbers refer to that file.</p>
+<h3 id="2-1-category-overview">2.1 Category overview</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Methods</th>
+<th>Idempotent / replayable</th>
+<th>ISF serialization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Creation family</td>
+<td><code>create_block</code> + 14 <code>create_*_gpio</code></td>
+<td>❌ one-shot bootstrap</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Property family</td>
+<td><code>set_property</code> / <code>set_device_property</code> / <code>set_gpio_unused_state</code> / <code>set_mode_sel_name</code> / <code>lock_property</code></td>
+<td>✅ replayable</td>
+<td>✅ (<code>lock_property</code> is serialized too)</td>
+</tr>
+<tr>
+<td>Resources and pins</td>
+<td><code>assign_resource</code> / <code>assign_pkg_pin</code></td>
+<td>✅ replayable</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Query family</td>
+<td><code>is_resource_used</code> / <code>is_pkg_pin_used</code> / <code>get_resource</code> / <code>get_pkg_pin</code> / <code>get_bonded_bank</code></td>
+<td>✅ read-only</td>
+<td>❌ no serializer</td>
+</tr>
+<tr>
+<td>Device level</td>
+<td><code>set_iobank_voltage</code></td>
+<td>✅ replayable (sugar over the property family)</td>
+<td>✅ (via the IOBANK set_property channel)</td>
+</tr>
+<tr>
+<td>Deletion family</td>
+<td><code>delete_block</code> / <code>delete_gpio</code> / <code>reset_device_settings</code> / <code>clear_design</code></td>
+<td>— (API-only)</td>
+<td>❌ <strong>no ISF serializer at all</strong></td>
+</tr>
+<tr>
+<td>Flow family</td>
+<td><code>export_design</code> / <code>import_design</code> / <code>setup_partial_design</code> / <code>finish_partial_design</code> / <code>convert_periphery_netlist_to_isf_commands</code> / <code>auto_assign_resource</code> / <code>export_isf_commands_file</code> / <code>export_auto_assignment_isf_file</code></td>
+<td>— (tool-side calls)</td>
+<td>partially (see §2.6)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-2-creation-family-one-shot-bootstrap">2.2 Creation family (one-shot bootstrap)</h3>
+<h4 id="2-2-1-create_block">2.2.1 <code>create_block</code></h4>
+<pre><code class="language-python"># design.py:192
+def create_block(self, name: str, block_type: str, **kwargs)
+</code></pre>
+<ul>
+<li>Common <code>block_type</code> values: <code>PLL</code>, <code>OSC</code>, <code>DDR</code>, <code>LVDS_RX</code>, <code>LVDS_TX</code>, <code>MIPI_RX</code>, <code>MIPI_TX</code>, <code>JTAG</code>, <code>SPI_FLASH</code>, etc. (the full legal set is in the exporter support table, §5.2).</li>
+<li><code>kwargs</code> supports creation-time parameters: <code>mode</code> / <code>conn_type</code> / <code>tx_mode</code> / <code>rx_conn_type</code> (signature at <code>design.py:192</code>).</li>
+<li>Serialization format (<code>isf_command.py:102-108</code>):</li>
+</ul>
+<pre><code class="language-text">design.create_block(&quot;pll_inst1&quot;,&quot;PLL&quot;)
+design.create_block(&quot;inst&quot;,&quot;TYPE&quot;,mode=&quot;X&quot;)     # with kwargs
+</code></pre>
+<h4 id="2-2-2-the-14-create_-_gpio">2.2.2 The 14 <code>create_*_gpio</code></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>design.py line</th>
+<th>Purpose</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_input_gpio</code></td>
+<td>1072</td>
+<td>Plain input</td>
+<td>RTL top-level input ports (usually inferred automatically by synthesis; normally not needed in an ISF)</td>
+</tr>
+<tr>
+<td><code>create_output_gpio</code></td>
+<td>1098</td>
+<td>Plain output</td>
+<td>Same as above</td>
+</tr>
+<tr>
+<td><code>create_inout_gpio</code></td>
+<td>1124</td>
+<td>Bidirectional</td>
+<td>Top-level bidirectional IO (e.g. <code>sda_io</code>)</td>
+</tr>
+<tr>
+<td><code>create_open_drain_output_gpio</code></td>
+<td>1150</td>
+<td>Open-drain output</td>
+<td>I2C-style open-drain drivers</td>
+</tr>
+<tr>
+<td><code>create_vref_gpio</code></td>
+<td>1170</td>
+<td>VREF reference voltage</td>
+<td>SSTL and other interfaces requiring VREF</td>
+</tr>
+<tr>
+<td><code>create_input_clock_gpio</code></td>
+<td>1188</td>
+<td>Single-ended input clock</td>
+<td>Ordinary clock input pins</td>
+</tr>
+<tr>
+<td><code>create_regional_input_clock_gpio</code></td>
+<td>1207</td>
+<td>Regional clock input</td>
+<td>Regional clock networks</td>
+</tr>
+<tr>
+<td><code>create_pll_input_clock_gpio</code></td>
+<td>1226</td>
+<td>PLL reference clock input</td>
+<td><strong>Mandatory for a PLL</strong> (see line 15 of the §4.2 listing)</td>
+</tr>
+<tr>
+<td><code>create_pll_ext_fb_gpio</code></td>
+<td>1245</td>
+<td>PLL external feedback</td>
+<td>EXTERNAL_FEEDBACK mode</td>
+</tr>
+<tr>
+<td><code>create_mipi_input_clock_gpio</code></td>
+<td>1265</td>
+<td>MIPI input clock</td>
+<td>MIPI RX reference</td>
+</tr>
+<tr>
+<td><code>create_pcie_perstn_gpio</code></td>
+<td>1285</td>
+<td>PCIe reset</td>
+<td>PERSTn pin</td>
+</tr>
+<tr>
+<td><code>create_clockout_gpio</code></td>
+<td>1305</td>
+<td>Clock output</td>
+<td>Clock-out pins</td>
+</tr>
+<tr>
+<td><code>create_global_control_gpio</code></td>
+<td>1324</td>
+<td>Global control</td>
+<td>Global control networks</td>
+</tr>
+<tr>
+<td><code>create_unused_gpio</code></td>
+<td>1343</td>
+<td>Explicitly unused</td>
+<td>Declaring reserved / floating pins</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bus determination rule</strong> (<code>design.py:1088-1091</code>, shown for <code>create_input_gpio</code>; the other creates are isomorphic):</p>
+<pre><code class="language-python"># msb == lsb → scalar GPIO; msb != lsb → GPIO bus (gpio_bus)
+if msb == lsb:
+    gpio = ...
+else:
+    gpio_bus = ...
+</code></pre>
+<p>Serialization format (<code>isf_command.py:45-48</code>):</p>
+<pre><code class="language-text">design.create_input_gpio(&quot;rstn&quot;)            # scalar
+design.create_input_gpio(&quot;data_in&quot;, 3, 0)   # bus, msb=3, lsb=0
+</code></pre>
+<blockquote>
+<p>Pitfall: <strong>never re-create plain GPIO (RTL top-level ports) in the ISF</strong>. Under the unified flow the synthesis tool infers GPIO from RTL ports automatically; re-creating the same-named instance in the ISF triggers <code>already exists</code> on replay (§3.4, §8.2). The ISF create_<em> family exists only for </em><em>hard IP and its dedicated GPIO</em>* (PLL/DDR/LVDS/OSC/MIPI and <code>PLL_CLKIN</code>-style inputs).</p>
+</blockquote>
+<h3 id="2-3-property-family-replayable">2.3 Property family (replayable)</h3>
+<h4 id="set_property-design-py-507"><code>set_property</code> (<code>design.py:507</code>)</h4>
+<pre><code class="language-python">def set_property(self, inst, prop_name: Union[str, Dict[str, str]], prop_value=None, block_type: str=&quot;GPIO&quot;)
+</code></pre>
+<ul>
+<li>The four-argument form is the <strong>only</strong> shape used in ISF serialization: the serializer always emits 4 positional arguments (<code>isf_command.py:147</code>):</li>
+</ul>
+<pre><code class="language-text">design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_FREQ&quot;,&quot;25.0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;reverse&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)     # block_type defaults to GPIO when omitted
+</code></pre>
+<ul>
+<li>⚠️ The <code>set_property</code> docstring warns explicitly: <strong>do not use it for resources or pins</strong> — that is the job of <code>assign_resource</code> / <code>assign_pkg_pin</code> (docstring at <code>design.py:507</code>).</li>
+<li><code>prop_name</code> may be passed as a dict for batch setting (a Python-call-level capability; textual ISF is one property per line).</li>
+<li>The <code>from_str</code> parsing regex only allows spaces and square brackets in <code>prop_value</code>: <code>[\w\s\.\[\]]*</code> (<code>isf_command.py:130</code>) — values containing commas/quotes cannot be expressed in textual ISF.</li>
+</ul>
+<h4 id="set_device_property-design-py-559"><code>set_device_property</code> (<code>design.py:559</code>)</h4>
+<pre><code class="language-python">def set_device_property(self, inst: str, prop_name, prop_value=None, devset_type: str=&quot;IOBANK&quot;)
+</code></pre>
+<p>The device-level setting entry point. The legal <code>devset_type</code> set has <strong>exactly 5 values</strong> (<code>int_device_setting.py:79-108</code>, decided by <code>is_setting_supported</code>):</p>
+<table>
+<thead>
+<tr>
+<th>devset_type</th>
+<th>Supported when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IOBANK</code></td>
+<td>always supported</td>
+</tr>
+<tr>
+<td><code>SEU</code></td>
+<td>Tesseract family only</td>
+</tr>
+<tr>
+<td><code>RU</code></td>
+<td>the device has <code>ctrl_reg</code></td>
+</tr>
+<tr>
+<td><code>EXT_FLASH</code></td>
+<td>the device has <code>ext_flash_reg</code></td>
+</tr>
+<tr>
+<td><code>CLKMUX</code></td>
+<td>Tesseract only (source comment: Trion clkmux has no configuration)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="set_iobank_voltage-design-py-639"><code>set_iobank_voltage</code> (<code>design.py:639</code>)</h4>
+<pre><code class="language-python">def set_iobank_voltage(self, bank_name: Union[str, Dict[str, str]], voltage=None)
+</code></pre>
+<p>It is pure <strong>syntactic sugar</strong> for <code>set_device_property(bank, "VOLTAGE", volt, "IOBANK")</code> (implementation at <code>design.py:639</code>) — hence naturally idempotent and replayable:</p>
+<pre><code class="language-text">design.set_iobank_voltage(&quot;TL&quot;,&quot;3.3&quot;)
+</code></pre>
+<p>Hard constraints (violation → Design Check <code>io_bank_rule_voltage_assignment</code>): all IOs in a bank must share one voltage standard; a MIPI bank must be 1.2V and must not share a bank with LVDS; within an HSIO bank, at least one pair of unassigned IOs must be left between GPIO/LVDS/MIPI as isolation; Ti60ES does not support 2.5V.</p>
+<h4 id="set_gpio_unused_state-design-py-1360"><code>set_gpio_unused_state</code> (<code>design.py:1360</code>)</h4>
+<p>Global unused-pin level setting. Serialization (<code>isf_command.py:92</code>):</p>
+<pre><code class="language-text">design.set_gpio_unused_state(&quot;value&quot;)
+</code></pre>
+<h4 id="set_mode_sel_name-design-py-754"><code>set_mode_sel_name</code> (<code>design.py:754</code>)</h4>
+<pre><code class="language-python">def set_mode_sel_name(self, bank_name, value, bonded_bank=None)
+</code></pre>
+<p>Sets a bank's mode_sel name; <code>bonded_bank</code> handles the bank mapping for non-fully-bonded packages. Per-IO voltage standards (<code>iostd</code>) and <code>mode_sel_name</code> both end up on the <code>efxpt:iobank</code> element of peri.xml (as <code>helloworld.peri.xml</code> proves).</p>
+<h4 id="lock_property-design-py-1936"><code>lock_property</code> (<code>design.py:1936</code>)</h4>
+<pre><code class="language-python">def lock_property(self, inst, prop, value, btype, checksum)
+</code></pre>
+<p>Registers a property into <code>netlist_config</code> (locked by the periphery-netlist checksum). <strong>Note</strong>: when <code>inst</code> is unknown it <strong>silently returns None without raising an error</strong> (implementation at <code>design.py:1936</code>) — a lock line with a wrong instance name will not fail immediately; when debugging, always confirm the instance exists first. Serialization (<code>isf_command.py:175</code>):</p>
+<pre><code class="language-text">design.lock_property(&quot;inst&quot;,&quot;PROP&quot;,&quot;VALUE&quot;,&quot;TYPE&quot;,&quot;checksum&quot;)
+</code></pre>
+<h3 id="2-4-resources-and-pins-replayable">2.4 Resources and pins (replayable)</h3>
+<h4 id="assign_resource-design-py-790"><code>assign_resource</code> (<code>design.py:790</code>)</h4>
+<pre><code class="language-python">def assign_resource(self, inst, res_name, block_type=&quot;GPIO&quot;, override=True)
+</code></pre>
+<p>Places an instance onto a concrete hard resource (e.g. PLL → <code>PLL_TL0</code>). Serialization is always 3 positional arguments (<code>isf_command.py:156</code>):</p>
+<pre><code class="language-text">design.assign_resource(&quot;pll_inst1&quot;,&quot;PLL_TL0&quot;,&quot;PLL&quot;)
+</code></pre>
+<h4 id="assign_pkg_pin-design-py-837"><code>assign_pkg_pin</code> (<code>design.py:837</code>)</h4>
+<pre><code class="language-python">def assign_pkg_pin(self, inst, pin_name, override=True)
+</code></pre>
+<p>Pin assignment. Bus members are written in the <code>"bus[N]"</code> form. Serialization is always 2 positional arguments (<code>isf_command.py:164</code>):</p>
+<pre><code class="language-text">design.assign_pkg_pin(&quot;rstn&quot;,&quot;J13&quot;)
+design.assign_pkg_pin(&quot;led[0]&quot;,&quot;K14&quot;)
+</code></pre>
+<blockquote>
+<p><strong>Always assign GPIO pins with <code>assign_pkg_pin</code>, not <code>assign_resource</code></strong> — the exporter's pin channel for GPIO is exactly assign_pkg_pin (<code>isf_exporter.py:837-853</code>).</p>
+</blockquote>
+<h4 id="query-family-read-only-no-isf-serialization">Query family (read-only, no ISF serialization)</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Line</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_resource_used</code></td>
+<td>865</td>
+<td>whether a resource is already taken</td>
+</tr>
+<tr>
+<td><code>is_pkg_pin_used</code></td>
+<td>890</td>
+<td>whether a pin is already taken</td>
+</tr>
+<tr>
+<td><code>get_resource</code></td>
+<td>904</td>
+<td>an instance's current resource</td>
+</tr>
+<tr>
+<td><code>get_pkg_pin</code></td>
+<td>928</td>
+<td>an instance's current pin</td>
+</tr>
+<tr>
+<td><code>get_bonded_bank</code></td>
+<td>723</td>
+<td>bonded bank lookup</td>
+</tr>
+</tbody>
+</table>
+<p>These methods have no serialized counterpart in ISF and contribute nothing to replay — <strong>do not write them into an ISF</strong>.</p>
+<h3 id="2-5-deletion-family-api-only-no-isf-serialization-this-is-the-evidence-that-isf-has-no-delete">2.5 Deletion family (API-only, no ISF serialization — this is the evidence that "ISF has no delete")</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Line</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delete_block</code></td>
+<td>255</td>
+<td>API-level block deletion</td>
+</tr>
+<tr>
+<td><code>delete_gpio</code></td>
+<td>302</td>
+<td>API-level GPIO deletion</td>
+</tr>
+<tr>
+<td><code>reset_device_settings</code></td>
+<td>2404</td>
+<td>clears device settings</td>
+</tr>
+<tr>
+<td><code>clear_design</code></td>
+<td>2423</td>
+<td>clears the design</td>
+</tr>
+</tbody>
+</table>
+<p>These deletion capabilities <strong>exist</strong> in the API, but none of <code>isf_exporter.py</code>'s 46 classes (§5) nor any command class in <code>isf_command.py</code> can serialize them into ISF text. Conclusion: <strong>the ISF command set has no delete/clear, and inventing one is not allowed</strong>. The only legitimate way to clear the database is to delete peri.xml and bootstrap again (a decision owned by the tool/project lifecycle; scripts must never delete peri.xml on their own).</p>
+<h3 id="2-6-flow-family-tool-side-calls">2.6 Flow family (tool-side calls)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Line</th>
+<th>Behavior highlights</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export_design</code></td>
+<td>1425</td>
+<td>exports peri.xml and other design data</td>
+</tr>
+<tr>
+<td><code>import_design</code></td>
+<td>1468</td>
+<td><strong>the official ISF import entry point</strong> (both <code>import_gpio_cli.py:104</code> and the unified flow go through it); with <code>gen_issue_csv=True</code> it also emits an issue CSV</td>
+</tr>
+<tr>
+<td><code>setup_partial_design</code></td>
+<td>1508</td>
+<td>partial design begin: deletes the GPIO/buses/instances in the periphery netlist that match (checksum-identical), making room for netlist regeneration</td>
+</tr>
+<tr>
+<td><code>finish_partial_design</code></td>
+<td>1569</td>
+<td>partial design end: migrates non-locked (volatile) settings back into the current design</td>
+</tr>
+<tr>
+<td><code>convert_periphery_netlist_to_isf_commands</code></td>
+<td>1656</td>
+<td>periphery netlist → ISF command list; <strong>always inserts <code>setup_partial_design</code> at position 0 and appends <code>finish_partial_design</code> at the end</strong> (<code>design.py:1686-1687</code>)</td>
+</tr>
+<tr>
+<td><code>auto_assign_resource</code></td>
+<td>1709</td>
+<td><code>DesignAutoResourcePlanner</code> plans resources automatically; set_property-type commands execute immediately, and the full command list is returned (<code>design.py:1709-1723</code>)</td>
+</tr>
+<tr>
+<td><code>export_isf_commands_file</code></td>
+<td>1725</td>
+<td>command list → <code>.isf</code> file (the write-out channel for <code>.unified.isf</code>)</td>
+</tr>
+<tr>
+<td><code>export_auto_assignment_isf_file</code></td>
+<td>1735</td>
+<td>auto-assignment commands → <code>.isf</code> file (the write-out channel for <code>.auto_asg.isf</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Serialization of <code>setup_partial_design</code> / <code>finish_partial_design</code> (<code>isf_command.py</code>):</p>
+<pre><code class="language-text">design.setup_partial_design(&quot;pd&quot;)
+design.finish_partial_design(&quot;pd&quot;)
+</code></pre>
+<hr />
+<h2 id="3-the-replay-safety-contract-the-primary-acceptance-criterion-for-isf-in-this-repository">3. The replay-safety contract (the primary acceptance criterion for ISF in this repository)</h2>
+<h3 id="3-1-why-this-contract-exists">3.1 Why this contract exists</h3>
+<p>The fixed behavior of a unified build: load the persisted <code>&lt;design&gt;.peri.xml</code> → import one by one every ISF referenced by the project XML → <code>save()</code> writes back. <strong>Every compile replays</strong> (§1.5, <code>efx_run_pt_unified.py</code>). Hence every command in an ISF must be re-executable against a database where "the instances already exist".</p>
+<h3 id="3-2-idempotent-command-allowlist">3.2 Idempotent command allowlist</h3>
+<p>An ISF referenced by a project may contain only these commands (repeated execution changes nothing):</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Idempotence basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>design.set_property(...)</code></td>
+<td>property overwrite, <code>design.py:507</code></td>
+</tr>
+<tr>
+<td><code>design.assign_pkg_pin(...)</code></td>
+<td>re-assignment with <code>override=True</code>, <code>design.py:837</code></td>
+</tr>
+<tr>
+<td><code>design.assign_resource(...)</code></td>
+<td>re-assignment with <code>override=True</code>, <code>design.py:790</code></td>
+</tr>
+<tr>
+<td><code>design.set_device_property(...)</code></td>
+<td>device setting overwrite, <code>design.py:559</code></td>
+</tr>
+<tr>
+<td><code>design.set_iobank_voltage(...)</code></td>
+<td>sugar over set_device_property, <code>design.py:639</code></td>
+</tr>
+<tr>
+<td><code>design.set_gpio_unused_state(...)</code> / <code>set_mode_sel_name(...)</code></td>
+<td>overwrite-style, <code>design.py:1360</code> / <code>754</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>lock_property</code> is also registration-style (<code>design.py:1936</code>), but it is normally generated by the tool during the partial-design flow; hand-written ISF does not need it.</p>
+<h3 id="3-3-one-shot-bootstrap-create_">3.3 One-shot bootstrap: <code>create_*</code></h3>
+<p><code>create_block</code> and all <code>create_*_gpio</code> carry "create instance" semantics (<code>isf_command.py:177-181</code> — <code>is_creation_command</code> identifies creation commands by exactly these). Replaying them onto a peri.xml that already contains the same-named instance → <code>already exists</code>. Therefore:</p>
+<ul>
+<li><code>create_*</code> may run <strong>only once, while peri.xml does not yet exist (or right after a deliberate rebuild)</strong>;</li>
+<li>afterwards they must be removed (commented out) from any ISF that will be replayed.</li>
+</ul>
+<h3 id="3-4-the-already-exists-failure-chain-why-the-second-compile-always-fails">3.4 The <code>already exists</code> failure chain (why the second compile always fails)</h3>
+<p>When an ISF containing <code>create_*</code> is replayed, the underlying duplicate check throws at:</p>
+<table>
+<thead>
+<tr>
+<th>Throw site</th>
+<th>File:line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>database item duplicate check</td>
+<td><code>pt\bin\design\db_item.py:792</code></td>
+</tr>
+<tr>
+<td>design export/import layer</td>
+<td><code>pt\bin\design\design_export_import.py:2015</code></td>
+</tr>
+<tr>
+<td>service layer</td>
+<td><code>pt\bin\design\service.py:635</code></td>
+</tr>
+</tbody>
+</table>
+<p>The error looks like <code>GPIO/PLL ... exists</code>. It is a PTException (warning-level, execution continues), but as §1.3 showed — <strong>any issue fails the import</strong>, and the unified flow aborts at once. The symptom is "first compile PASS, second compile always fails".</p>
+<h3 id="3-5-the-project-side-contract-three-sdk-iron-rules">3.5 The project-side contract (three SDK iron rules)</h3>
+<ol>
+<li>The project XML references only <strong>replay-safe</strong> ISF files (the official samples do exactly this: §4.4).</li>
+<li>No build path (SDK / adapter / script) may <strong>delete</strong> <code>&lt;design&gt;.peri.xml</code> — it is a project source file; deleting and regenerating it is a workaround, not a fix.</li>
+<li>ISF and peri.xml go into version control together; every ISF change must pass the <code>import_gpio.bat --dry-run</code> self-check (§6).</li>
+</ol>
+<hr />
+<h2 id="4-the-official-two-file-pattern-full-listings-from-helloworld-unified">4. The official two-file pattern (full listings from helloworld-unified)</h2>
+<h3 id="4-1-directory-layout">4.1 Directory layout</h3>
+<p><code>C:\Efinity\2026.1\examples\helloworld-unified\</code> contains one two-file pair per device, 9 devices in total (<code>&lt;device&gt;_kit_manual.isf</code> + <code>&lt;device&gt;_kit_pins.isf</code>):</p>
+<pre><code class="language-text">T120F324  T120F576  T20F256  T8F81  Ti180J484
+Ti375C529 Ti375N1156 Ti60F225 Tz170J484
+</code></pre>
+<p>The naming is the semantics: <code>manual</code> (manual/bootstrap, contains create_*) + <code>pins</code> (replay-safe pins and properties).</p>
+<h3 id="4-2-ti60f225_kit_manual-isf-full-listing-bootstrap-use-46-lines">4.2 <code>Ti60F225_kit_manual.isf</code> full listing (bootstrap use, 46 lines)</h3>
+<pre><code class="language-python"># Efinity Interface Configuration
+# Version: 2025.1.110.4.9
+# Date: 2025-09-05 16:12
+#
+# Copyright (C) 2013 - 2025 Efinix Inc. All rights reserved.
+#
+# Device: Ti60F225
+# Package: 225-ball FBGA (final)
+# Project: new_tutorial
+# Configuration mode: active (x1)
+# Timing Model: C4 (final)
+
+
+# Create instance
+design.create_pll_input_clock_gpio(&quot;pll_refclk&quot;)
+design.create_block(&quot;pll_inst1&quot;,&quot;PLL&quot;)
+
+# Set property, non-defaults
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_EN&quot;,&quot;1&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT1_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT2_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT3_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT4_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_SOURCE&quot;,&quot;EXTERNAL&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_CONN_TYPE&quot;,&quot;gclk&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_DIV&quot;,&quot;110&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_DYNPHASE_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_PHASE_STEP&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_PIN&quot;,&quot;clk&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;EXT_CLK&quot;,&quot;EXT_CLK0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;IS_CLKOUT0_INVERTED&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;LOCKED_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;M&quot;,&quot;1&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;N&quot;,&quot;1&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;O&quot;,&quot;2&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;PHASE_SHIFT_ENA_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;PHASE_SHIFT_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;PHASE_SHIFT_SEL_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_FREQ&quot;,&quot;25.0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;RSTN_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;FEEDBACK_MODE&quot;,&quot;LOCAL&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;FEEDBACK_CLK&quot;,&quot;CLK0&quot;,&quot;PLL&quot;)
+
+# Set resource assignment
+design.assign_pkg_pin(&quot;pll_refclk&quot;,&quot;B2&quot;)
+design.assign_resource(&quot;pll_inst1&quot;,&quot;PLL_TL0&quot;,&quot;PLL&quot;)
+</code></pre>
+<p>Key points: <code>create_*</code> appears exactly once (lines 15-16); the PLL parameters are overwritten in full with <code>set_property</code> non-default values (including explicitly writing <code>""</code> for unconnected pin properties); the resource assignment sits at the end of the file.</p>
+<h3 id="4-3-ti60f225_kit_pins-isf-full-listing-replay-safe-26-lines">4.3 <code>Ti60F225_kit_pins.isf</code> full listing (replay-safe, 26 lines)</h3>
+<pre><code class="language-python"># Efinity Interface Configuration
+# Version: 2025.1.110.4.9
+# Date: 2025-09-05 16:12
+#
+# Copyright (C) 2013 - 2025 Efinix Inc. All rights reserved.
+#
+# Device: Ti60F225
+# Package: 225-ball FBGA (final)
+# Project: new_tutorial
+# Configuration mode: active (x1)
+# Timing Model: C4 (final)
+
+
+# Set property, non-defaults
+design.set_property(&quot;reverse&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)
+design.set_property(&quot;rstn&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)
+
+# Set resource assignment
+design.assign_pkg_pin(&quot;led[0]&quot;,&quot;K14&quot;)
+design.assign_pkg_pin(&quot;led[1]&quot;,&quot;J15&quot;)
+design.assign_pkg_pin(&quot;led[2]&quot;,&quot;H10&quot;)
+design.assign_pkg_pin(&quot;led[3]&quot;,&quot;J14&quot;)
+design.assign_pkg_pin(&quot;led[4]&quot;,&quot;H15&quot;)
+design.assign_pkg_pin(&quot;led[5]&quot;,&quot;H11&quot;)
+design.assign_pkg_pin(&quot;rstn&quot;,&quot;J13&quot;)
+design.assign_pkg_pin(&quot;reverse&quot;,&quot;K13&quot;)
+</code></pre>
+<p>Key points: <strong>no <code>create_*</code> at all</strong> — only non-default properties (weak pullup) and pin assignments; <code>led</code> bus members get their pins one by one in the <code>"led[N]"</code> form; all GPIO use <code>assign_pkg_pin</code>.</p>
+<h3 id="4-4-the-project-xml-references-only-the-pins-version">4.4 The project XML references only the pins version</h3>
+<p><code>helloworld.xml</code> (<code>xmlns:efx="http://www.efinixinc.com/enf_proj"</code>):</p>
+<pre><code class="language-xml">&lt;!-- helloworld.xml:8 --&gt;
+&lt;efx:design_info def_veri_version=&quot;verilog_2k&quot; def_vhdl_version=&quot;vhdl_2008&quot; unified_flow=&quot;true&quot;&gt;
+...
+&lt;!-- helloworld.xml:13-17 --&gt;
+&lt;efx:constraint_info&gt;
+    &lt;efx:sdc_file name=&quot;helloworld.sdc&quot;/&gt;
+    &lt;efx:inter_file name=&quot;&quot;/&gt;
+    &lt;efx:isf_file name=&quot;Ti60F225_kit_pins.isf&quot;/&gt;
+&lt;/efx:constraint_info&gt;
+</code></pre>
+<p><strong>This is the official answer to "which ISF does the project reference": the replay-safe pins version.</strong> The manual version exists for one-shot GUI/tool bootstrapping and is never referenced by the project. Also note: <code>unified_flow="true"</code> (<code>helloworld.xml:8</code>) is the unified-flow switch in this sample; <code>&lt;efx:inter_file name=""/&gt;</code> is empty in this GUI sample (this repository's project-XML rules for inter_file are in xml-project-schema.md).</p>
+<p>The header of <code>helloworld.peri.xml</code> (the signature of a PT-produced artifact):</p>
+<pre><code class="language-xml">xmlns:efxpt=&quot;http://www.efinixinc.com/peri_design_db&quot;
+xsi:schemaLocation=&quot;... peri_design_db.xsd&quot;
+</code></pre>
+<p>It contains <code>efxpt:iobank</code> elements (carrying <code>iostd</code>, <code>mode_sel_name</code>) — the set/assign results of an ISF are ultimately persisted here.</p>
+<h3 id="4-5-the-bootstrap-ritual-the-sdk-standard-bootstrapping-procedure">4.5 The bootstrap ritual (the SDK standard bootstrapping procedure)</h3>
+<p>Fixed steps for a new project / new baseline (based on §3 + §4):</p>
+<ol>
+<li>Write all <code>set_property</code> / <code>assign_*</code> lines, and <strong>temporarily enable</strong> the <code>create_*</code> lines;</li>
+<li>compile once (PT generates <code>&lt;design&gt;.peri.xml</code>) → <strong>immediately comment out every <code>create_*</code></strong>, with a one-line side note (when it was enabled);</li>
+<li><strong>the replay compile must PASS again</strong> — only the "bootstrap + replay" double PASS counts as ISF acceptance;</li>
+<li>commit peri.xml together with the ISF.</li>
+</ol>
+<p>The authoritative template source is always "copy and adapt": <code>$EFINITY_HOME/examples/</code> and the bitstream-verified baseline demos in the catalog — never invent from scratch.</p>
+<hr />
+<h2 id="5-isfbuilder-export-rules-peri-xml-isf-auto-export">5. ISFBuilder export rules (peri.xml → ISF auto-export)</h2>
+<p>This chapter answers "what rules the tool follows when exporting peri.xml into ISF". Source: <code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_exporter.py</code> (46 classes).</p>
+<h3 id="5-1-exporter-architecture">5.1 Exporter architecture</h3>
+<ul>
+<li>Top-level <code>DesignISFExporter</code> (<code>isf_exporter.py:94</code>), line handle <code>design_api_handle="design"</code> — every exported line starts with <code>design.</code>;</li>
+<li>one <code>ISFBuilder</code> subclass per block type, converting that type's instances into a command-line sequence;</li>
+<li>line text is generated by the <code>format_str()</code> of each command class in <code>isf_command.py</code> (§5.8).</li>
+</ul>
+<h3 id="5-2-supported-block-types-build_supported_block_type-isf_exporter-py-143-217">5.2 Supported block types (<code>build_supported_block_type</code>, <code>isf_exporter.py:143-217</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Always supported</th>
+<th>Device-dependent (appended per device)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GPIO</code> / <code>PLL</code> / <code>IOBANK</code> / <code>JTAG</code></td>
+<td><code>OSC</code>, <code>MIPI_*</code>, <code>LVDS_*</code>, <code>SEU</code>, <code>RU</code>, <code>HYPERRAM</code>, <code>SPI_FLASH</code>, <code>DDR</code>, <code>PLL_SSC</code>, <code>EXT_FLASH</code>, <code>CLKMUX</code> (Tesseract only), <code>SOC</code>, <code>QUAD_PCIE</code>, <code>10GBASE_KR</code>, <code>SGMII</code>, <code>PMA_DIRECT</code>, <code>CM</code></td>
+</tr>
+</tbody>
+</table>
+<p>Compared with the 5 device-setting types of §2.3 (<code>int_device_setting.py:79-108</code>): IOBANK is always present; SEU/RU/EXT_FLASH/CLKMUX appear per device capability.</p>
+<h3 id="5-3-builder-output-order-build_block_builder_list-isf_exporter-py-218-235">5.3 Builder output order (<code>build_block_builder_list</code>, <code>isf_exporter.py:218-235</code>)</h3>
+<p>The section order of the exported text = the builder registration order:</p>
+<pre><code class="language-text">gpio → cm → pll → osc → jtag → mipi_dphy_rx → mipi_dphy_tx
+→ lvds_rx → lvds_tx → lvds_bidir → mipi_hard_dphy_tx → mipi_hard_dphy_rx
+→ hyper_ram → spi_flash → ddr → mipi_rx → mipi_tx → pll_ssc
+→ soc → pcie → lane10g → lane1g → raw_serdes
+</code></pre>
+<h3 id="5-4-the-six-pll-builder-variants">5.4 The six PLL builder variants</h3>
+<p>The PLL builder selects among six variants by device family (<code>isf_exporter.py:299-326</code>) — different Titanium/Trion generations have different PLL property sets, so the PLL set_property lists in official samples <strong>must not be copied across families</strong>.</p>
+<h3 id="5-5-section-comments-and-file-header-the-fixed-skeleton-of-exported-text">5.5 Section comments and file header (the fixed skeleton of exported text)</h3>
+<table>
+<thead>
+<tr>
+<th>Text element</th>
+<th>Generated at</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File header <code># Efinity Interface Configuration</code></td>
+<td><code>ExportGPIODesign.header_title</code>, <code>isf_exporter.py:633-640</code></td>
+</tr>
+<tr>
+<td><code># Device setting</code></td>
+<td><code>isf_exporter.py:541</code></td>
+</tr>
+<tr>
+<td><code>\n# Create instance</code></td>
+<td><code>isf_exporter.py:591</code></td>
+</tr>
+<tr>
+<td><code>\n# Set property, non-defaults</code></td>
+<td><code>isf_exporter.py:605</code></td>
+</tr>
+<tr>
+<td><code>\n# Set resource assignment</code></td>
+<td><code>isf_exporter.py:619</code></td>
+</tr>
+</tbody>
+</table>
+<p>Hand-written ISF should follow these four comment classes to stay consistent with tool export (the listings in §4.2/§4.3 use exactly this skeleton).</p>
+<h3 id="5-6-gpioisfbuilder-details-isf_exporter-py-664">5.6 GPIOISFBuilder details (<code>isf_exporter.py:664</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Evidence / notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Command map <code>cmd2str_map</code> covers all create GPIO commands</td>
+<td><code>isf_exporter.py:695-712</code></td>
+</tr>
+<tr>
+<td>⚠️ the <code>gpio_reg_ctrl</code> entry is <strong>commented out</strong>: <code>#CommandType.gpio_reg_ctrl: "create_regional_control_gpio"</code> — that API <strong>does not exist</strong></td>
+<td>comment inside <code>isf_exporter.py:695-712</code>. Never write <code>create_regional_control_gpio</code> in an ISF (AttributeError, §1.3)</td>
+</tr>
+<tr>
+<td>Instances are output sorted by name</td>
+<td>same file</td>
+</tr>
+<tr>
+<td>Bus properties are exported from the <strong>template member</strong> (the first member); other members get their own line only when they differ from the template</td>
+<td>same file (this is why the pins listing has <code>led[N]</code> pin lines but no per-member property lines)</td>
+</tr>
+<tr>
+<td><strong>GPIO pin assignments are exported as <code>assign_pkg_pin</code></strong> (not assign_resource)</td>
+<td><code>isf_exporter.py:837-853</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-7-blockisfbuilder-isf_exporter-py-1247-the-base-class-of-all-hard-ip-builders">5.7 BlockISFBuilder (<code>isf_exporter.py:1247</code>, the base class of all hard-IP builders)</h3>
+<ul>
+<li>Command sequence: <code>create_block</code> → <code>set_property</code> → <code>assign_resource</code>;</li>
+<li>instances are likewise sorted by name.</li>
+</ul>
+<h3 id="5-8-text-line-format-quick-reference-isf_command-py-format_str">5.8 Text line format quick reference (<code>isf_command.py</code> <code>format_str</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Command class</th>
+<th>Generated text (fixed format)</th>
+<th>isf_command.py line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISFSetupPartialDesignCommand</td>
+<td><code>design.setup_partial_design("pd")</code></td>
+<td>top classes</td>
+</tr>
+<tr>
+<td>ISFFinishPartialDesignCommand</td>
+<td><code>design.finish_partial_design("pd")</code></td>
+<td>top classes</td>
+</tr>
+<tr>
+<td>Create GPIO (scalar)</td>
+<td><code>design.create_input_gpio("name")</code></td>
+<td>45-48</td>
+</tr>
+<tr>
+<td>Create GPIO (bus)</td>
+<td><code>design.create_input_gpio("name", msb, lsb)</code></td>
+<td>45-48</td>
+</tr>
+<tr>
+<td>ISFSetGpioUnusedStateCommand</td>
+<td><code>design.set_gpio_unused_state("value")</code></td>
+<td>92</td>
+</tr>
+<tr>
+<td>ISFCreateBlockCommand</td>
+<td><code>design.create_block("name","TYPE")</code> / with kwargs</td>
+<td>102-108</td>
+</tr>
+<tr>
+<td>ISFSetPropertyCommand</td>
+<td><code>design.set_property("block","prop","value","type")</code> (always 4 positional arguments)</td>
+<td>147</td>
+</tr>
+<tr>
+<td>ISFAssignResourceCommand</td>
+<td><code>design.assign_resource("block","res","type")</code> (always 3 positional arguments)</td>
+<td>156</td>
+</tr>
+<tr>
+<td>ISFAssignPkgPinCommand</td>
+<td><code>design.assign_pkg_pin("block","pin")</code> (always 2 positional arguments)</td>
+<td>164</td>
+</tr>
+<tr>
+<td>ISFLockPropertyCommand</td>
+<td><code>design.lock_property("block","prop","value","type","checksum")</code></td>
+<td>175</td>
+</tr>
+</tbody>
+</table>
+<p>Additional details:</p>
+<ul>
+<li>When parsing with <code>from_str</code>, only <code>prop_value</code> may contain spaces and square brackets: <code>[\w\s\.\[\]]*</code> (<code>isf_command.py:130</code>);</li>
+<li><code>is_creation_command</code> = <code>ISFCreateBlockCommand</code> + <code>ISFAbstractCreateGPIOCommand</code> (<code>isf_command.py:177-181</code>);</li>
+<li>Known minor defect: <code>get_gpio_type</code> (<code>isf_command.py:186-189</code>) checks <code>ISFCreateOutputGPIOCommand</code> twice, making the INOUT branch unreachable — the impact is limited to parse-side type classification and does not affect the written format.</li>
+</ul>
+<hr />
+<h2 id="6-the-self-check-flow-import_gpio-bat-dry-run">6. The self-check flow: <code>import_gpio.bat --dry-run</code></h2>
+<h3 id="6-1-tool-chain">6.1 Tool chain</h3>
+<pre><code class="language-text">sdk\cli\import_gpio.bat (environment setup)
+  └─ python sdk\cli\import_gpio_cli.py (arguments and exit-code management)
+       ├─ .isf → DesignAPI.import_design(&lt;path&gt;, gen_issue_csv=True)   # import_gpio_cli.py:104
+       └─ .csv → ImportGPIODesign backend (same as the GUI wizard)     # import_gpio_cli.py:154
+</code></pre>
+<p><code>import_gpio.bat</code> is responsible for: locating <code>EFINITY_HOME</code> (default <code>C:\Efinity\2026.1</code>), setting <code>PYTHONHOME</code> / <code>EFXPT_HOME</code>, exiting with <code>exit 3</code> when Python is not found, and forwarding all arguments while returning the real exit code via <code>exit /b %errorlevel%</code>. It explicitly declares "This file is NOT a parser" — judgment is delegated entirely to Efinity's own <code>DesignAPI</code>.</p>
+<h3 id="6-2-usage">6.2 Usage</h3>
+<pre><code class="language-powershell"># Dry run: parse and import, produce the report, do not write back peri.xml
+sdk\cli\import_gpio.bat --peri &lt;project&gt;.peri.xml --input &lt;file&gt;.isf --dry-run
+</code></pre>
+<h3 id="6-3-exit-code-semantics-import_gpio_cli-py">6.3 Exit-code semantics (<code>import_gpio_cli.py</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Exit code</th>
+<th>Meaning</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>import OK, no issues</td>
+<td>pass</td>
+</tr>
+<tr>
+<td>1</td>
+<td>import error (issues present, including warning-level)</td>
+<td>must fix</td>
+</tr>
+<tr>
+<td>2</td>
+<td>warnings only, requires <code>--force</code> (<strong>CSV path only</strong>)</td>
+<td>manual confirmation</td>
+</tr>
+<tr>
+<td>3</td>
+<td>environment/infrastructure error (missing Python, etc.)</td>
+<td>fix the environment</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Echoing §1.3: on the .isf path, a non-empty issue_reg is already a failure (exit 1); warnings cannot be "tolerated through".</p>
+</blockquote>
+<h3 id="6-4-write-back-behavior">6.4 Write-back behavior</h3>
+<ul>
+<li><code>--dry-run</code>: parse and report only, <strong>no write-back</strong> to peri.xml (<code>import_gpio_cli.py:243-245</code>);</li>
+<li>non-dry-run: before writing back, a backup is saved as <code>&lt;name&gt;.bak_pre_import</code> (<code>import_gpio_cli.py:216-217</code>).</li>
+</ul>
+<h3 id="6-5-ci-requirements-mandatory">6.5 CI requirements (mandatory)</h3>
+<ul>
+<li>Every <code>constraints/*.isf</code> <strong>must</strong> pass <code>--dry-run</code> (exit 0) before commit;</li>
+<li>CI runs automatically on every <code>constraints/*.isf</code> change;</li>
+<li>but <code>--dry-run</code> only validates <strong>syntax and import legality</strong>; it cannot replace the "bootstrap + replay double PASS" replay verification of §4.5 (a dry run cannot uncover the timing precondition behind <code>already exists</code> — it does not simulate a full build).</li>
+</ul>
+<hr />
+<h2 id="7-isf-artifacts-in-the-unified-flow">7. ISF artifacts in the unified flow</h2>
+<h3 id="7-1-efx_run_pt_unified-py-flow-steps-pt-bin-efx_run_pt_unified-py">7.1 <code>efx_run_pt_unified.py</code> flow steps (<code>pt\bin\efx_run_pt_unified.py</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Behavior</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>periphery netlist → ISF commands → writes <code>{design}.unified.isf</code>, <strong>inserted at peri_scripts position 0</strong> (imported first)</td>
+<td>243-247 (with <code>design.py:1656,1686-1687</code>)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>replays each project ISF via <code>import_design(script)</code>; any failure → break → whole flow ERROR</td>
+<td>249-263</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>auto_assign_resource()</code>; if assignments are planned → writes <code>{design}.auto_asg.isf</code></td>
+<td>273-279 (<code>design.py:1709</code>)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>design_api.save()</code> writes the merged peri.xml back</td>
+<td>281</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>check_design()</code> gate (Design Check)</td>
+<td>283-289</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>generate()</code> produces the PT results consumed by pnr</td>
+<td>291-293</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-2-semantics-of-design-unified-isf">7.2 Semantics of <code>{design}.unified.isf</code></h3>
+<ul>
+<li>Content: the <strong>current periphery netlist</strong> (the GPIO/PLL etc. inferred from RTL by the synthesizer) deserialized into ISF commands, wrapped in <code>setup_partial_design</code> / <code>finish_partial_design</code>;</li>
+<li>Effect: it first deletes the same-named instances already present from the netlist (partial design), then rebuilds them from the netlist — this is the mechanism behind "RTL ports automatically enter the interface database";</li>
+<li>it is a <strong>tool-generated artifact</strong>, placed at the head of the import queue; never edit it by hand.</li>
+</ul>
+<h3 id="7-3-semantics-of-design-auto_asg-isf">7.3 Semantics of <code>{design}.auto_asg.isf</code></h3>
+<ul>
+<li>Content: the planning output of <code>auto_assign_resource</code> (auto assignments not yet persisted into peri.xml), expressed as <code>design.set_property</code> / <code>design.assign_*</code> lines;</li>
+<li>Consumption: later imports may skip its <code>design.assign*</code> lines with <code>--skip-resasg</code> (<code>isf_importer.py:231-233</code>);</li>
+<li>it is likewise a <strong>tool-generated artifact</strong>.</li>
+</ul>
+<h3 id="7-4-design-peri-xml">7.4 <code>&lt;design&gt;.peri.xml</code></h3>
+<ul>
+<li>Namespace <code>efxpt:design_db</code> (schema <code>peri_design_db.xsd</code>, see the header listing in §4.4);</li>
+<li><strong>project source file</strong>: it must survive the build and be version-controlled; only the Efinity PT tools/GUI can produce it;</li>
+<li>hand-editing has neither schema guarantees nor replay semantics — always express intent through ISF.</li>
+</ul>
+<hr />
+<h2 id="8-known-pitfalls-revised-per-new-evidence">8. Known pitfalls (revised per new evidence)</h2>
+<h3 id="8-1-writing-isf-as-xml-inventing-tags-invalid-syntax">8.1 Writing ISF as XML / inventing tags → "invalid syntax"</h3>
+<p>ISF is Python API source. XML such as <code>&lt;efx:gpio&gt;</code> or <code>&lt;EFX_PERI_INTERFACE&gt;</code> inside a <code>.isf</code> is parsed as Python; the first line raises <code>SyntaxError</code> → the whole file aborts (§1.3). Historical lesson: a 46 KB XML renamed <code>.peri.isf</code> was rejected by the importer on the spot, and the defect lay dormant for months undetected — <strong>because nothing ever actually imported it</strong>. The countermeasure is the mandatory self-check in §6.</p>
+<h3 id="8-2-replaying-an-isf-containing-create_-gpio-pll-exists-the-second-compile-always-fails">8.2 Replaying an ISF containing <code>create_*</code> → <code>GPIO/PLL ... exists</code>; the second compile always fails</h3>
+<p>Mechanism chain: create semantics + replay on every build (§3.1) → duplicate check failure (<code>db_item.py:792</code>, <code>design_export_import.py:2015</code>, <code>service.py:635</code>) → PTException (warning-level, continues) → a non-empty issue registry fails the import (§1.3) → unified flow aborts. Countermeasure: the §4.5 bootstrap ritual (comment out <code>create_*</code> right after bootstrapping; the replay compile must PASS again).</p>
+<h3 id="8-3-setting-resources-or-pins-with-set_property">8.3 Setting resources or pins with <code>set_property</code></h3>
+<p>The <code>set_property</code> docstring forbids it explicitly (<code>design.py:507</code>). Resources and pins have dedicated channels, <code>assign_resource</code> / <code>assign_pkg_pin</code>; properties sent through the wrong channel may be overwritten by Design Check or later assignments.</p>
+<h3 id="8-4-bus-vs-scalar-confusion">8.4 Bus vs. scalar confusion</h3>
+<ul>
+<li><code>msb == lsb</code> means scalar; anything else is a bus (<code>design.py:1088-1091</code>);</li>
+<li>a bus GPIO is created with <code>create_output_gpio("led", 5, 0)</code> — <strong>never</strong> split it into per-bit <code>create_output_gpio("led[0]", 0, 0)</code> calls;</li>
+<li>pin assignments for members use the <code>"led[N]"</code> form: <code>design.assign_pkg_pin("led[0]","K14")</code> (listing in §4.3);</li>
+<li>at the textual serialization level: a scalar create line has no msb/lsb; a bus create line carries two numbers (§5.8).</li>
+</ul>
+<h3 id="8-5-isf-instance-names-not-matching-rtl-port-names">8.5 ISF instance names not matching RTL port names</h3>
+<p>In the unified flow, GPIO instance names come from RTL top-level ports (rebuilt via <code>.unified.isf</code>, §7.2). When the names used in set/assign do not match the port names, <code>set_property</code> attaches to a wrong or invalid object, and <code>lock_property</code> even returns None silently (<code>design.py:1936</code>) — the error may stay hidden until Design Check.</p>
+<h3 id="8-6-a-warning-level-issue-is-still-a-failure">8.6 "A warning-level issue is still a failure"</h3>
+<p><code>PTException</code> is warning-level in the importer and execution continues, but <code>import_isf</code> looks only at the issue count (§1.3). <strong>Never</strong> treat an import whose log shows warnings as a success; the exit code / flow status is the only yardstick.</p>
+<h3 id="8-7-create_regional_control_gpio-does-not-exist">8.7 <code>create_regional_control_gpio</code> does not exist</h3>
+<p>The exporter map has the <code>gpio_reg_ctrl</code> entry commented out (<code>isf_exporter.py:695-712</code>); the API was never provided. Writing it = <code>AttributeError</code> (error-level issue, §1.3) → import failure.</p>
+<h3 id="8-8-textual-isf-has-limited-value-expressiveness">8.8 Textual ISF has limited value expressiveness</h3>
+<p><code>from_str</code> allows only letters/digits/underscores/whitespace/dots/brackets in <code>prop_value</code> (<code>isf_command.py:130</code>). Complex values containing commas or quotes cannot be expressed as a text line; empty-string values are legal (in the §4.2 listing, <code>LOCKED_PIN","","PLL"</code>).</p>
+<h3 id="8-9-hand-writing-hand-editing-peri-xml">8.9 Hand-writing / hand-editing <code>.peri.xml</code></h3>
+<p><code>efxpt:design_db</code> is a tool-private database that only the PT tools/GUI can produce (§7.4). Any build path that deletes or regenerates peri.xml is an illegitimate workaround; the three SDK iron rules are in §3.5.</p>
+<h3 id="8-10-bank-voltage-vs-io-standard-matching-kept-from-the-old-edition-ti180-field-evidence">8.10 Bank voltage vs. IO standard matching (kept from the old edition; Ti180 field evidence)</h3>
+<ul>
+<li>All IOs in one bank must share the same voltage standard; the bank voltage is declared with <code>design.set_iobank_voltage("TL","3.3")</code> (§2.3);</li>
+<li>a MIPI bank must be 1.2V, and MIPI and LVDS cannot share a bank (different voltage requirements) → violations raise <code>io_bank_rule_voltage_assignment</code>;</li>
+<li>inside an HSIO bank, at least one pair of unassigned IOs must be left between GPIO/LVDS/MIPI as isolation;</li>
+<li>Ti60ES (engineering sample) does not support 2.5V; only production parts do;</li>
+<li>verified baseline: the bank voltage declarations in the Ti180 catalog project XML (<code>opx_333x642_b40_d20_tj180a484s.xml</code>) are consistent with the rules above.</li>
+</ul>
+<h3 id="8-11-a-pll-can-only-be-created-in-the-isf-pair-with-the-4-2-template">8.11 A PLL can only be created in the ISF (pair with the §4.2 template)</h3>
+<p>The RTL declares only ports (<code>pll_clk_out</code> / <code>pll_locked</code>); the PLL instance and all its parameters are expressed through ISF <code>create_block("pll_inst1","PLL")</code> + <code>set_property</code>, with the resource via <code>assign_resource("pll_inst1","PLL_TL0","PLL")</code>. PLL output dividers can only be powers of two, and phase moves in 45° steps (see optimization-guide.md).</p>
+<hr />
+<h2 id="appendix-a-minimal-legal-isf-templates">Appendix A: Minimal legal ISF templates</h2>
+<h3 id="a-1-bootstrap-template-enable-create_-only-while-peri-xml-does-not-exist-comment-out-after-bootstrapping">A.1 Bootstrap template (enable create_* only while peri.xml does not exist; comment out after bootstrapping)</h3>
+<pre><code class="language-python"># ==== bootstrap (one-shot): enable only while &lt;design&gt;.peri.xml does not exist; comment out immediately after bootstrapping ====
+# design.create_pll_input_clock_gpio(&quot;pll_refclk&quot;)
+# design.create_block(&quot;pll_inst1&quot;,&quot;PLL&quot;)
+
+# ==== Replay-safe zone (replayed on every compile) ====
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_SOURCE&quot;,&quot;EXTERNAL&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_FREQ&quot;,&quot;25.0&quot;,&quot;PLL&quot;)
+design.assign_pkg_pin(&quot;pll_refclk&quot;,&quot;B2&quot;)
+design.assign_resource(&quot;pll_inst1&quot;,&quot;PLL_TL0&quot;,&quot;PLL&quot;)
+</code></pre>
+<h3 id="a-2-pins-template-the-form-referenced-by-the-project-xml-aligned-with-4-3">A.2 Pins template (the form referenced by the project XML; aligned with §4.3)</h3>
+<pre><code class="language-python"># Set property, non-defaults
+design.set_property(&quot;rstn&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)
+
+# Set resource assignment
+design.assign_pkg_pin(&quot;led[0]&quot;,&quot;K14&quot;)
+design.assign_pkg_pin(&quot;rstn&quot;,&quot;J13&quot;)
+</code></pre>
+<h2 id="appendix-b-evidence-file-index">Appendix B: Evidence file index</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All DesignAPI methods</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code></td>
+</tr>
+<tr>
+<td>ISF importer (exec / error classification)</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_importer.py</code></td>
+</tr>
+<tr>
+<td>ISF exporter (46 builders)</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_exporter.py</code></td>
+</tr>
+<tr>
+<td>Command text serialization</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\isf_command.py</code></td>
+</tr>
+<tr>
+<td>Device setting capability table</td>
+<td><code>C:\Efinity\2026.1\pt\bin\...\int_device_setting.py</code></td>
+</tr>
+<tr>
+<td>Unified flow driver</td>
+<td><code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code></td>
+</tr>
+<tr>
+<td>Official dual ISF + project XML</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code></td>
+</tr>
+<tr>
+<td><code>already exists</code> throw sites</td>
+<td><code>pt\bin\design\db_item.py:792</code>, <code>design_export_import.py:2015</code>, <code>service.py:635</code></td>
+</tr>
+<tr>
+<td>SDK self-check tool</td>
+<td><code>c:\work\awesomsdk\sdk\cli\import_gpio.bat</code> / <code>import_gpio_cli.py</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix-c-isf-acceptance-checklist-the-operational-merge-of-3-4-6">Appendix C: ISF acceptance checklist (the operational merge of §3/§4/§6)</h2>
+<ul>
+<li>[ ] Every <code>constraints/*.isf</code> passes <code>sdk\cli\import_gpio.bat --dry-run</code> (exit 0)</li>
+<li>[ ] Every ISF referenced by the project XML contains only idempotent commands (the §3.2 allowlist); <code>create_*</code> exists only in the one-shot bootstrap and is commented out afterwards</li>
+<li>[ ] Every new baseline has completed the "bootstrap compile + replay compile" double PASS (§4.5)</li>
+<li>[ ] <code>&lt;design&gt;.peri.xml</code> exists, survives the build, and is version-controlled together with the ISF</li>
+<li>[ ] Project instance names exactly match the RTL port / hard-IP names (§8.5)</li>
+<li>[ ] Bus GPIOs are not created as scalars; pin assignments use the <code>"bus[N]"</code> form (§8.4)</li>
+<li>[ ] Bank voltages are declared and all IOs are compatible; MIPI bank = 1.2V, not shared with LVDS (§8.10)</li>
+</ul></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

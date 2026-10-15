@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 片上调试指南</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>标记信号、两次编译、触发采集、VIO 与调试痕迹清理的完整闭环。</span>
+<code>efinity/Efinity-片上调试指南.md</code>
+<a href="../../../efinity/Efinity-片上调试指南.md">Markdown 源文件</a></p>
+<h1>Efinity 片上调试指南</h1></header>
+<main class="article"><h1 id="efinity-片上调试指南">Efinity 片上调试指南</h1>
+<blockquote>
+<p><strong>版本</strong>：v1.0　<strong>适用 SDK</strong>：v1.0.0（Efinity Adapter）
+<strong>更新日期</strong>：2026-09-30</p>
+</blockquote>
+<p>Efinity Adapter 的 Debug 页提供不打开 Efinity GUI 的片上调试闭环：标记信号 → 两次编译 → 烧录 → 扫描设备 → 配置触发条件 → 采集波形。全程通过 <code>evoverse_dbg.py</code> 桥接 Efinity 官方调试 API，结果以 VCD 波形文件交付。</p>
+<h2 id="1-两个核心概念">1. 两个核心概念</h2>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>全称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LA（逻辑分析仪）</strong></td>
+<td>Logic Analyzer</td>
+<td>像 FPGA 内部的示波器：按采样时钟连续记录信号值，触发条件满足时把整段历史波形导出为 VCD。用于"信号在时间轴上怎么变化"。</td>
+</tr>
+<tr>
+<td><strong>VIO（虚拟输入输出）</strong></td>
+<td>Virtual I/O</td>
+<td>不占板卡引脚的虚拟开关/指示灯：输出探针可以在运行中写入值驱动 FPGA 内部信号，输入探针可以实时读取当前值。用于"手动拨一下看反应"。</td>
+</tr>
+</tbody>
+</table>
+<p>mark_debug 调试流程默认使用 LA（每信号采样记录）；VIO 核心需要在调试配置文件中手动定义，或在 AI 辅助下生成。</p>
+<h2 id="2-准备条件">2. 准备条件</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>扩展</td>
+<td>evoverse-sdk 与 evoverse-efinity-adapter 已安装</td>
+</tr>
+<tr>
+<td>Efinity</td>
+<td>2026.1+，路径已配置在核心设置 <code>evoverse.efinityPath</code></td>
+</tr>
+<tr>
+<td>硬件</td>
+<td>板卡 JTAG 已连接，下载线驱动正常</td>
+</tr>
+<tr>
+<td>工程</td>
+<td>已打开一个 Efinity FPGA 工程（有可编译的 RTL）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-完整流程-七步">3. 完整流程（七步）</h2>
+<p>Debug 页顶部有同样的流程指南。每一步也可以直接交给 AI（见 §5）。</p>
+<h3 id="第-1-步-标记信号">第 1 步 · 标记信号</h3>
+<p>在 RTL 编辑器中<strong>选中信号名</strong>（<code>pattern</code>、<code>data_valid</code> 等），右键 → <strong>Add Signal to Efinity Debug</strong>。命令会在声明前写入综合属性：</p>
+<pre><code class="language-verilog">(* mark_debug = &quot;true&quot; *) wire [7:0] pattern;
+</code></pre>
+<ul>
+<li>同一信号再次执行会提示已存在；<code>Remove Signal from Efinity Debug</code> 撤销标记（保留其他综合属性如 <code>keep</code>）。</li>
+<li>手写 <code>(* mark_debug = "true" *)</code> 效果相同——右键命令只是自动化的编辑。</li>
+<li>右键菜单要求：有选中文本 + 文件扩展名为 <code>.v/.sv/.vh/.svh</code>。</li>
+<li><code>Prepare Selection for Efinity Debug</code> = 标记后直接跳到 Debug 页。</li>
+</ul>
+<h3 id="第-2-步-第一次编译-生成调试配置文件">第 2 步 · 第一次编译（生成调试配置文件）</h3>
+<p>点击 Build。综合器（<code>enable-mark-debug</code> 选项）收集所有标记信号，在 <code>outflow/debug_profile.mark_debug.json</code> 生成调试配置：包含探针列表、位宽、采样时钟和默认采样深度。</p>
+<blockquote>
+<p><strong>为什么必须先编译一次</strong>：调试核的自动实例化要求配置文件在编译开始前已存在（Efinity 机制，见 <a href="Efinity-Debugger参考.html">Efinity Debugger 参考</a> §8）。首次就开启自动实例化会导致编译崩溃（<code>elab.vdb</code> 缺失）。Adapter 已做前置校验拦截这种用法。</p>
+</blockquote>
+<h3 id="第-3-步-启用调试-debug-页-1-调试配置">第 3 步 · 启用调试（Debug 页 · 1 · 调试配置）</h3>
+<ul>
+<li>勾选<strong>自动实例化</strong>，配置文件路径自动填为 <code>outflow/debug_profile.mark_debug.json</code>。可先"预览配置变更"再"应用"。</li>
+<li><strong>采样深度</strong>（默认 1024）：LA 缓冲一次采集记录的采样点数，越大越占 BRAM。修改后需重新编译生效。</li>
+<li><strong>采样时钟</strong>：从综合结果自动识别（探针所属时钟域），只读展示。</li>
+</ul>
+<h3 id="第-4-步-第二次编译-把调试核编进硬件">第 4 步 · 第二次编译（把调试核编进硬件）</h3>
+<p>再点一次 Build。编译完成后 Debug 页 profile 状态应显示 <strong>✓ debug cores compiled</strong>，<code>work_dbg/</code> 目录出现调试核 RTL。</p>
+<h3 id="第-5-步-烧录并扫描设备">第 5 步 · 烧录并扫描设备</h3>
+<p>Debug 页 <strong>2 · 烧录</strong> 下载位流，<strong>3 · 扫描设备</strong> 扫描 FTDI/JTAG 链，确认硬件里的调试核数量。探针表此时显示已标记信号。</p>
+<h3 id="第-6-步-配置触发条件并采集">第 6 步 · 配置触发条件并采集</h3>
+<p><strong>4 · 调试探针</strong> 每行一个信号：</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>比较条件</td>
+<td><code>等于</code> / <code>不等于</code> / <code>&lt;</code> / <code>&lt;=</code> / <code>&gt;</code> / <code>&gt;=</code>；1 位信号另有 <code>不触发</code>（该信号不参与）</td>
+</tr>
+<tr>
+<td>匹配值</td>
+<td>比较目标，如 <code>0xA5</code></td>
+</tr>
+<tr>
+<td>掩码</td>
+<td>默认全 1（所有位参与）；置 0 的位被忽略</td>
+</tr>
+</tbody>
+</table>
+<p><strong>5 · 采集</strong>：
+- <strong>条件触发采集</strong>：点击时收集表中条件下发给硬件，条件同时满足才开始记录，完成后自动导出 VCD 并打开。
+- <strong>立即采集</strong>：不等条件，立刻记录当前状态——排查"信号是否有变化"先用它。</p>
+<p>多信号条件之间是<strong>与</strong>关系：所有信号条件同时满足才触发。</p>
+<h3 id="第-7-步-收尾-调试版本管理">第 7 步 · 收尾（调试版本管理）</h3>
+<ul>
+<li><strong>清除调试痕迹</strong>：一键回到未开启调试的基线——移除全部 <code>(* mark_debug *)</code> 标记、重置调试配置（自动实例化=关、profile=NONE）、删除调试配置文件和 <code>work_dbg/</code> 目录。会弹确认框；已烧录位流中的调试核要重新编译后才消失。</li>
+<li><strong>分支出干净基线</strong>：把工程复制到一个新文件夹并清除副本的调试痕迹，原调试版工程原样保留——适合"保留一个带调试的版本，另起炉灶测其他内容"。</li>
+</ul>
+<h2 id="4-debug-页区块速查">4. Debug 页区块速查</h2>
+<table>
+<thead>
+<tr>
+<th>区块</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>调试流程指南</td>
+<td>七步流程 + AI 辅助说明</td>
+</tr>
+<tr>
+<td>1 · 调试配置</td>
+<td>profile 状态、自动实例化、采样时钟/采样深度、预览/应用</td>
+</tr>
+<tr>
+<td>2 · 烧录</td>
+<td>下载位流到 FPGA</td>
+</tr>
+<tr>
+<td>3 · 扫描设备</td>
+<td>FTDI/JTAG 扫描，读取硬件调试核</td>
+</tr>
+<tr>
+<td>4 · 调试探针</td>
+<td>LA/VIO 探针表 + 触发条件（比较/匹配值/掩码）</td>
+</tr>
+<tr>
+<td>5 · 采集</td>
+<td>条件触发采集 / 立即采集</td>
+</tr>
+<tr>
+<td>6 · 虚拟 IO (VIO)</td>
+<td>读取全部探针值；输出探针写入（有方向与宽度校验 + 确认）</td>
+</tr>
+<tr>
+<td>采集结果</td>
+<td>采样点数、状态、时间戳、VCD 路径</td>
+</tr>
+<tr>
+<td>调试版本管理</td>
+<td>清除调试痕迹 / 分支出干净基线</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-ai-辅助路径">5. AI 辅助路径</h2>
+<p>Debug 页只做状态查看、触发配置和采集；改 RTL、改配置、跑编译都可以直接在 Trae 对话里用自然语言驱动，例如：</p>
+<blockquote>
+<p>"给 pattern 和 data_valid 加调试标记，采样深度改成 4096，编译并烧录。"</p>
+<p>"帮我清除这个工程的所有调试痕迹，再分支出一个干净副本叫 blink_test。"</p>
+</blockquote>
+<p>AI 会直接编辑 RTL/工程 XML 并调用 SDK 编译命令；危险操作（写 VIO、应用配置）仍走带确认的命令通道。</p>
+<h2 id="6-命令速查">6. 命令速查</h2>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Add Signal to Efinity Debug</code></td>
+<td>编辑器右键（需选中文本）</td>
+</tr>
+<tr>
+<td><code>Remove Signal from Efinity Debug</code></td>
+<td>编辑器右键</td>
+</tr>
+<tr>
+<td><code>Prepare Selection for Efinity Debug</code></td>
+<td>编辑器右键（标记并跳转 Debug 页）</td>
+</tr>
+<tr>
+<td><code>EvoVerse: Open Efinity Workspace</code></td>
+<td>命令面板（Debug 页在左侧 Workbench）</td>
+</tr>
+<tr>
+<td><code>Efinity: Scan Debug Device</code></td>
+<td>命令面板</td>
+</tr>
+<tr>
+<td><code>Efinity: Trigger Capture</code> / <code>Immediate Capture</code></td>
+<td>命令面板</td>
+</tr>
+<tr>
+<td><code>Efinity: Read VIO</code> / <code>Write VIO</code></td>
+<td>命令面板</td>
+</tr>
+<tr>
+<td><code>EvoVerse: Clean Efinity Debug Traces</code></td>
+<td>命令面板（等价清除调试痕迹按钮）</td>
+</tr>
+<tr>
+<td><code>EvoVerse: Branch Clean Efinity Debug Project</code></td>
+<td>命令面板（等价分支出干净基线按钮）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-产物文件">7. 产物文件</h2>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>生成时机</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>outflow/debug_profile.mark_debug.json</code></td>
+<td>第一次编译</td>
+<td>调试配置：探针、位宽、采样时钟、采样深度</td>
+</tr>
+<tr>
+<td><code>work_dbg/</code></td>
+<td>第二次编译</td>
+<td>调试核 RTL 与相关中间文件</td>
+</tr>
+<tr>
+<td><code>outflow/&lt;工程名&gt;.bit</code></td>
+<td>编译完成</td>
+<td>含调试核的位流</td>
+</tr>
+<tr>
+<td><code>&lt;工程名&gt;_&lt;时间戳&gt;.vcd</code></td>
+<td>每次采集</td>
+<td>波形文件，自动打开；也可用任何 VCD 查看器</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-常见问题">8. 常见问题</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因与处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编译崩溃，日志含 <code>No such file: ...elab.vdb</code></td>
+<td>首次编译就开了自动实例化。按正确顺序：先无自动实例化编译一次生成配置文件，再开启并二次编译。Adapter 已拦截，遇到时按提示顺序重做。</td>
+</tr>
+<tr>
+<td>右键没有 Add Signal 菜单</td>
+<td>未选中文本，或文件不是 <code>.v/.sv/.vh/.svh</code>。先在编辑器里选中信号名。</td>
+</tr>
+<tr>
+<td>Debug 页状态陈旧</td>
+<td>编译/应用完成后会自动刷新；若打开时工程未就绪，重开一次 Debug 页。</td>
+</tr>
+<tr>
+<td>探针表为空</td>
+<td>还没扫描设备，或位流里没有调试核（检查 profile 状态是否 ✓、是否已完成第二次编译）。</td>
+</tr>
+<tr>
+<td>改了采样深度没生效</td>
+<td>深度在编译时固化进硬件，改后需重新编译并重新烧录。</td>
+</tr>
+<tr>
+<td>触发后一直等待</td>
+<td>条件永不满足。先用"立即采集"确认信号在变化，再放宽条件或改掩码。</td>
+</tr>
+<tr>
+<td>想恢复成干净工程</td>
+<td>用"清除调试痕迹"；想同时保留调试版，用"分支出干净基线"。</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>底层机制（两次编译的 elab.vdb 依赖、XML debugger 块字段、profile JSON 格式）见 <a href="Efinity-Debugger参考.html">Efinity Debugger 参考</a>。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

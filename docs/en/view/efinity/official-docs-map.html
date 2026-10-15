@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Official Documentation Map</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>A topic map of the installed doc and sim_models trees, a problem-to-document lookup guide and the simulation-model evidence chain.</span>
+<code>efinity/official-docs-map.md</code>
+<a href="../../../efinity/official-docs-map.md">Markdown source</a></p>
+<h1>Efinity Official Documentation Map</h1></header>
+<main class="article"><h1 id="efinity-official-documentation-map">Efinity Official Documentation Map</h1>
+<blockquote>
+<p><strong>Applies to</strong>: Efinity 2026.1 (installation directory surveyed hands-on: <code>C:\Efinity\2026.1\</code>)
+<strong>Survey date</strong>: 2026-09-25
+<strong>Survey method</strong>: read-only evidence collection on the official doc directories; every claim is annotated with the absolute evidence path (with line numbers where needed).
+<strong>Positioning</strong>: this volume is the "from problem to official document" index; tool command details are in <em>Efinity Toolchain Reference</em>, the device database in <em>Efinity Device Database and Architecture Data Reference</em>.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+<li><a href="#1-doc-directory-overview-and-the-four-doc-sites">1. doc directory overview and the four doc sites</a></li>
+<li><a href="#2-topic-map-find-documents-by-topic">2. Topic map (find documents by topic)</a></li>
+<li><a href="#3-find-the-document-by-problem-guide">3. Find-the-document-by-problem guide</a></li>
+<li><a href="#4-sim_models-structure-and-simulation-mapping">4. sim_models structure and simulation mapping</a></li>
+<li><a href="#5-efx_ff-single-sr-pin-evidence-chain">5. EFX_FF single-SR-pin evidence chain</a></li>
+</ul>
+<hr />
+<h2 id="1-doc-directory-overview-and-the-four-doc-sites">1. doc directory overview and the four doc sites</h2>
+<h3 id="1-1-directory-scale-measured">1.1 Directory scale (measured)</h3>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Size / count</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\</code></td>
+<td>78.07 MB</td>
+<td>Main doc site: <code>topics\</code> 490 HTML pages + <code>pdf\</code> 9 PDFs + <code>art\</code> / <code>css\</code> / <code>fonts\</code> / <code>js\</code> / <code>logo\</code> / <code>images\</code></td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\doc\</code></td>
+<td>—</td>
+<td>Interface Designer doc site</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pgm\doc\</code></td>
+<td>—</td>
+<td>Programmer doc site (includes <code>jtag-device-ids-ti.html</code>)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\doc\</code></td>
+<td>—</td>
+<td>Debugger doc site</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-main-documentation-and-pdf-inventory">1.2 Main documentation and PDF inventory</h3>
+<p>Main user guide version: <strong>UG-EFN-SOFTWARE-v14.0</strong> (visible in the <code>doc\topics\</code> page headers).</p>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\doc\pdf\</code> measured to hold 9 PDFs; the main navigation (left nav of pages such as <code>doc\topics\efn-simulating-models.html</code>) lists only 8</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>PDF</th>
+<th>In main navigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>efinity-ug (main UG)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>installation</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>quantum-ti-primitives-ug (Titanium primitives)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>quantum-tz-primitives-ug (Topaz primitives)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>quantum-primitives-ug (Trion primitives)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>synthesis</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>timing-closure</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>python-api</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>efinity-pgm</strong></td>
+<td>❌ <strong>not in the main navigation</strong> (PDF and pgm\doc site only)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Erratum</strong>: the outside world often says "doc has only 2 PDFs"; the measured count is <strong>9</strong>.</p>
+<h3 id="1-3-the-division-of-labor-among-the-four-doc-sites">1.3 The division of labor among the four doc sites</h3>
+<p>The HTML topic pages are split across four sites by ownership; the topic map (§2) gives each topic's actual location:</p>
+<table>
+<thead>
+<tr>
+<th>Doc site</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>doc\topics\</code></td>
+<td>Help Overview / Projects / Tool Flow / IP Manager / IP Packager / Synthesis / Partition Planner (Beta) / Timing Closure / Simulating / Messages / Project Files glossary / CLI / Appendices</td>
+</tr>
+<tr>
+<td><code>pt\doc\</code></td>
+<td>Interface Designer (hard IP configuration: IO/PLL/DDR/LVDS/MIPI, etc.)</td>
+</tr>
+<tr>
+<td><code>pgm\doc\</code></td>
+<td>Programmer (programming, JTAG chain, device IDs)</td>
+</tr>
+<tr>
+<td><code>debugger\doc\</code></td>
+<td>Debugger (LA/VIO online debug)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-topic-map-find-documents-by-topic">2. Topic map (find documents by topic)</h2>
+<p>The table below maps major topics → representative documents (absolute paths) → one-line description → the corresponding volume in this repository. The repository volumes are the Chinese knowledge-base documents under <code>docs/efinity/</code> (34 volumes on disk; <em>Efinity Hard IP — Interfaces and JTAG Reference</em> is being written in parallel).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Topic</th>
+<th>Representative document (under <code>C:\Efinity\2026.1\</code>)</th>
+<th>One-line description</th>
+<th>Repository volume</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Help overview</td>
+<td><code>doc\topics\efn-help-overview.html</code></td>
+<td>Doc site entry and navigation notes</td>
+<td><em>Efinity Official Documentation Map</em> (this volume)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Project management</td>
+<td><code>doc\topics\efn-projects*.html</code></td>
+<td>Project creation / project XML structure</td>
+<td><em>Efinity XML Project File Schema Reference</em></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Tool flow</td>
+<td><code>doc\topics\efn-tool-flow*.html</code></td>
+<td>The full map → PT → pnr → pgm flow</td>
+<td><em>Efinity Toolchain Reference</em></td>
+</tr>
+<tr>
+<td>4</td>
+<td>IP Manager</td>
+<td><code>doc\topics\efn-ip-manager*.html</code></td>
+<td>IP generation / instantiation</td>
+<td><em>Efinity IP Manager User Guide</em></td>
+</tr>
+<tr>
+<td>5</td>
+<td>IP Packager</td>
+<td><code>doc\topics\efn-ip-packager*.html</code></td>
+<td>Custom IP packaging</td>
+<td><em>Efinity IP Manager User Guide</em></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Synthesis</td>
+<td><code>doc\topics\syn-*.html</code> (e.g. <code>syn-ff.html</code>)</td>
+<td>Synthesis behavior, primitive inference, RTL rules</td>
+<td><em>Efinity Design Rules</em></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Interface Designer</td>
+<td><code>pt\doc\topics\</code></td>
+<td>Hard IP configuration (PLL/DDR/LVDS/MIPI/GPIO)</td>
+<td><em>Efinity Hard IP — Interfaces and JTAG Reference</em></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Partition Planner (Beta)</td>
+<td><code>doc\topics\efn-partition*.html</code></td>
+<td>Partitioned compilation (Beta feature)</td>
+<td>No dedicated volume yet</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Timing closure</td>
+<td><code>doc\topics\timing-closure*.html</code> + pdf\timing-closure</td>
+<td>Timing closure methodology</td>
+<td><em>Efinity Optimization Guide</em>, <em>Timing Analysis Guide</em></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Simulation</td>
+<td><code>doc\topics\efn-simulating-models.html</code>, <code>efn-simulate-*.html</code></td>
+<td>Primitive models and simulator flows</td>
+<td>This volume §4, <em>Efinity Generic Simulation Flow</em></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Programmer</td>
+<td><code>pgm\doc\topics\</code></td>
+<td>Programming flows, JTAG chain</td>
+<td><em>Efinity Programming and Flashing Guide</em></td>
+</tr>
+<tr>
+<td>12</td>
+<td>JTAG device IDs</td>
+<td><code>pgm\doc\topics\jtag-device-ids-ti.html</code></td>
+<td>Official Titanium MP IDCODE table</td>
+<td><em>Efinity Device Database and Architecture Data Reference</em></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Debugger</td>
+<td><code>debugger\doc\topics\</code></td>
+<td>LA capture / VIO read-write</td>
+<td><em>Efinity Hard IP — Interfaces and JTAG Reference</em></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Transceiver debugging</td>
+<td><code>debugger\doc\topics\</code> (transceiver parts)</td>
+<td>Online debug of high-speed transceivers</td>
+<td>No dedicated volume yet</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Messages and errors</td>
+<td><code>doc\topics\msg-*.html</code> (e.g. <code>msg-flow.html</code>)</td>
+<td>Tool message dictionary (error/warning per entry)</td>
+<td><em>Efinity Common Build Errors</em></td>
+</tr>
+<tr>
+<td>16</td>
+<td>Project file terminology</td>
+<td><code>doc\topics\</code> (Project Files glossary)</td>
+<td>Definitions of each artifact file (.peri.xml/.map.v etc.)</td>
+<td><em>Efinity File Formats: SDC and Report Artifacts</em></td>
+</tr>
+<tr>
+<td>17</td>
+<td>Command line</td>
+<td><code>doc\topics\efn-cli*.html</code> + <code>bin\</code></td>
+<td>CLI usage</td>
+<td><em>Efinity Toolchain Reference</em>, <em>Efinity Helper Tools and Scripts Reference</em></td>
+</tr>
+<tr>
+<td>18</td>
+<td>Primitives reference</td>
+<td><code>doc\pdf\quantum-*-primitives-ug.pdf</code></td>
+<td>Hardware primitives of the three families (EFX_LUT4/EFX_FF/DSP/RAM)</td>
+<td><em>Efinity Design Rules</em></td>
+</tr>
+<tr>
+<td>19</td>
+<td>Python API</td>
+<td><code>doc\pdf\python-api.pdf</code> + <code>pt\bin\</code></td>
+<td>DesignAPI automation</td>
+<td><em>Efinity DesignAPI Reference</em></td>
+</tr>
+<tr>
+<td>20</td>
+<td>Installation</td>
+<td><code>doc\pdf\installation.pdf</code></td>
+<td>Installation and environment variables (EFINITY_HOME etc.)</td>
+<td><em>Efinity Helper Tools and Scripts Reference</em></td>
+</tr>
+<tr>
+<td>21</td>
+<td>ISF/constraints</td>
+<td><code>pt\doc\</code> + <code>doc\topics\</code> (interface parts)</td>
+<td>ISF syntax and constraint flow</td>
+<td><em>Efinity ISF Syntax Reference</em></td>
+</tr>
+</tbody>
+</table>
+<p>Topic classification basis: the complete left TOC tree of <code>doc\topics\efn-simulating-models.html</code> (around line 167), covering Help Overview / Projects / Tool Flow / IP Manager / IP Packager / Synthesis / Interface Designer / Partition Planner Beta / Timing Closure / Simulating / Programmer / Debugger / Transceiver Debugging / Messages / Project Files glossary / CLI / Appendices.</p>
+<hr />
+<h2 id="3-find-the-document-by-problem-guide">3. Find-the-document-by-problem guide</h2>
+<table>
+<thead>
+<tr>
+<th>Your problem</th>
+<th>Look first</th>
+<th>Then look</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What a command parameter means</td>
+<td><em>Efinity Toolchain Reference</em></td>
+<td><code>doc\topics\efn-cli*.html</code></td>
+<td>The repository volume is generated from measured <code>--help</code></td>
+</tr>
+<tr>
+<td>Compile error X</td>
+<td><em>Efinity Common Build Errors</em></td>
+<td><code>doc\topics\msg-*.html</code></td>
+<td>The msg site groups by flow stage</td>
+</tr>
+<tr>
+<td>How to configure a hard IP</td>
+<td><em>Efinity Hard IP — Interfaces and JTAG Reference</em></td>
+<td><code>pt\doc\topics\</code></td>
+<td></td>
+</tr>
+<tr>
+<td>IO constraints / pin assignment</td>
+<td><em>Efinity ISF Syntax Reference</em></td>
+<td><code>pt\doc\</code></td>
+<td>ISF is a Python API source, not XML</td>
+</tr>
+<tr>
+<td>Timing not converging</td>
+<td><em>Efinity Optimization Guide</em>, <em>Timing Analysis Guide</em></td>
+<td><code>doc\pdf\timing-closure.pdf</code></td>
+<td></td>
+</tr>
+<tr>
+<td>How to set up simulation</td>
+<td>This volume §4, <em>Efinity Generic Simulation Flow</em></td>
+<td><code>doc\topics\efn-simulate-*.html</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Programming fails</td>
+<td><em>Efinity Programming and Flashing Guide</em></td>
+<td><code>pgm\doc\topics\</code></td>
+<td>Check the IDCODE first (ES/MP)</td>
+</tr>
+<tr>
+<td>Project XML fields</td>
+<td><em>Efinity XML Project File Schema Reference</em></td>
+<td><code>bin\enf_proj.xsd</code></td>
+<td>The schema is authoritative</td>
+</tr>
+<tr>
+<td>RTL coding rules</td>
+<td><em>Efinity Design Rules</em></td>
+<td><code>doc\topics\syn-*.html</code></td>
+<td>The repository also has RTL coding rules (workspace rules)</td>
+</tr>
+<tr>
+<td>Scripting / automation</td>
+<td><em>Efinity Helper Tools and Scripts Reference</em></td>
+<td><code>doc\pdf\python-api.pdf</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-sim_models-structure-and-simulation-mapping">4. sim_models structure and simulation mapping</h2>
+<blockquote>
+<p>Evidence directory: <code>C:\Efinity\2026.1\sim_models\</code> (measured 11.43 MB)</p>
+</blockquote>
+<h3 id="4-1-directory-structure">4.1 Directory structure</h3>
+<pre><code>C:\Efinity\2026.1\sim_models\
+├── maplib\                 # map-stage libraries
+│   ├── efinix_maplib.v     # Core primitive maplib source (one of §5's evidence)
+│   ├── efinix_peri_lib.v   # Peripheral primitive maplib
+│   └── *.vdb               # Precompiled libraries
+├── verilog\                # Core primitive simulation models (15 .v, measured)
+└── vhdl\packages\
+    ├── vhdl_1993\          # VHDL-1993 precompiled .vdb (efxphysicallib + ieee/std/synopsys/vl)
+    ├── vhdl_2008\          # VHDL-2008 precompiled .vdb
+    └── vhdl_2019\          # VHDL-2019 precompiled .vdb
+</code></pre>
+<p>The interface primitive models live separately in <strong><code>pt\sim_models\verilog\</code></strong> (PLL/GPIO/LVDS, etc.).</p>
+<h3 id="4-2-core-primitive-models-official-table-vs-measured-directory">4.2 Core primitive models: official table vs measured directory</h3>
+<blockquote>
+<p>Evidence A (official table): <code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code> Table 1 (lines 176-298, 14 entries, path <code>&lt;install&gt;/sim_models/verilog</code>)
+Evidence B (measured directory): <code>C:\Efinity\2026.1\sim_models\verilog\</code> holds 15 .v files</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Model (official Table 1 name)</th>
+<th>File</th>
+<th style="text-align: center;">Trion</th>
+<th style="text-align: center;">Titanium</th>
+<th style="text-align: center;">Topaz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EFX_ADD</td>
+<td>efx_add.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_COMB4</td>
+<td>efx_comb4.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DPRAM5K</td>
+<td>efx_dpram5k.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>EFX_DPRAM10</td>
+<td>efx_dpram10.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DSP12</td>
+<td>efx_dsp12.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DSP24</td>
+<td>efx_dsp24.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DSP48</td>
+<td>efx_dsp48.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_FF</td>
+<td>efx_ff.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_GBUFCE</td>
+<td>efx_gbufce.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_LUT4</td>
+<td>efx_lut4.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_MULT</td>
+<td>efx_mult.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>EFX_RAM_5K</td>
+<td>efx_ram_5k.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>EFX_RAM10</td>
+<td>efx_ram_10.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_SRL8</td>
+<td>efx_srl8.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>(not listed in the official table)</strong></td>
+<td><strong>efx_ram_10k.v</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Known discrepancies (flagged honestly)</strong>:</p>
+<ol>
+<li>Official Table 1 lists 14 entries; the measured directory holds <strong>15 .v files</strong> — <code>efx_ram_10k.v</code> is in the directory but absent from the official table. Trust the measured files when citing;</li>
+<li>The actual file name appearing in the ModelSim flow document is <strong><code>efx_dpram_5k.v</code> (with underscore)</strong>, matching the measured directory naming (the official tabulated name EFX_DPRAM5K drops the underscore).<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\doc\topics\efn-simulate-modelsim.html</code> lines 239-254, the <code>vlog</code> list</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="4-3-interface-primitive-models-26-supported">4.3 Interface primitive models (26 supported)</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code> Table 2 (lines 300-524, path <code>&lt;install&gt;/pt/sim_models/verilog</code>)</p>
+</blockquote>
+<p>EFX_CLKOUT, EFX_FPLL_V1, EFX_GPIO_V1 / V2 / V3, EFX_GPIO_DIFF_V3, EFX_IBUF, EFX_IDDIO, EFX_IOREG, EFX_IO_BUF, EFX_IREG, EFX_JTAG_CTRL, EFX_JTAG_V1, EFX_OBUF, EFX_ODDIO, EFX_OREG, EFX_OSC_V1 / V3, EFX_PLL_V1 / V2 / V3, EFX_LVDS_RX_V1 / V2, EFX_LVDS_TX_V1 / V2, EFX_LVDS_BIDIR_V2.</p>
+<p>Original warning (a note on that page): "Although additional model files are located in the /pt/sim_models/verilog directory, only the ones listed in this table are supported." — <strong>extra files in the directory are not guaranteed to be supported</strong>.</p>
+<h3 id="4-4-vhdl-simulation-mapping">4.4 VHDL simulation mapping</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\doc\topics\syn-vhdl-libraries-efx.html</code> lines 171-175</p>
+</blockquote>
+<ul>
+<li>Efinix officially ships Trion / Titanium primitive VHDL libraries, referenced in a fixed way:</li>
+</ul>
+<pre><code class="language-vhdl">library efxphysicallib;
+use efxphysicallib.efxcomponents.all;
+</code></pre>
+<ul>
+<li>Instantiation example (same document, lines 177-207): <code>entity LUT4_VHDL</code>, <code>generic map (LUTMASK =&gt; x"8888")</code>, <code>port map (I0..I3, O)</code>;</li>
+<li>The precompiled libraries come in three language-version sets of <code>.vdb</code> (<code>sim_models\vhdl\packages\vhdl_1993|2008|2019</code>), each containing <code>efxphysicallib</code> plus <code>ieee</code> / <code>std</code> / <code>synopsys</code> / <code>vl</code>.</li>
+</ul>
+<h3 id="4-5-simulator-command-flow-modelsim-example">4.5 Simulator command flow (ModelSim example)</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\doc\topics\efn-simulate-modelsim.html</code> (the CLI page efn-simulate-modelsim-1.html has identical content)</p>
+</blockquote>
+<p>RTL simulation (lines 225-233):</p>
+<pre><code class="language-tcl">vlib work
+vmap work work
+vlog &quot;helloworld.v&quot;        ;# RTL source
+vsim -t ps work.sim
+</code></pre>
+<p>Post-synthesis netlist simulation (lines 239-254) — beyond the netlist, each primitive model must be <strong>compiled one by one</strong>:</p>
+<pre><code class="language-tcl">vlib work
+vmap work work
+vlog &quot;outflow/helloworld.map.v&quot;
+vlog efx_add.v
+vlog efx_dpram_5k.v        ;# note the underscored file name
+vlog efx_ff.v
+vlog efx_gbufce.v
+vlog efx_lut4.v
+vlog efx_mult.v
+vlog efx_ram_5k.v
+vsim -t ps work.sim
+</code></pre>
+<p>Supported simulators (the flow pages of efn-simulating-models.html): iVerilog (+GTKWave for waveforms), ModelSim, NCSim, Aldec.</p>
+<hr />
+<h2 id="5-efx_ff-single-sr-pin-evidence-chain">5. EFX_FF single-SR-pin evidence chain</h2>
+<p><strong>Conclusion first</strong>: the Efinix flip-flop (EFX_FF) has <strong>only one SR (set/reset) pin</strong>; there is no independently encodable separate set and reset. This corroborates the hard constraint in the workspace RTL rules that "a register must not encode both set and reset". The four independent pieces of evidence below agree completely.</p>
+<h3 id="5-1-evidence-1-the-maplib-source-the-synthesis-backend-truth">5.1 Evidence 1: the maplib source (the synthesis backend truth)</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\sim_models\maplib\efinix_maplib.v</code></p>
+</blockquote>
+<pre><code class="language-verilog">module EFX_FF(Q, D, CE, CLK, SR);   // line 21: the port list has a single SR
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Content</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16-18</td>
+<td><code>SR_SYNC_PRIORITY</code> macro defaults to <code>1</code></td>
+<td>SR wins when SR and CE conflict in the same cycle</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>module EFX_FF(Q, D, CE, CLK, SR);</code></td>
+<td><strong>A single SR port</strong>, no independent SET/RST</td>
+</tr>
+<tr>
+<td>27</td>
+<td>comment <code>// 0 CE, 1 SR</code></td>
+<td>priority arbitration table: CE=0, SR=1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-evidence-2-the-official-synthesis-document-s-port-table">5.2 Evidence 2: the official synthesis document's port table</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\doc\topics\syn-ff.html</code> (UG-EFN-SOFTWARE-v14.0)</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>175-181</td>
+<td>FF control signal list: clock enable CE + <strong>a single set/reset (SR)</strong></td>
+</tr>
+<tr>
+<td>213-215</td>
+<td>Table 1 EFX_FF Ports: <code>SR</code> — "Asynchronous/synchronous set/reset" (configurable as async or sync, but <strong>physically only one</strong>)</td>
+</tr>
+<tr>
+<td>Figure</td>
+<td>quan-prim-efx-ff.svg: the FF diagram shows a single SR pin</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-3-evidence-3-the-behavioral-model-source">5.3 Evidence 3: the behavioral model source</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\sim_models\verilog\efx_ff.v</code></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5-9</td>
+<td>Header comment: D flip-flop with clock enable and <strong>single set/reset pin</strong></td>
+</tr>
+<tr>
+<td>31</td>
+<td><code>input SR, // asyc/sync set/reset</code></td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td><code>SR_SYNC</code> (sync/async select), <code>SR_VALUE</code> (set/reset polarity)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-4-evidence-4-the-official-simulation-model-table-description">5.4 Evidence 4: the official simulation model table description</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code> Table 1, lines 243-249</p>
+</blockquote>
+<p>Original EFX_FF description: "<strong>D Flip-flop with Clock Enable and Set/Reset Pin</strong>" (singular Pin).</p>
+<h3 id="5-5-evidence-chain-summary-and-engineering-implications">5.5 Evidence chain summary and engineering implications</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Evidence</th>
+<th>Layer</th>
+<th>Key point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>efinix_maplib.v</code> line 21</td>
+<td>Backend maplib source</td>
+<td>The port list physically has a single SR</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>syn-ff.html</code> lines 213-215</td>
+<td>Official synthesis document</td>
+<td>SR = asynchronous/synchronous set/reset (either-or configuration)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>efx_ff.v</code> line 31</td>
+<td>Simulation behavioral model</td>
+<td>The behavioral model matches the port list</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>efn-simulating-models.html</code> lines 243-249</td>
+<td>Official model master table</td>
+<td>Original description uses the singular "Set/Reset Pin"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Engineering implications</strong>:</p>
+<ol>
+<li>RTL that encodes both set and reset forces the synthesizer to emulate the second control signal with <strong>extra LUTs</strong> → area bloat + timing degradation (the counter-example in the workspace RTL rules stems from this hardware fact);</li>
+<li>SR polarity/synchronicity is configured via ISF/synthesis attributes (<code>SR_SYNC</code>, <code>SR_VALUE</code>), not by adding another pin;</li>
+<li>When writing RTL, each register should have only a single reset (or single set) path; see <em>Efinity Design Rules</em> and the repository RTL coding rules.</li>
+</ol>
+<hr />
+<h2 id="appendix-evidence-file-list-of-this-volume">Appendix: evidence file list of this volume</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence file (absolute path)</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\</code> (whole directory surveyed, 78.07 MB)</td>
+<td>Doc site scale and PDF inventory (§1)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code></td>
+<td>Core/interface primitive model tables, TOC tree, PDF navigation (§1.2/§2/§4/§5)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\efn-simulate-modelsim.html</code></td>
+<td>ModelSim command flow (§4.5)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\syn-vhdl-libraries-efx.html</code></td>
+<td>VHDL library usage (§4.4)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\syn-ff.html</code></td>
+<td>Official EFX_FF port table (§5.2)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\sim_models\</code> (whole directory surveyed, 11.43 MB)</td>
+<td>Model directory structure, 15 .v files, three-version .vdb (§4.1/§4.2)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\sim_models\maplib\efinix_maplib.v</code></td>
+<td>EFX_FF maplib ports (§5.1)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\sim_models\verilog\efx_ff.v</code></td>
+<td>EFX_FF behavioral model (§5.3)</td>
+</tr>
+</tbody>
+</table></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

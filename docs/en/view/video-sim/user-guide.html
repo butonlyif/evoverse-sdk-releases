@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Video Sim User Guide</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../video-sim.html">← Back to Video Sim</a>
+<span>Import, simulate, analyze and run regressions.</span>
+<code>video-sim/user-guide.md</code>
+<a href="../../../video-sim/user-guide.md">Markdown source</a></p>
+<h1>Video Sim User Guide</h1></header>
+<main class="article"><h1 id="vip-simulation-and-verification-platform-user-guide">VIP Simulation and Verification Platform — User Guide</h1>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Version</td>
+<td>1.2.0</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-06-24</td>
+</tr>
+<tr>
+<td>Applies to</td>
+<td>evoverse video processing IPs</td>
+</tr>
+<tr>
+<td>Target users</td>
+<td>FPGA verification engineers / research students / IP developers</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="current-learning-entry-point">Current learning entry point</h2>
+<p>Enter through the Video Sim task on the offline customer documentation portal. This manual, together with <a href="platform-overview.html">Platform Overview</a> and the <a href="video-ip-design-guide.html">Video IP Design Guide</a> in the same directory, is the current reference; the retired VIP01–VIP10 tutorial tree is no longer distributed with the SDK working directory.</p>
+<hr />
+<h2 id="1-product-introduction">1. Product introduction</h2>
+<p>The VIP simulation and verification platform is an <strong>end-to-end video IP simulation environment</strong>, delivered as a Trae / VS Code extension with two entry points: a graphical console and the command line. Core capabilities:</p>
+<ul>
+<li><strong>Image/video → simulation stimulus</strong>: real images are converted automatically into hex stimulus readable by Verilog <code>$readmemh</code></li>
+<li><strong>One-click simulation</strong>: iverilog compile + run + result collection, fully automatic</li>
+<li><strong>Result restoration</strong>: simulation output hex is restored automatically to an image/video, so the effect is directly visible</li>
+<li><strong>Golden-reference comparison</strong>: a Python reference model reproduces the RTL fixed-point arithmetic bit for bit and declares PASS/FAIL automatically</li>
+<li><strong>Multi-dimensional quality analysis</strong>: sharpness, white balance, PSNR, histogram, Gamma curve, each in a pop-up panel of its own</li>
+</ul>
+<p><strong>In one sentence</strong>: feed an image in, get an image out, with your IP in between—and be told how well the processing worked.</p>
+<hr />
+<h2 id="2-installation-and-environment-setup">2. Installation and environment setup</h2>
+<h3 id="2-1-installing-the-extension">2.1 Installing the extension</h3>
+<p>Install the EvoVerse SDK core extension (<code>evoverse-sdk-&lt;version&gt;.vsix</code>, Video Sim included):</p>
+<pre><code class="language-bash">code --install-extension evoverse-sdk-&lt;version&gt;.vsix
+</code></pre>
+<p>After installation, <strong>reload the Trae / VS Code window</strong> (<code>Cmd+Shift+P</code> → <code>Developer: Reload Window</code>).</p>
+<h3 id="2-2-prerequisites">2.2 Prerequisites</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Installation</th>
+<th>Required/optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iverilog</td>
+<td><code>brew install icarus-verilog</code> (macOS) or <code>sudo apt install iverilog</code> (Linux) or <code>scoop install icarus-verilog</code> (Windows)</td>
+<td><strong>Required</strong></td>
+</tr>
+<tr>
+<td>python3</td>
+<td>Python 3.11+; on macOS <code>brew install python@3.11</code>, on Windows install the 64-bit build from <code>python.org</code></td>
+<td><strong>Required</strong></td>
+</tr>
+<tr>
+<td>VaporView</td>
+<td>search for <code>lramseyer.vaporview</code> in the VS Code extension marketplace</td>
+<td>Optional (view waveforms inside the IDE)</td>
+</tr>
+<tr>
+<td>GTKWave</td>
+<td><code>brew install gtkwave</code> or <code>scoop install gtkwave</code> (Windows)</td>
+<td>Optional (view waveforms externally)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note</strong>: On Windows, GNU Make is not needed; the build orchestration uses the pure-Python <code>scripts/sim.py</code>.</p>
+</blockquote>
+<h3 id="2-3-verifying-the-environment">2.3 Verifying the environment</h3>
+<p>Open a terminal and run the environment self-check script:</p>
+<pre><code class="language-bash">echo &quot;=== Environment self-check ===&quot;
+echo -n &quot;Python: &quot;; python3 --version
+echo -n &quot;OpenCV: &quot;; python3 -c &quot;import cv2; print(cv2.__version__)&quot; 2&gt;/dev/null || echo &quot;not installed&quot;
+echo -n &quot;NumPy:  &quot;; python3 -c &quot;import numpy; print(numpy.__version__)&quot; 2&gt;/dev/null || echo &quot;not installed&quot;
+echo -n &quot;Pillow: &quot;; python3 -c &quot;import PIL; print(PIL.__version__)&quot; 2&gt;/dev/null || echo &quot;not installed&quot;
+echo -n &quot;iverilog: &quot;; iverilog -V 2&gt;/dev/null | head -1 || echo &quot;not installed&quot;
+echo &quot;=== Self-check complete ===&quot;
+</code></pre>
+<p><strong>Windows users</strong>: click the "Environment self-check" button in the console, or run <code>python -c "import cv2,numpy,PIL;print('OK')"</code> and <code>iverilog -V</code>.</p>
+<p>Expected output:</p>
+<pre><code>Python: Python 3.11.5
+OpenCV: 4.9.0
+NumPy:  1.26.4
+Pillow: 10.2.0
+iverilog: Icarus Verilog version 12.0 (stable)
+</code></pre>
+<blockquote>
+<p><strong>Note</strong>: The Python dependencies (opencv/numpy/pillow) do not need manual installation. When the extension creates a project, it sets up a <code>.venv</code> and installs every dependency automatically.</p>
+</blockquote>
+<hr />
+<h2 id="3-system-architecture">3. System architecture</h2>
+<pre><code class="language-mermaid">flowchart TB
+    subgraph GUI[&quot;Trae IDE — VIP Sim console&quot;]
+        PARAM[&quot;⚙ Simulation parameters&lt;br/&gt;IP / resolution / frame count&quot;]
+        REG[&quot;📋 Register editing&lt;br/&gt;regdef.json → form&quot;]
+        MEDIA[&quot;🖼 Media import&lt;br/&gt;image / video / test pattern / preprocessing&quot;]
+        TOOL[&quot;▶ One-click run&quot;]
+        ANA[&quot;📊 6-dimension analysis panels&quot;]
+        WAVE[&quot;📈 Waveform&quot;]
+    end
+
+    subgraph Python[&quot;Python toolchain&quot;]
+        GS[&quot;gen_stimulus.py&lt;br/&gt;image → pixel hex&quot;]
+        GR[&quot;gen_pattern.py&lt;br/&gt;test patterns / noise / dead pixels&quot;]
+        GO[&quot;gen_output.py&lt;br/&gt;hex → image/video&quot;]
+        GM[&quot;golden.py&lt;br/&gt;golden reference model&quot;]
+        CP[&quot;compare.py&lt;br/&gt;word-by-word comparison&quot;]
+        AZ[&quot;analyze.py&lt;br/&gt;quality analysis report&quot;]
+    end
+
+    subgraph Verilog[&quot;Verilog simulation layer&quot;]
+        SRC[&quot;axis_video_source&lt;br/&gt;AXI-Stream BFM&quot;]
+        REGB[&quot;reg_config&lt;br/&gt;register BFM&quot;]
+        DUT[&quot;DUT&lt;br/&gt;IP Core&quot;]
+        SNK[&quot;axis_video_sink&lt;br/&gt;result-collection BFM&quot;]
+    end
+
+    GUI --&gt;|spawn subprocess| Python
+    Python -- &quot;stimulus.hex / header.hex / regcfg.hex&quot; --&gt; SRC
+    Python -- &quot;regcfg.hex&quot; --&gt; REGB
+    SRC --&gt; DUT --&gt; SNK
+    REGB --&gt; DUT
+    SNK --&gt;|result.hex| Python
+    Python -- &quot;output.png / report.json&quot; --&gt; GUI
+</code></pre>
+<h3 id="3-1-data-bridging">3.1 Data bridging</h3>
+<p>Python and Verilog are bridged through <strong>hex text files</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Direction</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stimulus.hex</td>
+<td>Python → simulation</td>
+<td>32-bit hex pixel data</td>
+</tr>
+<tr>
+<td>header.hex</td>
+<td>Python → simulation</td>
+<td>resolution, format, frame-count metadata</td>
+</tr>
+<tr>
+<td>regcfg.hex</td>
+<td>Python → simulation</td>
+<td>sequence of register addresses and written values</td>
+</tr>
+<tr>
+<td>result.hex</td>
+<td>simulation → Python</td>
+<td>32-bit hex output pixel data</td>
+</tr>
+<tr>
+<td>expected.hex</td>
+<td>Python → simulation</td>
+<td>golden expected output (used for comparison)</td>
+</tr>
+<tr>
+<td><code>*_report.json</code></td>
+<td>Python → console</td>
+<td>quality analysis reports (data source for the panels)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-supported-pixel-formats">3.2 Supported pixel formats</h3>
+<table>
+<thead>
+<tr>
+<th>Format ID</th>
+<th>Name</th>
+<th>Bits per pixel</th>
+<th>Corresponding tdata arrangement in Verilog</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>RGB888</td>
+<td>24 bit</td>
+<td><code>{8'd0, R[7:0], G[7:0], B[7:0]}</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>RGB888 is currently the primary supported format. RAW8/10/12 and YUV422/444 are defined in the Python toolchain, but on the Verilog BFM side RGB888 is the workhorse format.</p>
+</blockquote>
+<hr />
+<h2 id="4-using-the-trae-extension-recommended-entry">4. Using the Trae extension (recommended entry)</h2>
+<h3 id="4-1-one-unified-entry-the-simulation-console">4.1 One unified entry: the simulation console</h3>
+<p><strong>Remember a single entry point</strong> — <code>Ctrl+Shift+P</code> (Windows) / <code>Cmd+Shift+P</code> (Mac) → <code>VIP Sim: 打开仿真控制台</code>. The console switches between two shapes depending on the current workspace:</p>
+<ul>
+<li><strong>Already a simulation project</strong> → the console loads directly and auto-detects the project's IP / registers / inputs and outputs (no manual import). When you open a simulation project folder, the console <strong>pops up automatically</strong> as well.</li>
+<li><strong>Not a simulation project (or no folder open)</strong> → the console shows a "Get Started" landing page; click <strong>➕ New Simulation Project</strong> to create a project in the same view—no separate command needed.</li>
+</ul>
+<pre><code class="language-mermaid">flowchart LR
+  A[Open the simulation console] --&gt; B{Simulation project?}
+  B -- Yes --&gt; C[Load the console&lt;br/&gt;auto-import the project]
+  B -- No --&gt; D[Get Started landing page]
+  D -- click New --&gt; E[Pick location / name → copy template → create venv]
+  E --&gt; F[Open the project] --&gt; C
+</code></pre>
+<p>When you create a project, the extension automatically:
+1. Copies the complete simulation environment to the new directory (Python scripts / Verilog BFMs / Makefile / example DUT)
+2. Creates the in-project Python virtual environment <code>.venv</code> and installs opencv/numpy/pillow
+3. Opens the project (the console then loads automatically)</p>
+<blockquote>
+<p>The <code>VIP Sim: 新建仿真项目</code> command still exists and is equivalent to the landing page's "New" button; day to day, "Open the simulation console" is the only entry point you need.</p>
+</blockquote>
+<h3 id="4-2-console-layout">4.2 Console layout</h3>
+<pre><code>┌─ 🎬 VIP Simulation Console ─────────────────────┐
+│  evoverse video IPs · end-to-end sim platform   │
+└─────────────────────────────────────────────────┘
+
+┌─ ⚙ Simulation parameters ───────────────────────┐
+│  Target IP: [passthrough ▼]  W: 64  H: 48  Frames: 1 │
+└─────────────────────────────────────────────────┘
+
+┌─ 📋 Register config ──written to the DUT at sim start─┐
+│  Addr    Name   Access  Value          Description    │
+│  0x04    CTRL  RW   [0x00000001]  bit0=enable...     │
+│  ...                                                │
+│  RW registers are editable · RO shows reset value only │
+│  [↺ Restore defaults]                               │
+└────────────────────────────────────────────────────┘
+
+┌─ 🖼 Media input/output ──────────────────────────┐
+│  ┌─ Input ─────┐     ┌─ Sim output ─┐            │
+│  │ [thumbnail] │     │ [thumbnail]  │            │
+│  │ 📂Import image│     │ 💾Export image │            │
+│  │ 🎬Import video│     └──────────────┘            │
+│  │ 🎨Generate pattern│                            │
+│  │ ⚔Preprocess  │                                 │
+│  └──────────────┘                                 │
+└───────────────────────────────────────────────────┘
+
+  [▶ Run simulation]                          [📈 View waveform]
+
+  Result analysis: [📷Image compare] [🔥Diff heatmap] [🔍Sharpness] [🌡White balance] [📊Histogram] [📡PSNR]
+</code></pre>
+<h3 id="4-3-command-quick-reference">4.3 Command quick reference</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VIP Sim: 打开仿真控制台 <strong>(unified entry)</strong></td>
+<td>The main GUI; loads automatically when a project exists, otherwise guides you to create one</td>
+</tr>
+<tr>
+<td>VIP Sim: 导入已有工程</td>
+<td>Pick an external RTL project directory; the extension auto-detects IPs, copies the RTL, generates the TB/registers, and creates a standalone simulation workspace next to the project</td>
+</tr>
+<tr>
+<td>VIP Sim: 新建仿真项目</td>
+<td>Copies the complete toolkit to a new directory and creates a venv (same as the console landing page's "New" button)</td>
+</tr>
+<tr>
+<td>VIP Sim: 查看波形</td>
+<td>Opens this simulation's VCD inside the IDE</td>
+</tr>
+<tr>
+<td>VIP Sim: 环境自检</td>
+<td>Checks iverilog / venv / environment-file versions</td>
+</tr>
+<tr>
+<td>VIP Sim: 同步环境文件到当前项目</td>
+<td>Updates an older project's BFMs / scripts / rules after an extension upgrade</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-gui-operation-notes">4.4 GUI operation notes</h3>
+<p><strong>Import image</strong>: opens a file dialog to pick a PNG/BMP/JPG, copies it automatically to <code>sim/testdata/</code>, and sets it as the stimulus source.</p>
+<p><strong>Generate pattern</strong>: pops up 9 built-in test patterns:
+- Grayscale ramp (tests Gamma / contrast)
+- Color bars (tests color-space conversion)
+- Low-contrast chart (tests contrast enhancement)
+- Checkerboard (tests boundary alignment)
+- Gray card · 6500K / 3000K / 8500K (tests white balance)
+- Noise injection + dead-pixel injection (based on the current image)</p>
+<p><strong>Preprocessing</strong>: applies an operator to the input image before the simulation: Gaussian noise / dead-pixel injection / Gaussian blur / combination / custom (AI-generated)</p>
+<p><strong>Register editing</strong>: the console reads <code>rtl/&lt;IP&gt;/regdef.json</code> automatically; RW registers appear as editable input fields and RO registers show their default values grayed out. When you click Run, <code>regcfg.hex</code> is generated from the current values and written into the simulation.</p>
+<p><strong>Register read/write self-check</strong>: the simulation does not just "write the form values and call it done". Before the video stream starts, the <code>reg_config</code> BFM first writes every register, then <strong>reads each one back and compares</strong>, exercising the register read/write timing on the real logic. It prints <code>REGCHK PASS/FAIL</code> to the output panel (a mismatch reports the <code>@addr/wrote/read</code> detail), and only after the IP's register interface is confirmed correct is the pixel data released.</p>
+<p><strong>Run simulation</strong>: chains, in one click, <code>gen_stimulus → gen_header → iverilog compile → vvp run (register configuration + self-check first, then the video stream) → gen_output → analyze</code>.</p>
+<p><strong>Analysis panels</strong>: each of the 6 buttons opens its own Webview panel; multiple panels can be opened side by side for comparison.</p>
+<hr />
+<h2 id="5-typical-usage-scenarios">5. Typical usage scenarios</h2>
+<h3 id="scenario-0-import-an-existing-project-into-simulation-the-most-common-entry">Scenario 0: Import an existing project into simulation (the most common entry)</h3>
+<p><strong>When to use</strong>: you already have an RTL project (code handed over by a team, an IP you wrote earlier) and want to bring it onto the simulation platform quickly to verify the image results.</p>
+<h4 id="steps">Steps</h4>
+<ol>
+<li><code>Ctrl+Shift+P</code> / <code>Cmd+Shift+P</code> → <strong>VIP Sim: 导入已有工程</strong> (or click "📥 Import existing project" on the console landing page)</li>
+<li>Select the <strong>root directory</strong> of the existing RTL project (the folder containing the <code>.v/.sv</code> files)</li>
+<li>The extension then does all of the following:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① Create the simulation workspace</td>
+<td>Creates a standalone <code>&lt;project&gt;_vipsim/</code> directory next to the project; <strong>the original project is never modified</strong></td>
+</tr>
+<tr>
+<td>② Set up the Python environment</td>
+<td>Creates <code>.venv</code> and installs opencv / numpy / pillow</td>
+</tr>
+<tr>
+<td>③ Scan and identify IPs</td>
+<td>Walks every <code>.v/.sv</code>; modules whose top level has both <code>s_axis_*</code> and <code>m_axis_*</code> ports are recognized as video IPs</td>
+</tr>
+<tr>
+<td>④ Copy the RTL</td>
+<td>IP top level → <code>rtl/&lt;ip&gt;/</code>, shared submodules → <code>rtl/_imported_common/</code> (deduplicated globally)</td>
+</tr>
+<tr>
+<td>⑤ Generate the testbench</td>
+<td>Generates <code>sim/tests/tb_&lt;ip&gt;.v</code> from the DUT's real port names</td>
+</tr>
+<tr>
+<td>⑥ Generate the register description</td>
+<td>Detects <code>cfg_*</code> buses → generates a <code>rtl/&lt;ip&gt;/regdef.json</code> skeleton</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Choose to open the workspace in a new window or the current one</li>
+<li>The console loads automatically; the recognized IPs appear in the IP dropdown</li>
+<li>Import an image → set the resolution → <strong>▶ Run simulation</strong></li>
+</ol>
+<h4 id="recognition-rules">Recognition rules</h4>
+<pre><code>Conditions for recognizing an AXI-Stream video IP:
+  the module's top-level ports include both s_axis_tdata and m_axis_tdata
+  (signal-name variants tolerated: tvalid/tready/tlast/tuser are all optional)
+</code></pre>
+<ul>
+<li>Missing <code>tuser</code>/<code>tlast</code> → the TB rebuilds frame/line boundaries from the pixel index</li>
+<li>Missing <code>s_axis_tready</code> → the source pushes the stream freely (no backpressure)</li>
+<li><code>cfg_*</code> bus present → wired to the <code>reg_config</code> BFM automatically, and the register form is generated</li>
+<li>Data files referenced by <code>$readmemh</code> → copied automatically; if missing, you are prompted to add them manually</li>
+</ul>
+<h4 id="command-line-equivalent">Command-line equivalent</h4>
+<pre><code class="language-bash"># Option 1: through the extension command (recommended)
+# Ctrl+Shift+P → VIP Sim: 导入已有工程
+
+# Option 2: run manually
+python scripts/import_project.py --src /path/to/your/project --json
+</code></pre>
+<blockquote>
+<p><strong>The original project changed?</strong> Run the import command again to refresh the workspace (you will be asked whether to overwrite and rebuild).</p>
+</blockquote>
+<hr />
+<h3 id="scenario-1-single-frame-image-simulation-most-common">Scenario 1: Single-frame image simulation (most common)</h3>
+<p><strong>Applicable IPs</strong>: color-space conversion, Gamma correction, dead-pixel correction, denoise, sharpening, contrast enhancement</p>
+<p><strong>Steps</strong>:</p>
+<ol>
+<li>Import a test image in the console (640×480 recommended; use small resolutions for everyday debugging)</li>
+<li>Select the target IP and set the resolution</li>
+<li>Edit register values (e.g. Gamma coefficient <code>0x04=0x00000003</code> for bypass mode)</li>
+<li>Click <strong>▶ Run simulation</strong></li>
+<li>When it finishes, check the output thumbnail → click the analysis buttons for the metrics</li>
+</ol>
+<p><strong>Console output example</strong> (when the golden reference passes):</p>
+<pre><code>🔧 Register self-check  REGCHK PASS  2/2 readbacks match (write-then-read compare)
+📋 Golden reference  PASS  bit-exact, 0 mismatched pixels
+📊 Quality analysis  PSNR 42.3 dB · 640×480
+</code></pre>
+<p><strong>Command-line equivalent</strong>:</p>
+<pre><code class="language-bash">make all IP=gamma_corr WIDTH=640 HEIGHT=480 INPUT_IMG=sim/testdata/input.png
+</code></pre>
+<hr />
+<h3 id="scenario-2-developing-a-new-ip-from-scratch-vibe-coding-flow">Scenario 2: Developing a new IP from scratch (vibe coding flow)</h3>
+<p><strong>When to use</strong>: you have the project but no IP code at hand and will generate it with AI.</p>
+<p><strong>Recommended — spec-driven</strong> (RTL and golden model generated together, consistent by construction):</p>
+<ol>
+<li>Tell the AI: "Implement a 3-tap sharpening filter with coefficients [1,-2,1] and a bypass" (or a more specific spec)</li>
+<li>The AI writes <code>.ip_spec.yaml</code> per <code>.trae/rules/project_rules.md</code> and calls <code>gen_ip_spec.py</code></li>
+<li>The toolchain produces 4 files <strong>in one shot</strong>:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rtl/&lt;ip&gt;/&lt;ip&gt;.v</code></td>
+<td>Verilog RTL—usable as-is, or modify the datapath</td>
+</tr>
+<tr>
+<td><code>rtl/&lt;ip&gt;/regdef.json</code></td>
+<td>data source for the console's register form</td>
+</tr>
+<tr>
+<td><code>sim/tests/tb_&lt;ip&gt;.v</code></td>
+<td>testbench skeleton</td>
+</tr>
+<tr>
+<td><code>scripts/golden.py</code></td>
+<td>golden-model function (appended to MODELS/CONFIG)</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Refresh the console; the new IP appears in the IP dropdown automatically</li>
+<li>Run <code>make verify IP=&lt;ip&gt;</code> to verify (golden comparison runs automatically)</li>
+</ol>
+<p><strong>Traditional — follow the assignment doc</strong> (the 7 existing assignments):</p>
+<ol>
+<li>Read the spec for the assignment in <code>docs/IP开发课题说明书.md</code></li>
+<li>Tell the AI: "Implement assignment 2, the Gamma correction IP, placing files per the project rules"</li>
+<li>The AI generates RTL + TB + regdef (<strong>the golden model must be added manually</strong>—see below)</li>
+<li>Refresh the console → import an image → run the simulation</li>
+</ol>
+<p><strong>The development iteration loop</strong>:</p>
+<pre><code class="language-mermaid">flowchart LR
+    A[&quot;Describe the requirement to the AI&quot;] --&gt; B[&quot;gen_ip_spec.py generates\nRTL + TB + regdef + golden&quot;]
+    B --&gt; C[&quot;make verify IP=&amp;lt;ip&amp;gt;&quot;]
+    C --&gt; D{&quot;Golden reference PASS?&quot;}
+    D -- No --&gt; E[&quot;Fix the RTL / golden.py&lt;br/&gt;inspect analysis panels / waveforms&quot;]
+    E --&gt; C
+    D -- Yes --&gt; F[&quot;Verify on a large image / run the regression&quot;]
+</code></pre>
+<p><strong>About fixing the golden model</strong>: the auto-generated golden model is an algorithm template; RTL details (fixed-point widths, truncation points, saturation logic) need manual review. How to check:</p>
+<pre><code class="language-bash"># Compare the RTL fixed-point arithmetic against golden.py's Python arithmetic
+make verify IP=my_filter WIDTH=64 HEIGHT=48
+
+# On FAIL, find where the mismatches are
+# open output/reports/result_&lt;ip&gt;.json and look at mismatch_pixels
+# decide whether it is fixed-point truncation error (tune CONFIG['tol']) or a logic bug (fix golden.py)
+</code></pre>
+<hr />
+<h3 id="scenario-3-golden-reference-comparison">Scenario 3: Golden-reference comparison</h3>
+<p><strong>Applicable IPs</strong>: all 7 IPs</p>
+<p><strong>Principle</strong>: every IP has a Python reference model (<code>scripts/golden.py</code>) that reproduces the processing result with integer/fixed-point arithmetic exactly matching the RTL; the simulation output is compared word by word.</p>
+<p><strong>How to run</strong>:
+- The comparison runs automatically when you click ▶ Run simulation in the console; the result is shown in the UI
+- Command line: <code>make verify IP=gamma_corr WIDTH=640 HEIGHT=480</code></p>
+<p><strong>Reading the result</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Display</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Golden PASS</td>
+<td>Bit-exact, 0 mismatched pixels. The algorithm is correct.</td>
+</tr>
+<tr>
+<td>Golden FAIL</td>
+<td>Mismatched pixels exist; the count and the first mismatch coordinate are shown. The RTL needs checking.</td>
+</tr>
+<tr>
+<td>No reference model</td>
+<td>No golden model registered for this IP yet; only image-quality analysis runs</td>
+</tr>
+<tr>
+<td>Video mode · no per-frame bitwise comparison</td>
+<td>In video mode there is no word-by-word comparison; temporal analysis evaluates instead</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="scenario-4-multi-frame-video-simulation">Scenario 4: Multi-frame video simulation</h3>
+<p><strong>Applicable IPs</strong>: denoise (temporal), auto white balance (inter-frame statistics), contrast enhancement (inter-frame statistics)</p>
+<p><strong>Steps</strong>:</p>
+<ol>
+<li>Click <strong>🎬 Import video</strong> in the console</li>
+<li>Pick an MP4; the extension detects the frame count automatically</li>
+<li>Set the number of frames to simulate (2–30 recommended; iverilog is not fast)</li>
+<li>Click ▶ Run simulation</li>
+<li>When the frames finish: drag the slider to preview frame by frame → click "Temporal analysis" to watch the metrics evolve across frames</li>
+</ol>
+<blockquote>
+<p><strong>Important</strong>: statistics-based IPs (AWB, contrast enhancement) must be simulated over multiple frames. The gain is computed on frame N and takes effect on frame N+1; a single-frame simulation outputs the input unchanged.</p>
+</blockquote>
+<p><strong>Command line</strong>:</p>
+<pre><code class="language-bash">make video IP=denoise INPUT_VIDEO=sim/testdata/test.mp4 FRAMES=30
+</code></pre>
+<hr />
+<h3 id="scenario-5-regression-testing-ci-batch-verification">Scenario 5: Regression testing (CI batch verification)</h3>
+<p><strong>Purpose</strong>: after changing a shared module, quickly verify that none of the IPs broke.</p>
+<pre><code class="language-bash">make regression
+</code></pre>
+<p>For every registered IP the command runs: single-frame passthrough → golden comparison → randomized backpressure test, and summarizes PASS/FAIL.</p>
+<hr />
+<h3 id="scenario-6-debugging-with-waveforms">Scenario 6: Debugging with waveforms</h3>
+<p><strong>Steps</strong>:
+1. Click <strong>📈 View waveform</strong> in the console (the VCD is generated and opened automatically)
+2. Or from the command line: <code>make sim WAVE=1 IP=gamma_corr</code>
+3. In the waveform viewer check:
+   - reset-release timing from <code>aresetn</code> to <code>s_axis_tvalid</code>
+   - SOF/EOL alignment of <code>tuser/tlast</code> (are frame start / line end correct?)
+   - glitches on <code>tdata</code> during the <code>tready</code> handshake
+   - pipeline latency: the number of clock cycles from input pixel to output pixel</p>
+<hr />
+<h3 id="scenario-7-defect-injection-and-robustness-verification">Scenario 7: Defect injection and robustness verification</h3>
+<p><strong>Operation</strong>: console <strong>⚔ Preprocess</strong> → pick an injection → run the simulation</p>
+<table>
+<thead>
+<tr>
+<th>Injection</th>
+<th>What it tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gaussian noise σ=15</td>
+<td>noise suppression capability of the denoise IP</td>
+</tr>
+<tr>
+<td>Dead-pixel injection 200/frame</td>
+<td>whether the dead-pixel-correction IP can detect and repair them</td>
+</tr>
+<tr>
+<td>Gaussian blur 5×5</td>
+<td>whether the sharpening IP can restore clarity</td>
+</tr>
+<tr>
+<td>Noise + dead pixels (combined)</td>
+<td>the cascade effect of chained processing (denoise → dead-pixel correction)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-image-quality-analysis-in-depth">6. Image-quality analysis in depth</h2>
+<p>After every simulation, 5 analyses run automatically. Click the corresponding button in the console to open its standalone panel.</p>
+<h3 id="6-1-image-comparison">6.1 Image comparison</h3>
+<p>Shows the input image and the output image side by side to confirm the visual effect. Good for a quick "did anything happen at all" check.</p>
+<h3 id="6-2-difference-heatmap">6.2 Difference heatmap</h3>
+<p>Pseudo-color rendering of <code>|output − input|</code>. Red areas = large changes, blue = unchanged. Locate where the IP acts at a glance.</p>
+<h3 id="6-3-sharpness-analysis">6.3 Sharpness analysis</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Algorithm</th>
+<th>Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Laplacian variance</td>
+<td><code>cv2.Laplacian().var()</code></td>
+<td>Overall sharpness. Higher is sharper.</td>
+</tr>
+<tr>
+<td>Tenengrad value</td>
+<td>sum of squared Sobel gradients</td>
+<td>A classic focus-measure function. Stronger edges give a higher value.</td>
+</tr>
+<tr>
+<td>Grade</td>
+<td>automatic verdict</td>
+<td>Blurry / Fair / Good / Excellent / Outstanding</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Typical uses</strong>:</p>
+<ul>
+<li>Sharpening IP development: feed a blurred test pattern; the Laplacian variance of the output should rise significantly</li>
+<li>Denoise IP development: feed a noisy image; the output should not lose much sharpness (the Laplacian variance should not drop noticeably)</li>
+</ul>
+<h3 id="6-4-white-balance-analysis">6.4 White-balance analysis</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Algorithm</th>
+<th>Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R/G/B gains</td>
+<td>gray-world assumption</td>
+<td>ideal values are <code>1.0 / 1.0 / 1.0</code></td>
+</tr>
+<tr>
+<td>Color-temperature tendency</td>
+<td>estimated from the R/B ratio</td>
+<td>warm (yellowish) / neutral / cool (bluish)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Typical use</strong>: AWB IP development — feed a 3000K gray card (warm); the output gains should approach 1.0 / 1.0 / 1.0 and the color-temperature tendency should become "neutral".</p>
+<h3 id="6-5-histogram">6.5 Histogram</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R/G/B means</td>
+<td>average brightness of the three channels</td>
+</tr>
+<tr>
+<td>Brightness change</td>
+<td>shift from the input mean to the output mean</td>
+</tr>
+<tr>
+<td>Quantile statistics</td>
+<td>P5/P50/P95 percentiles</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Typical uses</strong>:</p>
+<ul>
+<li>Gamma correction: the output mean should rise, lifting the shadows</li>
+<li>Contrast enhancement: the histogram should spread more evenly</li>
+</ul>
+<h3 id="6-6-psnr">6.6 PSNR</h3>
+<p>Peak signal-to-noise ratio; measures how much the output differs from the input.</p>
+<table>
+<thead>
+<tr>
+<th>PSNR range</th>
+<th>Grade</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&gt; 40 dB</td>
+<td>Excellent</td>
+<td>Differences are tiny and invisible to the eye</td>
+</tr>
+<tr>
+<td>30–40 dB</td>
+<td>Good</td>
+<td>Slight differences</td>
+</tr>
+<tr>
+<td>20–30 dB</td>
+<td>Fair</td>
+<td>Noticeable differences (the IP is working; the processing is strong)</td>
+</tr>
+<tr>
+<td>&lt; 20 dB</td>
+<td>Poor</td>
+<td>Large differences (possibly an algorithm or parameter problem)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note</strong>: A high PSNR is not necessarily good, and a low one is not necessarily bad. A sharpening IP naturally has a low PSNR (it deliberately changes pixel values). Judge PSNR together with the other metrics.</p>
+</blockquote>
+<h3 id="6-7-gamma-analysis">6.7 Gamma analysis</h3>
+<p>Measured Gamma curve vs. target Gamma curve. Samples a 16-step grayscale ramp and least-squares-fits the effective Gamma value.</p>
+<p><strong>Typical uses</strong>: Gamma-correction IP (target 2.2, deviation &lt; 0.05 is excellent), color-space-conversion IP (target 1.0, passthrough).</p>
+<hr />
+<h2 id="7-command-line-reference">7. Command-line reference</h2>
+<p>The extension drives this command line internally, but you can also use it directly in a terminal.</p>
+<h3 id="7-1-makefile-targets">7.1 Makefile targets</h3>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>make all</code></td>
+<td>One click: stimulus generation → simulation → image restoration → golden reference → quality analysis</td>
+</tr>
+<tr>
+<td><code>make sim</code></td>
+<td>Run the simulation only</td>
+</tr>
+<tr>
+<td><code>make verify</code></td>
+<td>Golden-reference comparison</td>
+</tr>
+<tr>
+<td><code>make regression</code></td>
+<td>Regression test over all IPs</td>
+</tr>
+<tr>
+<td><code>make video</code></td>
+<td>Full video-mode flow</td>
+</tr>
+<tr>
+<td><code>make sim WAVE=1</code></td>
+<td>Simulation + VCD waveform output</td>
+</tr>
+<tr>
+<td><code>make clean</code></td>
+<td>Clean the output files</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Makefile variables</strong> (passed as <code>make KEY=VALUE</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IP</td>
+<td>passthrough</td>
+<td>target IP name</td>
+</tr>
+<tr>
+<td>WIDTH</td>
+<td>64</td>
+<td>image width</td>
+</tr>
+<tr>
+<td>HEIGHT</td>
+<td>48</td>
+<td>image height</td>
+</tr>
+<tr>
+<td>FRAMES</td>
+<td>1</td>
+<td>frame count</td>
+</tr>
+<tr>
+<td>INPUT_IMG</td>
+<td>sim/testdata/test_input.png</td>
+<td>input image path</td>
+</tr>
+<tr>
+<td>INPUT_VIDEO</td>
+<td>sim/testdata/test_input.mp4</td>
+<td>input video path</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-2-python-script-quick-reference">7.2 Python script quick reference</h3>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gen_stimulus.py</td>
+<td>image → hex stimulus</td>
+<td><code>-i input.png -o stimulus.hex -f RGB888</code></td>
+</tr>
+<tr>
+<td>gen_pattern.py</td>
+<td>generate test patterns</td>
+<td><code>--pattern ramp -W 640 -H 480</code></td>
+</tr>
+<tr>
+<td>gen_header.py</td>
+<td>generate frame header info</td>
+<td><code>-w 640 -H 480 -f RGB888</code></td>
+</tr>
+<tr>
+<td>gen_output.py</td>
+<td>hex → image/video</td>
+<td><code>-i result.hex -o output.png</code></td>
+</tr>
+<tr>
+<td>gen_video_stimulus.py</td>
+<td>split video frames → hex</td>
+<td><code>-i input.mp4 --max-frames 30</code></td>
+</tr>
+<tr>
+<td>analyze.py</td>
+<td>quality analysis + report output</td>
+<td><code>--input in.png --output out.png --all</code></td>
+</tr>
+<tr>
+<td>verify.py</td>
+<td>golden-comparison orchestration</td>
+<td><code>--ip gamma_corr -W 640 -H 480</code></td>
+</tr>
+<tr>
+<td>preprocess.py</td>
+<td>noise/dead-pixel/blur injection</td>
+<td><code>-i in.png -o out.png --noise 15</code></td>
+</tr>
+<tr>
+<td>dump_frames.py</td>
+<td>split multi-frame hex into PNGs</td>
+<td><code>-i stimulus.hex -d dir/ --frames 30</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-project-directory-structure">8. Project directory structure</h2>
+<p>The complete structure after creating a project:</p>
+<pre><code>my_vip_project/
+├── CLAUDE.md                    ← vibe coding rules of conduct (think first, simplicity first, …)
+├── docs/
+│   └── IP开发课题说明书.md          ← functional requirements and algorithm specs for the 7 IP assignments
+├── .trae/
+│   └── rules/
+│       └── project_rules.md       ← AI code-generation rules (TB skeleton, interface conventions, regdef format)
+├── rtl/
+│   ├── passthrough/               ← example DUT (passthrough, for reference)
+│   │   ├── passthrough.v
+│   │   └── regdef.json
+│   └── &lt;your IP&gt;/                 ← your IP code goes here
+│       ├── &lt;ip_name&gt;.v
+│       └── regdef.json             ← must be provided; the console renders the register editor from it
+├── sim/
+│   ├── common/                    ← shared BFMs (do not modify)
+│   │   ├── axis_video_source.v    ← AXI-Stream stimulus source
+│   │   ├── axis_video_sink.v      ← AXI-Stream result collection
+│   │   └── reg_config.v           ← register configuration
+│   ├── tests/
+│   │   └── tb_&lt;ip_name&gt;.v         ← your IP's testbench
+│   └── testdata/                  ← simulation data (put images/hex files here)
+├── scripts/                       ← Python toolchain
+│   ├── gen_stimulus.py
+│   ├── gen_output.py
+│   ├── analyze.py
+│   ├── golden.py                  ← golden reference model
+│   └── ...
+├── output/
+│   ├── images/                    ← output images
+│   ├── reports/                   ← analysis report JSON
+│   └── waves/                     ← .vcd waveform files
+├── Makefile
+├── requirements.txt
+├── .gitignore
+└── README.md
+</code></pre>
+<hr />
+<h2 id="9-faq">9. FAQ</h2>
+<p><strong>Q: The IP dropdown is empty after creating a project</strong></p>
+<p>A: A new project has only the <code>passthrough</code> example IP. After generating or hand-writing IP code, make sure a <code>.v</code> file exists under <code>rtl/&lt;ip_name&gt;/</code>, then refresh the console.</p>
+<hr />
+<p><strong>Q: The simulation says "no results yet" after running</strong></p>
+<p>A: Check the log in the VIP Sim output panel. Common causes: the iverilog compile failed (syntax error), <code>stimulus.hex</code> was not generated, or a pixel-count mismatch in the DUT hung the sink.</p>
+<hr />
+<p><strong>Q: Statistics-based IPs (AWB / contrast enhancement) show no effect in single-frame simulation</strong></p>
+<p>A: That is expected. Statistics-based IPs compute their gains/parameters on frame N and apply them on frame N+1. You must set <code>frames ≥ 2</code> in the console; the analysis tool takes the last frame's result by default.</p>
+<hr />
+<p><strong>Q: 4K simulation is slow</strong></p>
+<p>A: iverilog is an interpreted simulator; one 4K frame has 8.3 million pixels and can take tens of minutes. Use a reduced resolution for everyday debugging (e.g. 64×64 or 256×144)—the algorithm logic is identical to full resolution. Run full resolution only once or twice at milestone verification.</p>
+<hr />
+<p><strong>Q: How to add a golden model for a new IP</strong></p>
+<p>A: Edit <code>scripts/golden.py</code>:
+1. Add <code>'&lt;ip&gt;': m_&lt;ip&gt;</code> to the <code>MODELS</code> dict
+2. Implement <code>m_&lt;ip&gt;(pixels, regs, width, height)</code> → return the expected pixel list
+3. Register the comparison parameters (frame count, tolerance, allowed mismatch ratio) in the <code>CONFIG</code> dict
+4. Run <code>make verify IP=&lt;ip&gt;</code> to check</p>
+<hr />
+<p><strong>Q: The simulation log shows <code>ERROR: simulation timeout</code></strong></p>
+<p>A: The DUT did not output enough pixels and the sink kept waiting. Check:
+- whether the DUT passes <code>tuser/tlast</code> through correctly
+- whether pipeline depth delays the output (the timeout guard is generously large unless the pixel count is badly mismatched)
+- whether the statistics-based IP is in bypass mode</p>
+<hr />
+<p><strong>Q: PSNR is 100 dB but the golden reference FAILs</strong></p>
+<p>A: The golden reference checks consistency between the RTL fixed-point result and the Python reference model (bit-exact); PSNR measures the difference between output and input. The two are independent—a high PSNR only says the output is close to the input, not that the algorithm is correct.</p>
+<hr />
+<p><strong>Q: The output image looks purple/green-shifted</strong></p>
+<p>A: Check that the byte arrangement of <code>tdata</code> in the RTL is <code>{8'd0, R[7:0], G[7:0], B[7:0]}</code>. Common mistakes are reversing the RGB order or truncating the width.</p>
+<hr />
+<p><strong>Document version</strong>: V1.2.0<br />
+<strong>Last updated</strong>: 2026-06-24</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

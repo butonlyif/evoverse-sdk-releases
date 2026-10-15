@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 优化策略参考</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>时序和资源优化策略。</span>
+<code>efinity/Efinity优化设计.md</code>
+<a href="../../../efinity/Efinity优化设计.md">Markdown 源文件</a></p>
+<h1>Efinity 优化策略参考</h1></header>
+<main class="article"><h1 id="efinity-优化策略参考">Efinity 优化策略参考</h1>
+<blockquote>
+<p>基于 Efinity 2026.1 原生工具参数和官方文档整理。
+来源：<code>efx_map --help</code>、<code>efx_pnr --help</code>/<code>--help-verbose</code>、<code>efx_pgm --help</code>、官方 PDF 文档。</p>
+</blockquote>
+<hr />
+<h2 id="1-综合优化-efx_map">1. 综合优化 (efx_map)</h2>
+<h3 id="1-1-优化模式-mode">1.1 优化模式 (<code>--mode</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>speed</code>（默认）</td>
+<td>fMAX 优先</td>
+<td>时序紧张的设计</td>
+</tr>
+<tr>
+<td><code>speed2</code></td>
+<td>增强速度模式</td>
+<td>比 speed 更激进的速度优化</td>
+</tr>
+<tr>
+<td><code>area</code></td>
+<td>面积优化</td>
+<td>资源接近上限的设计</td>
+</tr>
+<tr>
+<td><code>area2</code></td>
+<td>增强面积模式（大型 MUX/选择器树优化）</td>
+<td>大型多路选择器密集的设计</td>
+</tr>
+<tr>
+<td><code>cong</code></td>
+<td>缓解拥塞</td>
+<td>布线拥塞严重的设计</td>
+</tr>
+<tr>
+<td><code>power</code></td>
+<td>功耗优先</td>
+<td>低功耗场景</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-重定时-retiming">1.2 重定时 (<code>--retiming</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>禁用</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>启用 — 在组合逻辑前后移动寄存器，均衡路径延迟</td>
+</tr>
+<tr>
+<td><code>2</code>（默认）</td>
+<td>高级模式 — 比模式1更激进，对 Titanium 推荐</td>
+</tr>
+</tbody>
+</table>
+<p><strong>限制</strong>：只能在已有寄存器间重分布，不能创造新寄存器。适用于流水线不够深的组合逻辑路径。</p>
+<h3 id="1-3-时序优化-seq_opt">1.3 时序优化 (<code>--seq_opt</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>禁用</td>
+</tr>
+<tr>
+<td><code>1</code>（默认）</td>
+<td>启用 — 优化时序逻辑综合结果</td>
+</tr>
+<tr>
+<td><code>--seq-opt-sync-only</code></td>
+<td>仅优化同步 set/reset 逻辑</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-4-dsp-优化">1.4 DSP 优化</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--dsp-input-regs-packing</code></td>
+<td><code>1</code>（开）</td>
+<td>DSP 输入寄存器打包（Titanium）</td>
+</tr>
+<tr>
+<td><code>--dsp-output-regs-packing</code></td>
+<td><code>1</code>（开）</td>
+<td>DSP 输出寄存器打包（Titanium）</td>
+</tr>
+<tr>
+<td><code>--dsp-mac-packing</code></td>
+<td><code>1</code>（开）</td>
+<td>DSP 乘加（MAC）打包（Titanium）</td>
+</tr>
+<tr>
+<td><code>--mult-decomp-retime</code></td>
+<td><code>1</code>（开）</td>
+<td>宽乘法器分解后重定时</td>
+</tr>
+<tr>
+<td><code>--mult-auto-pipeline</code></td>
+<td><code>0</code>（关）</td>
+<td>宽乘法器自动流水线（设置级数，0-36）</td>
+</tr>
+<tr>
+<td><code>--max_mult</code></td>
+<td><code>-1</code>（无限制）</td>
+<td>限制 DSP/Multiplier 数量</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-5-bram-优化">1.5 BRAM 优化</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--bram_output_regs_packing</code></td>
+<td><code>1</code>（开）</td>
+<td>BRAM 输出寄存器打包</td>
+</tr>
+<tr>
+<td><code>--bram-push-tco-outreg</code></td>
+<td><code>0</code>（关）</td>
+<td>BRAM Tco 输出寄存器后推</td>
+</tr>
+<tr>
+<td><code>--max_ram</code></td>
+<td><code>-1</code>（无限制）</td>
+<td>限制 BlockRAM 数量</td>
+</tr>
+<tr>
+<td><code>--ram-decomp-mode</code></td>
+<td><code>0</code></td>
+<td>RAM 分解模式（0=speed, 1=area, 2=power）</td>
+</tr>
+<tr>
+<td><code>--use-logic-for-small-mem</code></td>
+<td><code>64</code></td>
+<td>小于此 bit 数的存储器用 LE 实现</td>
+</tr>
+<tr>
+<td><code>--use-logic-for-small-rom</code></td>
+<td><code>64</code></td>
+<td>小于此 bit 数的 ROM 用 LE 实现</td>
+</tr>
+<tr>
+<td><code>--max-bit-blast-mem-size</code></td>
+<td><code>10240</code></td>
+<td>展开为逻辑的最大存储器 bit 数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-6-逻辑优化">1.6 逻辑优化</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--infer-clk-enable</code></td>
+<td><code>3</code></td>
+<td>时钟使能推断努力级（0=禁用, 1-4 努力递增）</td>
+</tr>
+<tr>
+<td><code>--infer-sync-set-reset</code></td>
+<td><code>1</code>（开）</td>
+<td>推断同步 set/reset 信号到 FF</td>
+</tr>
+<tr>
+<td><code>--fanout-limit</code></td>
+<td><code>0</code>（无限制）</td>
+<td>扇出上限（0=无限制, 1-2000）</td>
+</tr>
+<tr>
+<td><code>--min-ce-fanout</code></td>
+<td><code>0</code></td>
+<td>FF CE 推断最小扇出</td>
+</tr>
+<tr>
+<td><code>--min-sr-fanout</code></td>
+<td><code>0</code></td>
+<td>SR 推断最小扇出</td>
+</tr>
+<tr>
+<td><code>--operator-sharing</code></td>
+<td><code>0</code>（关）</td>
+<td>算术运算符和 MUX 资源共享</td>
+</tr>
+<tr>
+<td><code>--optimize-adder-tree</code></td>
+<td><code>0</code>（关）</td>
+<td>优化倾斜加法树</td>
+</tr>
+<tr>
+<td><code>--insert-carry-skip</code></td>
+<td><code>0</code>（关）</td>
+<td>进位跳跃链优化（Titanium）</td>
+</tr>
+<tr>
+<td><code>--blast_const_operand_adders</code></td>
+<td><code>1</code>（开）</td>
+<td>打散常量操作数加法器</td>
+</tr>
+<tr>
+<td><code>--pack-luts-to-comb4</code></td>
+<td><code>0</code>（关）</td>
+<td>LUT 打包到 COMB4 原语（Titanium, 0/1/2 努力级）</td>
+</tr>
+<tr>
+<td><code>--create-onehot-fsms</code></td>
+<td><code>0</code>（关）</td>
+<td>创建 one-hot 编码有限状态机</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-7-编译控制">1.7 编译控制</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--hdl-compile-unit</code></td>
+<td><code>1</code>（单文件）</td>
+<td>SystemVerilog 编译单元模式（0=多文件, 1=单文件）</td>
+</tr>
+<tr>
+<td><code>--hdl-loop-limit</code></td>
+<td><code>20000</code></td>
+<td>HDL 循环展开上限</td>
+</tr>
+<tr>
+<td><code>--max_threads</code></td>
+<td><code>-1</code>（自动）</td>
+<td>并行线程数</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-p-r-优化-efx_pnr">2. P&amp;R 优化 (efx_pnr)</h2>
+<h3 id="2-1-优化级别-optimization_level">2.1 优化级别 (<code>--optimization_level</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>级别</th>
+<th>方向</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TIMING_1</code></td>
+<td>时序</td>
+<td>基本时序优化</td>
+</tr>
+<tr>
+<td><code>TIMING_2</code></td>
+<td>时序</td>
+<td>中等时序优化</td>
+</tr>
+<tr>
+<td><code>TIMING_3</code></td>
+<td>时序</td>
+<td>激进的时序优化</td>
+</tr>
+<tr>
+<td><code>CONGESTION_1</code></td>
+<td>拥塞</td>
+<td>轻度拥塞缓解</td>
+</tr>
+<tr>
+<td><code>CONGESTION_2</code></td>
+<td>拥塞</td>
+<td>中度拥塞缓解</td>
+</tr>
+<tr>
+<td><code>CONGESTION_3</code></td>
+<td>拥塞</td>
+<td>激进拥塞缓解</td>
+</tr>
+<tr>
+<td><code>POWER_1</code></td>
+<td>功耗</td>
+<td>基本功耗优化</td>
+</tr>
+<tr>
+<td><code>POWER_2</code></td>
+<td>功耗</td>
+<td>激进功耗优化</td>
+</tr>
+</tbody>
+</table>
+<p><strong>提示</strong>：空字符串 <code>""</code> 表示使用工具默认策略。</p>
+<h3 id="2-2-布局选项">2.2 布局选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--placer_effort_level</code></td>
+<td><code>2</code></td>
+<td>布局努力级（1=最快, 5=最高质量）</td>
+</tr>
+<tr>
+<td><code>--seed</code></td>
+<td><code>1</code></td>
+<td>布局随机种子</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Placer Effort Level 影响</strong>：
+- 1-2: 快速布局，适合迭代开发
+- 3-4: 中等质量，适合时序收敛
+- 5: 最高质量，编译时间显著增加（2-3x）</p>
+<h3 id="2-3-seed-sweep">2.3 Seed Sweep</h3>
+<p>不同 <code>--seed</code> 值产生不同布局结果，对时序有显著影响。</p>
+<pre><code class="language-powershell"># 自动 Seed Sweep（遍历10个seed）
+efx_run_pnr_sweep.bat &lt;prj_xml&gt; sweep_seeds --num_seeds 10
+
+# 遍历优化级别组合
+efx_run_pnr_sweep.bat &lt;prj_xml&gt; sweep_opt_levels
+</code></pre>
+<h3 id="2-4-beneficial-skew-beneficial_skew">2.4 Beneficial Skew (<code>--beneficial_skew</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on</code>（默认，Titanium）</td>
+<td>利用时钟 skew 改善 setup timing</td>
+</tr>
+<tr>
+<td><code>off</code></td>
+<td>禁用</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意事项</strong>：
+- 可能引入 hold 违例，需额外 hold fixing
+- 适用于 Titanium 器件族
+- 如果遇到 hold 问题，考虑关闭此选项</p>
+<h3 id="2-5-打包选项">2.5 打包选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--packing_level</code></td>
+<td>打包程度：<code>NONE</code>, <code>MINIMAL</code>, <code>BASIC</code>, <code>L1</code>（默认）, <code>L2</code>, <code>L3</code></td>
+</tr>
+<tr>
+<td><code>--physical_packing</code></td>
+<td>DSP 物理打包（基于早期布局结果，<code>on</code>/<code>off</code>）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-6-布线选项">2.6 布线选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--max_router_iterations</code></td>
+<td>最大布线迭代次数</td>
+</tr>
+<tr>
+<td><code>--load_route</code></td>
+<td>加载已有布线文件（增量布线）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-比特流优化-efx_pgm">3. 比特流优化 (efx_pgm)</h2>
+<h3 id="3-1-配置性能">3.1 配置性能</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--oscillator_clock_divider</code></td>
+<td><code>DIV8</code></td>
+<td>SPI 编程时钟分频（<code>DIV8</code>→<code>DIV4</code>→<code>DIV2</code>→<code>DIV1</code> 加速）</td>
+</tr>
+<tr>
+<td><code>--width</code></td>
+<td><code>1</code></td>
+<td>配置位宽（x1/x2/x4/x8/x16/x32，更高更快）</td>
+</tr>
+<tr>
+<td><code>--bitstream_compression</code></td>
+<td><code>on</code></td>
+<td>比特流压缩（减小存储，但可能增加配置时间）</td>
+</tr>
+<tr>
+<td><code>--spi_low_power_mode</code></td>
+<td><code>on</code></td>
+<td>编程后 Flash 低功耗</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-可靠性">3.2 可靠性</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable_crc_check</code></td>
+<td>编程时 CRC 校验</td>
+</tr>
+<tr>
+<td><code>--enable_seu_crc_check</code></td>
+<td>用户模式 SEU（单粒子翻转）检测</td>
+</tr>
+<tr>
+<td><code>--seu_mode</code></td>
+<td><code>automatic</code> 或 <code>manual</code></td>
+</tr>
+<tr>
+<td><code>--seu_enable_correction</code></td>
+<td>使能 SEU 自动修正（需 SEU CRC 先开启）</td>
+</tr>
+<tr>
+<td><code>--seu_correction_mode</code></td>
+<td>修正模式：<code>manual</code>, <code>timer</code>, <code>monitor</code>, <code>autofix</code></td>
+</tr>
+<tr>
+<td><code>--io_weak_pullup</code></td>
+<td>配置时 IO 弱上拉</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-时序收敛递进策略">4. 时序收敛递进策略</h2>
+<h3 id="level-1-零代码改动-工具层面">Level 1：零代码改动（工具层面）</h3>
+<ol>
+<li>开启 <strong>Retiming</strong>（<code>--retiming 2</code>，默认已开）</li>
+<li>提高 <strong>Placer Effort Level</strong>（<code>--placer_effort_level 3-5</code>）</li>
+<li>跑 <strong>Seed Sweep</strong>（尝试不同随机种子）</li>
+<li>尝试不同 <strong>优化级别</strong>（<code>--optimization_level TIMING_2/3</code>）</li>
+<li>尝试不同综合模式（<code>--mode speed2</code>）</li>
+<li>用 <strong>AOE</strong> 自动探索选项组合：</li>
+</ol>
+<pre><code class="language-powershell">efx_run_aoe.bat run -x &lt;project.xml&gt; -r regular.recipe
+</code></pre>
+<h3 id="level-2-约束层面-sdc-修改">Level 2：约束层面（SDC 修改）</h3>
+<ol>
+<li>添加 <strong>I/O delay</strong> 约束（<code>set_input_delay</code> / <code>set_output_delay</code>）</li>
+<li>设置 <strong>multicycle path</strong>（降低不必要的严格约束）</li>
+<li>设置 <strong>clock groups</strong>（<code>set_clock_groups -asynchronous</code>）</li>
+<li>设置 <strong>false path</strong>（异步复位、慢速信号）</li>
+<li>添加 <strong>max_delay</strong> / <strong>min_delay</strong> 点对点约束</li>
+</ol>
+<h3 id="level-3-rtl-层面-代码修改">Level 3：RTL 层面（代码修改）</h3>
+<ol>
+<li>在长组合逻辑路径中 <strong>插入 Pipeline 寄存器</strong></li>
+<li>优化 CDC（时钟域交叉）结构 — 使用标准同步器</li>
+<li>减少扇出：复制驱动或使用 <code>max_fanout</code> 约束</li>
+<li>优化状态机编码（one-hot vs binary）</li>
+<li>对宽乘法器手动添加流水线</li>
+<li>使用 <code>(* keep *)</code> 或 <code>(* dont_touch *)</code> 保护关键寄存器</li>
+</ol>
+<hr />
+<h2 id="5-titanium-器件优化要点">5. Titanium 器件优化要点</h2>
+<h3 id="5-1-架构特征">5.1 架构特征</h3>
+<ul>
+<li>LUT4 基本单元：≥3 级连续 LUT 组合逻辑链容易产生 setup 违例</li>
+<li>DSP Block：支持 MAC（乘加）打包，输入/输出寄存器打包默认开启</li>
+<li>时钟网络：<code>beneficial_skew</code> 默认 <code>on</code></li>
+</ul>
+<h3 id="5-2-推荐的-titanium-默认配置">5.2 推荐的 Titanium 默认配置</h3>
+<pre><code class="language-xml">&lt;!-- efx_map --&gt;
+&lt;efx:param name=&quot;mode&quot; value=&quot;speed&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;retiming&quot; value=&quot;2&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;dsp-input-regs-packing&quot; value=&quot;1&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;dsp-output-regs-packing&quot; value=&quot;1&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;dsp-mac-packing&quot; value=&quot;1&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;max_threads&quot; value=&quot;-1&quot; value_type=&quot;e_integer&quot; /&gt;
+
+&lt;!-- efx_pnr --&gt;
+&lt;efx:param name=&quot;seed&quot; value=&quot;1&quot; value_type=&quot;e_integer&quot; /&gt;
+&lt;efx:param name=&quot;placer_effort_level&quot; value=&quot;2&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;beneficial_skew&quot; value=&quot;on&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;max_threads&quot; value=&quot;-1&quot; value_type=&quot;e_integer&quot; /&gt;
+&lt;efx:param name=&quot;print_critical_path&quot; value=&quot;10&quot; value_type=&quot;e_integer&quot; /&gt;
+
+&lt;!-- efx_pgm --&gt;
+&lt;efx:param name=&quot;mode&quot; value=&quot;active&quot; value_type=&quot;e_option&quot; /&gt;
+&lt;efx:param name=&quot;active_capture_clk_edge&quot; value=&quot;negedge&quot; value_type=&quot;e_option&quot; /&gt;
+</code></pre>
+<h3 id="5-3-时序不收敛时的-titanium-排查清单">5.3 时序不收敛时的 Titanium 排查清单</h3>
+<ol>
+<li>确认 <code>beneficial_skew</code> 是否引入了 hold 违例（尝试关闭）</li>
+<li>检查是否存在 ≥3 级连续 LUT 组合逻辑路径（插入 Pipeline）</li>
+<li>确认 <code>active_capture_clk_edge</code> 设置为 <code>negedge</code>（Titanium 专用默认值）</li>
+<li>确认 <code>Ti35</code>/<code>Ti60</code> 器件未使用已废弃的 <code>I4</code>/<code>I4L</code> 时序模型</li>
+<li>检查 DSP 打包是否被意外关闭（<code>dsp-*-packing</code> 应为 1）</li>
+</ol></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

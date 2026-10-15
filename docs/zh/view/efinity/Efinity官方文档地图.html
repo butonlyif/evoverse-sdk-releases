@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 官方文档地图</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>安装内 doc 与 sim_models 的主题地图、按问题查文档指南与仿真模型证据链。</span>
+<code>efinity/Efinity官方文档地图.md</code>
+<a href="../../../efinity/Efinity官方文档地图.md">Markdown 源文件</a></p>
+<h1>Efinity 官方文档地图</h1></header>
+<main class="article"><h1 id="efinity-官方文档地图">Efinity 官方文档地图</h1>
+<blockquote>
+<p><strong>适用版本</strong>：Efinity 2026.1（实测安装目录 <code>C:\Efinity\2026.1\</code>）
+<strong>调查日期</strong>：2026-09-25
+<strong>调查方式</strong>：对官方 doc 目录只读取证，所有论断标注证据绝对路径（必要时含行号）。
+<strong>定位</strong>：本卷是"从问题找官方文档"的索引；工具命令细节见《Efinity工具链参考.md》，器件数据库见《Efinity器件数据库与架构数据.md》。</p>
+</blockquote>
+<hr />
+<h2 id="目录">目录</h2>
+<ul>
+<li><a href="#1-doc-目录总览与四文档站分工">1. doc 目录总览与四文档站分工</a></li>
+<li><a href="#2-主题地图按主题查文档">2. 主题地图（按主题查文档）</a></li>
+<li><a href="#3-按问题查文档指南">3. 按问题查文档指南</a></li>
+<li><a href="#4-sim_models-结构与仿真映射">4. sim_models 结构与仿真映射</a></li>
+<li><a href="#5-efx_ff-单-sr-引脚证据链专节">5. EFX_FF 单 SR 引脚证据链专节</a></li>
+</ul>
+<hr />
+<h2 id="1-doc-目录总览与四文档站分工">1. doc 目录总览与四文档站分工</h2>
+<h3 id="1-1-目录规模-实测">1.1 目录规模（实测）</h3>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>大小 / 数量</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\</code></td>
+<td>78.07 MB</td>
+<td>主文档站：<code>topics\</code> 490 个 HTML + <code>pdf\</code> 9 份 + <code>art\</code> / <code>css\</code> / <code>fonts\</code> / <code>js\</code> / <code>logo\</code> / <code>images\</code></td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\doc\</code></td>
+<td>—</td>
+<td>Interface Designer 文档站</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pgm\doc\</code></td>
+<td>—</td>
+<td>Programmer 文档站（含 <code>jtag-device-ids-ti.html</code>）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\doc\</code></td>
+<td>—</td>
+<td>Debugger 文档站</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-主文档与-pdf-清单">1.2 主文档与 PDF 清单</h3>
+<p>主用户指南版本：<strong>UG-EFN-SOFTWARE-v14.0</strong>（<code>doc\topics\</code> 页眉可见）。</p>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\doc\pdf\</code> 实测 9 份；主导航（<code>doc\topics\efn-simulating-models.html</code> 等页左侧导航）只列 8 份</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>PDF</th>
+<th>是否在主导航</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>efinity-ug（主 UG）</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>installation</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>quantum-ti-primitives-ug（Titanium 原语）</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>quantum-tz-primitives-ug（Topaz 原语）</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>quantum-primitives-ug（Trion 原语）</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>synthesis</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>timing-closure</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>python-api</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>efinity-pgm</strong></td>
+<td>❌ <strong>不在主导航</strong>（仅 PDF 与 pgm\doc 站）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>勘误</strong>：外部常传"doc 里只有 2 份 PDF"，实测为 <strong>9 份</strong>。</p>
+<h3 id="1-3-四文档站分工">1.3 四文档站分工</h3>
+<p>HTML 主题页按归属拆在四个站内，主题地图（§2）给出各主题的实际落点：</p>
+<table>
+<thead>
+<tr>
+<th>文档站</th>
+<th>覆盖内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>doc\topics\</code></td>
+<td>Help Overview / Projects / Tool Flow / IP Manager / IP Packager / Synthesis / Partition Planner (Beta) / Timing Closure / Simulating / Messages / Project Files 术语 / CLI / Appendices</td>
+</tr>
+<tr>
+<td><code>pt\doc\</code></td>
+<td>Interface Designer（IO/PLL/DDR/LVDS/MIPI 等硬 IP 配置）</td>
+</tr>
+<tr>
+<td><code>pgm\doc\</code></td>
+<td>Programmer（烧录、JTAG 链、器件 ID）</td>
+</tr>
+<tr>
+<td><code>debugger\doc\</code></td>
+<td>Debugger（LA/VIO 在线调试）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-主题地图-按主题查文档">2. 主题地图（按主题查文档）</h2>
+<p>下表为主要主题 → 代表文档（绝对路径）→ 一句话说明 → 仓库内对应卷。仓库卷为 <code>docs/efinity/</code> 下的中文知识库文档（34 卷已落盘；《Efinity硬IP-接口与JTAG参考.md》并行编写中）。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>主题</th>
+<th>代表文档（<code>C:\Efinity\2026.1\</code> 下）</th>
+<th>一句话说明</th>
+<th>仓库对应卷</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>帮助总览</td>
+<td><code>doc\topics\efn-help-overview.html</code></td>
+<td>文档站入口与导航说明</td>
+<td>《Efinity官方文档地图.md》（本卷）</td>
+</tr>
+<tr>
+<td>2</td>
+<td>工程管理</td>
+<td><code>doc\topics\efn-projects*.html</code></td>
+<td>工程创建/工程 XML 结构</td>
+<td>《Efinity-XML工程文件Schema参考.md》</td>
+</tr>
+<tr>
+<td>3</td>
+<td>工具流程</td>
+<td><code>doc\topics\efn-tool-flow*.html</code></td>
+<td>map → PT → pnr → pgm 全流程</td>
+<td>《Efinity工具链参考.md》</td>
+</tr>
+<tr>
+<td>4</td>
+<td>IP Manager</td>
+<td><code>doc\topics\efn-ip-manager*.html</code></td>
+<td>IP 生成/实例化</td>
+<td>《Efinity-IP-Manager使用指南.md》</td>
+</tr>
+<tr>
+<td>5</td>
+<td>IP Packager</td>
+<td><code>doc\topics\efn-ip-packager*.html</code></td>
+<td>自定义 IP 打包</td>
+<td>《Efinity-IP-Manager使用指南.md》</td>
+</tr>
+<tr>
+<td>6</td>
+<td>综合</td>
+<td><code>doc\topics\syn-*.html</code>（如 <code>syn-ff.html</code>）</td>
+<td>综合行为、原语推断、RTL 规则</td>
+<td>《Efinity设计规范.md》</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Interface Designer</td>
+<td><code>pt\doc\topics\</code></td>
+<td>硬 IP 配置（PLL/DDR/LVDS/MIPI/GPIO）</td>
+<td>《Efinity硬IP-接口与JTAG参考.md》</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Partition Planner (Beta)</td>
+<td><code>doc\topics\efn-partition*.html</code></td>
+<td>分区编译（Beta 功能）</td>
+<td>暂无专卷</td>
+</tr>
+<tr>
+<td>9</td>
+<td>时序收敛</td>
+<td><code>doc\topics\timing-closure*.html</code> + pdf\timing-closure</td>
+<td>时序收敛方法论</td>
+<td>《Efinity优化设计.md》《时序分析指南.md》</td>
+</tr>
+<tr>
+<td>10</td>
+<td>仿真</td>
+<td><code>doc\topics\efn-simulating-models.html</code>、<code>efn-simulate-*.html</code></td>
+<td>原语模型与仿真器流程</td>
+<td>本卷 §4、《Efinity通用仿真流程.md》</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Programmer</td>
+<td><code>pgm\doc\topics\</code></td>
+<td>烧录流程、JTAG 链</td>
+<td>《Efinity编程与烧录指南.md》</td>
+</tr>
+<tr>
+<td>12</td>
+<td>JTAG 器件 ID</td>
+<td><code>pgm\doc\topics\jtag-device-ids-ti.html</code></td>
+<td>Titanium MP IDCODE 官方表</td>
+<td>《Efinity器件数据库与架构数据.md》</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Debugger</td>
+<td><code>debugger\doc\topics\</code></td>
+<td>LA capture / VIO 读写</td>
+<td>《Efinity硬IP-接口与JTAG参考.md》</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Transceiver 调试</td>
+<td><code>debugger\doc\topics\</code>（transceiver 部分）</td>
+<td>高速收发器在线调试</td>
+<td>暂无专卷</td>
+</tr>
+<tr>
+<td>15</td>
+<td>消息与错误</td>
+<td><code>doc\topics\msg-*.html</code>（如 <code>msg-flow.html</code>）</td>
+<td>工具消息字典（错误/警告逐条）</td>
+<td>《Efinity常见编译错误排查.md》</td>
+</tr>
+<tr>
+<td>16</td>
+<td>工程文件术语</td>
+<td><code>doc\topics\</code>（Project Files glossary）</td>
+<td>各产物文件（.peri.xml/.map.v 等）定义</td>
+<td>《Efinity文件格式-SDC与报告产物.md》</td>
+</tr>
+<tr>
+<td>17</td>
+<td>命令行</td>
+<td><code>doc\topics\efn-cli*.html</code> + <code>bin\</code></td>
+<td>CLI 用法</td>
+<td>《Efinity工具链参考.md》《Efinity辅助工具与脚本参考.md》</td>
+</tr>
+<tr>
+<td>18</td>
+<td>原语参考</td>
+<td><code>doc\pdf\quantum-*-primitives-ug.pdf</code></td>
+<td>三家族硬件原语（EFX_LUT4/EFX_FF/DSP/RAM）</td>
+<td>《Efinity设计规范.md》</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Python API</td>
+<td><code>doc\pdf\python-api.pdf</code> + <code>pt\bin\</code></td>
+<td>DesignAPI 自动化</td>
+<td>《Efinity-DesignAPI方法参考.md》</td>
+</tr>
+<tr>
+<td>20</td>
+<td>安装</td>
+<td><code>doc\pdf\installation.pdf</code></td>
+<td>安装与环境变量（EFINITY_HOME 等）</td>
+<td>《Efinity辅助工具与脚本参考.md》</td>
+</tr>
+<tr>
+<td>21</td>
+<td>ISF/约束</td>
+<td><code>pt\doc\</code> + <code>doc\topics\</code>（interface 部分）</td>
+<td>ISF 语法与约束流程</td>
+<td>《Efinity-ISF语法参考.md》</td>
+</tr>
+</tbody>
+</table>
+<p>主题分类依据：<code>doc\topics\efn-simulating-models.html</code> 左侧完整 TOC 树（第 167 行附近区域），涵盖 Help Overview / Projects / Tool Flow / IP Manager / IP Packager / Synthesis / Interface Designer / Partition Planner Beta / Timing Closure / Simulating / Programmer / Debugger / Transceiver Debugging / Messages / Project Files gloss / CLI / Appendices。</p>
+<hr />
+<h2 id="3-按问题查文档指南">3. 按问题查文档指南</h2>
+<table>
+<thead>
+<tr>
+<th>你遇到的问题</th>
+<th>先查</th>
+<th>再查</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>命令参数含义</td>
+<td>《Efinity工具链参考.md》</td>
+<td><code>doc\topics\efn-cli*.html</code></td>
+<td>仓库卷由实测 <code>--help</code> 生成</td>
+</tr>
+<tr>
+<td>编译报错 X</td>
+<td>《Efinity常见编译错误排查.md》</td>
+<td><code>doc\topics\msg-*.html</code></td>
+<td>msg 站按流程阶段分组</td>
+</tr>
+<tr>
+<td>硬 IP 怎么配</td>
+<td>《Efinity硬IP-接口与JTAG参考.md》</td>
+<td><code>pt\doc\topics\</code></td>
+<td></td>
+</tr>
+<tr>
+<td>IO 约束/引脚分配</td>
+<td>《Efinity-ISF语法参考.md》</td>
+<td><code>pt\doc\</code></td>
+<td>ISF 是 Python API 源码，非 XML</td>
+</tr>
+<tr>
+<td>时序不收敛</td>
+<td>《Efinity优化设计.md》《时序分析指南.md》</td>
+<td><code>doc\pdf\timing-closure.pdf</code></td>
+<td></td>
+</tr>
+<tr>
+<td>仿真怎么搭</td>
+<td>本卷 §4、《Efinity通用仿真流程.md》</td>
+<td><code>doc\topics\efn-simulate-*.html</code></td>
+<td></td>
+</tr>
+<tr>
+<td>烧录失败</td>
+<td>《Efinity编程与烧录指南.md》</td>
+<td><code>pgm\doc\topics\</code></td>
+<td>先核 IDCODE（ES/MP）</td>
+</tr>
+<tr>
+<td>工程 XML 字段</td>
+<td>《Efinity-XML工程文件Schema参考.md》</td>
+<td><code>bin\enf_proj.xsd</code></td>
+<td>schema 是权威</td>
+</tr>
+<tr>
+<td>RTL 写法规矩</td>
+<td>《Efinity设计规范.md》</td>
+<td><code>doc\topics\syn-*.html</code></td>
+<td>仓库另有 RTL 编码规范（工作区规则）</td>
+</tr>
+<tr>
+<td>脚本/自动化</td>
+<td>《Efinity辅助工具与脚本参考.md》</td>
+<td><code>doc\pdf\python-api.pdf</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-sim_models-结构与仿真映射">4. sim_models 结构与仿真映射</h2>
+<blockquote>
+<p>证据目录：<code>C:\Efinity\2026.1\sim_models\</code>（实测 11.43 MB）</p>
+</blockquote>
+<h3 id="4-1-目录结构">4.1 目录结构</h3>
+<pre><code>C:\Efinity\2026.1\sim_models\
+├── maplib\                 # map 阶段库
+│   ├── efinix_maplib.v     # 核心原语 maplib 源码（§5 证据之一）
+│   ├── efinix_peri_lib.v   # 外设原语 maplib
+│   └── *.vdb               # 预编译库
+├── verilog\                # 核心原语仿真模型（15 个 .v，实测）
+└── vhdl\packages\
+    ├── vhdl_1993\          # VHDL-1993 预编译 .vdb（efxphysicallib + ieee/std/synopsys/vl）
+    ├── vhdl_2008\          # VHDL-2008 预编译 .vdb
+    └── vhdl_2019\          # VHDL-2019 预编译 .vdb
+</code></pre>
+<p>接口原语模型另在 <strong><code>pt\sim_models\verilog\</code></strong>（PLL/GPIO/LVDS 等）。</p>
+<h3 id="4-2-核心原语模型-文档表-vs-目录实测">4.2 核心原语模型：文档表 vs 目录实测</h3>
+<blockquote>
+<p>证据 A（官方表）：<code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code> Table 1（第 176-298 行，14 项，路径 <code>&lt;install&gt;/sim_models/verilog</code>）
+证据 B（目录实测）：<code>C:\Efinity\2026.1\sim_models\verilog\</code> 共 15 个 .v</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>模型（Table 1 官方名）</th>
+<th>文件</th>
+<th style="text-align: center;">Trion</th>
+<th style="text-align: center;">Titanium</th>
+<th style="text-align: center;">Topaz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EFX_ADD</td>
+<td>efx_add.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_COMB4</td>
+<td>efx_comb4.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DPRAM5K</td>
+<td>efx_dpram5k.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>EFX_DPRAM10</td>
+<td>efx_dpram10.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DSP12</td>
+<td>efx_dsp12.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DSP24</td>
+<td>efx_dsp24.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_DSP48</td>
+<td>efx_dsp48.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_FF</td>
+<td>efx_ff.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_GBUFCE</td>
+<td>efx_gbufce.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_LUT4</td>
+<td>efx_lut4.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_MULT</td>
+<td>efx_mult.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>EFX_RAM_5K</td>
+<td>efx_ram_5k.v</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>EFX_RAM10</td>
+<td>efx_ram_10.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td>EFX_SRL8</td>
+<td>efx_srl8.v</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td><strong>（文档表未列）</strong></td>
+<td><strong>efx_ram_10k.v</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>已知出入（如实标注）</strong>：</p>
+<ol>
+<li>官方 Table 1 列 14 项，目录实测 <strong>15 个 .v</strong>——<code>efx_ram_10k.v</code> 在目录中但官方表未列。引用时以实测文件为准；</li>
+<li>ModelSim 流程文档中出现的实际文件名是 <strong><code>efx_dpram_5k.v</code>（下划线）</strong>，与目录实测命名一致（官方表格化名 EFX_DPRAM5K 省略了下划线）。<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\doc\topics\efn-simulate-modelsim.html</code> 第 239-254 行 <code>vlog</code> 清单</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="4-3-接口原语模型-26-项受支持">4.3 接口原语模型（26 项受支持）</h3>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code> Table 2（第 300-524 行，路径 <code>&lt;install&gt;/pt/sim_models/verilog</code>）</p>
+</blockquote>
+<p>EFX_CLKOUT、EFX_FPLL_V1、EFX_GPIO_V1 / V2 / V3、EFX_GPIO_DIFF_V3、EFX_IBUF、EFX_IDDIO、EFX_IOREG、EFX_IO_BUF、EFX_IREG、EFX_JTAG_CTRL、EFX_JTAG_V1、EFX_OBUF、EFX_ODDIO、EFX_OREG、EFX_OSC_V1 / V3、EFX_PLL_V1 / V2 / V3、EFX_LVDS_RX_V1 / V2、EFX_LVDS_TX_V1 / V2、EFX_LVDS_BIDIR_V2。</p>
+<p>原文警告（该页注释）："Although additional model files are located in the /pt/sim_models/verilog directory, only the ones listed in this table are supported." —— <strong>目录里多的文件不保证受支持</strong>。</p>
+<h3 id="4-4-vhdl-仿真映射">4.4 VHDL 仿真映射</h3>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\doc\topics\syn-vhdl-libraries-efx.html</code> 第 171-175 行</p>
+</blockquote>
+<ul>
+<li>官方提供 Trion / Titanium 原语 VHDL 库，引用方式固定：</li>
+</ul>
+<pre><code class="language-vhdl">library efxphysicallib;
+use efxphysicallib.efxcomponents.all;
+</code></pre>
+<ul>
+<li>实例化示例（同文档第 177-207 行）：<code>entity LUT4_VHDL</code>，<code>generic map (LUTMASK =&gt; x"8888")</code>，<code>port map (I0..I3, O)</code>；</li>
+<li>预编译库按语言版本分三套 <code>.vdb</code>（<code>sim_models\vhdl\packages\vhdl_1993|2008|2019</code>），每套含 <code>efxphysicallib</code> 与 <code>ieee</code> / <code>std</code> / <code>synopsys</code> / <code>vl</code>。</li>
+</ul>
+<h3 id="4-5-仿真器命令流程-modelsim-为例">4.5 仿真器命令流程（ModelSim 为例）</h3>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\doc\topics\efn-simulate-modelsim.html</code>（CLI 版 efn-simulate-modelsim-1.html 内容相同）</p>
+</blockquote>
+<p>RTL 仿真（第 225-233 行）：</p>
+<pre><code class="language-tcl">vlib work
+vmap work work
+vlog &quot;helloworld.v&quot;        ;# RTL 源码
+vsim -t ps work.sim
+</code></pre>
+<p>综合后网表仿真（第 239-254 行）——除网表外需<strong>逐个编译原语模型</strong>：</p>
+<pre><code class="language-tcl">vlib work
+vmap work work
+vlog &quot;outflow/helloworld.map.v&quot;
+vlog efx_add.v
+vlog efx_dpram_5k.v        ;# 注意下划线文件名
+vlog efx_ff.v
+vlog efx_gbufce.v
+vlog efx_lut4.v
+vlog efx_mult.v
+vlog efx_ram_5k.v
+vsim -t ps work.sim
+</code></pre>
+<p>仿真器支持清单（efn-simulating-models.html 各流程页）：iVerilog（+GTKWave 看波）、ModelSim、NCSim、Aldec。</p>
+<hr />
+<h2 id="5-efx_ff-单-sr-引脚证据链专节">5. EFX_FF 单 SR 引脚证据链专节</h2>
+<p><strong>结论先行</strong>：Efinix 触发器（EFX_FF）<strong>只有一个 SR（set/reset）引脚</strong>，不存在可分别编码的独立 set 与 reset。这与工作区 RTL 规范"禁止同一寄存器同时编码 set 和 reset"的硬约束互为印证。以下四方证据互相独立、完全一致。</p>
+<h3 id="5-1-证据一-maplib-源码-综合后端真身">5.1 证据一：maplib 源码（综合后端真身）</h3>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\sim_models\maplib\efinix_maplib.v</code></p>
+</blockquote>
+<pre><code class="language-verilog">module EFX_FF(Q, D, CE, CLK, SR);   // 第 21 行：端口表只有一个 SR
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>行号</th>
+<th>内容</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16-18</td>
+<td><code>SR_SYNC_PRIORITY</code> 宏默认 <code>1</code></td>
+<td>SR 与 CE 同拍冲突时 SR 优先</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>module EFX_FF(Q, D, CE, CLK, SR);</code></td>
+<td><strong>单一 SR 端口</strong>，无独立 SET/RST</td>
+</tr>
+<tr>
+<td>27</td>
+<td>注释 <code>// 0 CE, 1 SR</code></td>
+<td>优先级仲裁表：CE=0、SR=1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-证据二-官方综合文档端口表">5.2 证据二：官方综合文档端口表</h3>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\doc\topics\syn-ff.html</code>（UG-EFN-SOFTWARE-v14.0）</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>行号</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>175-181</td>
+<td>FF 控制信号列表：时钟使能 CE + <strong>单一 set/reset（SR）</strong></td>
+</tr>
+<tr>
+<td>213-215</td>
+<td>Table 1 EFX_FF Ports：<code>SR</code> — "Asynchronous/synchronous set/reset"（可配异步或同步，但<strong>物理上只有一个</strong>）</td>
+</tr>
+<tr>
+<td>配图</td>
+<td>quan-prim-efx-ff.svg：FF 框图仅一根 SR 引脚</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-3-证据三-行为模型源码">5.3 证据三：行为模型源码</h3>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\sim_models\verilog\efx_ff.v</code></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>行号</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5-9</td>
+<td>头注释：D flip-flop with clock enable and <strong>single set/reset pin</strong></td>
+</tr>
+<tr>
+<td>31</td>
+<td><code>input SR, // asyc/sync set/reset</code></td>
+</tr>
+<tr>
+<td>参数</td>
+<td><code>SR_SYNC</code>（同步/异步选择）、<code>SR_VALUE</code>（置位/复位极性）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-4-证据四-官方仿真模型表描述">5.4 证据四：官方仿真模型表描述</h3>
+<blockquote>
+<p>证据：<code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code> Table 1 第 243-249 行</p>
+</blockquote>
+<p>EFX_FF 描述原文："<strong>D Flip-flop with Clock Enable and Set/Reset Pin</strong>"（单数 Pin）。</p>
+<h3 id="5-5-证据链汇总与工程含义">5.5 证据链汇总与工程含义</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>证据</th>
+<th>层面</th>
+<th>关键点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>efinix_maplib.v</code> 第 21 行</td>
+<td>后端 maplib 源码</td>
+<td>端口表物理上只有一个 SR</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>syn-ff.html</code> 第 213-215 行</td>
+<td>官方综合文档</td>
+<td>SR = 异步/同步 set/reset（二选一配置）</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>efx_ff.v</code> 第 31 行</td>
+<td>仿真行为模型</td>
+<td>行为模型与端口表一致</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>efn-simulating-models.html</code> 第 243-249 行</td>
+<td>官方模型总表</td>
+<td>描述原文单数 "Set/Reset Pin"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>工程含义</strong>：</p>
+<ol>
+<li>同时编码 set 与 reset 的 RTL，综合器必须用<strong>额外 LUT</strong> 模拟第二个控制信号 → 面积膨胀 + 时序恶化（工作区 RTL 规范反例即源于此硬件事实）；</li>
+<li>SR 极性/同步性由 ISF/综合属性配置（<code>SR_SYNC</code>、<code>SR_VALUE</code>），不是多一根引脚；</li>
+<li>写 RTL 时每个寄存器只应出现单一复位（或单一置位）路径，见《Efinity设计规范.md》与仓库 RTL 编码规范。</li>
+</ol>
+<hr />
+<h2 id="附-本卷证据文件清单">附：本卷证据文件清单</h2>
+<table>
+<thead>
+<tr>
+<th>证据文件（绝对路径）</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\</code>（78.07 MB 整目录实测）</td>
+<td>文档站规模与 PDF 清单（§1）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\efn-simulating-models.html</code></td>
+<td>核心/接口原语模型表、TOC 树、PDF 导航（§1.2/§2/§4/§5）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\efn-simulate-modelsim.html</code></td>
+<td>ModelSim 命令流程（§4.5）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\syn-vhdl-libraries-efx.html</code></td>
+<td>VHDL 库用法（§4.4）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\syn-ff.html</code></td>
+<td>EFX_FF 官方端口表（§5.2）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\sim_models\</code>（11.43 MB 整目录实测）</td>
+<td>模型目录结构、15 个 .v、三版本 .vdb（§4.1/§4.2）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\sim_models\maplib\efinix_maplib.v</code></td>
+<td>EFX_FF maplib 端口（§5.1）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\sim_models\verilog\efx_ff.v</code></td>
+<td>EFX_FF 行为模型（§5.3）</td>
+</tr>
+</tbody>
+</table></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WS-E2 RK3588J Minimal-System Natural-Language Tutorial</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../../rk3588-adapter.html">← Back to RK3588 Adapter</a>
+<span>From installing the three VSIXes and deploying the dual offline packages to generating and building a BUILD_READY minimal system — everything except tool installation done in natural language.</span>
+<code>learn/ws-e2-rk3588-minimal/README.md</code>
+<a href="../../../../learn/ws-e2-rk3588-minimal/README.md">Markdown source</a></p>
+<h1>WS-E2 RK3588J Minimal-System Natural-Language Tutorial</h1></header>
+<main class="article"><h1 id="ws-e2-rk3588j-minimal-system-natural-language-tutorial">WS-E2 RK3588J Minimal-System Natural-Language Tutorial</h1>
+<p>This tutorial starts from installing EvoVerse and ends with a WS-E2 RK3588J project containing U-Boot, a Linux kernel, a device tree, a minimal rootfs, and a firmware package. <strong>Apart from installing the VSIXes, Docker Desktop, and similar tools, every operation is generated and executed through natural language.</strong></p>
+<blockquote>
+<p>This tutorial completes the software build loop. Flashing, boot, DDR/eMMC stress testing, and FPGA↔RK3588 on-board interface validation remain <strong>hardware verification: NOT_RUN</strong>.</p>
+</blockquote>
+<pre><code class="language-mermaid">flowchart LR
+  A[Install three VSIXes + Docker] --&gt; B[Catalog + environment READY]
+  B --&gt; C[Create project via natural language]
+  C --&gt; D[PROFILE_READY]
+  D --&gt; E[Preflight]
+  E --&gt; F[Four-stage build]
+  F --&gt; G[BUILD_READY]
+  G --&gt; H[Firmware + receipts + logs]
+  H --&gt; I[Hardware verification: NOT_RUN]
+</code></pre>
+<p>Every section provides a ready-to-copy natural-language prompt. Whenever a license, a material choice, or a risk boundary is involved, the Agent must wait for your confirmation.</p>
+<h2 id="0-prerequisites">0. Prerequisites</h2>
+<ul>
+<li>Windows 10/11 x64 with at least 9 GiB of free space on the target disk;</li>
+<li>Trae CN or a compatible VS Code host;</li>
+<li>Docker Desktop running Linux containers;</li>
+<li>the three EvoVerse VSIXes;</li>
+<li>the two <code>.evopkg</code> offline packages provided by EvoVerse.</li>
+</ul>
+<p>Do not extract, rename, or re-compress the <code>.evopkg</code> files.</p>
+<h2 id="1-install-the-three-vsixes">1. Install the three VSIXes</h2>
+<p>This is the one tool-installation step that must be done by hand:</p>
+<ol>
+<li>In the Extensions view choose "Install from VSIX…";</li>
+<li>install <code>evoverse-sdk-1.0.0.vsix</code>;</li>
+<li>install <code>evoverse-efinity-adapter-1.0.0.vsix</code>;</li>
+<li>install <code>evoverse-rk3588-adapter-1.0.0.vsix</code>;</li>
+<li>restart the IDE;</li>
+<li>install and start Docker Desktop, and confirm it uses Linux containers.</li>
+</ol>
+<h3 id="natural-language-prompt-1-verify-the-installation">Natural-language prompt 1: verify the installation</h3>
+<blockquote>
+<p>Check whether the EvoVerse SDK, the Efinity Adapter, and the RK3588 Adapter are correctly installed and activated, and check the Docker CLI, the Docker daemon, and Linux-container mode. Read-only checks only — do not modify the project. If anything is missing, tell me exactly what I need to install by hand.</p>
+</blockquote>
+<p>Tool installation must be done by you; do not let the Agent download installers from unknown sources.</p>
+<h2 id="2-sync-the-catalog-and-confirm-ws-e2">2. Sync the Catalog and confirm WS-E2</h2>
+<h3 id="natural-language-prompt-2-sync-board-materials">Natural-language prompt 2: sync board materials</h3>
+<blockquote>
+<p>Sync the EvoVerse private Catalog, then check whether the ws-e2 board, the rk3588j-evm carrier, and the RK3588 minimal-system materials are available. Report the Catalog version, the development target, the offline-package declarations, and the evidence boundary. Do not create a project.</p>
+</blockquote>
+<p>The answer should mention <code>ws-e2</code>, <code>rk3588j-evm</code>, BSP <code>b8f5dda5</code>, toolchain <code>2026.09</code>, and the two offline-package file names. If the Catalog is unavailable, fix the sync first — never fabricate materials from memory.</p>
+<h2 id="3-check-the-rk3588-development-environment">3. Check the RK3588 development environment</h2>
+<h3 id="natural-language-prompt-3-environment-health-check">Natural-language prompt 3: environment health check</h3>
+<blockquote>
+<p>Check the RK3588 development environment. Use the Adapter's environment health-check capability to inspect Docker, disk space, the WS-E2 BSP, the toolchain offline packages, installation receipts, and the identity of installed files. Explain PACKAGE_REQUIRED, REPAIRABLE, USER_ACTION_REQUIRED, or READY, and give only the currently legal next step.</p>
+</blockquote>
+<p>The corresponding MCP capability: <code>rk3588_environment_status</code> (read-only; produces no installation receipts or staging directories).</p>
+<p>The first run usually returns <code>PACKAGE_REQUIRED</code>, meaning offline materials are needed.</p>
+<h2 id="4-obtain-and-deploy-the-two-offline-packages">4. Obtain and deploy the two offline packages</h2>
+<p>Obtain from EvoVerse:</p>
+<ul>
+<li><code>rk3588-toolchain-2026.09.evopkg</code></li>
+<li><code>ws-e2-rk3588-bsp-b8f5dda5.evopkg</code></li>
+</ul>
+<p>The two offline packages live in the fixed directory <code>&lt;EVOVERSE_HOME&gt;\downloads\rk3588\</code> (<code>EVOVERSE_HOME</code> defaults to <code>%USERPROFILE%\evoverse-sdk</code>). Prompt 4 has the Agent open exactly this directory: copy the two original evopkg files in, then run prompt 5.</p>
+<h3 id="natural-language-prompt-4-open-the-inbox">Natural-language prompt 4: open the inbox</h3>
+<blockquote>
+<p>Open the fixed RK3588 offline-package directory; do not start deploying. I will copy the two original evopkg files provided by EvoVerse into it. After opening, tell me the full path.</p>
+</blockquote>
+<p>After copying both files:</p>
+<h3 id="natural-language-prompt-5-verify-and-deploy">Natural-language prompt 5: verify and deploy</h3>
+<blockquote>
+<p>Re-inspect the two RK3588 offline packages: verify the Catalog declarations, byte counts, outer SHA-256, inner manifest, and per-file checksums. On success, show me the license confirmation content and the estimated disk usage, and wait for my explicit confirmation before deploying in one shot. Afterwards you must re-run the full health check; only report success if the final state is READY.</p>
+</blockquote>
+<p>The corresponding MCP capability: first call <code>rk3588_environment_prepare</code> to obtain a one-time <code>inspectionToken</code>, then call <code>rk3588_environment_deploy</code> with <code>acceptedLicenses: true</code>. The token is valid only for the bytes inspected at that moment; if the package contents change, re-inspection is mandatory — replaying an old token is rejected.</p>
+<p>After reading the licenses, reply explicitly: "I accept the license terms in the offline packages and confirm deployment." If the deployment is cancelled or fails, the directories, receipts, and images added by this run are rolled back; images that existed before the deployment are not deleted.</p>
+<h2 id="5-confirm-the-environment-is-ready">5. Confirm the environment is READY</h2>
+<h3 id="natural-language-prompt-6-explain-the-environment-evidence">Natural-language prompt 6: explain the environment evidence</h3>
+<blockquote>
+<p>Check the RK3588 development environment again and explain the READY evidence item by item: Catalog package identity, inner manifest, installation receipt, per-file and extra-file checks, BSP qualification, Docker image digest, and minimum Adapter version. Finish by stating explicitly what remains unverified.</p>
+</blockquote>
+<p>The correct boundary here is an environment that is <code>READY</code>, while the current project is not yet <code>BUILD_READY</code> and flashing and hardware verification remain <code>NOT_RUN</code>.</p>
+<h2 id="6-create-the-ws-e2-rk3588j-minimal-system">6. Create the WS-E2 RK3588J minimal system</h2>
+<p>Open an empty directory as the project directory.</p>
+<h3 id="natural-language-prompt-7-create-the-project">Natural-language prompt 7: create the project</h3>
+<blockquote>
+<p>Create an EvoVerse project named ws-e2-rk3588j-minimal in the current empty directory. Choose the ws-e2 board, the rk3588j-evm carrier, and the rk3588 development target. Generate a minimal Linux system based on the current Catalog and the offline environment that is already READY; recommend eMMC boot, UART2 logging, and a Buildroot minimal rootfs. Do not hand-assemble a Profile; do not guess loaders, partitions, DDR, or DTS — identities must come from the current Catalog, BSP qualification, and the generation chain. Show me the recommended and alternative choices and wait for my confirmation before generating.</p>
+</blockquote>
+<p>The Agent should point out: the core module already includes the PMIC, LPDDR4X, eMMC, and the reference clock; this is still not an on-board validation conclusion.</p>
+<h3 id="natural-language-prompt-8-confirm-the-recommendation">Natural-language prompt 8: confirm the recommendation</h3>
+<blockquote>
+<p>I confirm the recommended plan: pin the current BSP and toolchain identities, eMMC boot, UART2 logging, Buildroot minimal rootfs. Complete the controlled generation, but do not build. Check the file ownership in the generation manifest and confirm that regeneration will not overwrite customer content under applications.</p>
+</blockquote>
+<p>Expect a generated Profile, DTS/DTSI, a generation manifest, a customer application directory, and the output-directory skeleton. At this point the state may be <code>PROFILE_READY</code>, but it must not be passed off as <code>BUILD_READY</code>.</p>
+<p>The corresponding MCP capability: <code>rk3588_project_generate</code> (targets allow only the <code>ws-e2</code> / <code>rk3588j-evm</code> / <code>minimal-linux</code> combination, and the project directory must be an absolute path; on success the project is <code>PROFILE_READY</code>, which does not mean buildable).</p>
+<h2 id="7-run-the-project-preflight">7. Run the project preflight</h2>
+<h3 id="natural-language-prompt-9-preflight">Natural-language prompt 9: preflight</h3>
+<blockquote>
+<p>Run preflight on the current RK3588 project. Re-qualify the BSP: check the root commit, the four submodules, the loader, the partition table, the container digest, the toolchain, the DTS manifest, the output directory, and the four-stage capabilities. Do not modify BSP sources automatically; if anything blocks, give a stable error code, the evidence, and a minimal repair suggestion.</p>
+</blockquote>
+<ul>
+<li><code>BSP_BINDING_REQUIRED</code>: rebind with the currently deployed materials;</li>
+<li><code>BSP_SOURCE_DIRTY</code>: back up and restore the declared version — no bypassing;</li>
+<li><code>BSP_QUALIFICATION_STALE</code>: re-verify the current identity; an old PASS cannot be inherited.</li>
+</ul>
+<p>The corresponding MCP capability: <code>rk3588_project_preflight</code> (read-only qualification checks, 300-second timeout; any repair action must be confirmed by the user and executed separately — it never happens automatically alongside preflight).</p>
+<h2 id="8-complete-the-four-stage-build-via-natural-language">8. Complete the four-stage build via natural language</h2>
+<h3 id="natural-language-prompt-10-build">Natural-language prompt 10: build</h3>
+<blockquote>
+<p>Build the current project with the RK3588 Adapter, executing U-Boot, kernel/DTB, rootfs, and package in order. Report the exit code, the required artifacts of each run, SHA-256s, and diagnostics for every stage; stop on any stage failure and never pass old artifacts off as success. When finished, recompute the Build Identity and readiness.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Expected artifacts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U-Boot</td>
+<td><code>uboot.img</code></td>
+</tr>
+<tr>
+<td>Kernel</td>
+<td><code>Image</code>, <code>rk3588j-evoverse.dtb</code></td>
+</tr>
+<tr>
+<td>Rootfs</td>
+<td><code>rootfs.ext2</code></td>
+</tr>
+<tr>
+<td>Package</td>
+<td><code>ws-e2-rk3588j-minimal-firmware.tar.gz</code></td>
+</tr>
+</tbody>
+</table>
+<p>The corresponding MCP capability: <code>rk3588_project_build</code> (headless builds accept only the complete four-stage order uboot → kernel → rootfs → package, not partial stages). Each stage's commands, exit codes, and SHA-256 evidence are attributed to <code>.evoverse/output/build-report.json</code> in the project directory; that file is the authority for the final state, and chat replies are only its summary.</p>
+<h2 id="9-accept-the-minimal-system">9. Accept the minimal system</h2>
+<h3 id="natural-language-prompt-11-acceptance-evidence">Natural-language prompt 11: acceptance evidence</h3>
+<blockquote>
+<p>Accept the current WS-E2 RK3588J minimal system. Read the build-report, build-manifest, four-stage receipts, and the firmware package — do not just check that files exist. Present a table of stage statuses, artifact digests, and the Build Identity, judge whether it is BUILD_READY, and list all NOT_RUN items separately.</p>
+</blockquote>
+<p>Acceptance requires: all four stages belong to the current Build Identity, zero error diagnostics, the firmware package contains U-Boot/Image/DTB/rootfs, the project state is <code>BUILD_READY</code>, and <strong>hardware verification: NOT_RUN</strong> is stated explicitly.</p>
+<p>The corresponding MCP capability: <code>rk3588_project_status</code> (reads <code>.evoverse/output/build-report.json</code> and the readiness summary; read-only, never re-runs the build or refreshes evidence).</p>
+<h2 id="10-what-to-do-next">10. What to do next</h2>
+<h3 id="prepare-for-flashing-but-do-not-flash-yet">Prepare for flashing, but do not flash yet</h3>
+<blockquote>
+<p>Based on the current WS-E2 Profile and firmware evidence, give me a pre-flash checklist: loader, partitions, device identification, backup, and rollback requirements. Do not flash, and keep hardware status NOT_RUN.</p>
+</blockquote>
+<h3 id="add-fpga-co-design">Add FPGA co-design</h3>
+<blockquote>
+<p>Plan a WS-E2 FPGA + RK3588 system project without modifying the existing RK3588 BUILD_READY baseline. Read the final device mapping and the interface contract, and recommend PCIe, MIPI, RGMII, or GPIO; do not treat board-to-board connectors as an independent source of truth, and do not run hardware verification.</p>
+</blockquote>
+<h3 id="start-an-on-board-application">Start an on-board application</h3>
+<blockquote>
+<p>Plan the first AArch64 user-space application on top of the current minimal rootfs. Application code goes in the customer directory; explain cross-compilation, packaging, and runtime dependencies, and do not modify the managed BSP or generated files.</p>
+</blockquote>
+<h2 id="11-troubleshooting-prompt">11. Troubleshooting prompt</h2>
+<blockquote>
+<p>Diagnose the current RK3588 operation failure. Read the logs, receipts, diagnostics, and Profile for this runId, and analyze only this run's evidence. Distinguish five problem classes: environment, material binding, BSP qualification, native-tool errors, and unverified hardware. Do not inherit an old PASS, and do not create scripts that bypass the native toolchain; give the root cause and a minimal fix first, and wait for my confirmation before changing anything.</p>
+</blockquote>
+<h2 id="12-completion-checklist">12. Completion checklist</h2>
+<ul>
+<li>[ ] Three VSIXes installed and activated</li>
+<li>[ ] Docker Linux containers available</li>
+<li>[ ] ws-e2 / rk3588j-evm present in the Catalog</li>
+<li>[ ] Environment is <code>READY</code></li>
+<li>[ ] Generation completed with the "create WS-E2 RK3588J minimal system" natural-language prompt</li>
+<li>[ ] Profile, DTS, and generation manifest have clear origins</li>
+<li>[ ] Preflight passed</li>
+<li>[ ] Four-stage build evidence complete</li>
+<li>[ ] Project is <code>BUILD_READY</code></li>
+<li>[ ] Flashing and hardware verification remain <code>NOT_RUN</code></li>
+</ul>
+<p>Continue reading: <a href="../../rk3588/development-flow.html">RK3588 Development Flow Guide</a> · <a href="../../rk3588/offline-environment-deployment.html">Offline Environment Deployment Guide</a></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>视频 IP 设计指南</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../video-sim.html">← 返回Video Sim</a>
+<span>视频 IP 与 SDK 代码生成契约。</span>
+<code>video-sim/视频IP设计指南.md</code>
+<a href="../../../video-sim/视频IP设计指南.md">Markdown 源文件</a></p>
+<h1>视频 IP 设计指南</h1></header>
+<main class="article"><h1 id="evoverse-vip-ip-设计指南-与-assurance-契约-v1-1">EvoVerse VIP/IP 设计指南 与 Assurance 契约 v1.1</h1>
+<blockquote>
+<p>文档版本：v1.1
+更新日期：2026-09-01</p>
+</blockquote>
+<h2 id="0-文档关系">0. 文档关系</h2>
+<ul>
+<li>客户视频 IP 设计的<strong>唯一权威规范源</strong></li>
+<li>与冻结规格的 Assurance 契约同步（见 §0.5）</li>
+<li>不替代 Efinity 工具链参考、IPM 库使用指南</li>
+</ul>
+<h2 id="0-5-sdk-assurance-契约声明">0.5 SDK Assurance 契约声明</h2>
+<p>本指南定义视频 IP 的设计要求；项目的冻结规格将每个实例的明确取值写入
+<code>assurance.contracts</code>，并使用 <code>evoverse.video@1</code> 验证候选 RTL。</p>
+<p>RTL 可以由设计者或 Agent 自由编写，但不得由模块名或端口名推断其视频意图。
+缺少 module、imageWidth、bitsPerPixel、parallelism 或 lineBufferDepth 时，规格必须
+标为 <code>DECISION_REQUIRED</code>，不能进入冻结或受控 Assurance。</p>
+<p><strong>SDK 实施点</strong>：</p>
+<ol>
+<li>规则实现：<code>sdk/design-assurance/evoverse_assurance/protocols/video.py</code></li>
+<li>规格实现：冻结的 ModuleSpec/SystemSpec <code>assurance.contracts</code></li>
+<li>执行入口：<code>evoverse assurance</code> 或 MCP <code>assurance_check</code></li>
+<li>工程 harness：<code>evoverse new-project</code> 把本指南复制至 <code>&lt;project&gt;/docs/VIP-IP-DESIGN-GUIDE.md</code>，并落项目级 instruction（<code>applyTo: **/*.{v,sv}</code>）；工程内修改 <code>video_*</code> 代码必须遵循。<strong>单一来源</strong>：本文件（<code>docs/video-sim/视频IP设计指南.md</code>）；bundle（<code>build-vsix.ps1</code> vendor）与工程内的 <code>VIP-IP-DESIGN-GUIDE.md</code> 均由本文件生成，勿直接编辑。</li>
+</ol>
+<p><strong>同步原则</strong>：本指南、规格模板和 <code>evoverse.video@1</code> 规则变动必须一并评审。任何一方变动必须在 <code>DAYLOG/</code> 留痕。</p>
+<h2 id="1-适用范围与术语">1. 适用范围与术语</h2>
+<ul>
+<li>VIP：Video IP，泛指 AXI-Stream 视频处理核</li>
+<li>通用寄存器接口（cfg_*）</li>
+<li>AXI-Stream 流接口（s_axis_<em>/m_axis_</em>）</li>
+<li>BRAM 行缓冲（line buffer）</li>
+<li>同步复位（aresetn，低有效）</li>
+</ul>
+<h2 id="2-公共规格定义-契约正文">2. 公共规格定义（契约正文）</h2>
+<h3 id="2-1-系统参数">2.1 系统参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAX_WIDTH</td>
+<td>3840</td>
+<td>最大像素宽度</td>
+</tr>
+<tr>
+<td>MAX_HEIGHT</td>
+<td>2160</td>
+<td>最大像素高度</td>
+</tr>
+<tr>
+<td>DATA_WIDTH</td>
+<td>24</td>
+<td>默认像素位宽（RGB888）</td>
+</tr>
+<tr>
+<td>PARALLEL</td>
+<td>1</td>
+<td>每时钟像素数</td>
+</tr>
+<tr>
+<td>CLK_FREQ_MHZ</td>
+<td>125</td>
+<td>工作时钟频率</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-2-时钟架构">2.2 时钟架构</h3>
+<ul>
+<li>单时钟 <code>aclk</code> + 低有效同步复位 <code>aresetn</code></li>
+<li>复位同步释放（rst_sync_r 两级触发器链）</li>
+<li>多时钟域需在 §4 中显式标注 CDC</li>
+</ul>
+<h3 id="2-3-axi-stream-视频接口标准-契约">2.3 AXI-Stream 视频接口标准（契约）</h3>
+<p><strong>信号集</strong>（与 Xilinx AXI-Stream Video 兼容）：
+| 信号 | 方向 | 位宽 | 说明 |
+|---|---|---|---|
+| aclk | in | 1 | 时钟 |
+| aresetn | in | 1 | 异步低有效复位 |
+| s_axis_tvalid | in | 1 | 发送方数据有效 |
+| s_axis_tready | out | 1 | 接收方就绪 |
+| s_axis_tdata | in | DATA_WIDTH | 像素数据 |
+| s_axis_tuser | in | 1 | SOF 帧起始 |
+| s_axis_tlast | in | 1 | EOL 行结束 |
+| m_axis_* | out | 同上 | 镜像输出集 |</p>
+<p><strong>约定</strong>：
+- SOF（tuser=1）只在每帧第一像素置位 1 拍
+- EOL（tlast=1）只在每行最后一像素置位 1 拍
+- 帧/行计数器由 IP 内部维护，外部不暴露</p>
+<h3 id="2-4-寄存器接口标准-契约">2.4 寄存器接口标准（契约）</h3>
+<p><strong>信号集</strong>：
+| 信号 | 方向 | 位宽 | 说明 |
+|---|---|---|---|
+| cfg_clk | in | 1 | 寄存器接口时钟（与 aclk 异步时需 CDC） |
+| cfg_addr | in | 8 | 字节地址 |
+| cfg_wdata | in | 32 | 写入数据 |
+| cfg_wen | in | 1 | 写使能 |
+| cfg_ren | in | 1 | 读使能 |
+| cfg_rdata | out | 32 | 读出数据 |
+| cfg_rdy | out | 1 | 就绪 |</p>
+<p><strong>寄存器映射模板</strong>：
+- 0x00 IP_VERSION（RO）
+- 0x04 IP_CTRL（RW）：[0] enable，[1] bypass
+- 0x08 IP_STATUS（RO）：[0] running，[1] error
+- 0x0C IP_RESET（WO）：写 1 软复位
+- 0x10 IMG_WIDTH（RW，16 bit）
+- 0x14 IMG_HEIGHT（RW，16 bit）
+- 0x18 IMG_FORMAT（RW，3 bit：0=RAW8/1=RAW10/2=RAW12/3=RGB888/4=YUV422）
+- 0x1C-0x3C IP_PARAM_*（RW，算法参数，由具体 IP 定义）</p>
+<h3 id="2-5-ip-核基本结构-契约-顶层模板">2.5 IP 核基本结构（契约：顶层模板）</h3>
+<pre><code class="language-verilog">module &lt;ip_name&gt; #(
+    parameter C_DATA_WIDTH = 24,
+    parameter C_MAX_WIDTH  = 3840,
+    parameter C_MAX_HEIGHT = 2160
+) (
+    // 系统接口（顺序固定）
+    input  wire        aclk,
+    input  wire        aresetn,
+
+    // 寄存器接口
+    input  wire        cfg_clk,
+    input  wire [7:0]  cfg_addr,
+    input  wire [31:0] cfg_wdata,
+    input  wire        cfg_wen,
+    input  wire        cfg_ren,
+    output wire [31:0] cfg_rdata,
+    output wire        cfg_rdy,
+
+    // AXI-Stream 输入
+    input  wire        s_axis_tvalid,
+    output wire        s_axis_tready,
+    input  wire [C_DATA_WIDTH-1:0] s_axis_tdata,
+    input  wire        s_axis_tuser,
+    input  wire        s_axis_tlast,
+
+    // AXI-Stream 输出
+    output wire        m_axis_tvalid,
+    input  wire        m_axis_tready,
+    output wire [C_DATA_WIDTH-1:0] m_axis_tdata,
+    output wire        m_axis_tuser,
+    output wire        m_axis_tlast
+);
+</code></pre>
+<p><strong>端口顺序契约</strong>：①系统（aclk/aresetn）→ ②寄存器（cfg_<em>）→ ③输入流（s_axis_</em>）→ ④输出流（m_axis_*）。任何重排视为实现缺陷。</p>
+<h3 id="2-6-bram-行缓冲契约">2.6 BRAM 行缓冲契约</h3>
+<p><strong>资源估算公式</strong>（用于 §4 综合资源预算）：</p>
+<pre><code>单行数据量（bits）= IMG_WIDTH × BPP × PARALLEL
+所需 BRAM 块数 = ceil(单行数据量 / 10240) × 行数
+</code></pre>
+<p><strong>TJ180 限制</strong>：单 IP ≤ 16 块 BRAM；行缓冲深度 ≤ 4 行。</p>
+<h3 id="2-7-性能指标契约">2.7 性能指标契约</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>最高分辨率</td>
+<td>3840×2160</td>
+</tr>
+<tr>
+<td>最高帧率</td>
+<td>60 fps @ 1080p</td>
+</tr>
+<tr>
+<td>流水线深度</td>
+<td>≤ 16 级</td>
+</tr>
+<tr>
+<td>端到端延迟</td>
+<td>≤ 1 行（带 BYPASS 旁路）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-rtl-编码与命名规范">3. RTL 编码与命名规范</h2>
+<h3 id="3-1-命名约定">3.1 命名约定</h3>
+<table>
+<thead>
+<tr>
+<th>元素</th>
+<th>规范</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模块名</td>
+<td>小写蛇形</td>
+<td><code>video_register_slice</code></td>
+</tr>
+<tr>
+<td>参数</td>
+<td>大写蛇形，C_ 前缀</td>
+<td><code>C_DATA_WIDTH</code></td>
+</tr>
+<tr>
+<td>寄存器地址</td>
+<td>大写蛇形，REG_ 前缀</td>
+<td><code>REG_IP_CTRL</code></td>
+</tr>
+<tr>
+<td>端口</td>
+<td>小写蛇形，方向后缀</td>
+<td><code>s_axis_tvalid</code>, <code>cfg_wdata</code></td>
+</tr>
+<tr>
+<td>内部信号</td>
+<td>小写蛇形</td>
+<td><code>pixel_cnt</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-编码风格-与-sdk-通用模板一致">3.2 编码风格（与 SDK 通用模板一致）</h3>
+<ul>
+<li><code>timescale 1ns / 1ps</code></li>
+<li><code>default_nettype none</code>（文件尾恢复 wire）</li>
+<li>同步复位 <code>aresetn</code>，低有效</li>
+<li>复位同步释放（两级触发器）</li>
+<li>端口后缀：<code>_i</code>（输入）、<code>_o</code>（输出）、<code>_io</code>（双向）</li>
+<li>中文行内注释</li>
+</ul>
+<h3 id="3-3-仿真测试要求">3.3 仿真测试要求</h3>
+<ul>
+<li>每个 IP 必须含 <code>_tb.v</code> 自检 testbench</li>
+<li>必须覆盖：基本功能、边界（最小/最大分辨率）、连续帧、复位恢复</li>
+</ul>
+<h3 id="3-4-综合约束模板">3.4 综合约束模板</h3>
+<pre><code class="language-tcl">create_clock -name aclk -period 8.0 [get_ports aclk]
+set_input_delay -clock aclk -max 2.0 [all_inputs]
+set_output_delay -clock aclk -max 2.0 [all_outputs]
+set_false_path -from [get_ports {aresetn}]
+set_false_path -from [get_ports {cfg_clk}]   # 异步寄存器时钟
+</code></pre>
+<h2 id="4-多时钟域与-cdc">4. 多时钟域与 CDC</h2>
+<h3 id="4-1-单时钟-ip-默认">4.1 单时钟 IP（默认）</h3>
+<ul>
+<li>所有信号在 <code>aclk</code> 域</li>
+<li>寄存器接口 <code>cfg_clk = aclk</code>（同步寄存器接口）</li>
+</ul>
+<h3 id="4-2-异步寄存器接口">4.2 异步寄存器接口</h3>
+<ul>
+<li><code>cfg_clk</code> 与 <code>aclk</code> 异步时需两级同步器</li>
+<li>必须在 RTL 注释中标注 CDC</li>
+<li>校验器检查 <code>// CDC:</code> 注释存在</li>
+</ul>
+<h2 id="5-assurance-契约-sdk-实施点">5. Assurance 契约（SDK 实施点）</h2>
+<h3 id="5-1-冻结规格必须声明">5.1 冻结规格必须声明</h3>
+<pre><code class="language-yaml">assurance:
+  rulePacks: [rtl-baseline@1, evoverse.video@1]
+  contracts:
+    - id: camera_pipe
+      protocol: evoverse.video
+      module: video_pipe
+      imageWidth: 1920
+      bitsPerPixel: 24
+      parallelism: 1
+      lineBufferDepth: 2
+</code></pre>
+<h3 id="5-2-规则覆盖范围">5.2 规则覆盖范围</h3>
+<ol>
+<li>§2.3 信号集完备（s_axis_<em> / m_axis_</em> 各 6 个）</li>
+<li>§2.4 寄存器信号集完备（cfg_* 7 个）</li>
+<li>§2.5 端口顺序（系统→寄存器→输入流→输出流）</li>
+<li>§2.6 BRAM 行缓冲预算</li>
+</ol>
+<h3 id="5-3-执行方式">5.3 执行方式</h3>
+<p>受控 RTL 任务从冻结规格读取契约并保存候选绑定回执。自由开发可直接运行
+<code>evoverse assurance</code> 检查已明确声明的请求；缺少动态证据时结果为 <code>incomplete</code>，
+不是 PASS。</p>
+<h2 id="6-不在本指南范围">6. 不在本指南范围</h2>
+<ul>
+<li>ISP 算法本身（去马赛克/AWB/降噪等）：由客户在模板之上实现</li>
+<li>regmap.h C 头文件生成：v1.1 再纳入</li>
+<li>跨语言绑定：v1.1 再纳入</li>
+</ul>
+<h2 id="7-附录">7. 附录</h2>
+<h3 id="7-1-术语表">7.1 术语表</h3>
+<ul>
+<li>AXI-Stream / BRAM / CDC / SOF / EOL / VIP / ISP</li>
+</ul>
+<h3 id="7-2-参考资料">7.2 参考资料</h3>
+<ul>
+<li>EvoVerse SDK <code>efinity-coding-style.md</code></li>
+<li>Efinity 官方 <code>efinity-toolchain-reference.md</code></li>
+<li>ARM AMBA 4 AXI4-Stream Protocol Specification</li>
+<li>Xilinx PG034 AXI Reference Guide</li>
+</ul>
+<h3 id="7-3-修订记录">7.3 修订记录</h3>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>修订内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1.0</td>
+<td>2026-07-19</td>
+<td>初版；从《IP 开发课题说明书》提炼通用规范，新增 SDK 代码生成契约</td>
+</tr>
+</tbody>
+</table></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

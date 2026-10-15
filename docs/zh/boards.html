@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>板卡与物料 · Catalog 说明</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}</style></head><body>
+<div class="topbar"><a class="brand" href="customer-portal.html"><img src="assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="tutorials.html">教程中心</a><a class="pnav-item" href="efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="video-sim.html">Video Sim</a><a class="pnav-item" href="skills.html">Skills</a><a class="pnav-item on" href="boards.html">板卡与物料</a><a class="pnav-item" href="cli-reference.html">CLI 参考</a><a class="pnav-item" href="mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0 · Trae 优先</p><h1>板卡与物料 · Catalog 说明</h1><p>板卡/Jacket/Demo/IP 物料经私有 Catalog 仓库授权同步；本页说明其内容与获取流程。</p>
+<label><span class="sr-only">搜索文档</span><input id="search" class="search" type="search" placeholder="搜索当前产品文档…"></label></header>
+<main><div class="doc-body"><h1 id="catalog-物料与获取">Catalog 物料与获取</h1>
+<blockquote>
+<p>适用版本：v1.0.0　适用对象：拿到客户交付包的全部用户</p>
+</blockquote>
+<h2 id="这页讲什么">这页讲什么</h2>
+<p>EvoVerse SDK 的板卡、参考设计与 IP 物料<strong>不随安装包分发</strong>。它们集中存放在唯一的私有 Catalog 仓库中，安装扩展后按授权同步到本地。本页说明 Catalog 里有什么、如何获得访问权限、如何同步；具体板卡的规格与 datasheet 不在本页展开，同步后随物料一起提供。</p>
+<h2 id="catalog-里有什么">Catalog 里有什么</h2>
+<table>
+<thead>
+<tr>
+<th>物料类别</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>板卡定义</td>
+<td>核心板的板卡数据（供自然语言工程创建、pinout 与约束生成使用）</td>
+</tr>
+<tr>
+<td>底板与扩展</td>
+<td>底板（carrier）定义与扩展接口信息</td>
+</tr>
+<tr>
+<td>参考设计 Jacket</td>
+<td>可一键创建的完整参考工程（含规格与实施说明）</td>
+</tr>
+<tr>
+<td>Demo 工程</td>
+<td>面向各板卡的示例工程</td>
+</tr>
+<tr>
+<td>IP 物料</td>
+<td>随 Catalog 分发的 IP 核与配套文档</td>
+</tr>
+<tr>
+<td>板卡文档</td>
+<td>各板卡的规格书、datasheet 与参考设计说明（随同步落地到本地）</td>
+</tr>
+</tbody>
+</table>
+<p>当前提供哪些板卡、Jacket 与 IP，以同步后的 Catalog 实际内容为准，不在交付包中静态罗列。</p>
+<h2 id="获取流程">获取流程</h2>
+<ol>
+<li>把自己的 <strong>GitHub 用户名</strong>（不是邮箱）告知 EvoVerse 运营人员，等待 <code>evoverse-catalog</code> 私有仓库的只读邀请。</li>
+<li>在邮箱中接受邀请。仓库地址对扩展可见，但没有 GitHub 授权仍无法读取内容。</li>
+<li>用 Git Credential Manager 或 GitHub CLI 在本机完成该账户认证。<strong>不要索取或使用团队共享 PAT。</strong></li>
+<li>在 Trae / VS Code 左侧打开「Board Catalog」视图点刷新，或运行命令 <code>EvoVerse: Sync Catalog</code>。</li>
+<li>同步完成后，Welcome 与 Trae 自然语言工程流程即可看到全部板卡、Demo 与 IP。</li>
+</ol>
+<h2 id="同步后物料在哪里">同步后物料在哪里</h2>
+<p>物料安装到 <code>evoverse.home</code>（默认 <code>~/evoverse-sdk</code>）下的 <code>catalog/</code> 目录：</p>
+<ul>
+<li><code>catalog/boards/&lt;板卡&gt;/</code> — 板卡数据与随板维护的文档（规格、datasheet、参考设计说明）</li>
+<li>上一版本会保留为 <code>catalog.previous/</code>，供离线回退</li>
+</ul>
+<p>可用 <code>evoverse catalog status --json</code> 查看当前 <code>catalogVersion</code>、<code>commit</code> 与 <code>treeDigest</code>。</p>
+<h2 id="常见状态与问题">常见状态与问题</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>说明与处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CATALOG_NOT_INSTALLED</code></td>
+<td>尚未同步，属预期状态；完成上述获取流程后 Sync 即可</td>
+</tr>
+<tr>
+<td>同步失败（网络/鉴权）</td>
+<td>修复网络或 GitHub 认证后重试；已有版本不受影响</td>
+</tr>
+<tr>
+<td>新版本同步失败但本地版本健康</td>
+<td>可运行 <code>EvoVerse: Roll Back Catalog</code> 离线回退到 <code>catalog.previous</code></td>
+</tr>
+<tr>
+<td>物料更新</td>
+<td>运营发布新版 Catalog 后重新 Sync 即可，无需重装扩展</td>
+</tr>
+</tbody>
+</table>
+<h2 id="设计说明">设计说明</h2>
+<p>物料不打进安装包是刻意的访问控制设计：Catalog 通过 GitHub 只读授权按客户发放，扩展安装时会主动校验 VSIX 内不含 Catalog 物料。板卡文档与板卡数据在同一仓库中同版本演进，因此文档也随物料同步，而不是随安装包静态分发。</p></div></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+<script>
+const input=document.getElementById('search');input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();document.querySelectorAll('[data-search]').forEach(e=>e.classList.toggle('hidden',q&&!e.dataset.search.toLowerCase().includes(q)));});
+</script></body></html>

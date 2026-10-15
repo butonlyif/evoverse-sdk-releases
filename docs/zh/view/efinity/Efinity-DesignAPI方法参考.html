@@ -1,0 +1,1193 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity DesignAPI 方法参考</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>DesignAPI 全方法签名、efx_run_pt_unified 流程与 ISF 执行模型的详尽权威。</span>
+<code>efinity/Efinity-DesignAPI方法参考.md</code>
+<a href="../../../efinity/Efinity-DesignAPI方法参考.md">Markdown 源文件</a></p>
+<h1>Efinity DesignAPI 方法参考</h1></header>
+<main class="article"><h1 id="efinity-designapi-方法参考">Efinity DesignAPI 方法参考</h1>
+<blockquote>
+<p><strong>适用版本</strong>：Efinity 2026.1（PT / Periphery Toolchain）
+<strong>调查日期</strong>：2026-09-25
+<strong>调查方式</strong>：逐行实读 Efinity 2026.1 安装目录下的官方 Python 源码，全部结论附源码行号证据。
+<strong>核心证据源</strong>：
+- <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code>（2810 行，DesignAPI 门面类真身）
+- <code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code>（393 行，unified flow 编排器）
+- <code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_importer.py</code>（435 行，ISF 导入器）
+- <code>C:\Efinity\2026.1\pt\bin\design\service.py</code>（DesignWriterXml，peri.xml 写出器）</p>
+</blockquote>
+<hr />
+<h2 id="0-位置勘误与阅读指引">0. 位置勘误与阅读指引</h2>
+<h3 id="0-1-三条重要勘误-先读">0.1 三条重要勘误（先读）</h3>
+<p>在查阅 Efinity DesignAPI 相关资料时，以下三个位置很容易搞错，本文以实读源码为准予以勘误：</p>
+<p><strong>勘误 1：DesignAPI 真身在 <code>pt\bin\api_service\design.py</code>，不是 <code>design\db.py</code>。</strong></p>
+<ul>
+<li><code>api_service\design.py</code> L71 定义 <code>class DesignAPI</code>，是用户直接调用的<strong>门面类（Facade）</strong>，约 2810 行，包含全部 <code>create_*_gpio</code> / <code>set_property</code> / <code>assign_pkg_pin</code> / <code>import_design</code> 等公开方法。</li>
+<li><code>design\db.py</code>（<code>pt\bin\design\db.py</code>）L64 定义的是 <code>class PeriDesign(db_item.PeriDesignItem)</code>——这是<strong>内部数据容器</strong>，保存 GPIO/PLL/IOBank 等对象的内存数据库，不对外提供操作语义。DesignAPI 通过 <code>from design.db import PeriDesign</code>（design.py L31）持有它。</li>
+<li>另有中间编排层 <code>api_service\internal\int_design.py</code> 的 <code>IntDesignAPI</code>（load L140 / create L316 / save L391 / create_block L758 / check_design L978 等），DesignAPI 的大部分生命周期方法都是对它的一层薄封装。</li>
+</ul>
+<p><strong>勘误 2：peri.xml 写出器 <code>DesignWriterXml</code> 在 <code>pt\bin\design\service.py</code>（L3476），不在 <code>api_service\design\service.py</code>（该路径不存在），也不在 writer 目录。</strong></p>
+<ul>
+<li><code>pt\bin\api_service\</code> 目录下没有 <code>design</code> 子包——<code>api_service\design.py</code> 是单文件模块，不是包。</li>
+<li><code>pt\bin\design\service.py</code> 顶层定义 <code>class DesignService</code>（L540）与 <code>class DesignWriterXml</code>（L3476），前者负责 peri.xml 的加载/保存编排，后者是真正的 XML 写出器。</li>
+</ul>
+<p><strong>勘误 3：peri.xml 的写出器只有一个，peri.xml 本身是"工程源文件"而非"构建生成物"。</strong></p>
+<ul>
+<li>每次 unified build（<code>efx_run --flow compile</code>）都会加载已持久化的 <code>&lt;design&gt;.peri.xml</code>，并把工程 XML 引用的 ISF 重放上去（见第 3 节）。因此 peri.xml 必须随工程纳入版本管理，任何构建路径都不得在构建前删除它。</li>
+<li>它的根元素与命名空间是 <code>efxpt:design_db</code> / <code>http://www.efinixinc.com/peri_design_db</code>（service.py L3506、L3521-3526），与工程 XML 的 <code>enf_proj</code> 命名空间（<code>http://www.efinixinc.com/enf_proj</code>）是<strong>两个不同的 schema</strong>，详见《Efinity-XML工程文件Schema参考.md》。</li>
+</ul>
+<h3 id="0-2-分层架构总览">0.2 分层架构总览</h3>
+<pre><code>用户层      ISF 脚本（design.create_input_gpio(...) 等 Python 源码）
+              │  exec() 执行，design 名字绑定 DesignAPI 实例（isf_importer.py L287/L289）
+              ▼
+门面层      api_service\design.py  class DesignAPI (L71)         ← 本卷核心
+              │  薄封装
+              ▼
+编排层      api_service\internal\int_design.py  class IntDesignAPI
+              │  load L140 / save L391 / create_block L758 / check_design L978 ...
+              ▼
+服务层      design\service.py  DesignService (L540)
+              │  load_design L662 / save_design L720
+              ▼
+写出/读入   DesignWriterXml (L3476)  ⇄  DesignBuilderXml
+              │
+              ▼
+容器层      design\db.py  class PeriDesign (L64)  ← 内存对象数据库（不对外）
+              │
+              ▼
+持久层      &lt;design&gt;.peri.xml（efxpt:design_db 命名空间，工程源文件）
+</code></pre>
+<h3 id="0-3-与-isf-peri-xml-的关系">0.3 与 ISF / peri.xml 的关系</h3>
+<ul>
+<li><strong>ISF 是 Python API 源码</strong>：<code>.isf</code> 文件内容就是一行行 <code>design.xxx(...)</code> 调用，由 <code>isf_importer.py</code> 以 <code>exec()</code> 逐行执行（L236、L289）。这就是"ISF 语法错误 → 整个 import 立即终止"的根源（Python 的 <code>SyntaxError</code> 无法按行恢复，见 4.3 节异常矩阵）。</li>
+<li><strong>peri.xml 是对象数据库的 XML 序列化</strong>：ISF 执行产生的全部对象/属性/引脚分配最终写入 PeriDesign 容器，再由 <code>DesignWriterXml</code> 序列化为 <code>&lt;design&gt;.peri.xml</code>。</li>
+<li><strong>重放安全</strong>：每次 build 都会重新执行 ISF 到已存在的 peri.xml 上，所以工程 XML 引用的 ISF 只能包含幂等命令（<code>set_property</code> / <code>assign_pkg_pin</code> / <code>assign_resource</code> / <code>set_device_property</code> / <code>set_iobank_voltage</code>）；<code>create_*</code> 是一次性 bootstrap，只能在 peri.xml 不存在时执行一次——ISF 命令集没有 delete/clear，重复 <code>create_*</code> 会报 "already exists" 类错误。此契约的完整表述见《Efinity-ISF语法参考.md》与硬约束规则 §15。</li>
+</ul>
+<hr />
+<h2 id="1-designapi-类基础">1. DesignAPI 类基础</h2>
+<h3 id="1-1-类定义与构造">1.1 类定义与构造</h3>
+<p>证据：<code>pt\bin\api_service\design.py</code>。</p>
+<pre><code class="language-python"># L68
+BlockInstanceType = Union[str, int]
+
+# L71
+class DesignAPI:
+
+    # L76
+    def __init__(self, is_verbose=False):
+</code></pre>
+<ul>
+<li><code>is_verbose=False</code>：是否输出详细日志。ISF 导入器内部固定以 <code>DesignAPI(is_verbose=True)</code> 创建实例（isf_importer.py L111）。</li>
+<li>构造后通过 <code>_setup_design(design_db)</code>（L99）绑定内部 PeriDesign 容器；外部脚本通常不需要直接调用它。</li>
+</ul>
+<h3 id="1-2-对象句柄模型">1.2 对象句柄模型</h3>
+<p>DesignAPI 的绝大多数方法第一个参数是 <code>inst</code>，类型为 <code>BlockInstanceType = Union[str, int]</code>（L68）：</p>
+<ul>
+<li><strong>传 <code>str</code></strong>：按实例名查找（如 <code>"ddr0"</code>、<code>"my_pll"</code>）。</li>
+<li><strong>传 <code>int</code></strong>：按内部 object_id 查找。</li>
+<li><strong>IOBank / SEU / RU / EXT_FLASH / CLKMUX 特殊</strong>：这些不是普通块，而是器件设置单例。<code>__get_object_id</code>（L2681）会把这类名字映射到器件设置对象（L2695-2713），所以 <code>set_device_property("TL", "VOLTAGE", "3.3", "IOBANK")</code> 可以直接用 bank 名作 <code>inst</code>。</li>
+</ul>
+<h3 id="1-3-block_type-体系">1.3 block_type 体系</h3>
+<p><code>create_block(name, block_type, ...)</code> 与属性方法的 <code>block_type</code> 参数使用如下块类型（在 design.py 各方法签名与 docstring 中出现）：</p>
+<table>
+<thead>
+<tr>
+<th>block_type</th>
+<th>用途</th>
+<th>关联硬 IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GPIO</code></td>
+<td>普通 GPIO / 总线 GPIO（<strong>禁用 create_block 创建</strong>，L196-197）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>PLL</code></td>
+<td>锁相环</td>
+<td>PLL</td>
+</tr>
+<tr>
+<td><code>OSC</code></td>
+<td>片上振荡器</td>
+<td>OSC</td>
+</tr>
+<tr>
+<td><code>LVDS_TX</code> / <code>LVDS_RX</code> / <code>LVDS_BIDIR</code></td>
+<td>LVDS 差分</td>
+<td>LVDS</td>
+</tr>
+<tr>
+<td><code>MIPI_TX_LANE</code> / <code>MIPI_RX_LANE</code></td>
+<td>MIPI Lane</td>
+<td>MIPI</td>
+</tr>
+<tr>
+<td><code>JTAG</code></td>
+<td>JTAG</td>
+<td>JTAG</td>
+</tr>
+<tr>
+<td><code>DDR</code></td>
+<td>DDR 控制器</td>
+<td>DDR</td>
+</tr>
+<tr>
+<td><code>PMA_DIRECT</code></td>
+<td>PMA 直通（PCIe/高速串行）</td>
+<td>PMA</td>
+</tr>
+<tr>
+<td><code>QUAD_PCIE</code></td>
+<td>PCIe Quad</td>
+<td>PCIe</td>
+</tr>
+<tr>
+<td><code>CM</code></td>
+<td>Clock Morphing / 时钟管理</td>
+<td>CM</td>
+</tr>
+</tbody>
+</table>
+<p>GPIO 连接类型（<code>conn_type</code>，由 14 个 <code>create_*_gpio</code> 固定注入）：<code>GCLK</code>（全局时钟）、<code>RCLK</code>（区域时钟）、<code>PLL_CLKIN</code>（PLL 参考时钟输入）、<code>PLL_EXTFB</code>（PLL 外部反馈）、<code>MIPI_CLKIN</code>（MIPI 时钟输入）、<code>PCIE_PERSTN</code>（PCIe 复位）、<code>GCTRL</code>（全局控制）、<code>clkout</code>（时钟输出）。</p>
+<h3 id="1-4-devset_type-体系">1.4 devset_type 体系</h3>
+<p><code>set_device_property</code> / <code>get_device_property</code> / <code>reset_device_settings</code> 使用的器件设置类型（L576 docstring）：</p>
+<table>
+<thead>
+<tr>
+<th>devset_type</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IOBANK</code></td>
+<td>IO Bank（电压、mode_sel 等）</td>
+</tr>
+<tr>
+<td><code>SEU</code></td>
+<td>SEU（软错误纠察）设置</td>
+</tr>
+<tr>
+<td><code>RU</code></td>
+<td>冗余/备用设置</td>
+</tr>
+<tr>
+<td><code>EXT_FLASH</code></td>
+<td>外部 SPI Flash 设置</td>
+</tr>
+<tr>
+<td><code>CLKMUX</code></td>
+<td>全局时钟复用（经 get/set_mode_sel_name、global mux 方法族操作）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-全方法参考">2. 全方法参考</h2>
+<p>以下全部行号均指 <code>pt\bin\api_service\design.py</code>（除非另行标注）。签名摘自源码定义行。</p>
+<h3 id="2-1-生命周期族">2.1 生命周期族</h3>
+<pre><code class="language-python"># L112
+def load(self, design_file):
+</code></pre>
+<p>加载已存在的 peri.xml。委托链：<code>DesignAPI.load (L112)</code> → <code>IntDesignAPI.load (int_design.py L140)</code> → <code>DesignService.load_design (service.py L662)</code>（内部用 DesignBuilderXml L682 解析；若资源名发生变更会自动回存 L693-698）。</p>
+<pre><code class="language-python"># L123
+def create(self, design_name, device_name, path=&quot;.&quot;, auto_save=False, overwrite=False):
+</code></pre>
+<p>创建全新设计（bootstrap 用）。unified flow 在 <code>--create</code> 且 peri.xml 不存在时调用（efx_run_pt_unified.py L188-194）。</p>
+<pre><code class="language-python"># L147
+def save(self):
+</code></pre>
+<p>保存到当前文件。委托链：<code>DesignAPI.save (L147)</code> → <code>IntDesignAPI.save (L391)</code> → <code>DesignService.save_design (L720-732)</code> → <code>DesignWriterXml().write() (L727 → L3484)</code>。</p>
+<pre><code class="language-python"># L155
+def save_as(self, design_file, overwrite=False):
+</code></pre>
+<p>另存为新文件。对应 <code>IntDesignAPI.save_as (L413)</code>。</p>
+<pre><code class="language-python"># L104
+def get_device_api(self):
+</code></pre>
+<p>获取器件 API 句柄（查询器件资源/封装信息用）。</p>
+<h3 id="2-2-块管理族">2.2 块管理族</h3>
+<pre><code class="language-python"># L192
+def create_block(self, name, block_type, **kwargs):
+</code></pre>
+<p>创建硬 IP 块。kwargs 支持 <code>mode</code> / <code>conn_type</code> / <code>tx_mode</code> / <code>rx_conn_type</code>。<strong>注意：<code>block_type="GPIO"</code> 会被拒绝</strong>（L196-197）——GPIO 必须用 2.4 节的 14 个 <code>create_*_gpio</code> 方法创建，这正是"PLL 必须在 ISF 中创建、不能在 RTL 中例化"规则的工具侧对应物。</p>
+<pre><code class="language-python"># L255
+def delete_block(self, inst, block_type):
+# L302
+def delete_gpio(self, inst):
+</code></pre>
+<p>删除块 / 删除 GPIO。API 层有 delete 方法，但 <strong>ISF 命令集不暴露 delete</strong>——ISF 是重放安全的，没有可写入 ISF 的幂等删除。</p>
+<pre><code class="language-python"># L166
+def get_block_type(self):
+# L174
+def get_all_block_version(self):
+# L182
+def get_block_version(self, block_type):
+# L343
+def get_all_block_name(self, block_type):
+# L356
+def get_block(self, name, block_type):
+</code></pre>
+<p>块查询：当前工程支持的块类型列表、各块类型的工具版本号、某类型的全部实例名、按名取块句柄。</p>
+<h3 id="2-3-属性设置族">2.3 属性设置族</h3>
+<pre><code class="language-python"># L507
+def set_property(self, inst, prop_name, prop_value=None, block_type=&quot;GPIO&quot;):
+</code></pre>
+<p>核心属性设置方法。</p>
+<ul>
+<li><code>prop_name</code> / <code>prop_value</code> 为 <code>str</code>：设置单属性；此时 <code>prop_value=None</code> 会报错（L546-548）。</li>
+<li><code>prop_name</code> 为 <code>dict</code>：批量设置，<code>prop_value</code> 忽略（L542-550）。</li>
+<li><strong>docstring 明确（L512-513）</strong>：资源分配与引脚分配不要用 <code>set_property</code>，必须用 <code>assign_resource</code>（L790）/ <code>assign_pkg_pin</code>（L837）。</li>
+</ul>
+<pre><code class="language-python"># L427
+def get_property(self, inst, prop_name, block_type=&quot;GPIO&quot;):
+</code></pre>
+<p>读属性；<code>prop_name</code> 支持 <code>list</code> 批量读取。对总线 GPIO，属性读不到时回退到首成员（私有 <code>__get_bus_property</code> L2571、<code>__get_bus_first_gpio</code> L2632）。</p>
+<pre><code class="language-python"># L559
+def set_device_property(self, inst, prop_name, prop_value=None, devset_type=&quot;IOBANK&quot;):
+</code></pre>
+<p>设置<strong>器件级</strong>属性（区别于块属性）。<code>devset_type</code> 见 1.4 节；<code>inst</code> 为空会报错（L583-585）。</p>
+<pre><code class="language-python"># L468
+def get_device_property(self, inst, prop_name, devset_type=&quot;IOBANK&quot;):
+</code></pre>
+<p>读器件级属性。</p>
+<pre><code class="language-python"># L387
+def get_all_property(self, block_type=None, object_id=None):
+</code></pre>
+<p>枚举属性清单（不指定对象时返回属性名全表，用于探查某 block_type 支持哪些属性）。</p>
+<pre><code class="language-python"># L1935
+def lock_property(self, inst, prop_name, prop_value, block_type, netlist_checksum):
+</code></pre>
+<p>锁定属性与网表校验和的绑定，防止外设网表重导入时属性被覆盖。<strong><code>block_type</code> 与 <code>netlist_checksum</code> 无默认值</strong>（必填）；实例不存在时仅 print 并返回 None，不抛异常（L1944-1945）。ISF 导入器在处理网表生成的命令时会自动调用（isf_importer.py L121-122）。</p>
+<pre><code class="language-python"># L1598
+def db_blk_type_to_api_block_type_str(self):
+# L1627
+def build_api_prop(self):
+</code></pre>
+<p>内部辅助：内部块类型枚举到 API 字符串的映射表；API 属性对象构造。</p>
+<h3 id="2-4-gpio-创建族-14-个-逐一签名">2.4 GPIO 创建族（14 个，逐一签名）</h3>
+<p>全部位于 design.py，均为 <code>name</code> + 可选总线位宽（<code>msb</code>/<code>lsb</code>）的薄封装；内部统一走 <code>create_block</code> 的 GPIO 通道并注入各自的 <code>conn_type</code>。<strong>这些方法是 ISF 中唯一合法的 GPIO 创建入口</strong>（一次 bootstrap，之后注释掉，见 0.3 节）。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>方法</th>
+<th>行号</th>
+<th>conn_type</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>create_input_gpio</code></td>
+<td>L1071</td>
+<td>—</td>
+<td>普通输入</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>create_output_gpio</code></td>
+<td>L1097</td>
+<td>—</td>
+<td>普通输出</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>create_inout_gpio</code></td>
+<td>L1123</td>
+<td>—</td>
+<td>双向（仅顶层 IO）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>create_open_drain_output_gpio</code></td>
+<td>L1149</td>
+<td>—</td>
+<td>开漏输出（输出恒 0/GND）</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>create_vref_gpio</code></td>
+<td>L1169</td>
+<td>—</td>
+<td>IO Bank 参考电压脚</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>create_input_clock_gpio</code></td>
+<td>L1187</td>
+<td>GCLK</td>
+<td>全局时钟输入</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>create_regional_input_clock_gpio</code></td>
+<td>L1206</td>
+<td>RCLK</td>
+<td>区域时钟输入</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>create_pll_input_clock_gpio</code></td>
+<td>L1225</td>
+<td>PLL_CLKIN</td>
+<td>PLL 参考时钟输入</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>create_pll_ext_fb_gpio</code></td>
+<td>L1244</td>
+<td>PLL_EXTFB</td>
+<td>PLL 外部反馈</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>create_mipi_input_clock_gpio</code></td>
+<td>L1264</td>
+<td>MIPI_CLKIN</td>
+<td>MIPI 时钟输入（Trion 硬 MIPI）</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>create_pcie_perstn_gpio</code></td>
+<td>L1284</td>
+<td>PCIE_PERSTN</td>
+<td>PCIe 复位输入（Titanium PCIe）</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>create_clockout_gpio</code></td>
+<td>L1304</td>
+<td>clkout</td>
+<td>时钟输出脚</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>create_global_control_gpio</code></td>
+<td>L1324</td>
+<td>GCTRL</td>
+<td>全局控制输入</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>create_unused_gpio</code></td>
+<td>L1343</td>
+<td>—</td>
+<td>声明未用脚（配合 unused_state）</td>
+</tr>
+</tbody>
+</table>
+<p>精确签名（前三个带总线位宽）：</p>
+<pre><code class="language-python"># L1071
+def create_input_gpio(self, name, msb=None, lsb=None):
+# L1097
+def create_output_gpio(self, name, msb=None, lsb=None):
+# L1123
+def create_inout_gpio(self, name, msb=None, lsb=None):
+</code></pre>
+<p>总线 GPIO 一次性创建：<code>create_output_gpio("led", 3, 0)</code> 创建 <code>led[3:0]</code>——<strong>不要</strong>拆成 <code>led[0]</code>、<code>led[1]</code> 逐个创建。引脚分配时总线成员用 <code>"bus[N]"</code> 格式：<code>design.assign_pkg_pin("led[0]", "A1")</code>。</p>
+<p>其余 11 个签名（单 bit）：</p>
+<pre><code class="language-python"># L1149
+def create_open_drain_output_gpio(self, name):
+# L1169
+def create_vref_gpio(self, name):
+# L1187
+def create_input_clock_gpio(self, name):          # conn_type=GCLK
+# L1206
+def create_regional_input_clock_gpio(self, name): # conn_type=RCLK
+# L1225
+def create_pll_input_clock_gpio(self, name):      # conn_type=PLL_CLKIN
+# L1244
+def create_pll_ext_fb_gpio(self, name):           # conn_type=PLL_EXTFB
+# L1264
+def create_mipi_input_clock_gpio(self, name):     # conn_type=MIPI_CLKIN
+# L1284
+def create_pcie_perstn_gpio(self, name):          # conn_type=PCIE_PERSTN
+# L1304
+def create_clockout_gpio(self, name):             # conn_type=clkout
+# L1324
+def create_global_control_gpio(self, name):       # conn_type=GCTRL
+# L1343
+def create_unused_gpio(self, name):
+</code></pre>
+<p>未用脚状态：</p>
+<pre><code class="language-python"># L1360
+def set_gpio_unused_state(self, value):
+</code></pre>
+<p><code>value</code> 取 <code>INPUT_WEAK_PULLUP</code> / <code>INPUT_WEAK_PULLDOWN</code>，配合 <code>create_unused_gpio</code> 使用。</p>
+<pre><code class="language-python"># L1373
+def get_gpio_unused_state(self):
+</code></pre>
+<h3 id="2-5-gpio-删除与查询族">2.5 GPIO 删除与查询族</h3>
+<pre><code class="language-python"># L302
+def delete_gpio(self, inst):
+# L942
+def get_all_gpio_name(self):
+# L952
+def get_gpio(self, name):
+# L973
+def get_bus(self, name):
+# L995
+def get_bus_gpio(self, bus_object_id):
+# L1020
+def get_all_gpio(self):
+# L1041
+def get_object_block_type(self, inst):
+</code></pre>
+<ul>
+<li><code>get_gpio</code> / <code>get_bus</code>：按名取 GPIO / 总线对象句柄。</li>
+<li><code>get_bus_gpio</code>：由总线 object_id 取其成员 GPIO 列表。</li>
+<li><code>get_object_block_type</code>：查询任意句柄所属的 block_type。</li>
+</ul>
+<h3 id="2-6-资源与引脚族">2.6 资源与引脚族</h3>
+<pre><code class="language-python"># L790
+def assign_resource(self, inst, res_name, block_type=&quot;GPIO&quot;, override=True):
+</code></pre>
+<p>把块实例绑定到具体器件资源（如 PLL 资源位、DDR 资源位）。<code>override=True</code> 允许覆盖已有分配。</p>
+<pre><code class="language-python"># L837
+def assign_pkg_pin(self, inst, pin_name, override=True):
+</code></pre>
+<p>把 GPIO 绑定到封装引脚。内部固定作用于 GPIO 块类型（L849），所以不需要 <code>block_type</code> 参数。引脚名是数据手册封装信息里的球号（如 <code>"A1"</code>、<code>"K14"</code>）。</p>
+<pre><code class="language-python"># L864
+def is_resource_used(self, res_name, block_type=&quot;GPIO&quot;):
+# L889
+def is_pkg_pin_used(self, pin_name):
+</code></pre>
+<p>占用查询（自动分配/脚本化分配前做冲突检查）。</p>
+<pre><code class="language-python"># L903
+def get_resource(self, inst, block_type=&quot;GPIO&quot;):
+# L927
+def get_pkg_pin(self, inst):
+</code></pre>
+<p>反向查询：实例绑定了哪个资源 / 哪个引脚（<code>get_resource</code> 内部即读 <code>RESOURCE</code> 属性）。</p>
+<p>最小调用示例：</p>
+<pre><code class="language-python">design.set_iobank_voltage(&quot;TL&quot;, &quot;3.3&quot;)
+design.create_output_gpio(&quot;led&quot;, 3, 0)        # bootstrap 阶段，一次性
+design.assign_pkg_pin(&quot;led[0]&quot;, &quot;A1&quot;)         # 重放安全，每次 build 可执行
+design.set_property(&quot;led[0]&quot;, &quot;IO_TYPE&quot;, &quot;3.3V LVTTL / LVCMOS&quot;)
+</code></pre>
+<h3 id="2-7-器件级设置族-iobank-时钟复用">2.7 器件级设置族（IOBank / 时钟复用）</h3>
+<pre><code class="language-python"># L619
+def get_all_iobank_name(self):
+# L639
+def set_iobank_voltage(self, bank_name, voltage=None):
+# L657
+def get_iobank_voltage(self, bank_name=None):
+</code></pre>
+<ul>
+<li><code>set_iobank_voltage</code>：<code>voltage</code> 可传单值（<code>"3.3"</code>）或 <code>{bank: volt}</code> 字典批量；内部即 <code>set_device_property(bank, "VOLTAGE", volt, "IOBANK")</code>。bank 电压决定该 bank 可用的 IO_STANDARD，同一 bank 必须同压（硬约束 §3）。</li>
+</ul>
+<pre><code class="language-python"># L680
+def get_mode_sel_name(self, bank_name, bonded_bank=None):
+# L754
+def set_mode_sel_name(self, bank_name, value, bonded_bank=None):
+# L723
+def get_bonded_bank(self, bank_name):
+</code></pre>
+<p>Bank 的 mode_sel 读写与 bonded bank 查询。</p>
+<pre><code class="language-python"># L2327
+def get_all_global_mux_name(self):
+# L2344
+def get_regional_buffer_info(self, clkmux_name, regional_buf=None):
+# L2371
+def get_global_dynamic_mux_input_info(self, clkmux_name, dynamic_mux, clock_input, index=None):
+</code></pre>
+<p>全局时钟复用器（GCLK mux）枚举、区域 buffer 信息、动态复用输入查询。</p>
+<pre><code class="language-python"># L2403
+def reset_device_settings(self, devset_types=None):
+</code></pre>
+<p>按 devset 类型批量复位器件设置；<code>None</code> 表示全部。</p>
+<h3 id="2-8-pll-cm-计算族">2.8 PLL / CM 计算族</h3>
+<pre><code class="language-python"># L1988
+def calc_pll_clock(self, inst):
+</code></pre>
+<p>按当前已配置的 M/N/O 计数器与输出分频<strong>正算</strong> PLL 各输出频率。必须先配好计数器参数才有意义。</p>
+<pre><code class="language-python"># L2219
+def auto_calc_pll_clock(self, inst, target_freq=None, apply_optimal=True, result_len=None):
+</code></pre>
+<p><strong>反算</strong>：给定目标频率求计数器组合。
+- <code>target_freq</code>：MHz 为单位的字典（输出名 → 频率）；<code>None</code> 直接报错（L2242-2244）。
+- <code>result_len</code>：返回解的数量，默认 5 个，<code>0</code> 表示全部（L2231）。
+- <code>apply_optimal=True</code>：自动把最优解写回 PLL 属性。</p>
+<pre><code class="language-python"># L2023
+def calc_cm_clock(self, inst):
+# L2293
+def auto_calc_cm_clock(self, inst, target_freq, apply_optimal=True, result_len=None):
+</code></pre>
+<p>CM（时钟管理块）的正算 / 反算，语义同 PLL 版。</p>
+<pre><code class="language-python"># L2257
+def auto_calc_quad_clock(self, inst):
+</code></pre>
+<p>PMA_DIRECT 块专用，返回 GHz 字符串结果或 <code>None</code>。</p>
+<pre><code class="language-python"># L2135
+def trace_ref_clock(self, inst, block_type=&quot;PLL&quot;):
+</code></pre>
+<p>回溯 PLL 的参考时钟来源，返回列表元素为 <code>{"NAME", "RESOURCE", "IN_PIN"}</code>（L2170-2174）；仅支持 PLL。</p>
+<pre><code class="language-python"># L2182
+def gen_pll_ref_clock(self, inst, **kwargs):
+</code></pre>
+<p>生成 PLL 参考时钟记录；kwargs 支持 <code>pll_res</code> / <code>refclk_name</code>。</p>
+<h3 id="2-9-ddr-pma-preset-族">2.9 DDR / PMA preset 族</h3>
+<pre><code class="language-python"># L2058
+def get_all_preset_info(self, name, block_type=&quot;DDR&quot;):
+</code></pre>
+<p>列出某块可用的 preset。<code>block_type</code> 仅接受 <code>DDR</code> / <code>PMA_DIRECT</code>（L2066-2067）。</p>
+<pre><code class="language-python"># L2087
+def set_preset(self, name, preset_id, block_type=&quot;DDR&quot;):
+</code></pre>
+<p>应用 preset。内部即 <code>set_property(name, "PRESET", ...)</code>（L2100）；PMA_DIRECT 时用 preset 描述定位（L2092）。</p>
+<pre><code class="language-python"># L2104
+def get_preset(self, name, block_type=&quot;DDR&quot;):
+</code></pre>
+<p>返回 <code>(preset_id, description)</code> 元组。</p>
+<p>DDR 的具体 preset 列表与各属性语义见《Efinity硬IP-DDR参考.md》（如存在；以硬 IP 卷为准）。</p>
+<h3 id="2-10-流程控制族">2.10 流程控制族</h3>
+<pre><code class="language-python"># L1409
+def check_design(self):
+</code></pre>
+<p>设计规则检查（DRC）。返回 <code>bool</code>；全部 issue 存于 <code>__last_design_issue_list</code>，经 <code>get_design_check_issue</code>（L1968）读取（<code>raw=False</code> 时返回格式化对象）。</p>
+<pre><code class="language-python"># L1403
+def clean_output(self):
+# L1385
+def generate(self, enable_bitstream, outdir=None):
+</code></pre>
+<p><code>generate</code> 内部顺序：<code>clean_output</code> → <code>check_design</code> → <code>__gen_report</code>（L2666，summary/pinout 报告）→ <code>__gen_constraint</code>（L2652，pcr/core interface/timing 约束文件）。<code>enable_bitstream</code> 决定是否产出供 pgm 使用的约束。</p>
+<pre><code class="language-python"># L1468
+def import_design(self, design_isf_file, gen_issue_csv=False, path=&quot;&quot;):
+</code></pre>
+<p><strong>导入 ISF 的主入口</strong>。返回 <code>Tuple[bool, List[DesignIssue]]</code>；<code>gen_issue_csv=True</code> 时把 issue 写出 CSV（命名规则 L1494-1498：基于 ISF 文件名派生）。执行模型见第 4 节。</p>
+<pre><code class="language-python"># L1425
+def export_design(self, block_type=None, block_inst=None, isf_file=&quot;&quot;, export_all_pin=False):
+</code></pre>
+<p>从当前设计<strong>反向导出 ISF</strong>；<code>block_type</code> 优先于 <code>block_inst</code>（L1428-1429）。<code>export_all_pin=True</code> 时连未分配引脚也导出。可用于把官方示例 peri.xml 反推为 ISF 学习样本。</p>
+<pre><code class="language-python"># L1508
+def setup_partial_design(self, name):
+# L1569
+def finish_partial_design(self, name):
+</code></pre>
+<p>部分设计迁移（partial design migration）的边界标记：<code>setup</code> 记录当前状态快照，<code>finish</code> 完成合并。网表反推 ISF 命令时会自动包上这对命令（见 2.11 节 <code>convert_periphery_netlist_to_isf_commands</code>）。</p>
+<pre><code class="language-python"># L1545
+def get_instance_modified_props(self, inst, block_type=None, block_name=None, original_block=True):
+</code></pre>
+<p>查询实例相对原始定义被修改过的属性（部分设计流程辅助）。</p>
+<pre><code class="language-python"># L2422
+def clear_design(self, block_types=None):
+</code></pre>
+<p>按 block_type 清空设计内容；<code>None</code> 表示全部。</p>
+<h3 id="2-11-外设网表-isf-互转族">2.11 外设网表 ↔ ISF 互转族</h3>
+<pre><code class="language-python"># L1656
+def convert_periphery_netlist_to_isf_commands(self, peri_netlist_file):
+</code></pre>
+<p>把外设网表（peri netlist）解析为 ISF 命令对象列表；<strong>队首自动插入 <code>ISFSetupPartialDesignCommand</code>、队尾插入 <code>ISFFinishPartialDesignCommand</code></strong>（L1686-1687）——反推出来的 ISF 天然带部分设计边界。</p>
+<pre><code class="language-python"># L1692
+def convert_periphery_netlist_to_isf_file(self, peri_netlist_file, design_isf_file):
+</code></pre>
+<p>同上，直接落盘为 <code>.isf</code> 文件。unified flow 第 6 步用它从 <code>--peri_netlist</code> 生成 <code>&lt;design&gt;.unified.isf</code>（efx_run_pt_unified.py L244-248）。</p>
+<pre><code class="language-python"># L1709
+def auto_assign_resource(self):
+</code></pre>
+<p>自动资源分配，返回 <code>List[ISFAbstractCommand]</code>；其中 set_prop 类命令需经 importer 回灌校验（L1719-1722）。unified flow 第 6 步把它落盘为 <code>&lt;design&gt;.auto_asg.isf</code>（L275-280）。</p>
+<pre><code class="language-python"># L1725
+def export_isf_commands_file(self, commands, out_isf_file):
+# L1735
+def export_auto_assignment_isf_file(self, assignments, out_isf_file):
+</code></pre>
+<p>把命令对象列表写出为 ISF 文本文件。</p>
+<h3 id="2-12-导出族-仿真-时序网表">2.12 导出族（仿真 / 时序网表）</h3>
+<pre><code class="language-python"># L1758
+def is_periphery_sim_supported_for_all_blocks(self):
+# L1786
+def export_periphery_sim_netlist(self, top_module_name, out_rtl_sim_netlist,
+                                 out_pt_sim_netlist, rtl_ndb=None, language='verilog'):
+</code></pre>
+<p>导出外设仿真网表，一次写出<strong>两个</strong>文件：
+- <code>out_rtl_sim_netlist</code>：<code>&lt;top&gt;</code> 顶层（RTL 仿真视角）；
+- <code>out_pt_sim_netlist</code>：<code>&lt;top&gt;~chip</code>（含芯片脚的 PT 视角）。
+（两文件写出在 L1836-1847。）</p>
+<p>关键行为：
+- <code>language</code> 断言仅 <code>verilog</code>（L1804）；
+- <strong>函数内部先跑 <code>check_design</code>，失败直接抛异常</strong>（L1810-1812）；
+- <code>rtl_ndb</code> 用于附带 mem cfg 附加文件的处理（L1817-1832）。</p>
+<pre><code class="language-python"># L1849
+def is_periphery_timing_supported_for_all_blocks(self):
+# L1868
+def export_periphery_timing_netlist(self, timing_netlist_file, timing_fixed_delay_file,
+                                    timing_cell_site_instance_file, timing_cell_delay_override_file):
+</code></pre>
+<p>导出外设<strong>时序</strong>网表，四个输出对应四个文件（L1890-1932）：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>后缀惯例</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timing_netlist_file</code></td>
+<td><code>.pbn</code></td>
+<td>时序网表本体</td>
+</tr>
+<tr>
+<td><code>timing_fixed_delay_file</code></td>
+<td><code>.qdelay</code></td>
+<td>固定延迟</td>
+</tr>
+<tr>
+<td><code>timing_cell_site_instance_file</code></td>
+<td><code>.csi</code></td>
+<td>单元-站点实例映射</td>
+</tr>
+<tr>
+<td><code>timing_cell_delay_override_file</code></td>
+<td><code>.cdo</code></td>
+<td>单元延迟覆盖</td>
+</tr>
+</tbody>
+</table>
+<p>内部同样<strong>先 <code>check_design</code>，失败抛异常</strong>（L1879-1881）。</p>
+<p>unified flow 第 9 步依次调用这两个导出（efx_run_pt_unified.py L296-344），产物为 <code>&lt;design&gt;.peri.rtl.v</code> / <code>&lt;design&gt;.peri.pt.v</code> 与 <code>peri.pbn/qdelay/csi/cdo</code>。</p>
+<h3 id="2-13-pcie-族-quad_pcie">2.13 PCIe 族（QUAD_PCIE）</h3>
+<pre><code class="language-python"># L2444
+def get_pcie_rp_outbound(self, inst):
+# L2475
+def remove_pcie_rp_outbound(self, inst, region_id_list):
+# L2507
+def export_pcie_rp_outbound(self, inst, filename):
+# L2539
+def import_pcie_rp_outbound(self, inst, filename):
+</code></pre>
+<p>PCIe Root Port outbound 区域的读 / 删 / 导出 / 导入（<code>block_type="QUAD_PCIE"</code>）。</p>
+<h3 id="2-14-私有方法简表-仅供源码定位">2.14 私有方法简表（仅供源码定位）</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>行号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__get_bus_property</code></td>
+<td>L2571</td>
+<td>总线属性回退到首成员</td>
+</tr>
+<tr>
+<td><code>__get_simple_property</code></td>
+<td>L2600</td>
+<td>单值属性读取</td>
+</tr>
+<tr>
+<td><code>__get_bus_first_gpio</code></td>
+<td>L2632</td>
+<td>取总线首成员 GPIO</td>
+</tr>
+<tr>
+<td><code>__gen_constraint</code></td>
+<td>L2652</td>
+<td>generate 的约束产出（pcr / core interface / timing）</td>
+</tr>
+<tr>
+<td><code>__gen_report</code></td>
+<td>L2666</td>
+<td>generate 的报告产出（summary / pinout）</td>
+</tr>
+<tr>
+<td><code>__get_object_id</code></td>
+<td>L2681</td>
+<td>inst → object_id；IOBANK/SEU/RU/EXT_FLASH/CLKMUX 名字映射到器件设置单例（L2695-2713）</td>
+</tr>
+<tr>
+<td><code>__get_iobank</code></td>
+<td>L2719</td>
+<td>取 IOBank 对象</td>
+</tr>
+<tr>
+<td><code>__get_seu</code></td>
+<td>L2736</td>
+<td>取 SEU 对象</td>
+</tr>
+<tr>
+<td><code>__get_ctrl</code></td>
+<td>L2753</td>
+<td>取 ctrl 对象</td>
+</tr>
+<tr>
+<td><code>__get_ext_flash</code></td>
+<td>L2770</td>
+<td>取外部 Flash 对象</td>
+</tr>
+<tr>
+<td><code>__get_clockmux</code></td>
+<td>L2787</td>
+<td>取时钟复用器对象</td>
+</tr>
+<tr>
+<td><code>_get_design_db</code></td>
+<td>L2800</td>
+<td>取 PeriDesign 容器句柄</td>
+</tr>
+<tr>
+<td><code>_get_internal_design</code></td>
+<td>L2803</td>
+<td>取 IntDesignAPI 句柄</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-efx_run_pt_unified-py-九步流程详解">3. efx_run_pt_unified.py 九步流程详解</h2>
+<h3 id="3-1-流程定位与退出码">3.1 流程定位与退出码</h3>
+<p><code>pt\bin\efx_run_pt_unified.py</code>（393 行）是 unified flow 中 PT 阶段的编排器：定位/引导 peri.xml → 重放 ISF → 设计检查 → 生成约束报告 → 导出仿真/时序网表。退出码定义（L52-57）：</p>
+<pre><code class="language-python">OK = 0
+ERROR = 1
+WARNING_SKIP = 0   # skip 时返回 0，避免中断 GUI 流程
+</code></pre>
+<p>注意 <strong>WARNING_SKIP 与 OK 同为 0</strong>：可跳过的情况（非支持 family、内部测试器件等）不算失败，这是为了让 <code>efx_run --flow compile</code> 的 GUI 流程不被 PT 侧的可跳过情形打断。</p>
+<p>辅助函数：
+- <code>check_bitstream_enabled(device, family)</code>（L60-74）：调用 <code>efx_pgm --query_bitstreams</code>（L66-67）查询器件是否启用 bitstream。
+- <code>sync_design_file_efxproject(design_file, project_file)</code>（L77-107）：工程改名后同步 peri.xml 文件名（写新文件、删旧文件；源码自带 tech debt 注释 L79-80）。</p>
+<h3 id="3-2-九步分解-ptflowrunner-__call__-l127-351">3.2 九步分解（<code>PTFlowRunner.__call__</code>，L127-351）</h3>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>行号</th>
+<th>内容</th>
+<th>失败模式 → 退出码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>L129-131</td>
+<td>检查环境变量 <code>EFX_SKIP_PT</code></td>
+<td>已设置 → 跳过整个 PT 阶段 → <code>WARNING_SKIP</code>(0)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>L134-142</td>
+<td>family 检查</td>
+<td>未指定 family → <code>ERROR</code>(1)（L136-137）；非 trion/titanium/topaz → <code>WARNING_SKIP</code>(0)（L140-142）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>L144-164</td>
+<td>器件校验</td>
+<td>未指定 device → <code>ERROR</code>；QX/Q 开头内部测试器件 → skip（L150-152）；<code>DeviceService.is_device_exists</code> 不通过 → <code>ERROR</code>（L156-159）；timing_model 校验仅 TODO 占位（L161-164）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>L167-174 + L214-231</td>
+<td>工程 XML 校验（<strong>加载两次</strong>）</td>
+<td>首次加载失败 → <code>ERROR</code>；设计加载后二次加载并比对 family/device/timing_model，不一致 → <code>ERROR</code>（L223-231）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>L176-211</td>
+<td>peri.xml 定位与 bootstrap/重放判定</td>
+<td>见下文</td>
+</tr>
+<tr>
+<td>6</td>
+<td>L233-282</td>
+<td>ISF 重放 + auto_assign_resource + save</td>
+<td>任一 peri_script <code>import_design</code> 失败 → break → <code>ERROR</code>；最终 <code>design_api.save()</code>（L282）落盘</td>
+</tr>
+<tr>
+<td>7</td>
+<td>L284-290</td>
+<td><code>check_design</code></td>
+<td>失败 → <code>pretty_print_design_issues</code> 打印 → <code>ERROR</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>L291-294</td>
+<td>bitstream 查询 + <code>generate</code></td>
+<td><code>PTDsgGenConstException</code> / <code>PTDsgGenReportException</code> → 打印 traceback → <code>ERROR</code>（L346-349）</td>
+</tr>
+<tr>
+<td>9</td>
+<td>L296-344</td>
+<td>统一仿真网表 + 外设时序网表导出</td>
+<td><code>ImportError</code> → 提示缺 Chipper 模块（L335-337）；<code>PTDsgExportException</code> → 静默 pass（L338-339）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>第 5 步细读（bootstrap 与重放的分界）</strong>：</p>
+<ol>
+<li><code>design_api = DesignAPI()</code>（L176）。</li>
+<li>定位 peri.xml：优先 <code>--peri_file</code> 参数，否则默认 <code>&lt;design&gt;.peri.xml</code>（L180-185）。</li>
+<li><strong>不存在</strong>且命令行带 <code>--create</code> → <code>design_api.create(...) + save()</code> 做 bootstrap（L188-194）——这是 <code>create_*</code> 一次性命令唯一合法的执行时机；不存在且无 <code>--create</code> → <code>ERROR</code>（L195-197）。</li>
+<li><strong>存在</strong> → <code>sync_design_file_efxproject</code> 同步名称 + <code>design_api.load()</code>（L202-205）——此后进入"重放"分支，ISF 中再出现 <code>create_*</code> 就会撞 "exists" 错误。</li>
+<li>output_dir 默认 <code>&lt;design_dir&gt;/outflow</code>（L210-211）。</li>
+</ol>
+<p><strong>第 6 步细读（ISF 重放）</strong>：</p>
+<ol>
+<li>若给出 <code>--peri_netlist</code> → <code>convert_periphery_netlist_to_isf_file</code> 生成 <code>&lt;design&gt;.unified.isf</code> 并置于重放队首（L244-248）。</li>
+<li><code>--peri_scripts</code>（可 append）逐个 <code>import_design</code>；<strong>任一脚本失败立即 break</strong>（L250-267）——印证"ISF 语法错误整个 import 立即终止"。</li>
+<li><code>auto_assign_resource</code> 结果落盘 <code>&lt;design&gt;.auto_asg.isf</code>（L275-280）。</li>
+<li><code>design_api.save()</code>（L282）：重放结果持久化回 peri.xml——这就是"peri.xml 构建后存活且可能被更新"的机制。</li>
+</ol>
+<h3 id="3-3-命令行参数-l354-382">3.3 命令行参数（L354-382）</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>位置参数 <code>design</code> / <code>family</code> / <code>device</code></td>
+<td>必填</td>
+<td>设计名 / 家族 / 器件</td>
+</tr>
+<tr>
+<td><code>--timing_model</code></td>
+<td>—</td>
+<td>时序模型（校验逻辑为 TODO）</td>
+</tr>
+<tr>
+<td><code>--project_xml</code></td>
+<td>—</td>
+<td>工程 XML 路径</td>
+</tr>
+<tr>
+<td><code>--output_dir</code></td>
+<td><code>outflow</code></td>
+<td>输出目录</td>
+</tr>
+<tr>
+<td><code>--work_dir</code></td>
+<td><code>work_pt</code></td>
+<td>PT 工作目录</td>
+</tr>
+<tr>
+<td><code>--design_dir</code></td>
+<td>当前目录</td>
+<td>设计目录</td>
+</tr>
+<tr>
+<td><code>--create</code></td>
+<td><code>True</code></td>
+<td>peri.xml 不存在时是否 bootstrap</td>
+</tr>
+<tr>
+<td><code>--peri_file</code></td>
+<td>—</td>
+<td>显式指定 peri.xml</td>
+</tr>
+<tr>
+<td><code>--peri_netlist</code></td>
+<td>—</td>
+<td>外设网表（反推 unified.isf）</td>
+</tr>
+<tr>
+<td><code>--peri_scripts</code></td>
+<td>—</td>
+<td>追加重放的 ISF 脚本（append 语义）</td>
+</tr>
+<tr>
+<td><code>--un_flow</code></td>
+<td>—</td>
+<td>unified flow 开关</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-isf_importer-执行模型-isf-为什么是-python">4. isf_importer 执行模型：ISF 为什么是 Python</h2>
+<p>证据：<code>pt\bin\api_service\exim\isf_importer.py</code>（435 行）。</p>
+<h3 id="4-1-两条导入入口">4.1 两条导入入口</h3>
+<pre><code class="language-python"># L37
+class DesignISFImporter:
+
+    # L155
+    def import_isf(self, design_db, isf_design_file, is_skip_resasg=False):
+</code></pre>
+<p>从 <code>.isf</code> 文件导入（逐行模式）。内部<strong>新建独立 DesignAPI 实例</strong>（L172-173）；导入结束后做模块清理：<code>setattr(self.isf_module, "design", None)</code>（L182）、<code>del sys.modules[...]</code>（L188）；issue 计数 &gt; 0 → 返回 <code>False</code>（L191-194）。</p>
+<pre><code class="language-python"># L101
+def import_isf_commands(self, design_db, isf_commands, netlist_checksum=None):
+</code></pre>
+<p>从命令对象列表导入（网表反推路径用）。同样新建 <code>DesignAPI(is_verbose=True)</code>（L111）并 <code>_setup_design</code>（L112）、<code>design = self.design_api</code>（L114）；逐命令 <code>exec(code)</code>（L120）；带 <code>netlist_checksum</code> 时对相关属性调用 <code>lock_property</code>（L121-122）。</p>
+<h3 id="4-2-exec-design-绑定-isf-之所以是-python">4.2 exec + design 绑定：ISF 之所以是 Python</h3>
+<p>逐行模式核心 <code>__import_line_code</code>（L197）：</p>
+<ul>
+<li>以 UTF-8 读入文件（L202）；</li>
+<li><code>design = self.design_api</code>——源码注释原文 "Set design context for import, used by exec()"（<strong>L217</strong>）；</li>
+<li>跳过空行与 <code>#</code> 注释行（L227-228）；<code>is_skip_resasg=True</code> 时跳过 <code>design.assign</code> 前缀的行（L231-233）；</li>
+<li><strong>逐行 <code>exec(code)</code></strong>（<strong>L236</strong>）。</li>
+</ul>
+<p>整文件模式核心 <code>__import_code</code>（L272-304）：</p>
+<pre><code class="language-python"># L282
+module = types.ModuleType(name)
+# L287
+setattr(module, &quot;design&quot;, self.design_api)
+# L289
+exec(code, module.__dict__)
+</code></pre>
+<p>即：ISF 文件被当作 Python 模块体在临时模块命名空间中执行，且该命名空间里预置了名字 <code>design</code> → DesignAPI 实例。<strong>这就是 ISF 必须写成 <code>design.xxx(...)</code>、且本质是 Python 源码的直接证据</strong>——任何"自创 XML 约束格式"在 Efinity 的导入器眼里都是 Python 语法错误，必然被拒（历史教训见《Efinity-ISF语法参考.md》卷首）。</p>
+<h3 id="4-3-异常处理矩阵-l240-267">4.3 异常处理矩阵（L240-267）</h3>
+<p>逐行 <code>exec</code> 的异常分流决定了"ISF 错误是立即终止还是记账继续"：</p>
+<table>
+<thead>
+<tr>
+<th>异常</th>
+<th>处理</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PTException</code></td>
+<td>记账（<code>__register_command_issue</code> L351，severity=warning）</td>
+<td><strong>继续</strong>下一行</td>
+</tr>
+<tr>
+<td><code>AttributeError</code></td>
+<td>记账 + 打印 traceback</td>
+<td><strong>继续</strong>下一行</td>
+</tr>
+<tr>
+<td><code>SyntaxError</code></td>
+<td>记账（<code>__register_syntax_issue</code> L370，severity=error）+ <strong>break</strong></td>
+<td>整个导入立即终止</td>
+</tr>
+<tr>
+<td><code>TypeError</code></td>
+<td><strong>break</strong></td>
+<td>立即终止</td>
+</tr>
+<tr>
+<td><code>UnicodeError</code></td>
+<td><strong>break</strong></td>
+<td>立即终止</td>
+</tr>
+<tr>
+<td>其他 <code>Exception</code></td>
+<td><code>__register_general_issue</code>（L389）+ <strong>break</strong></td>
+<td>立即终止</td>
+</tr>
+</tbody>
+</table>
+<p>解读：
+- <strong>属性级错误可恢复</strong>（unknown property、already exists 等 PTException）——按 warning 记账后继续，因此一条错误 ISF 可能产生多条 issue；
+- <strong>语法级错误不可恢复</strong>（SyntaxError 是 Python 解析层的，无法定位到"下一行"语义）——立即终止。这从实现层面印证硬约束"ISF 语法错误 → 整个 import 立即终止，不部分处理"。</p>
+<h3 id="4-4-后处理与设计检查">4.4 后处理与设计检查</h3>
+<ul>
+<li><code>__do_post_processing</code>（L414-421）：导入完成后<strong>重算所有 PLL 频率</strong>（L417-420），保证计数器与频率属性一致。</li>
+<li><code>__do_design_check</code>（L424-431）：调用 APIPropertyChecker 做轻量检查。</li>
+</ul>
+<hr />
+<h2 id="5-designwriterxml-写出模型-peri-xml-是怎么写出来的">5. DesignWriterXml 写出模型（peri.xml 是怎么写出来的）</h2>
+<p>证据：<code>pt\bin\design\service.py</code>。</p>
+<h3 id="5-1-完整调用链">5.1 完整调用链</h3>
+<pre><code>保存：DesignAPI.save (design.py L147)
+      → IntDesignAPI.save (int_design.py L391)
+      → DesignService.save_design (service.py L720-732，saver = DesignWriterXml() 在 L727)
+      → DesignWriterXml.write (L3484)
+
+加载：DesignAPI.load (design.py L112)
+      → IntDesignAPI.load (int_design.py L140)
+      → DesignService.load_design (service.py L662)
+      → DesignBuilderXml（L682 构造，L686 build；资源名变更时自动回存 L693-698）
+</code></pre>
+<h3 id="5-2-write-结构-l3484-起">5.2 write() 结构（L3484 起）</h3>
+<p><code>write(design, design_file)</code>（L3484）用 QXmlStreamWriter + QBuffer（L3492-3496）在内存中构建 XML 后落盘（L3711-3713）：</p>
+<ul>
+<li>根元素 <code>efxpt:design_db</code>（L3506），属性含 <code>name</code> / <code>device_def</code> / <code>version</code> / <code>db_version</code> / <code>last_change_date</code>（L3507-3519）；</li>
+<li><strong>命名空间声明 <code>xmlns:efxpt="http://www.efinixinc.com/peri_design_db"</code>（L3521-3526）</strong>——peri.xml 与工程 XML（<code>enf_proj</code>）分属两个 schema 的直接证据；</li>
+<li>device_info 段（L3528-3594）：iobank（普通/advance 两套，L3532-3538）；ctrl/seu 按 <code>tx60_ctrl</code> / <code>tx125_ctrl</code> 器件插件区分（L3542-3565）；clkmux 按 <code>tx60</code> / <code>tx180</code> / <code>tx375</code> 区分（L3567-3583）；ext flash（L3585-3591）；</li>
+<li><code>efxpt:partial_design</code> 元素（带 source 属性，L3699-3703）记录部分设计迁移来源。</li>
+</ul>
+<h3 id="5-3-块写出顺序-l3596-3697">5.3 块写出顺序（L3596-3697）</h3>
+<p>源码注释原文 "Blocks must be written in correct order"（L3596）。固定顺序：</p>
+<pre><code>GPIO → PLL → OSC → LVDS → MIPI → JTAG → DDR → H264 → MIPI lane
+→ SPI flash → HyperRAM → PLL SSC → common quad → QUAD PCIe
+→ Lane10G → Lane1G → RawSerdes → SOC → CM
+</code></pre>
+<p>该顺序由工具保证；手工编辑 peri.xml 打乱顺序/手工造假peri.xml 均不受支持——peri.xml 只能由 PT 工具产出（硬约束 §1）。</p>
+<hr />
+<h2 id="6-与其他卷的分工">6. 与其他卷的分工</h2>
+<p>本卷只覆盖 <strong>DesignAPI 方法语义、unified PT 流程编排、ISF 执行模型、peri.xml 写出模型</strong>。以下主题请直接查对应卷（docs/efinity/ 下）：</p>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>卷</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISF 语法写法（怎么写一条合法 ISF、bootstrap/重放契约、samples 模板）</td>
+<td>《Efinity-ISF语法参考.md》</td>
+</tr>
+<tr>
+<td>工程 XML（<code>enf_proj</code> schema、design_file/inter_file/SDC 引用）</td>
+<td>《Efinity-XML工程文件Schema参考.md》</td>
+</tr>
+<tr>
+<td>硬 IP 属性语义（PLL/DDR/LVDS/MIPI 各 block_type 的属性名与取值）</td>
+<td>《Efinity硬IP-*参考.md》</td>
+</tr>
+<tr>
+<td>命令行工具参数（efx_map / efx_pnr / efx_pgm / efx_run）</td>
+<td>《Efinity工具链参考.md》</td>
+</tr>
+<tr>
+<td>优化与时序收敛</td>
+<td>《Efinity优化设计.md》</td>
+</tr>
+<tr>
+<td>RTL 编码风格 / 复位 / CDC / SDC 模板</td>
+<td>《Efinity设计规范.md》</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-证据文件清单">7. 证据文件清单</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>行数</th>
+<th>本卷引用的关键锚点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code></td>
+<td>2810</td>
+<td>class DesignAPI L71；set_property L507；set_device_property L559；set_iobank_voltage L639；assign_resource L790；assign_pkg_pin L837；14 个 create_*_gpio L1071-L1343；import_design L1468；export_periphery_sim_netlist L1786；export_periphery_timing_netlist L1868；lock_property L1935；calc/auto_calc PLL/CM 族 L1988-L2293；PCIe 族 L2444-L2539</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code></td>
+<td>393</td>
+<td>退出码 L52-57；PTFlowRunner.<strong>call</strong> L127-351（九步逐行见 3.2 节）；命令行参数 L354-382</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_importer.py</code></td>
+<td>435</td>
+<td>import_isf_commands L101；import_isf L155；design 绑定 L217/L287；exec L236/L289；异常矩阵 L240-267</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\design\service.py</code></td>
+<td>—</td>
+<td>DesignService L540；load_design L662；save_design L720；DesignWriterXml L3476；write L3484；命名空间 L3521-3526；块顺序 L3596-3697</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\design\db.py</code></td>
+<td>—</td>
+<td>class PeriDesign L64；DesignIssue L1285；DesignIssueRegistry L1308（勘误 1 证据）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\internal\int_design.py</code></td>
+<td>—</td>
+<td>load L140；create L316；save L391；create_block L758；check_design L978（分层架构证据）</td>
+</tr>
+</tbody>
+</table></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

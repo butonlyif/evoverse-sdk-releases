@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FPGA Retiming and Pipelining</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Pipelining and retiming design reference.</span>
+<code>efinity/fpga-retiming-pipelining.md</code>
+<a href="../../../efinity/fpga-retiming-pipelining.md">Markdown source</a></p>
+<h1>FPGA Retiming and Pipelining</h1></header>
+<main class="article"><h1 id="fpga-retiming-and-pipelining">FPGA Retiming and Pipelining</h1>
+<blockquote>
+<p><strong>EvoVerse SDK · Knowledge Base — Cross-Vendor Supplement</strong></p>
+<p><strong>Intended audience</strong>: engineers who need to use Efinity synthesis parameters such as <code>--retiming</code> / <code>--seq_opt</code>, or who design RTL pipelines to balance logic depth; AI collaborators on timing optimization</p>
+<p><strong>Last updated</strong>: 2026-07-30</p>
+<p><strong>Scope</strong>: Authoritative sources are the Efinity 2026.1 official synthesis documentation (<code>efinity-synthesis.pdf §4 "Retiming"</code> + <code>C:\Efinity\2026.1\doc\topics\syn-retiming.html</code> + <code>syn-seqopt.html</code> + <code>syn-options-infer-ce.html</code>), supplemented by Leiserson 1983 classic retiming theory, Singh &amp; Brown FPGA'02 (integrated retiming + placement), the CSDN optimization guide, MPI Lesson 11, and the Twente FPGA pipelining paper.</p>
+<p><strong>Related documents</strong>:
+- <a href="fpga-sta-basics.html">fpga-sta-basics.md</a> — Slack / Setup / Hold fundamentals
+- <a href="optimization-guide.html">optimization-guide.md</a> — timing closure optimization directions
+- <a href="toolchain-reference.html">toolchain-reference.md</a> — full <code>efx_map</code> parameters
+- <a href="timing-analysis-guide.html">timing-analysis-guide.md</a> — EvoVerse SDK timing diagnosis and optimization</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-why-retiming-is-needed">Why retiming is needed</a></li>
+<li><a href="#2-retiming-theory-leiserson">Retiming theory (Leiserson)</a></li>
+<li><a href="#3-c-slow-retiming">C-Slow Retiming</a></li>
+<li><a href="#4-integrated-retiming--placement">Integrated Retiming + Placement</a></li>
+<li><a href="#5-pipelining-latency-vs-throughput">Pipelining: Latency vs Throughput</a></li>
+<li><a href="#6-efinity---retiming-parameter">Efinity <code>--retiming</code> parameter</a></li>
+<li><a href="#7-efinity---infer-clk-enable">Efinity <code>--infer-clk-enable</code></a></li>
+<li><a href="#8-efinity---seq_opt">Efinity <code>--seq_opt</code></a></li>
+<li><a href="#9-retiming-vs-pipelining-which-to-use-when">Retiming vs Pipelining: which to use when</a></li>
+<li><a href="#10-practical-rtl-examples">Practical RTL examples</a></li>
+</ol>
+<hr />
+<h2 id="1-why-retiming-is-needed">1. Why retiming is needed</h2>
+<p><strong>The FPGA frequency handicap</strong>:</p>
+<blockquote>
+<p>"Low clock frequencies are one of the drawbacks of the FPGA technology. According to [1], the clock frequency of FPGA designs increased only by 3.8× between 1999 and 2009. In the same time period, the CPU frequencies increased more than 9× from around 400 MHz to 3.6 GHz. For the 90 nm technology, compared to an ASIC, FPGA designs operate at 3 to 4× lower clock frequency."
+—— Source: [B6] University of Twente FPGA Pipelining Paper (Asghar et al.)</p>
+<p>"Since the invention of the FPGA, the logic density has grown by a factor 10,000, whereas the maximum clock frequency has only increased by 100x."
+—— Source: [B6] Twente</p>
+</blockquote>
+<p><strong>FPGA vs ASIC quantified comparison</strong>:</p>
+<blockquote>
+<p>"FPGAs incur 3–4× longer delays, 5–15× greater area usage, and 5–14× higher power consumption than ASICs."
+—— Source: Kuon &amp; Rose 2007 (cited via [B5] arXiv 2510.26985)</p>
+</blockquote>
+<p><strong>Conclusion</strong>: on FPGAs you must <strong>actively</strong> apply retiming / pipelining to approach ASIC performance.</p>
+<hr />
+<h2 id="2-retiming-theory-leiserson">2. Retiming theory (Leiserson)</h2>
+<h3 id="2-1-the-classic-definition-leiserson-1983">2.1 The classic definition (Leiserson 1983)</h3>
+<blockquote>
+<p>"The idea of automatic pipelining was first introduced by Leiserson et al. [8] with an approach called retiming. The retiming is an optimization technique, which attempts to replace the existing registers in a design to achieve certain optimization goals (e.g., reducing the delay of the critical path). This optimization can thus improve the throughput of a system while keeping the initial latency unchanged."
+—— Source: [B6] Twente (citing Leiserson 1983)</p>
+</blockquote>
+<p><strong>Core properties</strong>:
+- <strong>Leaves the combinational structure untouched</strong>—only register positions move
+- <strong>Preserves observable behavior</strong>—the circuit remains functionally equivalent
+- <strong>Keeps latency unchanged</strong> (the key difference from pipelining)</p>
+<h3 id="2-2-mathematical-description">2.2 Mathematical description</h3>
+<p><strong>Retiming label <code>r(v)</code></strong>: the retiming label of each node v = the number of registers moved to v's incoming edges.</p>
+<p><strong>A legal retiming</strong>:</p>
+<pre><code>r(v) ≥ 0                              (no negative delay)
+r(v) − r(u) ≤ w(e) for each edge e    (retiming per edge must not exceed the original register count)
+</code></pre>
+<p><strong>Key property (Leiserson)</strong>: after retiming, the minimum clock period is <code>Φ* = max over cycles C { (W(C) - w(C)) / |C| } + 1</code>, where <code>W(C)</code> = the maximum delay around the cycle.</p>
+<p><strong>Engineering implication</strong>: retiming shortens the critical path by balancing delays across cycles.</p>
+<h3 id="2-3-a-simple-example-csdn-b7-c1">2.3 A simple example (CSDN [B7]/[C1])</h3>
+<pre><code class="language-verilog">// Original design: 3 adders in series, all registers at the end
+always @(posedge clk) begin
+    temp1 &lt;= a + b;
+    temp2 &lt;= temp1 + c;
+    result &lt;= temp2 + d;
+end
+// Critical path delay = (a+b) + (temp1+c) + (temp2+d) → too long
+
+// After retiming: registers between each stage (balanced stages)
+always @(posedge clk) begin
+    temp1 &lt;= a + b;
+    temp2 &lt;= temp1 + c;
+    result &lt;= temp2 + d;
+end
+// The synthesis tool automatically redistributes registers across the combinational logic
+</code></pre>
+<blockquote>
+<p>Source: [C1] CSDN FPGA optimization guide §"Retiming example"</p>
+</blockquote>
+<hr />
+<h2 id="3-c-slow-retiming">3. C-Slow Retiming</h2>
+<h3 id="3-1-concept-weaver-et-al-uc-berkeley">3.1 Concept (Weaver et al., UC Berkeley)</h3>
+<blockquote>
+<p>"C-slow retiming is a process of automatically increasing the throughput of a design by enabling fine grained pipelining of problems with feedback loops... each design register is first replaced with c registers before retiming... The effect of c-slow retiming is to enable pipelining of the critical path, even in the presence of feedback loops."
+—— Source: [B6] Twente (citing Weaver et al., Iowa State)</p>
+</blockquote>
+<h3 id="3-2-steps">3.2 Steps</h3>
+<ol>
+<li>Replace every original FF with c FFs (c-slowing)</li>
+<li>Run Leiserson retiming on the c-slowed design</li>
+<li>The critical path can now be broken by c-slowing (even in the presence of feedback loops)</li>
+</ol>
+<h3 id="3-3-engineering-implications">3.3 Engineering implications</h3>
+<ul>
+<li><strong>Throughput improves c×</strong> (latency unchanged)</li>
+<li><strong>Area grows c×</strong> (FF count)</li>
+<li><strong>Fits</strong>: streaming / DSP / video pipelines</li>
+</ul>
+<h3 id="3-4-efinity-support">3.4 Efinity support</h3>
+<p>Efinity <code>efx_map --seq_opt 1</code> + <code>--retiming 2</code> (advanced) implicitly performs c-slow-like optimization (decided automatically during synthesis), but there is <strong>no explicit c-slow CLI parameter</strong>.</p>
+<p>See <a href="optimization-guide.html">optimization-guide.md §"Retiming"</a>.</p>
+<hr />
+<h2 id="4-integrated-retiming-placement">4. Integrated Retiming + Placement</h2>
+<h3 id="4-1-singh-brown-fpga-2002-u-toronto">4.1 Singh &amp; Brown FPGA 2002 (U Toronto)</h3>
+<blockquote>
+<p>"Retiming is a synchronous circuit transformation that can optimize the delay of a synchronous circuit by moving registers across combinational circuit elements. The combinational structure remains unchanged and the observable behavior of the circuit is identical to the original."
+"Our experiments show that the integration of retiming with placement results in 19% better clock periods in comparison to the application of retiming before the place and route steps."
+—— Source: [B6] Twente (citing Singh &amp; Brown, FPGA 2002)</p>
+</blockquote>
+<p><strong>Key finding</strong>: optimizing retiming <strong>jointly with placement</strong> beats the serial "retiming → placement" flow by <strong>19%</strong> on clock period.</p>
+<h3 id="4-2-efinity-implementation">4.2 Efinity implementation</h3>
+<p>Efinity integrates retiming into <code>efx_pnr</code> (the P&amp;R stage); combined with synthesis <code>--retiming 2</code> (advanced), it achieves joint retiming + placement optimization.</p>
+<p>See <a href="optimization-guide.html">optimization-guide.md §"P&amp;R optimization"</a>.</p>
+<hr />
+<h2 id="5-pipelining-latency-vs-throughput">5. Pipelining: Latency vs Throughput</h2>
+<h3 id="5-1-the-core-trade-off">5.1 The core trade-off</h3>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Latency</th>
+<th>Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Not pipelined</strong></td>
+<td>L</td>
+<td>1/L (Hz)</td>
+</tr>
+<tr>
+<td><strong>N-stage pipeline</strong></td>
+<td>L (latency grows by ~N cycles)</td>
+<td>1/Tcycle (Hz) — a large improvement</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-pipelining-example-8-tap-fir">5.2 Pipelining example (8-tap FIR)</h3>
+<pre><code class="language-verilog">// Not pipelined: combinational delay = 8 × (mul + add) → long critical path
+module fir_8tap_comb (
+    input  wire clk,
+    input  wire [15:0] x_in,
+    output reg  [31:0] y_out
+);
+    reg [15:0] x [7:0];
+    wire [31:0] coef [7:0] = '{...};
+    always @(posedge clk) x[0] &lt;= x_in;
+    always @(posedge clk) x[1] &lt;= x[0];
+    // ... 7 delay stages
+    always @(posedge clk) y_out &lt;=
+        x[0]*coef[0] + x[1]*coef[1] + ... + x[7]*coef[7];
+endmodule
+// fMAX limited by the 8× mul-add chain → tens of MHz
+
+// Pipelined: registers break every stage → fMAX approaches a single mul-add
+module fir_8tap_pipe (
+    input  wire clk,
+    input  wire [15:0] x_in,
+    output reg  [31:0] y_out
+);
+    reg [15:0] x [7:0];
+    reg [31:0] acc [7:0];
+    wire [31:0] coef [7:0] = '{...};
+    integer i;
+    always @(posedge clk) begin
+        x[0] &lt;= x_in;
+        for (i = 1; i &lt; 8; i = i + 1) x[i] &lt;= x[i-1];
+        acc[0] &lt;= x[0] * coef[0];
+        for (i = 1; i &lt; 8; i = i + 1) acc[i] &lt;= acc[i-1] + x[i] * coef[i];
+        y_out &lt;= acc[7];
+    end
+endmodule
+// fMAX approaches a single mul-add → hundreds of MHz, throughput ×N
+</code></pre>
+<h3 id="5-3-choosing-between-latency-and-throughput">5.3 Choosing between latency and throughput</h3>
+<table>
+<thead>
+<tr>
+<th>Application</th>
+<th>Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Control logic / state machines</td>
+<td>no pipelining (latency first)</td>
+</tr>
+<tr>
+<td>FIR / FFT / signal processing</td>
+<td><strong>deep pipeline</strong> (throughput first)</td>
+</tr>
+<tr>
+<td>Video processing</td>
+<td>moderate pipeline (latency ≤ 1 frame)</td>
+</tr>
+<tr>
+<td>Processor pipelines</td>
+<td>5-20 stage pipeline (e.g., 5-stage RISC-V)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-efinity-retiming-parameter">6. Efinity <code>--retiming</code> parameter</h2>
+<h3 id="6-1-three-modes">6.1 Three modes</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>disabled</td>
+<td>the RTL is already hand-pipelined</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>enabled — moves registers forward/backward across combinational logic to balance path delays</td>
+<td>before the default value</td>
+</tr>
+<tr>
+<td><code>2</code> (default)</td>
+<td>advanced mode — more aggressive than mode 1, <strong>recommended for Titanium</strong></td>
+<td>complex designs that need maximum fMAX</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\syn-retiming.html</code> ([A3])</p>
+</blockquote>
+<h3 id="6-2-official-description-verbatim">6.2 Official description (verbatim)</h3>
+<blockquote>
+<p>"The Efinity software includes an option for retiming. You enable it by setting the --retiming option to 1 in Project Editor &gt; Synthesis tab. When this option is turned on, the software moves registers forward or backward to improve the design's performance."
+—— Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-synthesis.pdf §4 "Retiming"</code> ([A2])</p>
+</blockquote>
+<h3 id="6-3-limitations">6.3 Limitations</h3>
+<blockquote>
+<p>It can only redistribute among existing registers and <strong>cannot create new registers</strong>. It suits combinational paths whose pipelines are not deep enough.
+—— Source: <a href="optimization-guide.html">optimization-guide.md §1.2</a> (based on <code>--help</code> output)</p>
+</blockquote>
+<h3 id="6-4-cli-gui-invocation">6.4 CLI / GUI invocation</h3>
+<pre><code class="language-bash"># CLI: efx_map
+efx_map --retiming 2 --seq_opt 1 ...
+
+# GUI: Project Editor → Synthesis tab → Retiming = 2
+</code></pre>
+<p>See <a href="toolchain-reference.html">toolchain-reference.md §"efx_map"</a>.</p>
+<hr />
+<h2 id="7-efinity-infer-clk-enable">7. Efinity <code>--infer-clk-enable</code></h2>
+<p><strong>Purpose</strong>: converts <strong>gated clocks</strong> into <strong>clock enables</strong>—avoiding the skew/hold problems gated clocks bring.</p>
+<blockquote>
+<p>"Infer Clock Enable Option ... Converts gated clock patterns to clock-enable logic, removing clock tree distortion."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\syn-options-infer-ce.html</code> ([A3])</p>
+</blockquote>
+<p><strong>Benefits</strong>:
+- No gated clock network is created (avoids skew)
+- Keeps the global clock timing clean
+- Automatically inserts <code>(* syn_preserve *)</code> to preserve registers</p>
+<h3 id="7-1-example">7.1 Example</h3>
+<pre><code class="language-verilog">// Gated clock (automatically converted to CE during synthesis)
+always @(posedge gated_clk)
+    if (enable) reg_data &lt;= reg_data_next;
+
+// Equivalent after synthesis
+always @(posedge sys_clk)
+    if (enable) reg_data &lt;= reg_data_next;
+</code></pre>
+<h3 id="7-2-cli-parameter">7.2 CLI parameter</h3>
+<pre><code class="language-bash">efx_map --infer-clk-enable ...
+</code></pre>
+<p>See <a href="toolchain-reference.html">toolchain-reference.md</a>.</p>
+<hr />
+<h2 id="8-efinity-seq_opt">8. Efinity <code>--seq_opt</code></h2>
+<p><strong>Purpose</strong>: synthesis optimization for sequential logic—optimizes state machines and register-to-register paths.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>disabled</td>
+</tr>
+<tr>
+<td><code>1</code> (default)</td>
+<td>enabled — optimizes the sequential-logic synthesis result</td>
+</tr>
+<tr>
+<td><code>--seq-opt-sync-only</code></td>
+<td>optimizes only synchronous set/reset logic</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <a href="optimization-guide.html">optimization-guide.md §1.3</a></p>
+</blockquote>
+<p><strong>Typical effects</strong>:
+- Automatically retimes synchronous set/reset chains
+- Optimizes state machine encoding (one-hot → binary, etc.)
+- Balances FSM registers against logic paths</p>
+<hr />
+<h2 id="9-retiming-vs-pipelining-which-to-use-when">9. Retiming vs Pipelining: which to use when</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommendation</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Existing RTL close to fMAX</strong></td>
+<td><code>--retiming 2</code></td>
+<td>automatically balances the critical path</td>
+</tr>
+<tr>
+<td><strong>Deep combinational logic (≥8 LUTs)</strong></td>
+<td>add RTL pipeline stages + <code>--retiming 2</code></td>
+<td>synthesis + RTL together</td>
+</tr>
+<tr>
+<td><strong>Heavy feedback loops</strong></td>
+<td>rewrite RTL with c-slow + <code>--retiming 2</code></td>
+<td>c-slow explicitly breaks the loop</td>
+</tr>
+<tr>
+<td><strong>Latency must not change</strong></td>
+<td>retiming only</td>
+<td>retiming preserves latency; pipelining adds it</td>
+</tr>
+<tr>
+<td><strong>Latency can grow</strong></td>
+<td>pipelining</td>
+<td>higher performance ceiling</td>
+</tr>
+<tr>
+<td><strong>DSP-heavy designs</strong></td>
+<td>RTL pipelining + <code>--retiming 2</code> + <code>--dsp-input-regs-packing</code></td>
+<td>multi-level optimization</td>
+</tr>
+<tr>
+<td><strong>State machines (FSM)</strong></td>
+<td><code>--seq_opt 1</code></td>
+<td>purpose-built for FSM optimization</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-1-decision-flow">9.1 Decision flow</h3>
+<pre><code>START
+│
+├── How many LUT levels on the existing RTL critical path?
+│   ├── ≤ 3 LUTs → defaults are fine, no optimization needed
+│   ├── 4-6 LUTs → --retiming 2 (automatic retime)
+│   └── &gt; 6 LUTs → add RTL pipeline stages + --retiming 2
+│
+├── Does the design have feedback loops?
+│   ├── No → retiming works automatically
+│   └── Yes → rewrite RTL with c-slow (each FF replaced by c FFs)
+│
+├── Is latency constrained?
+│   ├── Strictly → retiming only (latency untouched)
+│   └── Flexible → retiming + pipelining
+│
+└── DSP block utilization?
+    ├── High → --dsp-input-regs-packing + pipeline the RTL input registers
+    └── Low → defaults are fine
+</code></pre>
+<hr />
+<h2 id="10-practical-rtl-examples">10. Practical RTL examples</h2>
+<h3 id="10-1-adder-chain-retiming-csdn-c1">10.1 Adder chain retiming (CSDN [C1])</h3>
+<pre><code class="language-verilog">// ===== Original =====
+module add_chain_orig (
+    input  wire        clk,
+    input  wire [15:0] a, b, c, d,
+    output reg  [15:0] result
+);
+    reg [15:0] temp1, temp2;
+    always @(posedge clk) begin
+        temp1  &lt;= a + b;
+        temp2  &lt;= temp1 + c;
+        result &lt;= temp2 + d;
+    end
+endmodule
+// Critical path = (a+b) + (temp1+c) + (temp2+d) = 3 adders in series
+
+// ===== After retiming (automatic in synthesis) =====
+// The synthesizer inserts FFs between the adders:
+//   stage1: temp1 &lt;= a + b
+//   stage2: temp2 &lt;= temp1 + c
+//   stage3: result &lt;= temp2 + d
+// Equivalent structure + latency grows by 2 cycles + fMAX approaches a single adder
+</code></pre>
+<h3 id="10-2-c-slow-fir-filter-twente-b6">10.2 C-slow FIR filter (Twente [B6])</h3>
+<pre><code class="language-verilog">// Original 4-tap FIR (feedback)
+module fir_4tap_orig (
+    input  wire        clk,
+    input  wire [15:0] x,
+    output reg  [31:0] y
+);
+    reg [15:0] d1, d2, d3;
+    wire [31:0] coef [3:0] = '{16'h0001, 16'h0002, 16'h0003, 16'h0004};
+    always @(posedge clk) begin
+        d1 &lt;= x;
+        d2 &lt;= d1;
+        d3 &lt;= d2;
+        y  &lt;= (d3 * coef[3]) + (d2 * coef[2]) + (d1 * coef[1]) + (x * coef[0]);
+    end
+endmodule
+
+// ===== C-slowed (c=2, each FF → 2 FFs) =====
+// Throughput ×2 (one new sample accepted every 2 cycles)
+module fir_4tap_cslow2 (
+    input  wire        clk,
+    input  wire [15:0] x,
+    output reg  [31:0] y0, y1
+);
+    reg [15:0] d1_0, d1_1, d2_0, d2_1, d3_0, d3_1;
+    wire [31:0] coef [3:0] = '{16'h0001, 16'h0002, 16'h0003, 16'h0004};
+    always @(posedge clk) begin
+        // Interleaved input: x valid every other cycle
+        d1_0 &lt;= x;
+        d1_1 &lt;= d1_0;
+        d2_0 &lt;= d1_1;
+        d2_1 &lt;= d2_0;
+        d3_0 &lt;= d2_1;
+        d3_1 &lt;= d3_0;
+
+        // Two parallel computation lanes
+        y0 &lt;= (d3_0 * coef[3]) + (d2_0 * coef[2]) + (d1_1 * coef[1]) + (d1_0 * coef[0]);
+        y1 &lt;= (d3_1 * coef[3]) + (d2_1 * coef[2]) + (d3_0 * coef[1]) + (d2_0 * coef[0]);
+    end
+endmodule
+</code></pre>
+<blockquote>
+<p>Source: based on the [B6] Twente c-slow retiming pattern</p>
+</blockquote>
+<h3 id="10-3-efinity-synthesis-configuration-evoverse-project-xml">10.3 Efinity synthesis configuration (evoverse project XML)</h3>
+<pre><code class="language-xml">&lt;efx:synthesis
+    retiming=&quot;2&quot;
+    seq_opt=&quot;1&quot;
+    infer_clk_enable=&quot;true&quot;
+    fanout_limit=&quot;100&quot;
+    dsp_input_regs_packing=&quot;1&quot;
+    dsp_output_regs_packing=&quot;1&quot;
+    mult_auto_pipeline=&quot;2&quot;
+    mult_decomp_retime=&quot;1&quot;
+/&gt;
+</code></pre>
+<p>Equivalent CLI:</p>
+<pre><code class="language-bash">efx_map --retiming 2 --seq_opt 1 --infer-clk-enable 1 \
+        --fanout-limit 100 --dsp-input-regs-packing 1 \
+        --dsp-output-regs-packing 1 --mult-auto-pipeline 2 \
+        --mult-decomp-retime 1
+</code></pre>
+<p>See <a href="xml-project-schema.html">xml-project-schema.md</a> §synthesis.</p>
+<hr />
+<h2 id="appendix-a-key-terminology">Appendix A — Key terminology</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Retiming</strong></td>
+<td>moves register positions to shorten the critical path; latency preserved</td>
+</tr>
+<tr>
+<td><strong>Pipelining</strong></td>
+<td>inserts registers between combinational logic to raise throughput; latency increases</td>
+</tr>
+<tr>
+<td><strong>C-Slow</strong></td>
+<td>replaces each FF with c FFs so retiming can break feedback loops</td>
+</tr>
+<tr>
+<td><strong>fMAX</strong></td>
+<td>maximum operating clock frequency</td>
+</tr>
+<tr>
+<td><strong>Critical Path</strong></td>
+<td>the path with the worst slack</td>
+</tr>
+<tr>
+<td><strong>Latency</strong></td>
+<td>input-to-output delay (in cycles)</td>
+</tr>
+<tr>
+<td><strong>Throughput</strong></td>
+<td>data processed per unit time (samples/second)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-b-cross-vendor-source-index">Appendix B — Cross-vendor source index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Source</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[B5]</td>
+<td>arXiv 2510.26985 (FPGA vs ASIC timing)</td>
+<td>Academic paper</td>
+</tr>
+<tr>
+<td>[B6]</td>
+<td>University of Twente FPGA Pipelining &amp; Retiming Paper (Asghar et al.)</td>
+<td>Academic paper</td>
+</tr>
+<tr>
+<td>[B7]</td>
+<td>CSDN — FPGA timing analysis (Chinese)</td>
+<td>Chinese tutorial</td>
+</tr>
+<tr>
+<td>[C1]</td>
+<td>CSDN — FPGA optimization guide (Retiming example)</td>
+<td>Chinese tutorial</td>
+</tr>
+<tr>
+<td>[A2]</td>
+<td>Efinity Synthesis User Guide §4 "Retiming" (UG-EFN-SYNTH-v3.5, Dec 2022)</td>
+<td>Official PDF</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>syn-retiming.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>syn-seqopt.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>syn-options-infer-ce.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>syn-options.html</code></td>
+<td>Official HTML</td>
+</tr>
+</tbody>
+</table>
+<p>The research source index was originally recorded in the internal research notes §E; those temporary notes are not published with the repository.</p>
+<hr />
+<p><strong>End of FPGA Retiming and Pipelining</strong></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

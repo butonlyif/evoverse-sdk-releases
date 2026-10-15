@@ -1,0 +1,3456 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RK3588 Adapter 设计文档</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
+<span>**版本**: v2.0.1</span>
+<code>rk3588/RK3588-Adapter设计文档.md</code>
+<a href="../../../rk3588/RK3588-Adapter设计文档.md">Markdown 源文件</a></p>
+<h1>RK3588 Adapter 设计文档</h1></header>
+<main class="article"><h1 id="rk3588-adapter-设计文档">RK3588 Adapter 设计文档</h1>
+<blockquote>
+<p><strong>版本</strong>: v2.0.1
+<strong>更新日期</strong>: 2026-08-01
+<strong>状态</strong>: 设计中 — 包含 FPGA-RK3588 Bridge 细化设计；§8 目录结构已对齐 Workbench 插件架构
+<strong>适用对象</strong>: EvoVerse SDK 开发团队
+<strong>归并说明</strong>: 本文档原位于独立 <code>RK3588/</code> 仓库，已于 2026-08-01 归并至 SDK 主仓 <code>docs/rk3588/</code>。代码实现以 <code>products/rk3588-adapter/</code> 为准。
+<strong>关联文档</strong>: SDK-ARCHITECTURE-VISION.md、<a href="RK3588-开发环境调研报告.html">RK3588-开发环境调研报告.md</a>、<a href="dev-env/README.html">开发环境脚本</a></p>
+</blockquote>
+<hr />
+<h2 id="目录">目录</h2>
+<ol>
+<li><a href="#ch1">架构定位</a></li>
+<li><a href="#ch2">VendorAdapter 接口实现</a></li>
+<li><a href="#ch3">编译流程设计</a></li>
+<li><a href="#ch4">Device Tree 生成方案</a></li>
+<li><a href="#ch5">烧录流程设计</a></li>
+<li><a href="#ch6">调试支持</a></li>
+<li><a href="#ch7">实现优先级</a></li>
+<li><a href="#ch8">目录结构</a></li>
+<li><a href="#9-adapter-契约补强">Adapter 契约补强</a></li>
+</ol>
+<hr />
+<p><a id="ch1"></a></p>
+<h2 id="1-架构定位">1. 架构定位</h2>
+<h3 id="1-1-sdk-四层架构中的位置">1.1 SDK 四层架构中的位置</h3>
+<p>RK3588 Adapter 位于 <strong>Layer 2: Vendor Adapter</strong> 层，是 SDK 与 Rockchip 工具链之间的适配层：</p>
+<pre><code class="language-mermaid">block-beta
+    columns 1
+    block:L4
+        L4Title[&quot;&lt;b&gt;Layer 4: AI Intelligence&lt;/b&gt; (厂商无关)&lt;br/&gt;时序诊断 / 代码生成 / 编译策略 / 结果分析&quot;]
+    end
+    space
+    block:L3
+        L3Title[&quot;&lt;b&gt;Layer 3: System Orchestration&lt;/b&gt; (厂商无关)&lt;br/&gt;项目模型 / 物料组合 / Jacket / 文件依赖追踪&quot;]
+    end
+    space
+    block:L2
+        L2Title[&quot;&lt;b&gt;Layer 2: Vendor Adapter&lt;/b&gt; (厂商特化，可插拔)&quot;]
+        columns 2
+        block:Efinix
+            ETitle[&quot;&lt;b&gt;Efinix Adapter&lt;/b&gt;&lt;br/&gt;(FPGA)&quot;]
+        end
+        block:RK3588
+            RKTitle[&quot;&lt;b&gt;RK3588 Adapter&lt;/b&gt; ← 本文档设计目标&lt;br/&gt;(SoC)&quot;]
+        end
+    end
+    space
+    block:L1
+        L1Title[&quot;&lt;b&gt;Layer 1: Vendor Tools&lt;/b&gt; (不碰，只调用)&lt;br/&gt;Efinity / arm-gcc / U-Boot / TF-A / Buildroot / rkdeveloptool&quot;]
+    end
+</code></pre>
+<h3 id="1-2-与-efinix-adapter-的关系">1.2 与 Efinix Adapter 的关系</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Efinix Adapter (FPGA)</th>
+<th>RK3588 Adapter (SoC)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>硬件描述</strong></td>
+<td>Verilog / SystemVerilog + SDC</td>
+<td>Device Tree + Kernel Config</td>
+</tr>
+<tr>
+<td><strong>编译目标</strong></td>
+<td>FPGA Bitstream (.bit)</td>
+<td>Bootloader + Kernel + Rootfs</td>
+</tr>
+<tr>
+<td><strong>工具链</strong></td>
+<td>Efinity (efx_map/efx_pnr)</td>
+<td>ARM Cross-compile + Buildroot</td>
+</tr>
+<tr>
+<td><strong>调试接口</strong></td>
+<td>JTAG (Efinix Debugger)</td>
+<td>JTAG (DAP) + 串口 + ADB</td>
+</tr>
+<tr>
+<td><strong>软件运行时</strong></td>
+<td>Bare-metal / FreeRTOS on RISC-V</td>
+<td>Linux on AArch64</td>
+</tr>
+<tr>
+<td><strong>烧录方式</strong></td>
+<td>FTDI Programmer</td>
+<td>eMMC/SD + rkdeveloptool</td>
+</tr>
+<tr>
+<td><strong>输出产物</strong></td>
+<td><code>.bit</code> 配置文件</td>
+<td><code>update.img</code> 固件包</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键数据流</strong>：</p>
+<pre><code class="language-mermaid">flowchart TD
+    SDK[&quot;SDK Project Model&quot;]
+    SDK --&gt; RK[&quot;&lt;b&gt;RK3588 Adapter&lt;/b&gt;&quot;]
+    RK --&gt; UBoot[&quot;generateProject → 配置/补丁/构建计划&quot;]
+    RK --&gt; TFA[&quot;build → 启动链产物&quot;]
+    RK --&gt; Kernel[&quot;build → Linux Kernel + DTB&quot;]
+    RK --&gt; Rootfs[&quot;build → Rootfs&quot;]
+    RK --&gt; UpdateImg[&quot;package → 可部署固件包&quot;]
+    RK --&gt; Report[&quot;Build Report&lt;br/&gt;(厂商无关模型)&quot;]
+</code></pre>
+<h3 id="1-3-bridge-spec-的-soc-侧实现">1.3 Bridge Spec 的 SoC 侧实现</h3>
+<p>当 RK3588 作为 SoC 与 Efinix FPGA 组成系统级设计时，Bridge Spec 定义了跨芯片接口。FPGA 与 RK3588 之间通过以下四种物理接口互联：</p>
+<pre><code class="language-mermaid">block-beta
+    columns 3
+    block:FPGA:1
+        columns 1
+        block:FPGATitle
+            T1[&quot;&lt;b&gt;FPGA Subsystem&lt;/b&gt;&lt;br/&gt;(Efinix Adapter)&quot;]
+        end
+        space
+        F1[&quot;AXI Master\nMSI/MSI-X&quot;]
+        space
+        F2[&quot;Ethernet MAC\nFPGA PHY (内部)&quot;]
+        space
+        F3[&quot;Video Out (CSI-TX)\nVideo In (DSI-RX)&quot;]
+        space
+        F4[&quot;GPIO Controller\nReset/IRQ/Status&quot;]
+    end
+    block:Bridge:1
+        columns 1
+        space
+        BTitle[&quot;&lt;b&gt;Bridge Spec&lt;/b&gt;&quot;]
+        space
+        B1[&quot;PCIe Gen3 x4&lt;br/&gt;◄────────►&quot;]
+        space
+        B2[&quot;GE (RGMII)&lt;br/&gt;◄────────►&quot;]
+        space
+        B3[&quot;MIPI CSI (4-lane)&lt;br/&gt;◄────────►&quot;]
+        space
+        B4[&quot;GPIO&lt;br/&gt;◄────────►&quot;]
+        space
+    end
+    block:SOC:1
+        columns 1
+        block:SOCTitle
+            T2[&quot;&lt;b&gt;SoC Subsystem&lt;/b&gt;&lt;br/&gt;(RK3588 Adapter)&quot;]
+        end
+        space
+        S1[&quot;PCIe RC (Root)\nMSI/MSI-X 中断\nDMA Controller&quot;]
+        space
+        S2[&quot;GMAC Controller\nMDIO Bus&quot;]
+        space
+        S3[&quot;VICAP\nVOP (DSI 4-lane)&quot;]
+        space
+        S4[&quot;任意空闲 GPIO Bank\npinctrl 子系统&quot;]
+    end
+</code></pre>
+<h4 id="1-3-1-bridge-物理接口概览">1.3.1 Bridge 物理接口概览</h4>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>用途</th>
+<th>RK3588 资源</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PCIe Gen3 x4</strong></td>
+<td>高速数据通道</td>
+<td>PCIe3x4 PHY, MSI/MSI-X 中断</td>
+<td>BAR 空间由 FPGA 决定；RK3588 作为 Root Complex</td>
+</tr>
+<tr>
+<td><strong>GE Ethernet (RGMII)</strong></td>
+<td>网络/控制面</td>
+<td>GMAC 控制器, MDIO</td>
+<td>PHY 可能在 FPGA 内部实现，需 MDIO 配置</td>
+</tr>
+<tr>
+<td><strong>MIPI CSI / DSI</strong></td>
+<td>视频流</td>
+<td>VICAP / VOP</td>
+<td>CSI 4-lane 输入, DSI 4-lane 输出</td>
+</tr>
+<tr>
+<td><strong>GPIO</strong></td>
+<td>低速控制信号</td>
+<td>任意空闲 GPIO Bank</td>
+<td>FPGA 复位、中断、模式选择、状态指示</td>
+</tr>
+</tbody>
+</table>
+<h4 id="1-3-2-pcie-接口细化">1.3.2 PCIe 接口细化</h4>
+<p>RK3588 内置 PCIe Gen3 x4 控制器，通常作为 <strong>Root Complex (RC)</strong>，FPGA 作为 <strong>Endpoint (EP)</strong>：</p>
+<ul>
+<li><strong>Lane 配置</strong>: PCIe Gen3 x4，理论带宽 ~4 GB/s（每 lane ~1 GB/s）</li>
+<li><strong>BAR 空间</strong>: FPGA EP 暴露 BAR0~BAR5，典型分配：</li>
+<li>BAR0: 32-bit 不可预取内存，用于控制寄存器（如 1 MB）</li>
+<li>BAR2: 64-bit 可预取内存，用于 DMA 缓冲区（如 256 MB）</li>
+<li><strong>中断</strong>: 使用 MSI/MSI-X，无需额外 GPIO 中断线</li>
+<li>MSI: FPGA 最多可分配 32 个 MSI 向量</li>
+<li>MSI-X: 支持每向量独立地址，适合多队列场景</li>
+<li><strong>地址映射</strong>: FPGA 寄存器通过 PCIe BAR 映射到 RK3588 内存空间</li>
+<li><strong>内核驱动</strong>: 使用标准 <code>pci_driver</code> 框架按 PCI vendor/device/subsystem ID 匹配；PCIe EP 是可枚举设备，不以 DT <code>compatible</code> 作为常规绑定方式</li>
+</ul>
+<p><strong>Device Tree 中 PCIe 节点引用</strong>:</p>
+<pre><code>&amp;pcie3x4 {
+    status = &quot;okay&quot;;
+    // FPGA Endpoint 配置
+};
+</code></pre>
+<h4 id="1-3-3-ge-ethernet-rgmii-细化">1.3.3 GE Ethernet (RGMII) 细化</h4>
+<p>使用 RK3588 的 GMAC 控制器，通过 RGMII 接口连接 FPGA 内部实现的以太网 PHY：</p>
+<ul>
+<li><strong>接口</strong>: RGMII (Reduced Gigabit Media Independent Interface)</li>
+<li>TXC/TX_CTL/TXD[3:0]: 发送通路</li>
+<li>RXC/RX_CTL/RXD[3:0]: 接收通路</li>
+<li>MDC/MDIO: PHY 管理接口，用于配置 FPGA 内部 PHY 寄存器</li>
+<li><strong>PHY 地址</strong>: FPGA 内部 PHY 通过 MDIO 分配地址（通常 0~31）</li>
+<li><strong>时钟方案</strong>: </li>
+<li>RK3588 提供 TXC 时钟（125 MHz DDR）</li>
+<li>RXC 由 FPGA PHY 恢复并提供给 RK3588</li>
+<li><strong>MAC 地址</strong>: </li>
+<li>推荐从 RK3588 OTP/eFuse 读取唯一 MAC</li>
+<li>若无 OTP 烧录，可在 Device Tree 中通过 <code>local-mac-address</code> 固定</li>
+<li><strong>内核驱动</strong>: 使用标准 <code>stmmac</code> (Synopsys GMAC) 驱动，通过 MDIO 发现并配置 PHY</li>
+</ul>
+<p><strong>Device Tree 中 GMAC 节点配置</strong>:</p>
+<pre><code>&amp;gmac0 {
+    phy-mode = &quot;rgmii-rxid&quot;;
+    // FPGA 内部 PHY, MDIO 地址通常为 0
+    fixed-link {
+        speed = &lt;1000&gt;;
+        full-duplex;
+    };
+};
+</code></pre>
+<h4 id="1-3-4-mipi-接口细化">1.3.4 MIPI 接口细化</h4>
+<p>RK3588 提供多组 MIPI 接口，用于 FPGA 视频流传输：</p>
+<p><strong>MIPI CSI (Camera Serial Interface)</strong> — FPGA → RK3588 视频输入：
+- <strong>用途</strong>: FPGA 作为视频源，将处理后的图像流通过 CSI 发送给 RK3588
+- <strong>控制器</strong>: RK3588 VICAP (Video Input Capture)
+- <strong>Lane 配置</strong>: 4-lane，每 lane 最高 2.5 Gbps
+- <strong>数据格式</strong>: RAW8/RAW10/RAW12, YUV422, RGB888 等
+- <strong>虚拟通道</strong>: 支持 4 个虚拟通道，可多路复用
+- <strong>驱动框架</strong>: V4L2 (<code>video4linux2</code>)，用户态通过 <code>/dev/videoX</code> 访问</p>
+<p><strong>MIPI DSI (Display Serial Interface)</strong> — RK3588 → FPGA 显示输出：
+- <strong>用途</strong>: RK3588 将显示内容通过 DSI 发送给 FPGA 做进一步处理或转发
+- <strong>控制器</strong>: RK3588 VOP (Video Output Processor)，内部 DSI 控制器
+- <strong>Lane 配置</strong>: 4-lane，每 lane 最高 2.5 Gbps
+- <strong>分辨率</strong>: 最高支持 4K@60Hz（取决于 FPGA 接收能力）
+- <strong>驱动框架</strong>: DRM (Direct Rendering Manager)，通过 <code>/dev/dri/cardX</code> 访问</p>
+<p><strong>Device Tree 中 MIPI 节点配置</strong>:</p>
+<pre><code>&amp;csi2_dphy0_hw {
+    status = &quot;okay&quot;;
+};
+
+&amp;csi2_dphy0 {
+    status = &quot;okay&quot;;
+    ports {
+        port@0 {
+            // 连接 FPGA CSI-TX
+        };
+    };
+};
+
+&amp;dsi0 {
+    status = &quot;okay&quot;;
+    // FPGA 作为 DSI 面板
+};
+</code></pre>
+<h4 id="1-3-5-gpio-接口细化">1.3.5 GPIO 接口细化</h4>
+<p>FPGA 与 RK3588 之间的低速控制信号，通过 GPIO 实现：</p>
+<table>
+<thead>
+<tr>
+<th>信号名</th>
+<th>方向</th>
+<th>用途</th>
+<th>推荐 GPIO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FPGA_RESET</code></td>
+<td>RK→FPGA</td>
+<td>FPGA 复位控制（低有效）</td>
+<td>任意 GPIO，开漏输出</td>
+</tr>
+<tr>
+<td><code>FPGA_IRQ</code></td>
+<td>FPGA→RK</td>
+<td>FPGA 到 RK3588 的中断请求</td>
+<td>支持中断的 GPIO（带 IRQ 功能）</td>
+</tr>
+<tr>
+<td><code>FPGA_DONE</code></td>
+<td>FPGA→RK</td>
+<td>FPGA 配置完成指示</td>
+<td>任意 GPIO 输入</td>
+</tr>
+<tr>
+<td><code>FPGA_INIT</code></td>
+<td>FPGA→RK</td>
+<td>FPGA 初始化状态</td>
+<td>任意 GPIO 输入</td>
+</tr>
+<tr>
+<td><code>FPGA_MODE[1:0]</code></td>
+<td>RK→FPGA</td>
+<td>FPGA 启动模式选择</td>
+<td>任意 GPIO 输出</td>
+</tr>
+<tr>
+<td><code>FPGA_STATUS</code></td>
+<td>FPGA→RK</td>
+<td>FPGA 运行状态指示</td>
+<td>任意 GPIO 输入</td>
+</tr>
+<tr>
+<td><code>SYS_PWR_EN</code></td>
+<td>RK→FPGA</td>
+<td>系统电源使能</td>
+<td>任意 GPIO 输出</td>
+</tr>
+</tbody>
+</table>
+<p><strong>GPIO 使用注意事项</strong>:
+- 确认 GPIO 引脚未被系统外设（UART、I2C、SPI 等）占用
+- 中断引脚必须使用支持 <code>interrupt-parent</code> 的 GPIO 控制器
+- 开漏输出引脚（<code>FPGA_RESET</code>）需外接上拉电阻
+- 高速信号不建议走 GPIO，应使用专用接口（PCIe/MIPI）</p>
+<p><strong>Device Tree 中 GPIO 的 pinctrl 配置</strong>:</p>
+<pre><code>&amp;pinctrl {
+    fpga-bridge {
+        fpga_bridge_pins: fpga-bridge-pins {
+            rockchip,pins =
+                &lt;0 RK_PA0 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;,   // FPGA_RESET
+                &lt;0 RK_PA1 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;,     // FPGA_IRQ
+                &lt;0 RK_PA2 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;   // FPGA_DONE
+        };
+    };
+};
+</code></pre>
+<hr />
+<p><a id="ch2"></a></p>
+<h2 id="2-vendoradapter-接口实现">2. VendorAdapter 接口实现</h2>
+<h3 id="2-1-接口定义">2.1 接口定义</h3>
+<pre><code class="language-typescript">// vendorAdapter.ts
+
+export interface VendorAdapter {
+  // ── L3 → L2: 从项目模型生成厂商工程文件 ──
+  generateProject(project: ProjectModel): VendorFiles;
+
+  // ── L2 → L1: 执行编译流程 ──
+  build(files: VendorFiles, flow: BuildFlow): BuildResult;
+
+  // ── L1 → L3: 解析编译结果为厂商无关模型 ──
+  parseReport(rawOutput: string[]): BuildReport;
+
+  // ── L4 ← L2: 获取数据供 AI 分析 ──
+  getTimingData(): TimingData;
+  getResourceData(): ResourceData;
+  getCriticalPaths(): CriticalPath[];
+}
+</code></pre>
+<h3 id="2-2-rk3588-专用接口扩展">2.2 RK3588 专用接口扩展</h3>
+<pre><code class="language-typescript">// rk3588Adapter.ts
+
+export interface RK3588Adapter extends VendorAdapter {
+  // ── 固件烧录 ──
+  flash(firmware: FirmwareBinary): FlashResult;
+
+  // ── 调试数据获取 ──
+  getDebugData(): RK3588DebugData;
+
+  // ── Device Tree 操作 ──
+  generateDeviceTree(project: ProjectModel, bridgeSpec?: BridgeSpec): DeviceTreeFiles;
+
+  // ── 固件打包 ──
+  packageFirmware(buildResult: BuildResult): FirmwareBinary;
+}
+
+// ── RK3588 专用类型定义 ──
+
+export interface RK3588DebugData {
+  serialLogs: SerialLog[];
+  kernelPanic?: KernelPanicInfo;
+  adbStatus: ADBConnectionStatus;
+  dmesgOutput: string[];
+}
+
+export interface DeviceTreeFiles {
+  baseDtb: string;           // 基础 DTB 文件路径
+  overlayDts: string;        // 项目特定 overlay
+  compiledDtb: string;       // 合并后的 DTB
+}
+
+export interface FlashResult {
+  success: boolean;
+  partitions: FlashPartition[];
+  error?: string;
+}
+
+export interface FlashPartition {
+  name: string;
+  offset: number;
+  size: number;
+  path: string;
+  checksum: string;
+}
+</code></pre>
+<h3 id="2-3-generateproject-实现">2.3 generateProject 实现</h3>
+<pre><code class="language-typescript">// rk3588Adapter.ts
+
+async generateProject(project: ProjectModel): Promise&lt;VendorFiles&gt; {
+  const files: VendorFiles = {
+    sourceFiles: [],
+    configFiles: [],
+    buildScripts: [],
+    outputDirs: [],
+  };
+
+  // 1. 生成 U-Boot 配置
+  const ubootConfig = await this.generateUBootConfig(project);
+  files.configFiles.push(ubootConfig);
+
+  // 2. 生成 Kernel 配置
+  const kernelConfig = await this.generateKernelConfig(project);
+  files.configFiles.push(kernelConfig);
+
+  // 3. 生成 Buildroot 配置
+  const buildrootConfig = await this.generateBuildrootConfig(project);
+  files.configFiles.push(buildrootConfig);
+
+  // 4. 生成 Device Tree
+  const dtFiles = await this.generateDeviceTree(project);
+  files.configFiles.push(...dtFiles);
+
+  // 5. 生成编译脚本
+  const buildScript = this.generateBuildScript(project);
+  files.buildScripts.push(buildScript);
+
+  // 6. 生成固件打包脚本
+  const packageScript = this.generatePackageScript(project);
+  files.buildScripts.push(packageScript);
+
+  return files;
+}
+
+async generateUBootConfig(project: ProjectModel): Promise&lt;ConfigFile&gt; {
+  const config = {
+    // Rockchip 特定配置
+    CONFIG_ROCKCHIP: true,
+    CONFIG_ROCKCHIP_RK3588: true,
+    CONFIG_TARGET_EVB_RK3588: true,
+
+    // 存储配置
+    CONFIG_MMC: true,
+    CONFIG_SF: false,
+    CONFIG_NVME: false,
+
+    // 启动配置
+    CONFIG_BOOTDELAY: 1,
+    CONFIG_BOOTCMD: 'mmc read 0x0 0x600000 0x40 0x200; bootm 0x600000',
+  };
+
+  return {
+    path: 'u-boot/configs/evb_rk3588_defconfig',
+    content: this.configToDefconfig(config),
+  };
+}
+
+async generateKernelConfig(project: ProjectModel): Promise&lt;ConfigFile&gt; {
+  const config = {
+    // 架构配置
+    CONFIG_ARM64: true,
+    CONFIG_ARCH_ROCKCHIP: true,
+
+    // 驱动配置 (从 project.hardware 推导)
+    ...this.deriveKernelDriverConfig(project),
+
+    // 常用配置
+    CONFIG_MODULES: true,
+    CONFIG_DEVTMPFS: true,
+    CONFIG_CGROUPS: true,
+    CONFIG_BLK_DEV_SD: true,        // SD 卡支持
+    CONFIG_MMC: true,
+    CONFIG_DWMMC_ROCKCHIP: true,    // RK SD/MMC 控制器
+
+    // 网络配置
+    CONFIG_NET_ETHERNET: true,
+    CONFIG_GBE: true,               // Gigabit Ethernet
+  };
+
+  return {
+    path: 'kernel/.config',
+    content: this.configToKconfig(config),
+  };
+}
+
+async generateBuildrootConfig(project: ProjectModel): Promise&lt;ConfigFile&gt; {
+  const config = {
+    BR2_arm64: true,
+    BR2_TOOLCHAIN_EXTERNAL_ROCKCHIP: true,
+
+    // 系统配置
+    BR2_SYSTEM_DHCP: 'eth0',
+    BR2_TARGET_GENERIC_GETTY_PORT: 'ttyS2',  // 串口
+    BR2_TARGET_GENERIC_GETTY_BAUDRATE: '1500000',
+
+    // 板级包
+    BR2_PACKAGE_RKWIFIBT: project.hasWifi ? true : false,
+    BR2_PACKAGE_ Rockchip: true,
+  };
+
+  return {
+    path: 'buildroot/configs/rockchip_rk3588_defconfig',
+    content: this.configToBuildrootDefconfig(config),
+  };
+}
+</code></pre>
+<h3 id="2-4-parsereport-实现">2.4 parseReport 实现</h3>
+<pre><code class="language-typescript">// rk3588Adapter.ts
+
+parseReport(rawOutput: string[]): BuildReport {
+  const report: BuildReport = {
+    success: true,
+    stages: [],
+    errors: [],
+    warnings: [],
+    artifacts: [],
+    timing: {},
+  };
+
+  for (const line of rawOutput) {
+    // U-Boot 编译阶段
+    if (this.isUBootStage(line)) {
+      report.stages.push(this.parseUBootStage(line));
+    }
+
+    // Kernel 编译阶段
+    if (this.isKernelStage(line)) {
+      report.stages.push(this.parseKernelStage(line));
+    }
+
+    // Buildroot 编译阶段
+    if (this.isBuildrootStage(line)) {
+      report.stages.push(this.parseBuildrootStage(line));
+    }
+
+    // 错误解析
+    if (this.isError(line)) {
+      report.errors.push(this.parseError(line));
+      report.success = false;
+    }
+
+    // 警告解析
+    if (this.isWarning(line)) {
+      report.warnings.push(this.parseWarning(line));
+    }
+
+    // 产物路径
+    if (this.isArtifact(line)) {
+      report.artifacts.push(this.parseArtifact(line));
+    }
+  }
+
+  return report;
+}
+
+// ── Buildroot 特定解析 ──
+
+parseBuildrootStage(line: string): BuildStage {
+  // Buildroot 输出格式: &quot;&gt;&gt;&gt; toolchain 1.0 Building...
+  const match = line.match(/&gt;&gt;&gt;\s+(\S+)\s+Building/);
+  if (match) {
+    return {
+      name: match[1],
+      status: 'building',
+      startTime: this.parseTimestamp(line),
+    };
+  }
+
+  // 成功标记: &quot;&gt;&gt;&gt; toolchain 1.0 Done&quot;
+  const doneMatch = line.match(/&gt;&gt;&gt;\s+(\S+)\s+Done/);
+  if (doneMatch) {
+    return {
+      name: doneMatch[1],
+      status: 'success',
+      duration: this.parseDuration(line),
+    };
+  }
+
+  // 进度: &quot;[  25%]&quot; 或 &quot;[100%]&quot;
+  const progressMatch = line.match(/\[(\d+)%\]$/);
+  if (progressMatch) {
+    return {
+      name: 'progress',
+      status: 'building',
+      progress: parseInt(progressMatch[1]),
+    };
+  }
+
+  return { name: 'unknown', status: 'unknown' };
+}
+
+// ── 错误解析 (Buildroot 格式) ──
+
+parseBuildrootError(line: string): BuildError {
+  const patterns = [
+    // Makefile 错误
+    {
+      pattern: /make\[(\d+)\]: \*\*\* (.*)/,
+      parse: (m: RegExpMatchArray): BuildError =&gt; ({
+        level: 'error',
+        message: m[2],
+        location: { file: 'Makefile', line: 0 },
+        suggestion: '检查依赖或配置错误',
+      }),
+    },
+    // 配置错误
+    {
+      pattern: /Configuration file .* is not valid/,
+      parse: (): BuildError =&gt; ({
+        level: 'error',
+        message: 'Buildroot 配置文件无效',
+        suggestion: '运行 make clean &amp;&amp; make defconfig 重置配置',
+      }),
+    },
+    // 依赖缺失
+    {
+      pattern: / Missing: (.*)/,
+      parse: (m: RegExpMatchArray): BuildError =&gt; ({
+        level: 'error',
+        message: `缺少依赖: ${m[1]}`,
+        suggestion: '安装缺失的开发工具',
+      }),
+    },
+    // 编译错误
+    {
+      pattern: /error: (.*)/,
+      parse: (m: RegExpMatchArray): BuildError =&gt; ({
+        level: 'error',
+        message: m[1],
+        suggestion: '检查源码或交叉编译工具链',
+      }),
+    },
+  ];
+
+  for (const { pattern, parse } of patterns) {
+    const match = line.match(pattern);
+    if (match) {
+      return parse(match);
+    }
+  }
+
+  return { level: 'error', message: line };
+}
+</code></pre>
+<hr />
+<p><a id="ch3"></a></p>
+<h2 id="3-编译流程设计">3. 编译流程设计</h2>
+<h3 id="3-1-整体编译流程">3.1 整体编译流程</h3>
+<pre><code class="language-mermaid">flowchart LR
+    UBoot[&quot;&lt;b&gt;U-Boot&lt;/b&gt;&lt;br/&gt;v2024.x&quot;] --&gt; TFA[&quot;&lt;b&gt;TF-A&lt;/b&gt;&lt;br/&gt;(ATF)&quot;]
+    TFA --&gt; Kernel[&quot;&lt;b&gt;Kernel&lt;/b&gt;&lt;br/&gt;v6.x&quot;]
+    Kernel --&gt; Rootfs[&quot;&lt;b&gt;Buildroot&lt;/b&gt;&lt;br/&gt;Rootfs&quot;]
+
+    UBoot --&gt; idbloader[&quot;idbloader.img&quot;]
+    TFA --&gt; tee[&quot;tee.img&quot;]
+    Kernel --&gt; boot[&quot;boot.img&quot;]
+    Rootfs --&gt; squashfs[&quot;rootfs.squashfs&quot;]
+
+    idbloader --&gt; merge[/&quot;合并&quot;/]
+    tee --&gt; merge
+    boot --&gt; merge
+    squashfs --&gt; merge
+
+    merge --&gt; firmware[&quot;&lt;b&gt;firmwarepack&lt;/b&gt;&lt;br/&gt;(update.img)&quot;]
+</code></pre>
+<h3 id="3-2-u-boot-编译流程">3.2 U-Boot 编译流程</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function buildUBoot(config: UBootConfig): Promise&lt;BuildStage&gt; {
+  const startTime = Date.now();
+
+  // 1. 准备源码
+  await this.prepareUBootSource(config);
+
+  // 2. 配置
+  const configureResult = await this.runCommand(`
+    cd ${config.sourceDir}/u-boot
+    make CROSS_COMPILE=aarch64-linux-gnu- ${config.defconfig}
+  `);
+
+  if (!configureResult.success) {
+    throw new BuildError('U-Boot 配置失败', configureResult.stderr);
+  }
+
+  // 3. 编译
+  const buildResult = await this.runCommand(`
+    cd ${config.sourceDir}/u-boot
+    make CROSS_COMPILE=aarch64-linux-gnu- -j${config.jobs}
+  `, {
+    env: {
+      ...process.env,
+      // Rockchip 特定环境变量
+      RK_IDBLOADER: '1',          // 生成 idbloader.img
+      RK_CHIP: 'RK3588',
+    },
+    timeout: config.timeout || 600000, // 10分钟
+  });
+
+  if (!buildResult.success) {
+    throw new BuildError('U-Boot 编译失败', buildResult.stderr);
+  }
+
+  // 4. 生成 idbloader.img
+  const idbloaderPath = await this.runCommand(`
+    cd ${config.sourceDir}/u-boot
+    ./tools/mkimage -n rk3588 -T rksd -d ./u-boot-tpl.bin:./u-boot-spl.bin idbloader.img
+  `);
+
+  return {
+    name: 'u-boot',
+    status: 'success',
+    duration: Date.now() - startTime,
+    artifacts: {
+      'idbloader.img': `${config.sourceDir}/u-boot/idbloader.img`,
+      'u-boot.bin': `${config.sourceDir}/u-boot/u-boot.bin`,
+    },
+  };
+}
+</code></pre>
+<p><strong>Shell 脚本版本</strong>：</p>
+<pre><code class="language-bash">#!/bin/bash
+# build_uboot.sh
+
+set -e
+
+SOURCE_DIR=${1:-./bsp}
+JOBS=${2:-$(nproc)}
+CROSS_COMPILE=aarch64-linux-gnu-
+
+cd ${SOURCE_DIR}/u-boot
+
+# 配置
+make ${CROSS_COMPILE} evb_rk3588_defconfig
+
+# 编译
+make ${CROSS_COMPILE} -j${JOBS}
+
+# 生成 idbloader.img
+./tools/mkimage -n rk3588 -T rksd \
+    -d ./u-boot-tpl.bin:./u-boot-spl.bin \
+    idbloader.img
+
+echo &quot;U-Boot build complete: idbloader.img&quot;
+</code></pre>
+<h3 id="3-3-linux-kernel-编译流程">3.3 Linux Kernel 编译流程</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function buildKernel(config: KernelConfig): Promise&lt;BuildStage&gt; {
+  const startTime = Date.now();
+
+  // 1. 准备源码
+  await this.prepareKernelSource(config);
+
+  // 2. 应用 Device Tree
+  await this.applyDeviceTree(config);
+
+  // 3. 配置
+  await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.defconfig}
+  `);
+
+  // 4. 编译内核
+  const buildResult = await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.arch} CROSS_COMPILE=${config.crossCompile} -j${config.jobs}
+  `, { timeout: config.timeout || 1800000 }); // 30分钟
+
+  if (!buildResult.success) {
+    throw new BuildError('Kernel 编译失败', buildResult.stderr);
+  }
+
+  // 5. 编译设备树
+  await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.arch} CROSS_COMPILE=${config.crossCompile} dtbs
+  `);
+
+  // 6. 编译模块
+  await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.arch} CROSS_COMPILE=${config.crossCompile} modules -j${config.jobs}
+  `);
+
+  // 7. 打包 boot.img
+  const bootImg = await this.createBootImage(config);
+
+  return {
+    name: 'kernel',
+    status: 'success',
+    duration: Date.now() - startTime,
+    artifacts: {
+      'Image': `${config.sourceDir}/kernel/arch/${config.arch}/boot/Image`,
+      'boot.img': bootImg,
+      'dtbs': `${config.sourceDir}/kernel/arch/${config.arch}/boot/dts/rockchip/rk3588*.dtb`,
+    },
+  };
+}
+
+// 创建 boot.img (包含 kernel + dtb + ramdisk)
+async function createBootImage(config: KernelConfig): Promise&lt;string&gt; {
+  const bootDir = `${config.outputDir}/boot`;
+  await fs.mkdir(bootDir, { recursive: true });
+
+  // 复制内核和设备树
+  await fs.copyFile(
+    `${config.sourceDir}/kernel/arch/${config.arch}/boot/Image`,
+    `${bootDir}/kernel`
+  );
+
+  await fs.copyFile(
+    `${config.sourceDir}/kernel/arch/${config.arch}/boot/dts/rockchip/${config.dtb}`,
+    `${bootDir}/rk3588.dtb`
+  );
+
+  // 生成 boot.scr
+  const bootScript = `
+setenv bootargs &quot;root=/dev/mmcblk0p4 rootwait earlyprintk console=ttyS2,1500000&quot;
+load mmc 0:4 0x600000 /boot/kernel
+load mmc 0:4 0x400000 /boot/rk3588.dtb
+booti 0x600000 - 0x400000
+`;
+
+  await fs.writeFile(`${bootDir}/boot.scr`, bootScript);
+  await this.runCommand(`cd ${bootDir} &amp;&amp; ./mkimage -C none -A arm64 -T script -d boot.scr boot.img`);
+
+  return `${bootDir}/boot.img`;
+}
+</code></pre>
+<h3 id="3-4-buildroot-rootfs-编译流程">3.4 Buildroot Rootfs 编译流程</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function buildRootfs(config: RootfsConfig): Promise&lt;BuildStage&gt; {
+  const startTime = Date.now();
+
+  // 1. 配置 Buildroot
+  await this.runCommand(`
+    cd ${config.sourceDir}/buildroot
+    make ${config.defconfig}
+  `);
+
+  // 2. 定制配置 (如果需要)
+  if (config.customPackages) {
+    await this.applyCustomPackages(config);
+  }
+
+  // 3. 编译
+  const buildResult = await this.runCommand(`
+    cd ${config.sourceDir}/buildroot
+    make -j${config.jobs}
+  `, { timeout: config.timeout || 3600000 }); // 60分钟
+
+  if (!buildResult.success) {
+    throw new BuildError('Rootfs 编译失败', buildResult.stderr);
+  }
+
+  // 4. 输出产物
+  const rootfsPath = `${config.outputDir}/rootfs.squashfs`;
+
+  await fs.copyFile(
+    `${config.sourceDir}/buildroot/output/images/rootfs.squashfs`,
+    rootfsPath
+  );
+
+  return {
+    name: 'rootfs',
+    status: 'success',
+    duration: Date.now() - startTime,
+    artifacts: {
+      'rootfs.squashfs': rootfsPath,
+      'rootfs.ext4': `${config.sourceDir}/buildroot/output/images/rootfs.ext4`,
+      'trivialfs.cpio.gz': `${config.sourceDir}/buildroot/output/images/trivialfs.cpio.gz`,
+    },
+  };
+}
+</code></pre>
+<h3 id="3-5-固件打包流程">3.5 固件打包流程</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function packageFirmware(config: PackageConfig): Promise&lt;string&gt; {
+  const outputDir = config.outputDir;
+  const packageDir = `${outputDir}/package`;
+
+  // 1. 创建目录结构
+  await fs.mkdir(packageDir, { recursive: true });
+  await fs.mkdir(`${packageDir}/Loader`, { recursive: true });
+  await fs.mkdir(`${packageDir}/update`, { recursive: true });
+
+  // 2. 复制固件文件
+  await fs.copyFile(config.idbloader, `${packageDir}/Loader/idbloader.img`);
+  await fs.copyFile(config.uboot, `${packageDir}/Loader/uboot.img`);
+  await fs.copyFile(config.trust, `${packageDir}/Loader/trust.img`);
+  await fs.copyFile(config.boot, `${packageDir}/update/boot.img`);
+  await fs.copyFile(config.rootfs, `${packageDir}/update/rootfs.squashfs`);
+
+  // 3. 生成 parameter.txt
+  const parameter = this.generateParameter(config);
+  await fs.writeFile(`${packageDir}/update/parameter.txt`, parameter);
+
+  // 4. 生成 package-file
+  const packageFile = this.generatePackageFile(config);
+  await fs.writeFile(`${packageDir}/package-file`, packageFile);
+
+  // 5. 调用 rk_image_tool 打包
+  const firmwarePath = `${outputDir}/update.img`;
+  await this.runCommand(`
+    cd ${packageDir}
+    ${config.rkImageTool} pack
+  `);
+
+  return firmwarePath;
+}
+
+// 生成 parameter.txt (分区表)
+function generateParameter(config: PackageConfig): string {
+  return `CMDLINE: mtdparts=rk29xxnand:0x00002000@0x00004000(uboot),\\
+0x00002000@0x00006000(misc),\\
+0x00020000@0x00008000(boot),\\
+0x00040000@0x00028000(rootfs),\\
+0x00002000@0x00068000(backup),\\
+0x00040000@0x0006A000(userdata)
+
+FIRMWARE_VER: ${config.version}
+MAGIC: 0x4F524B50
+`;
+}
+</code></pre>
+<hr />
+<p><a id="ch4"></a></p>
+<h2 id="4-device-tree-生成方案">4. Device Tree 生成方案</h2>
+<h3 id="4-1-device-tree-架构">4.1 Device Tree 架构</h3>
+<pre><code class="language-mermaid">graph TD
+    DT[&quot;&lt;b&gt;Device Tree (RK3588)&lt;/b&gt;&quot;]
+
+    DT --&gt; Base[&quot;&lt;b&gt;Base DTS&lt;/b&gt;&lt;br/&gt;rockchip/rk3588-evb*.dtsi&quot;]
+    Base --&gt; B1[&quot;CPU 配置&lt;br/&gt;(Cortex-A76/A55)&quot;]
+    Base --&gt; B2[&quot;GIC 配置&quot;]
+    Base --&gt; B3[&quot;时钟配置&lt;br/&gt;PMU / CRU / PLL&quot;]
+    Base --&gt; B4[&quot;通用外设&lt;br/&gt;MMC / GPIO / I2C / SPI / UART&quot;]
+
+    DT --&gt; Board[&quot;&lt;b&gt;Board DTS&lt;/b&gt;&lt;br/&gt;board/rk3588-xxx.dts&quot;]
+    Board --&gt; Bd1[&quot;板级资源&quot;]
+    Board --&gt; Bd2[&quot;PMIC 配置&quot;]
+    Board --&gt; Bd3[&quot;DDR 初始化参数&quot;]
+
+    DT --&gt; Overlay[&quot;&lt;b&gt;Project Overlay&lt;/b&gt;&lt;br/&gt;project/*.dtsh&quot;]
+    Overlay --&gt; O1[&quot;Bridge Spec 映射&quot;]
+    Overlay --&gt; O2[&quot;FPGA 寄存器空间&quot;]
+    Overlay --&gt; O3[&quot;客户特定外设&quot;]
+</code></pre>
+<h3 id="4-2-device-tree-生成器实现">4.2 Device Tree 生成器实现</h3>
+<pre><code class="language-typescript">// deviceTreeGenerator.ts
+
+export interface DTBGenerator {
+  generateBaseDTS(project: ProjectModel): string;
+  generateBoardDTS(project: ProjectModel): string;
+  generateOverlay(bridgeSpec: BridgeSpec): string;
+  compileDTS(dtsPath: string): string;
+  mergeOverlays(baseDtb: string, overlays: string[]): string;
+}
+
+export function generateDeviceTree(
+  project: ProjectModel,
+  bridgeSpec?: BridgeSpec
+): DeviceTreeFiles {
+  const generator = new RK3588DTBGenerator();
+
+  // 1. 生成基础 DTS
+  const baseDts = generator.generateBaseDTS(project);
+
+  // 2. 生成板级 DTS
+  const boardDts = generator.generateBoardDTS(project);
+
+  // 3. 生成 Bridge Spec Overlay (如果存在 FPGA 互联)
+  let overlayDts = '';
+  if (bridgeSpec) {
+    overlayDts = generator.generateOverlay(bridgeSpec);
+  }
+
+  // 4. 编译为 DTB
+  const baseDtb = generator.compileDTS(baseDts);
+  const boardDtb = generator.compileDTS(boardDts);
+
+  // 5. 合并 overlays
+  const mergedDtb = overlayDts
+    ? generator.mergeOverlays(boardDtb, [overlayDts])
+    : boardDtb;
+
+  return {
+    baseDts,
+    boardDts,
+    overlayDts,
+    baseDtb,
+    boardDtb,
+    mergedDtb,
+  };
+}
+
+class RK3588DTBGenerator implements DTBGenerator {
+  generateBaseDTS(project: ProjectModel): string {
+    return `
+// Auto-generated by EvoVerse SDK
+// DO NOT EDIT MANUALLY
+
+/dts-v1/;
+
+/ {
+  compatible = &quot;rockchip,rk3588&quot;;
+  #address-cells = &lt;0x2&gt;;
+  #size-cells = &lt;0x2&gt;;
+
+  // ── CPU 配置 ──
+  cpus {
+    #address-cells = &lt;0x1&gt;;
+    #size-cells = &lt;0x0&gt;;
+
+    // Cortex-A76 x4 (高性能)
+    cpu0: cpu@0 {
+      device_type = &quot;cpu&quot;;
+      compatible = &quot;arm,cortex-a76&quot;;
+      reg = &lt;0x0&gt;;
+      enable-method = &quot;psci&quot;;
+      #cooling-cells = &lt;0x2&gt;;
+      ...
+    };
+
+    // Cortex-A55 x4 (高能效)
+    cpu4: cpu@100 {
+      device_type = &quot;cpu&quot;;
+      compatible = &quot;arm,cortex-a55&quot;;
+      reg = &lt;0x100&gt;;
+      enable-method = &quot;psci&quot;;
+      #cooling-cells = &lt;0x2&gt;;
+      ...
+    };
+  };
+
+  // ── 时钟 ──
+  clock: clock-controller {
+    compatible = &quot;rockchip,rk3588-cru&quot;;
+    reg = &lt;0x0 0xfdd00000 0x0 0x50000&gt;;
+    #clock-cells = &lt;0x2&gt;;
+    #reset-cells = &lt;0x2&gt;;
+  };
+
+  // ── GIC ──
+  gic: interrupt-controller@fee00000 {
+    compatible = &quot;arm,gic-v3&quot;;
+    reg = &lt;0x0 0xfee00000 0 0x10000&gt;,
+          &lt;0x0 0xfef00000 0 0x100000&gt;;
+    interrupt-controller;
+    #interrupt-cells = &lt;0x3&gt;;
+  };
+};
+`;
+  }
+
+  generateBoardDTS(project: ProjectModel): string {
+    const dts = [`// Board: ${project.name}`, ''];
+
+    // 基础包含
+    dts.push('#include &quot;rk3588-base.dtsi&quot;');
+    dts.push('');
+
+    // 板级 compatible
+    dts.push('/ {');
+    dts.push('  compatible = &quot;rockchip,rk3588-${project.boardId}&quot;;');
+    dts.push('  model = &quot;${project.name}&quot;;');
+    dts.push('');
+
+    // 内存配置
+    dts.push('  memory {');
+    dts.push(`    reg = &lt;0x0 ${project.memory.size}&gt;;`);
+    dts.push('  };');
+    dts.push('');
+
+    // PMIC
+    dts.push('  vdd_cpu_big: vdd-cpu-big {');
+    dts.push('    regulator-name = &quot;vdd_cpu_big&quot;;');
+    dts.push('    regulator-always-on;');
+    dts.push('    ...');
+    dts.push('  };');
+    dts.push('}');
+    dts.push('');
+
+    // MMC 配置
+    dts.push('&amp;sdmmc {');
+    dts.push('  status = &quot;okay&quot;;');
+    dts.push('  cap-mmc-highspeed;');
+    dts.push('  cap-sd-highspeed;');
+    dts.push('};');
+    dts.push('');
+
+    // GMAC 配置
+    dts.push('&amp;gmac0 {');
+    dts.push('  phy-mode = &quot;rgmii-rxid&quot;;');
+    dts.push('  clock_in_out = &quot;output&quot;;');
+    dts.push('  snps,reset-gpio = &lt;&amp;gpio0 RK_PB5 GPIO_ACTIVE_LOW&gt;;');
+    dts.push('  snps,reset-active-low;');
+    dts.push('  snps,reset-delays-us = &lt;0 20000 100000&gt;;');
+    dts.push('};');
+
+    return dts.join('\n');
+  }
+
+  generateOverlay(bridgeSpec: BridgeSpec): string {
+    const dts = [
+      '// Bridge Spec Overlay - Auto-generated',
+      '// FPGA ↔ SoC Interface Definition',
+      '',
+      '/ {',
+      '  fragment@fpga-bridge {',
+      '    target = &lt;&amp;amba&gt;;',
+      '    __overlay__ {',
+      '',
+    ];
+
+    // 地址映射
+    for (const addrMap of bridgeSpec.addressMaps) {
+      dts.push('      // 地址映射');
+      dts.push(`      fpga@${addrMap.fpgaBase.toString(16)} {`);
+      dts.push('        compatible = &quot;rockchip,fpga-bridge&quot;;');
+      dts.push(`        reg = &lt;0x0 ${addrMap.fpgaBase.toString(16)} ${addrMap.size}&gt;;`);
+      dts.push('        #address-cells = &lt;0x1&gt;;');
+      dts.push('        #size-cells = &lt;0x1&gt;;');
+      dts.push('');
+      dts.push('        // FPGA 内部寄存器');
+      for (const reg of addrMap.registers) {
+        dts.push(`        reg@${reg.offset.toString(16)} {`);
+        dts.push(`          reg = &lt;${reg.offset} ${reg.size}&gt;;`);
+        dts.push(`          // ${reg.name}: ${reg.description}`);
+        dts.push('        };');
+      }
+      dts.push('      };');
+      dts.push('    };');
+    }
+
+    // 中断路由
+    if (bridgeSpec.interrupts.length &gt; 0) {
+      dts.push('');
+      dts.push('    __overlay__ {');
+      dts.push('      // 中断路由');
+      for (const irq of bridgeSpec.interrupts) {
+        dts.push(`      fpga-irq@${irq.gicNumber} {`);
+        dts.push(`        compatible = &quot;rockchip,fpga-irq&quot;;`);
+        dts.push(`        interrupts = &lt;GIC_SPI ${irq.gicNumber} IRQ_TYPE_LEVEL_HIGH&gt;;`);
+        dts.push(`        // Source: ${irq.source}`);
+        dts.push('      };');
+      }
+      dts.push('    };');
+    }
+
+    dts.push('  };');
+    dts.push('};');
+
+    return dts.join('\n');
+  }
+
+  compileDTS(dtsPath: string): string {
+    const dtbPath = dtsPath.replace('.dts', '.dtb');
+    this.runCommand(`dtc -I dts -O dtb -o ${dtbPath} ${dtsPath}`);
+    return dtbPath;
+  }
+
+  mergeOverlays(baseDtb: string, overlays: string[]): string {
+    let current = baseDtb;
+    for (const overlay of overlays) {
+      const overlayDtb = overlay.replace('.dtsh', '.dtbo');
+      this.runCommand(`dtc -I dts -O dtb -o ${overlayDtb} ${overlay}`);
+      current = this.runCommand(
+        `fdtapply ${current} ${overlayDtb}`
+      );
+    }
+    return current;
+  }
+}
+</code></pre>
+<h3 id="4-3-bridge-接口-device-tree-overlay-详细示例">4.3 Bridge 接口 Device Tree Overlay 详细示例</h3>
+<p>本节为 FPGA-RK3588 Bridge 的每种物理接口提供完整的 Device Tree fragment 代码示例。</p>
+<h4 id="4-3-1-pcie-device-tree-fragment">4.3.1 PCIe Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: PCIe Gen3 x4 - FPGA Endpoint
+// RK3588 作为 Root Complex
+
+&amp;pcie3x4 {
+    status = &quot;okay&quot;;
+    reset-gpios = &lt;&amp;gpio0 RK_PB0 GPIO_ACTIVE_LOW&gt;;
+    num-lanes = &lt;4&gt;;
+    max-link-speed = &lt;3&gt;;  // Gen3
+
+    pinctrl-names = &quot;default&quot;;
+    pinctrl-0 = &lt;&amp;pcie3x4_pins&gt;;
+
+    // FPGA Endpoint 无需在 DT 中声明，
+    // 由 PCIe 枚举自动发现
+};
+
+// 可选：固定 PCIe 时钟输出
+&amp;pcie30phy {
+    status = &quot;okay&quot;;
+};
+
+// 如果需要为 FPGA 提供参考时钟
+// 可在 FPGA 节点中引用 PCIe PHY 时钟
+</code></pre>
+<h4 id="4-3-2-ge-ethernet-rgmii-device-tree-fragment">4.3.2 GE Ethernet (RGMII) Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: GMAC0 - RGMII 连接 FPGA 内部 PHY
+
+&amp;gmac0 {
+    status = &quot;okay&quot;;
+    phy-mode = &quot;rgmii-rxid&quot;;
+    clock_in_out = &quot;output&quot;;
+
+    // 固定 MAC 地址（如无需 OTP 唯一 MAC）
+    local-mac-address = [00 11 22 33 44 55];
+
+    snps,reset-gpio = &lt;&amp;gpio0 RK_PB5 GPIO_ACTIVE_LOW&gt;;
+    snps,reset-active-low;
+    snps,reset-delays-us = &lt;0 20000 100000&gt;;
+
+    // TX 延迟配置（RGMII 时序）
+    tx_delay = &lt;0x30&gt;;
+    rx_delay = &lt;0x10&gt;;
+
+    // FPGA 内部 PHY - 使用 fixed-link
+    fixed-link {
+        speed = &lt;1000&gt;;
+        full-duplex;
+        pause;
+        asym-pause;
+    };
+};
+
+// MDIO 总线 - 用于配置 FPGA 内部 PHY 寄存器
+&amp;mdio0 {
+    status = &quot;okay&quot;;
+
+    // FPGA 内部 PHY @ MDIO 地址 0
+    fpga_phy: ethernet-phy@0 {
+        compatible = &quot;ethernet-phy-ieee802.3-c22&quot;;
+        reg = &lt;0x0&gt;;
+
+        // 时钟配置
+        clocks = &lt;&amp;cru CLK_GMAC0&gt;;
+
+        // 复位
+        reset-gpios = &lt;&amp;gpio0 RK_PB6 GPIO_ACTIVE_LOW&gt;;
+        reset-assert-us = &lt;20000&gt;;
+        reset-deassert-us = &lt;100000&gt;;
+    };
+};
+</code></pre>
+<h4 id="4-3-3-mipi-csi-device-tree-fragment">4.3.3 MIPI CSI Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: MIPI CSI 4-lane - FPGA 视频输入到 RK3588
+
+// 1. CSI DPHY 配置
+&amp;csi2_dphy0_hw {
+    status = &quot;okay&quot;;
+};
+
+&amp;csi2_dphy0 {
+    status = &quot;okay&quot;;
+
+    ports {
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;0&gt;;
+
+        // CSI 输入端口 - 连接 FPGA
+        port@0 {
+            reg = &lt;0&gt;;
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+
+            csi2_dphy0_in: endpoint@0 {
+                reg = &lt;0&gt;;
+                remote-endpoint = &lt;&amp;fpga_csi_tx_out&gt;;
+                data-lanes = &lt;1 2 3 4&gt;;
+                clock-lanes = &lt;0&gt;;
+                link-frequencies = /bits/ 64 &lt;500000000&gt;;
+            };
+        };
+
+        // CSI 输出端口 - 连接 VICAP
+        port@1 {
+            reg = &lt;1&gt;;
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+
+            csi2_dphy0_out: endpoint@0 {
+                reg = &lt;0&gt;;
+                remote-endpoint = &lt;&amp;mipi_csi2_input&gt;;
+            };
+        };
+    };
+};
+
+// 2. VICAP (视频捕获) 配置
+&amp;vicap {
+    status = &quot;okay&quot;;
+    num-channels = &lt;1&gt;;
+};
+
+&amp;rkcif_mipi_lvds {
+    status = &quot;okay&quot;;
+
+    port {
+        mipi_csi2_input: endpoint {
+            remote-endpoint = &lt;&amp;csi2_dphy0_out&gt;;
+        };
+    };
+};
+
+// 3. FPGA 作为 CSI 发送端（SoC 外部设备描述）
+/ {
+    fpga-csi-tx {
+        compatible = &quot;awe,fpga-csi-tx&quot;;
+        status = &quot;okay&quot;;
+
+        port {
+            fpga_csi_tx_out: endpoint {
+                remote-endpoint = &lt;&amp;csi2_dphy0_in&gt;;
+            };
+        };
+    };
+};
+</code></pre>
+<h4 id="4-3-4-mipi-dsi-device-tree-fragment">4.3.4 MIPI DSI Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: MIPI DSI 4-lane - RK3588 显示输出到 FPGA
+
+&amp;dsi0 {
+    status = &quot;okay&quot;;
+    rockchip,lane-rate = &lt;1000&gt;;  // Mbps per lane
+
+    // DSI 面板配置（FPGA 作为虚拟面板）
+    dsi0_panel: panel@0 {
+        compatible = &quot;awe,fpga-dsi-panel&quot;;
+        reg = &lt;0&gt;;
+        status = &quot;okay&quot;;
+
+        // 复位和使能由 GPIO 或 FPGA 内部控制
+        enable-gpios = &lt;&amp;gpio0 RK_PC0 GPIO_ACTIVE_HIGH&gt;;
+
+        // 显示时序
+        display-timings {
+            native-mode = &lt;&amp;fpga_display_timing&gt;;
+
+            fpga_display_timing: timing@0 {
+                clock-frequency = &lt;74250000&gt;;  // 74.25 MHz (1080p60)
+                hactive = &lt;1920&gt;;
+                vactive = &lt;1080&gt;;
+                hfront-porch = &lt;88&gt;;
+                hback-porch = &lt;148&gt;;
+                hsync-len = &lt;44&gt;;
+                vfront-porch = &lt;4&gt;;
+                vback-porch = &lt;36&gt;;
+                vsync-len = &lt;5&gt;;
+            };
+        };
+
+        // DSI 端口
+        ports {
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+
+            port@0 {
+                reg = &lt;0&gt;;
+                panel_in_dsi: endpoint {
+                    remote-endpoint = &lt;&amp;dsi0_out_panel&gt;;
+                };
+            };
+        };
+    };
+
+    // DSI 输出端口
+    ports {
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;0&gt;;
+
+        port@1 {
+            reg = &lt;1&gt;;
+            dsi0_out_panel: endpoint {
+                remote-endpoint = &lt;&amp;panel_in_dsi&gt;;
+            };
+        };
+    };
+};
+
+// VOP (显示控制器) 绑定
+&amp;vop {
+    status = &quot;okay&quot;;
+};
+
+&amp;dsi0_in_vp2 {
+    status = &quot;okay&quot;;
+};
+
+&amp;dsi0_in_vp3 {
+    status = &quot;okay&quot;;
+};
+
+&amp;route_dsi0 {
+    status = &quot;okay&quot;;
+    connect = &lt;&amp;vp2_out_dsi0&gt;;
+};
+</code></pre>
+<h4 id="4-3-5-gpio-device-tree-fragment">4.3.5 GPIO Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: FPGA-RK3588 GPIO 控制信号
+
+// 1. pinctrl 定义
+&amp;pinctrl {
+    fpga-bridge {
+        // FPGA 复位（开漏输出，低有效）
+        fpga_reset_pin: fpga-reset-pin {
+            rockchip,pins =
+                &lt;0 RK_PA0 RK_FUNC_GPIO &amp;pcfg_output_low_pull_none&gt;;
+        };
+
+        // FPGA 中断请求（输入，上拉，支持中断）
+        fpga_irq_pin: fpga-irq-pin {
+            rockchip,pins =
+                &lt;0 RK_PA1 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;;
+        };
+
+        // FPGA 配置完成（输入）
+        fpga_done_pin: fpga-done-pin {
+            rockchip,pins =
+                &lt;0 RK_PA2 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+
+        // FPGA 初始化状态（输入）
+        fpga_init_pin: fpga-init-pin {
+            rockchip,pins =
+                &lt;0 RK_PA3 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;;
+        };
+
+        // FPGA 模式选择（输出）
+        fpga_mode_pins: fpga-mode-pins {
+            rockchip,pins =
+                &lt;0 RK_PA4 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;,
+                &lt;0 RK_PA5 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+
+        // FPGA 状态指示（输入）
+        fpga_status_pin: fpga-status-pin {
+            rockchip,pins =
+                &lt;0 RK_PA6 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+
+        // 系统电源使能（输出）
+        sys_pwr_en_pin: sys-pwr-en-pin {
+            rockchip,pins =
+                &lt;0 RK_PA7 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+    };
+};
+
+// 2. FPGA Bridge GPIO 设备节点
+/ {
+    fpga-gpio-bridge {
+        compatible = &quot;awe,fpga-gpio-bridge&quot;;
+        status = &quot;okay&quot;;
+
+        pinctrl-names = &quot;default&quot;;
+        pinctrl-0 = &lt;&amp;fpga_reset_pin&gt;, &lt;&amp;fpga_irq_pin&gt;,
+                    &lt;&amp;fpga_done_pin&gt;, &lt;&amp;fpga_init_pin&gt;,
+                    &lt;&amp;fpga_mode_pins&gt;, &lt;&amp;fpga_status_pin&gt;,
+                    &lt;&amp;sys_pwr_en_pin&gt;;
+
+        // FPGA 复位
+        fpga-reset-gpios = &lt;&amp;gpio0 RK_PA0 GPIO_ACTIVE_LOW&gt;;
+        reset-assert-ms = &lt;100&gt;;
+        reset-deassert-ms = &lt;10&gt;;
+
+        // FPGA 中断
+        fpga-irq-gpios = &lt;&amp;gpio0 RK_PA1 GPIO_ACTIVE_HIGH&gt;;
+        interrupt-parent = &lt;&amp;gpio0&gt;;
+        interrupts = &lt;RK_PA1 IRQ_TYPE_EDGE_RISING&gt;;
+
+        // FPGA 状态
+        fpga-done-gpios = &lt;&amp;gpio0 RK_PA2 GPIO_ACTIVE_HIGH&gt;;
+        fpga-init-gpios = &lt;&amp;gpio0 RK_PA3 GPIO_ACTIVE_HIGH&gt;;
+        fpga-status-gpios = &lt;&amp;gpio0 RK_PA6 GPIO_ACTIVE_HIGH&gt;;
+
+        // 模式选择
+        fpga-mode-gpios = &lt;&amp;gpio0 RK_PA4 GPIO_ACTIVE_HIGH&gt;,
+                          &lt;&amp;gpio0 RK_PA5 GPIO_ACTIVE_HIGH&gt;;
+
+        // 电源使能
+        sys-pwr-en-gpios = &lt;&amp;gpio0 RK_PA7 GPIO_ACTIVE_HIGH&gt;;
+    };
+};
+</code></pre>
+<h4 id="4-3-6-完整-bridge-overlay-集成示例">4.3.6 完整 Bridge Overlay 集成示例</h4>
+<pre><code class="language-dts">// bridge-overlay.dts - FPGA-RK3588 Bridge 完整集成
+// 该 overlay 包含所有桥接接口的配置
+
+/dts-v1/;
+/plugin/;
+
+#include &lt;dt-bindings/gpio/gpio.h&gt;
+#include &lt;dt-bindings/interrupt-controller/arm-gic.h&gt;
+#include &lt;dt-bindings/clock/rk3588-cru.h&gt;
+#include &lt;dt-bindings/pinctrl/rockchip.h&gt;
+
+/ {
+    compatible = &quot;rockchip,rk3588&quot;;
+
+    // ── Fragment 1: PCIe (FPGA Endpoint) ──
+    fragment@1 {
+        target = &lt;&amp;pcie3x4&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+            reset-gpios = &lt;&amp;gpio0 RK_PB0 GPIO_ACTIVE_LOW&gt;;
+            num-lanes = &lt;4&gt;;
+            max-link-speed = &lt;3&gt;;
+        };
+    };
+
+    // ── Fragment 2: GMAC (FPGA PHY) ──
+    fragment@2 {
+        target = &lt;&amp;gmac0&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+            phy-mode = &quot;rgmii-rxid&quot;;
+            local-mac-address = [00 11 22 33 44 55];
+            snps,reset-gpio = &lt;&amp;gpio0 RK_PB5 GPIO_ACTIVE_LOW&gt;;
+            snps,reset-active-low;
+            snps,reset-delays-us = &lt;0 20000 100000&gt;;
+            fixed-link {
+                speed = &lt;1000&gt;;
+                full-duplex;
+            };
+        };
+    };
+
+    // ── Fragment 3: MIPI CSI (FPGA → RK3588) ──
+    fragment@3 {
+        target = &lt;&amp;csi2_dphy0&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+            ports {
+                port@0 {
+                    reg = &lt;0&gt;;
+                    endpoint {
+                        data-lanes = &lt;1 2 3 4&gt;;
+                        link-frequencies = /bits/ 64 &lt;500000000&gt;;
+                    };
+                };
+            };
+        };
+    };
+
+    // ── Fragment 4: MIPI DSI (RK3588 → FPGA) ──
+    fragment@4 {
+        target = &lt;&amp;dsi0&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+        };
+    };
+
+    // ── Fragment 5: GPIO Bridge ──
+    fragment@5 {
+        target = &lt;&amp;pinctrl&gt;;
+        __overlay__ {
+            fpga-bridge-gpio {
+                fpga_bridge_gpio: fpga-bridge-gpio {
+                    rockchip,pins =
+                        &lt;0 RK_PA0 RK_FUNC_GPIO &amp;pcfg_output_low&gt;,
+                        &lt;0 RK_PA1 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;,
+                        &lt;0 RK_PA2 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+                };
+            };
+        };
+    };
+};
+</code></pre>
+<h3 id="4-4-gpio-时钟-中断资源分配">4.4 GPIO/时钟/中断资源分配</h3>
+<pre><code class="language-typescript">// resourceAllocator.ts
+
+export interface ResourceAllocation {
+  gpio: GPIOAllocation[];
+  clocks: ClockAllocation[];
+  interrupts: InterruptAllocation[];
+}
+
+export class RK3588ResourceAllocator {
+  // 预定义的体系结构资源
+  private static readonly ARCH_RESERVED = {
+    // GPIO 组预留
+    gpio0: { used: ['PA0-PA7'], reserved: ['PB0-PB7'] },
+    gpio1: { used: ['PA0-PA7'], reserved: [] },
+    gpio2: { used: [], reserved: ['PC0-PC7'] },  // 用于 Camera
+
+    // 中断预留 (GIC SPI)
+    reservedIrqs: [32, 33, 34, 35],  // 系统中断
+
+    // 时钟预留
+    reservedClks: ['pll_npu', 'clk_npu'],
+  };
+
+  allocateGPIOA(project: ProjectModel): GPIOAllocation[] {
+    const allocations: GPIOAllocation[] = [];
+
+    for (const pin of project.hardware.gpioPins) {
+      // 检查是否与架构预留冲突
+      const isReserved = RK3588ResourceAllocator.ARCH_RESERVED.gpio0.reserved
+        .some(r =&gt; r === pin.pin);
+
+      if (isReserved) {
+        throw new Error(`GPIO pin ${pin.pin} is reserved by architecture`);
+      }
+
+      allocations.push({
+        pin: pin.pin,
+        function: pin.function,
+        direction: pin.direction,
+        pull: pin.pull || 'none',
+      });
+    }
+
+    return allocations;
+  }
+
+  allocateInterrupts(project: ProjectModel): InterruptAllocation[] {
+    const allocations: InterruptAllocation[] = [];
+
+    // 分配起始 IRQ 号 (从 64 开始，预留前 64 个)
+    let nextIrq = 64;
+
+    for (const irq of project.hardware.interrupts) {
+      allocations.push({
+        source: irq.source,
+        gicNumber: nextIrq,
+        type: irq.type,  // 'level' | 'edge'
+        polarity: irq.polarity || 'high',  // 'high' | 'rising' 等
+      });
+      nextIrq++;
+    }
+
+    return allocations;
+  }
+
+  allocateClocks(project: ProjectModel): ClockAllocation[] {
+    const allocations: ClockAllocation[] = [];
+
+    // 固定时钟分配
+    const fixedClocks = [
+      { name: 'clk_uart2', freq: 24000000, source: 'xin24m' },
+      { name: 'clk_gmac0', freq: 125000000, source: 'gmac_clkin' },
+      { name: 'clk_sdmmc', freq: 200000000, source: 'cpll' },
+    ];
+
+    for (const clk of fixedClocks) {
+      allocations.push(clk);
+    }
+
+    // 动态时钟分配
+    for (const dynamicClk of project.hardware.clocks) {
+      allocations.push({
+        name: dynamicClk.name,
+        freq: dynamicClk.frequency,
+        source: dynamicClk.source,
+      });
+    }
+
+    return allocations;
+  }
+}
+</code></pre>
+<hr />
+<p><a id="ch5"></a></p>
+<h2 id="5-烧录流程设计">5. 烧录流程设计</h2>
+<h3 id="5-1-烧录流程概览">5.1 烧录流程概览</h3>
+<pre><code class="language-mermaid">flowchart TD
+    Maskrom[&quot;&lt;b&gt;Maskrom Detection&lt;/b&gt;&lt;br/&gt;设备进入 Maskrom 模式&lt;br/&gt;(上电时按住 MASKROM 按键 或 短接)&quot;]
+    Maskrom --&gt; Loader[&quot;&lt;b&gt;LOADER Download&lt;/b&gt;&lt;br/&gt;下载 MiniLoader&lt;br/&gt;(rk3588_loader_v*.bin)&lt;br/&gt;rkdeveloptool dnl&quot;]
+    Loader --&gt; Parameter[&quot;&lt;b&gt;Parameter Write&lt;/b&gt;&lt;br/&gt;写入分区表&lt;br/&gt;(parameter.txt)&lt;br/&gt;rkdeveloptool down&quot;]
+    Parameter --&gt; Firmware[&quot;&lt;b&gt;Firmware Download&lt;/b&gt;&lt;br/&gt;写入固件&lt;br/&gt;(idbloader/trust/uboot/boot/rootfs)&lt;br/&gt;rkdeveloptool up&quot;]
+    Firmware --&gt; Verify[&quot;&lt;b&gt;Verify &amp; Reboot&lt;/b&gt;&lt;br/&gt;校验 checksum&lt;br/&gt;重启设备&quot;]
+</code></pre>
+<h3 id="5-2-flash-实现">5.2 Flash 实现</h3>
+<pre><code class="language-typescript">// rk3588Flash.ts
+
+export interface FlashConfig {
+  device: '/dev/ttyUSB0' | string;  // 串口设备
+  loaderPath: string;               // MiniLoader 路径
+  firmwarePath: string;             // update.img 路径
+  partitions: PartitionConfig[];
+}
+
+export interface PartitionConfig {
+  name: string;
+  offset: number;
+  size: number;
+  file?: string;
+}
+
+export class RK3588Flash {
+  private rkTool: string;
+  private device: string;
+
+  constructor(config: { rkToolPath: string; device?: string }) {
+    this.rkTool = config.rkToolPath;
+    this.device = config.device || '/dev/ttyUSB0';
+  }
+
+  async flash(firmware: FirmwareBinary): Promise&lt;FlashResult&gt; {
+    const result: FlashResult = {
+      success: false,
+      partitions: [],
+      error: undefined,
+    };
+
+    try {
+      // 1. 检测 Maskrom 模式
+      await this.detectMaskrom();
+
+      // 2. 下载 MiniLoader
+      await this.downloadLoader();
+
+      // 3. 写入分区表
+      await this.writeParameter(firmware.parameter);
+
+      // 4. 下载固件
+      for (const partition of firmware.partitions) {
+        await this.downloadPartition(partition);
+        result.partitions.push({
+          name: partition.name,
+          offset: partition.offset,
+          size: partition.size,
+          path: partition.file,
+          checksum: await this.calculateChecksum(partition.file),
+        });
+      }
+
+      // 5. 校验并重启
+      await this.verifyAndReboot();
+
+      result.success = true;
+    } catch (error) {
+      result.success = false;
+      result.error = error.message;
+    }
+
+    return result;
+  }
+
+  // ── Maskrom 模式检测 ──
+
+  async detectMaskrom(): Promise&lt;void&gt; {
+    const result = await this.runCommand(`
+      ${this.rkTool} list
+    `);
+
+    if (!result.stdout.includes('Maskrom')) {
+      throw new Error(
+        '设备未进入 Maskrom 模式。请：\n' +
+        '1. 断电\n' +
+        '2. 按住 MASKROM 按键\n' +
+        '3. 上电\n' +
+        '4. 释放按键'
+      );
+    }
+  }
+
+  // ── LOADER 下载 ──
+
+  async downloadLoader(): Promise&lt;void&gt; {
+    console.log('Downloading MiniLoader...');
+
+    const result = await this.runCommand(`
+      ${this.rkTool} dnl ${this.loaderPath}
+    `, { timeout: 60000 });
+
+    if (!result.success) {
+      throw new Error(`Loader 下载失败: ${result.stderr}`);
+    }
+
+    // 等待设备进入 loader 模式
+    await this.waitForLoaderMode();
+  }
+
+  // ── 分区表写入 ──
+
+  async writeParameter(parameter: string): Promise&lt;void&gt; {
+    console.log('Writing parameter...');
+
+    const result = await this.runCommand(`
+      cd ${this.firmwareDir}
+      ${this.rkTool} down ${parameter}
+    `);
+
+    if (!result.success) {
+      throw new Error(`Parameter 写入失败: ${result.stderr}`);
+    }
+  }
+
+  // ── 分区写入 ──
+
+  async downloadPartition(partition: PartitionInfo): Promise&lt;void&gt; {
+    console.log(`Downloading ${partition.name}...`);
+
+    const result = await this.runCommand(`
+      ${this.rkTool} up ${partition.name} ${partition.file}
+    `, { timeout: partition.size / 1024 / 10 }); // 约 10MB/s
+
+    if (!result.success) {
+      throw new Error(`分区 ${partition.name} 写入失败: ${result.stderr}`);
+    }
+  }
+
+  // ── 校验与重启 ──
+
+  async verifyAndReboot(): Promise&lt;void&gt; {
+    console.log('Verifying and rebooting...');
+
+    const result = await this.runCommand(`
+      ${this.rkTool} verif
+    `);
+
+    if (!result.success) {
+      throw new Error(`校验失败: ${result.stderr}`);
+    }
+
+    // 重启设备
+    await this.runCommand(`${this.rkTool} reboot`);
+  }
+
+  // ── 工具函数 ──
+
+  private async waitForLoaderMode(timeout = 30000): Promise&lt;void&gt; {
+    const start = Date.now();
+    while (Date.now() - start &lt; timeout) {
+      const result = await this.runCommand(`${this.rkTool} list`);
+      if (result.stdout.includes('Loader')) {
+        return;
+      }
+      await this.sleep(500);
+    }
+    throw new Error('等待 Loader 模式超时');
+  }
+
+  private async calculateChecksum(file: string): Promise&lt;string&gt; {
+    const result = await this.runCommand(`md5sum ${file}`);
+    return result.stdout.split(' ')[0];
+  }
+}
+</code></pre>
+<h3 id="5-3-分区配置">5.3 分区配置</h3>
+<pre><code class="language-typescript">// partitionConfig.ts
+
+// RK3588 默认分区布局 (基于 8GB eMMC)
+export const RK3588_DEFAULT_PARTITIONS: PartitionConfig[] = [
+  {
+    name: 'uboot',
+    offset: '0x00002000',     // 64KB
+    size: '0x00002000',       // 64KB
+    file: 'idbloader.img',
+  },
+  {
+    name: 'trust',
+    offset: '0x00004000',     // 128KB
+    size: '0x00004000',       // 256KB
+    file: 'trust.img',
+  },
+  {
+    name: 'boot',
+    offset: '0x00008000',     // 256KB
+    size: '0x00200000',       // 32MB
+    file: 'boot.img',
+  },
+  {
+    name: 'rootfs',
+    offset: '0x00208000',     // 32.5MB
+    size: '0x08000000',       // 256MB
+    file: 'rootfs.squashfs',
+  },
+  {
+    name: 'userdata',
+    offset: '0x08208000',     // 288.5MB
+    size: '0x00000000',       // 剩余空间
+    file: undefined,          // 留空，由系统使用
+  },
+];
+
+// parameter.txt 格式
+export function generateParameterTxt(
+  partitions: PartitionConfig[],
+  version: string
+): string {
+  const lines = [
+    `FIRMWARE_VER: ${version}`,
+    `MAGIC: 0x4F524B50`,
+    `CMDLINE: mtdparts=rk29xxnand:`,
+  ];
+
+  const mtdParts = partitions.map(p =&gt; {
+    const sizeHex = p.size.startsWith('0x')
+      ? parseInt(p.size).toString(16)
+      : p.size;
+    return `${p.name}@0x${parseInt(p.offset).toString(16)}(${p.name})`;
+  });
+
+  lines.push('    ' + mtdParts.join(',\\');
+  lines.push('');
+
+  return lines.join('\n');
+}
+</code></pre>
+<hr />
+<p><a id="ch6"></a></p>
+<h2 id="6-调试支持">6. 调试支持</h2>
+<h3 id="6-1-调试架构">6.1 调试架构</h3>
+<pre><code class="language-mermaid">flowchart TD
+    Serial[&quot;&lt;b&gt;Serial Console&lt;/b&gt;&quot;]
+    ADB[&quot;&lt;b&gt;ADB Access&lt;/b&gt;&quot;]
+    Panic[&quot;&lt;b&gt;Kernel Panic&lt;/b&gt;&quot;]
+
+    Serial --&gt; Aggregator[&quot;&lt;b&gt;DebugData Aggregator&lt;/b&gt;&lt;br/&gt;- serialLogs[]&lt;br/&gt;- kernelPanic&lt;br/&gt;- dmesgOutput&lt;br/&gt;- adbStatus&quot;]
+    ADB --&gt; Aggregator
+    Panic --&gt; Aggregator
+
+    Aggregator --&gt; AI[&quot;&lt;b&gt;AI Analysis&lt;/b&gt; (L4 Intelligence)&lt;br/&gt;- TimingDiagnoser&lt;br/&gt;- BuildStrategyAdvisor&lt;br/&gt;- CopilotContext&quot;]
+</code></pre>
+<h3 id="6-2-串口日志获取">6.2 串口日志获取</h3>
+<pre><code class="language-typescript">// serialDebug.ts
+
+export interface SerialConfig {
+  port: string;           // '/dev/ttyUSB0' 或 'COM3'
+  baudRate: number;       // 1500000 (RK3588 默认)
+  dataBits: 8;
+  stopBits: 1;
+  parity: 'none';
+}
+
+export class SerialDebugger {
+  private port: SerialPort;
+  private reader: ReadableStreamDefaultReader;
+  private logBuffer: SerialLog[] = [];
+
+  async connect(config: SerialConfig): Promise&lt;void&gt; {
+    this.port = new SerialPort({
+      path: config.port,
+      baudRate: config.baudRate,
+      dataBits: config.dataBits,
+      stopBits: config.stopBits,
+      parity: config.parity,
+    });
+
+    this.reader = this.port.read(ttyBuffer).getReader();
+  }
+
+  async readLogs(duration = 5000): Promise&lt;SerialLog[]&gt; {
+    const logs: SerialLog[] = [];
+    const startTime = Date.now();
+
+    while (Date.now() - startTime &lt; duration) {
+      const { value, done } = await this.reader.read();
+
+      if (done) break;
+
+      const line = new TextDecoder().decode(value);
+      logs.push({
+        timestamp: Date.now(),
+        content: line,
+        level: this.parseLogLevel(line),
+      });
+
+      this.logBuffer.push(logs[logs.length - 1]);
+    }
+
+    return logs;
+  }
+
+  parseLogLevel(line: string): 'info' | 'warn' | 'error' | 'debug' {
+    if (line.includes('[    0.000000]') || line.includes('Starting kernel')) {
+      return 'info';
+    }
+    if (line.includes('WARNING') || line.includes('warn')) {
+      return 'warn';
+    }
+    if (line.includes('ERROR') || line.includes('BUG') || line.includes('Panic')) {
+      return 'error';
+    }
+    return 'debug';
+  }
+
+  // 持续监听并实时返回
+  async *streamLogs(): AsyncGenerator&lt;SerialLog&gt; {
+    while (true) {
+      const { value, done } = await this.reader.read();
+      if (done) break;
+
+      const line = new TextDecoder().decode(value);
+      const log: SerialLog = {
+        timestamp: Date.now(),
+        content: line,
+        level: this.parseLogLevel(line),
+      };
+
+      this.logBuffer.push(log);
+      yield log;
+    }
+  }
+}
+</code></pre>
+<h3 id="6-3-adb-连接管理">6.3 ADB 连接管理</h3>
+<pre><code class="language-typescript">// adbDebug.ts
+
+export interface ADBDevice {
+  serial: string;
+  state: 'device' | 'offline' | 'unauthorized';
+  product: string;
+  model: string;
+  device: string;
+}
+
+export class ADBManager {
+  private adbPath: string;
+
+  constructor(adbPath = 'adb') {
+    this.adbPath = adbPath;
+  }
+
+  async getDevices(): Promise&lt;ADBDevice[]&gt; {
+    const result = await this.runCommand(`${this.adbPath} devices -l`);
+    const devices: ADBDevice[] = [];
+
+    for (const line of result.stdout.split('\n').slice(1)) {
+      if (!line.trim()) continue;
+
+      const parts = line.split(/\s+/);
+      devices.push({
+        serial: parts[0],
+        state: parts[1] as ADBDevice['state'],
+        product: this.extractValue(parts, 'product'),
+        model: this.extractValue(parts, 'model'),
+        device: this.extractValue(parts, 'device'),
+      });
+    }
+
+    return devices;
+  }
+
+  async shell(command: string): Promise&lt;string&gt; {
+    const result = await this.runCommand(`${this.adbPath} shell &quot;${command}&quot;`);
+    return result.stdout;
+  }
+
+  async pull(remotePath: string, localPath: string): Promise&lt;void&gt; {
+    await this.runCommand(`${this.adbPath} pull ${remotePath} ${localPath}`);
+  }
+
+  async push(localPath: string, remotePath: string): Promise&lt;void&gt; {
+    await this.runCommand(`${this.adbPath} push ${localPath} ${remotePath}`);
+  }
+
+  async getDmesg(): Promise&lt;string[]&gt; {
+    const output = await this.shell('dmesg');
+    return output.split('\n').filter(line =&gt; line.trim());
+  }
+
+  async getKernelPanic(): Promise&lt;KernelPanicInfo | null&gt; {
+    const dmesg = await this.getDmesg();
+
+    // 查找 kernel panic 信息
+    const panicLines: string[] = [];
+    let inPanic = false;
+
+    for (const line of dmesg) {
+      if (line.includes('Kernel panic')) {
+        inPanic = true;
+      }
+      if (inPanic) {
+        panicLines.push(line);
+        if (line.includes('---[ end trace')) {
+          break;
+        }
+      }
+    }
+
+    if (panicLines.length === 0) {
+      return null;
+    }
+
+    return {
+      fullLog: panicLines.join('\n'),
+      timestamp: this.extractTimestamp(panicLines[0]),
+      reason: this.extractPanicReason(panicLines),
+      callTrace: this.extractCallTrace(panicLines),
+    };
+  }
+
+  private extractPanicReason(lines: string[]): string {
+    for (const line of lines) {
+      if (line.includes('not syncing')) {
+        const match = line.match(/not syncing: (.+)$/);
+        return match ? match[1] : 'Unknown';
+      }
+    }
+    return 'Unknown';
+  }
+
+  private extractCallTrace(lines: string[]): string[] {
+    const trace: string[] = [];
+    let inTrace = false;
+
+    for (const line of lines) {
+      if (line.includes('Call trace:') || line.includes('Stack:')) {
+        inTrace = true;
+        continue;
+      }
+      if (inTrace &amp;&amp; line.match(/^\s*0x[0-9a-f]+/)) {
+        trace.push(line.trim());
+      }
+      if (inTrace &amp;&amp; line.match(/^\s*--- end trace/)) {
+        break;
+      }
+    }
+
+    return trace;
+  }
+}
+</code></pre>
+<h3 id="6-4-内核-panic-日志解析">6.4 内核 Panic 日志解析</h3>
+<pre><code class="language-typescript">// kernelPanicAnalyzer.ts
+
+export interface KernelPanicAnalyzer {
+  analyze(panicInfo: KernelPanicInfo): PanicAnalysis;
+  suggestFixes(analysis: PanicAnalysis): FixSuggestion[];
+}
+
+export interface PanicAnalysis {
+  type: PanicType;
+  severity: 'critical' | 'high' | 'medium';
+  rootCause: string;
+  affectedComponent: string;
+  stackTrace: AnalyzedStackTrace[];
+}
+
+export interface FixSuggestion {
+  description: string;
+  command?: string;
+  configChange?: ConfigChange;
+  confidence: number;  // 0-1
+}
+
+export class RK3588PanicAnalyzer implements KernelPanicAnalyzer {
+  // Panic 类型识别模式
+  private readonly PANIC_PATTERNS = [
+    {
+      type: 'oom' as PanicType,
+      pattern: /Out of memory.*LPJ/,
+      severity: 'critical',
+      rootCause: '内存不足',
+      suggestedFixes: [
+        { description: '增加 zram 大小', command: 'echo 50% &gt; /sys/block/zram0/disksize' },
+        { description: '减少 init 服务', confidence: 0.8 },
+        { description: '增加 DDR 容量或启用 swap', confidence: 0.6 },
+      ],
+    },
+    {
+      type: 'null_pointer' as PanicType,
+      pattern: /BUG: unable to handle kernel NULL pointer dereference/,
+      severity: 'critical',
+      rootCause: '空指针解引用',
+      suggestedFixes: [
+        { description: '检查驱动加载顺序', confidence: 0.7 },
+        { description: '更新内核或驱动版本', confidence: 0.5 },
+      ],
+    },
+    {
+      type: 'watchdog' as PanicType,
+      pattern: /watchdog.*timer didn't stop/,
+      severity: 'high',
+      rootCause: '看门狗超时，系统 hang',
+      suggestedFixes: [
+        { description: '增加看门狗超时时间', configChange: { kernel: 'CONFIG_WATCHDOG_TIMEOUT=30' } },
+        { description: '检查系统负载', confidence: 0.6 },
+      ],
+    },
+    {
+      type: 'fs' as PanicType,
+      pattern: /VFS: Unable to mount root fs/,
+      severity: 'critical',
+      rootCause: '根文件系统挂载失败',
+      suggestedFixes: [
+        { description: '检查 boot.img 中的 rootfs 路径', confidence: 0.9 },
+        { description: '验证 rootfs 镜像完整性', command: 'sha256sum rootfs.squashfs' },
+        { description: '检查 kernel cmdline root 参数', confidence: 0.8 },
+      ],
+    },
+  ];
+
+  analyze(panicInfo: KernelPanicInfo): PanicAnalysis {
+    for (const pattern of this.PANIC_PATTERNS) {
+      if (pattern.pattern.test(panicInfo.fullLog)) {
+        return {
+          type: pattern.type,
+          severity: pattern.severity,
+          rootCause: pattern.rootCause,
+          affectedComponent: this.extractAffectedComponent(panicInfo),
+          stackTrace: this.analyzeStackTrace(panicInfo.callTrace),
+        };
+      }
+    }
+
+    return {
+      type: 'unknown',
+      severity: 'high',
+      rootCause: '未知原因',
+      affectedComponent: 'unknown',
+      stackTrace: [],
+    };
+  }
+
+  suggestFixes(analysis: PanicAnalysis): FixSuggestion[] {
+    for (const pattern of this.PANIC_PATTERNS) {
+      if (pattern.type === analysis.type) {
+        return pattern.suggestedFixes;
+      }
+    }
+    return [];
+  }
+
+  private analyzeStackTrace(callTrace: string[]): AnalyzedStackTrace[] {
+    return callTrace.map(addr =&gt; ({
+      address: addr,
+      // 可以进一步使用 addr2line 解析符号
+      symbol: this.resolveSymbol(addr),
+    }));
+  }
+
+  private resolveSymbol(addr: string): string {
+    // 调用 arm-none-eabi-addr2line 或 aarch64-linux-gnu-addr2line
+    // return runCommand(`aarch64-linux-gnu-addr2line -e vmlinux ${addr}`);
+    return addr;
+  }
+}
+</code></pre>
+<hr />
+<p><a id="ch7"></a></p>
+<h2 id="7-实现优先级">7. 实现优先级</h2>
+<h3 id="7-0-mvp-边界与阶段门禁">7.0 MVP 边界与阶段门禁</h3>
+<p>首个 MVP 固定为“一个明确板卡 revision + 一个明确 BSP manifest + Linux/Buildroot 一条路径”。Android、Yocto、任意板卡 DTS 合成、MIPI 自动拓扑和全自动量产烧录均不进入 MVP。每个阶段只有在上一阶段生成可机器校验的证据后才能推进：</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>必须满足的证据</th>
+<th>当前实现状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G0 Profile</td>
+<td>BSP commit、板卡 revision、工具链 digest、loader、分区表均已锁定</td>
+<td>✅ 校验器、JSON Schema 与哈希校验已实现；待填写目标板 profile</td>
+</tr>
+<tr>
+<td>G1 Build</td>
+<td>clean build 成功；产物哈希、配置差异、日志和 manifest 可追溯</td>
+<td>✅ 编排与证据生成已实现，fake-BSP 已通过；待目标 BSP clean build</td>
+</tr>
+<tr>
+<td>G2 Boot</td>
+<td>串口完整启动；内核、DT、rootfs 身份与 manifest 一致</td>
+<td>⏳ 不属于 Phase 1，需目标板</td>
+</tr>
+<tr>
+<td>G3 Bridge</td>
+<td>PCIe/GMAC/GPIO 分别通过枚举、回环/吞吐、中断与错误注入测试</td>
+<td>⏳ 不属于 Phase 1，需目标板与 FPGA</td>
+</tr>
+<tr>
+<td>G4 Release</td>
+<td>可重复烧录、回读/启动验证、失败恢复流程与兼容矩阵通过</td>
+<td>⏳ 不属于 Phase 1，依赖 Phase 3/HIL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-1-phase-1-基础编译流程-p1">7.1 Phase 1: 基础编译流程 (P1)</h3>
+<p><strong>目标</strong>：实现 U-Boot、Kernel、Rootfs 的独立编译能力</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>依赖</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RK3588Adapter 骨架</td>
+<td>VendorAdapter 接口定义</td>
+<td>✅ 已实现</td>
+</tr>
+<tr>
+<td>U-Boot 编译流程</td>
+<td>BSP profile</td>
+<td>✅ 已实现，待目标 BSP 验证</td>
+</tr>
+<tr>
+<td>Kernel 编译流程</td>
+<td>BSP profile</td>
+<td>✅ 已实现，待目标 BSP 验证</td>
+</tr>
+<tr>
+<td>Buildroot 编译流程</td>
+<td>BSP profile</td>
+<td>✅ 已实现，待目标 BSP 验证</td>
+</tr>
+<tr>
+<td>编译报告解析</td>
+<td>各编译流程</td>
+<td>✅ 已实现（错误/警告/退出码/产物校验）</td>
+</tr>
+<tr>
+<td>固件打包</td>
+<td>BSP profile 的厂商打包命令</td>
+<td>✅ 已实现，待目标 BSP 验证</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MVP 实现位置</strong>：<code>src/adapters/rk3588/</code>；CLI 为 <code>src/cli/evoverse.ts</code>；profile schema 和模板位于 <code>catalog/soc/rk3588/profiles/</code>。截至 2026-07-14，fake-BSP 集成测试覆盖 G0 preflight、四阶段编排、报告生成、产物 SHA-256、路径逃逸、shell 拒绝和缺失产物失败；“已实现”表示软件流程完成，不表示任何具体 RK3588 板卡已完成 G1/G2 验证。</p>
+<p><strong>交付物</strong>：</p>
+<pre><code class="language-bash">evoverse rk3588 build --stage uboot
+evoverse rk3588 build --stage kernel
+evoverse rk3588 build --stage rootfs
+evoverse rk3588 build --stage all
+evoverse rk3588 package --output update.img
+</code></pre>
+<h3 id="7-2-phase-2-device-tree-生成-p2">7.2 Phase 2: Device Tree 生成 (P2)</h3>
+<p><strong>目标</strong>：自动生成符合硬件配置的 Device Tree</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>依赖</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DTBGenerator 基础实现</td>
+<td>Phase 1</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>Board DTS 生成</td>
+<td>板级 manifest</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>Bridge Spec Overlay 生成</td>
+<td>Bridge Spec 定义</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>GPIO/Clock/IRQ 资源分配</td>
+<td>项目硬件配置</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>DTB 编译与验证</td>
+<td>DTBGenerator</td>
+<td>待做</td>
+</tr>
+</tbody>
+</table>
+<p><strong>交付物</strong>：</p>
+<pre><code class="language-bash">evoverse rk3588 gen-dts --board &lt;board-id&gt; --output rk3588-custom.dts
+evoverse rk3588 gen-dts --bridge-spec bridge.yaml --output bridge-overlay.dtsh
+</code></pre>
+<h3 id="7-3-phase-3-烧录集成-p3">7.3 Phase 3: 烧录集成 (P3)</h3>
+<p><strong>目标</strong>：集成 rkdeveloptool 实现固件烧录</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>依赖</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flash 接口定义</td>
+<td>VendorAdapter 接口</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>Maskrom 检测</td>
+<td>rkdeveloptool 可用</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>LOADER 下载</td>
+<td>Maskrom 检测</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>分区写入</td>
+<td>LOADER 下载</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>固件校验</td>
+<td>分区写入</td>
+<td>待做</td>
+</tr>
+</tbody>
+</table>
+<p><strong>交付物</strong>：</p>
+<pre><code class="language-bash">evoverse rk3588 flash --firmware update.img --device-id &lt;rockusb-stable-id&gt;
+evoverse rk3588 flash --verify
+</code></pre>
+<h3 id="7-4-phase-4-调试支持-p4">7.4 Phase 4: 调试支持 (P4)</h3>
+<p><strong>目标</strong>：提供完整的调试能力</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>依赖</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>串口日志获取</td>
+<td>Serial 配置</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>ADB 连接管理</td>
+<td>ADB 可用</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>Kernel panic 解析</td>
+<td>串口日志</td>
+<td>待做</td>
+</tr>
+<tr>
+<td>AI 诊断集成</td>
+<td>BuildReport 模型</td>
+<td>待做</td>
+</tr>
+</tbody>
+</table>
+<p><strong>交付物</strong>：</p>
+<pre><code class="language-bash">evoverse rk3588 debug --serial /dev/ttyUSB0
+evoverse rk3588 debug --adb
+evoverse rk3588 diagnose --logs dmesg.txt
+</code></pre>
+<h3 id="7-5-优先级矩阵">7.5 优先级矩阵</h3>
+<pre><code class="language-mermaid">quadrantChart
+    title 优先级矩阵
+    x-axis &quot;重要性 低&quot; --&gt; &quot;重要性 高&quot;
+    y-axis &quot;效率 低&quot; --&gt; &quot;效率 高&quot;
+    quadrant-1 &quot;高价值、中等努力&quot;
+    quadrant-2 &quot;基础能力&quot;
+    quadrant-3 &quot;低优先&quot;
+    quadrant-4 &quot;低价值&quot;
+    &quot;P1.3 Kernel&quot;: [0.8, 0.8]
+    &quot;P2.3 Bridge Spec Overlay&quot;: [0.9, 0.7]
+    &quot;P1.2 U-Boot&quot;: [0.4, 0.3]
+    &quot;P1.4 Rootfs&quot;: [0.3, 0.2]
+    &quot;P3.1 Flash&quot;: [0.6, 0.3]
+    &quot;P4.2 ADB&quot;: [0.5, 0.25]
+</code></pre>
+<p><strong>推荐执行顺序</strong>：
+1. Phase 1.3 Kernel 编译 (高价值、验证最多)
+2. Phase 1.1-1.4 完整编译流程
+3. Phase 2.1-2.2 Device Tree 生成
+4. Phase 3 烧录集成
+5. Phase 2.3 Bridge Spec Overlay
+6. Phase 4 调试支持</p>
+<hr />
+<p><a id="ch8"></a></p>
+<h2 id="8-目录结构">8. 目录结构</h2>
+<h3 id="8-1-rk3588-adapter-目录结构">8.1 RK3588 Adapter 目录结构</h3>
+<blockquote>
+<p><strong>架构演进说明</strong>：RK3588 Adapter 不再作为 SDK <code>src/adapters/</code> 下的子目录，而是作为一个<strong>独立的 VS Code Extension（VSIX）</strong>，通过 SDK 的 Workbench 插件契约接入。这与 <code>products/efinity-adapter/</code>、<code>products/video-sim/</code> 的组织方式一致。Adapter 与 SDK 主 extension 通过 <code>extensionDependencies</code> + <code>package.json</code> 的 <code>evoverseAdapter</code> manifest 声明式解耦，可独立编译、独立版本化、独立发布。Workbench 公共契约见 <code>sdk/extension/src/workbench/contracts.ts</code>，本插件内 <code>src/workbench/contracts.d.ts</code> 是其类型镜像（保持同步，不参与 emit）。</p>
+</blockquote>
+<pre><code>evoversesdk/
+└── products/
+    └── rk3588-adapter/                       # 独立 VSIX 根目录
+        └── extension/
+            ├── package.json                  # evoverseAdapter manifest：id / workbenchApi / supportedChips / capabilities
+            ├── tsconfig.json
+            ├── .vscodeignore
+            │
+            ├── catalog/                      # SoC 级物料（跟着 adapter 走）
+            │   └── soc/rk3588/profiles/
+            │       ├── bsp-profile.schema.json   # BSP profile JSON Schema（对应 §9.1 BspProfile）
+            │       └── profile.example.json
+            │
+            ├── media/                        # Workbench webview 前端资源
+            │   ├── workspace.html            # 工作台 UI（对应 §1~§7 的能力在界面上的呈现）
+            │   ├── workspace.css
+            │   └── workspace.js
+            │
+            ├── src/
+            │   ├── extension.ts              # VS Code extension activate() 入口：注册贡献、加载 manifest
+            │   ├── rk3588Contribution.ts     # WorkspaceContribution 实现（Workbench 契约：getScope/handleCommand/getExplorer/subscribe）
+            │   │
+            │   ├── runtime/                  # Adapter 运行时（VendorAdapter 契约的实现）
+            │   │   ├── vendorAdapter.ts      # 本插件内的 VendorAdapter 契约声明
+            │   │   └── rk3588/
+            │   │       ├── rk3588Adapter.ts  # RK3588Adapter 主类（preflight/build/package）
+            │   │       ├── runner.ts         # 四阶段构建编排（uboot→kernel→rootfs→package）
+            │   │       ├── profile.ts        # BSP profile 加载与校验
+            │   │       ├── reportParser.ts   # 编译报告 → 厂商无关 BuildReport
+            │   │       ├── hash.ts           # 产物 SHA-256
+            │   │       ├── paths.ts          # 路径安全（防逃逸）
+            │   │       ├── types.ts          # RK3588 专用类型
+            │   │       └── build/            # 分阶段构建（对应 §3）
+            │   │           ├── stageBuild.ts     # 阶段通用执行器
+            │   │           ├── ubootBuild.ts     # U-Boot（对应 §3.2）
+            │   │           ├── kernelBuild.ts    # Kernel + DTB（对应 §3.3）
+            │   │           ├── rootfsBuild.ts    # Buildroot Rootfs（对应 §3.4）
+            │   │           └── firmwarePack.ts   # update.img 打包（对应 §3.5）
+            │   │
+            │   ├── workbench/                # Workbench 集成层（与 SDK 宿主对接）
+            │   │   ├── contracts.d.ts        # SDK Workbench 公共契约镜像（与 sdk/extension/src/workbench/contracts.ts 同步）
+            │   │   ├── gateway.ts            # WorkbenchCommand 网关 → 路由到 runtime
+            │   │   ├── explorer.ts           # Workbench 资源管理器节点
+            │   │   ├── projectContext.ts     # 项目上下文加载
+            │   │   ├── runCoordinator.ts     # 运行生命周期与取消
+            │   │   └── snapshot.ts           # WorkspaceScopeSnapshot 生成
+            │   │
+            │   └── webview/
+            │       └── reducer.ts            # 前端状态机（WorkbenchEvent → UI state）
+            │
+            ├── test-fixtures/                # 契约测试夹具
+            │   ├── fakeTool.js               # 模拟 BSP 工具（立即成功）
+            │   └── slowTool.js               # 模拟超时/取消
+            │
+            └── rk3588-*-test.js             # 四套集成测试：runtime / gateway / project / workbench
+</code></pre>
+<p><strong>与原设计的差异（旧 §8.1 已废弃）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>旧设计（src/adapters/ 子目录）</th>
+<th>现实现（products/rk3588-adapter 独立 VSIX）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/adapters/rk3588/{flash,deviceTree,debug,config}/</code></td>
+<td>flash/deviceTree/debug 模块<strong>尚未实现</strong>（见 §7 Phase 2~4），实现时在各对应 phase 落入 <code>src/runtime/rk3588/build/</code> 同级目录，不再单列 config/</td>
+</tr>
+<tr>
+<td><code>catalog/boards/rk3588-evb/</code>（板卡 manifest）</td>
+<td>板卡 manifest 归属独立 <code>evoverse-catalog</code> 仓库（客户经 Sync Catalog 安装到 <code>${EVOVERSE_HOME}/catalog</code>），本插件只持有 SoC 级 <code>catalog/soc/rk3588/profiles/</code></td>
+</tr>
+<tr>
+<td><code>cli/commands/rk3588.ts</code>（独立 CLI bin）</td>
+<td>旧独立 CLI 已弃用；RK3588 操作通过 VS Code command + Workbench 契约完成。如需 headless CLI，应在 SDK 主 CLI <code>sdk/cli/evoverse</code> 增加 <code>evoverse rk3588</code> 子命令，调用本插件的 runtime</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-2-sdk-project-model-扩展">8.2 SDK Project Model 扩展</h3>
+<pre><code class="language-typescript">// types/projectModel.ts
+
+export interface ProjectModel {
+  // 现有字段...
+
+  // RK3588 扩展 (新增)
+  soc?: SoCConfig;
+  bridgeSpec?: BridgeSpec;
+}
+
+export interface SoCConfig {
+  chip: 'rk3588';
+  board: string;
+
+  // 软件配置
+  uboot: {
+    version: string;
+    defconfig: string;
+    customConfig?: Record&lt;string, string&gt;;
+  };
+
+  kernel: {
+    version: string;
+    defconfig: string;
+    dtb: string;
+    modules: string[];
+    customConfig?: Record&lt;string, boolean | string&gt;;
+  };
+
+  rootfs: {
+    buildrootConfig: string;
+    packages: string[];
+    overlay?: string;
+  };
+
+  // 硬件配置
+  hardware: {
+    memory: {
+      size: number;         // 字节数
+      type: 'DDR4' | 'LPDDR4' | 'LPDDR5';
+    };
+    storage: {
+      type: 'eMMC' | 'SD' | 'NVM E';
+      size: number;
+    };
+    connectivity: {
+      ethernet: '1G' | '2.5G' | '5G';
+      wifi?: boolean;
+      bluetooth?: boolean;
+    };
+  };
+}
+
+export interface BridgeSpec {
+  // ── Bridge 物理接口配置 ──
+  pcie?: PCIeConfig;
+  ethernet?: EthernetConfig;
+  mipi?: MIPIConfig;
+  gpio: GPIOConfig[];
+
+  // ── 通用字段（保留原有地址映射、中断等） ──
+  addressMaps?: AddressMap[];
+  interrupts?: InterruptMapping[];
+  clocks?: ClockMapping[];
+  resets?: ResetMapping[];
+  dmaChannels?: DMAMapping[];
+}
+
+// ── PCIe 配置 ──
+
+export interface PCIeConfig {
+  /** 链路配置 */
+  generation: 'gen2' | 'gen3';
+  lanes: 1 | 2 | 4;
+
+  /** RK3588 角色（通常为 RC） */
+  role: 'rc' | 'ep';
+
+  /** BAR 空间分配 */
+  bars: PCIeBAR[];
+
+  /** 中断模式 */
+  interruptMode: 'msi' | 'msi-x';
+  /** MSI 向量数量 */
+  msiVectors?: number;
+
+  /** Device Tree 中 pcie 节点引用 */
+  dtNode: string;   // 例如 &quot;pcie3x4&quot;
+}
+
+export interface PCIeBAR {
+  index: 0 | 1 | 2 | 3 | 4 | 5;
+  /** 地址宽度: 32-bit 或 64-bit */
+  addressWidth: 32 | 64;
+  /** 是否可预取 */
+  prefetchable: boolean;
+  /** BAR 大小（字节），必须为 2 的幂 */
+  size: number;
+  /** 用途说明 */
+  description: string;
+}
+
+// ── Ethernet 配置 ──
+
+export interface EthernetConfig {
+  /** GMAC 控制器实例 */
+  gmacInstance: 'gmac0' | 'gmac1';
+
+  /** RGMII 模式 */
+  phyMode: 'rgmii' | 'rgmii-rxid' | 'rgmii-txid' | 'rgmii-id';
+
+  /** FPGA 内部 PHY 的 MDIO 地址 */
+  phyAddress: number;   // 0~31
+
+  /** 链路速度 */
+  speed: 10 | 100 | 1000;
+
+  /** 是否使用 fixed-link（FPGA 内部 PHY 无标准 MDIO 寄存器时） */
+  useFixedLink?: boolean;
+
+  /** MAC 地址（可选，为空则从 OTP 读取） */
+  macAddress?: string;  // 格式 &quot;xx:xx:xx:xx:xx:xx&quot;
+
+  /** Device Tree 中 gmac 节点引用 */
+  dtNode: string;       // 例如 &quot;gmac0&quot;
+}
+
+// ── MIPI 配置 ──
+
+export interface MIPIConfig {
+  /** CSI 输入配置（FPGA → RK3588） */
+  csi?: MIPICSIConfig;
+
+  /** DSI 输出配置（RK3588 → FPGA） */
+  dsi?: MIPIDSIConfig;
+}
+
+export interface MIPICSIConfig {
+  /** CSI 控制器实例 */
+  controller: string;   // 例如 &quot;csi2_dphy0&quot;
+
+  /** Lane 数量 */
+  lanes: 1 | 2 | 4;
+
+  /** 每 lane 最大速率 (bps) */
+  maxBitrate: number;   // 例如 2500000000 (2.5 Gbps)
+
+  /** 数据格式 */
+  dataFormat: 'raw8' | 'raw10' | 'raw12' | 'yuv422-8bit' | 'yuv422-10bit' | 'rgb888';
+
+  /** 虚拟通道（0~3） */
+  virtualChannel?: number;
+
+  /** Device Tree 中 csi 节点引用 */
+  dtNode: string;
+}
+
+export interface MIPIDSIConfig {
+  /** DSI 控制器实例 */
+  controller: string;   // 例如 &quot;dsi0&quot;
+
+  /** Lane 数量 */
+  lanes: 1 | 2 | 4;
+
+  /** 每 lane 最大速率 (bps) */
+  maxBitrate: number;   // 例如 2500000000 (2.5 Gbps)
+
+  /** 显示时序 */
+  displayTiming: {
+    hactive: number;
+    vactive: number;
+    hfrontPorch: number;
+    hbackPorch: number;
+    hsyncLen: number;
+    vfrontPorch: number;
+    vbackPorch: number;
+    vsyncLen: number;
+    pixelClock: number;               // Hz
+  };
+
+  /** Device Tree 中 dsi 节点引用 */
+  dtNode: string;
+}
+
+// ── GPIO 配置 ──
+
+export interface GPIOConfig {
+  /** 信号名称 */
+  name: string;          // 例如 &quot;FPGA_RESET&quot;, &quot;FPGA_IRQ&quot;, &quot;FPGA_DONE&quot;
+
+  /** 信号方向 */
+  direction: 'input' | 'output';
+
+  /** GPIO 引脚描述（RK3588 GPIO Bank + Pin） */
+  gpioBank: number;      // 0~4；实际可用引脚由封装、板级原理图与 pinctrl 决定
+  gpioPin: string;       // 例如 &quot;PA0&quot;, &quot;PB3&quot;
+  /** 完整的 GPIO 标签，如 &lt;&amp;gpio0 RK_PA0 GPIO_ACTIVE_LOW&gt; */
+  gpioLabel?: string;
+
+  /** 用途说明 */
+  purpose: string;
+
+  /** 偏置配置 */
+  bias?: 'pull-up' | 'pull-down' | 'none';
+
+  /** 驱动强度 */
+  driveStrength?: number; // mA
+
+  /** 是否支持中断（仅 input 方向有意义） */
+  interruptCapable?: boolean;
+  /** 中断触发类型 */
+  interruptType?: 'rising' | 'falling' | 'both' | 'level-high' | 'level-low';
+}
+
+// ── 保留的通用接口类型 ──
+
+export interface AddressMap {
+  name: string;
+  fpgaBase: number;
+  socBase: number;
+  size: number;
+  registers: Register[];
+}
+
+export interface Register {
+  offset: number;
+  size: number;
+  name: string;
+  description: string;
+}
+
+export interface InterruptMapping {
+  source: string;        // FPGA 中断源名称
+  gicNumber: number;     // GIC IRQ 号
+  type: 'level' | 'edge';
+}
+
+export interface ClockMapping {
+  fpgaClock: string;     // FPGA 时钟输出名
+  rk3588Clock: string;   // RK3588 时钟消费点
+  frequency: number;
+}
+
+export interface ResetMapping {
+  fpgaReset: string;
+  rk3588Reset: string;
+  holdTime: number;      // 毫秒
+}
+</code></pre>
+<hr />
+<h2 id="9-adapter-契约补强">9. Adapter 契约补强</h2>
+<h3 id="9-1-profile-驱动-而不是-rk3588-硬编码">9.1 Profile 驱动，而不是 RK3588 硬编码</h3>
+<p><code>RK3588Adapter</code> 必须消费不可变的 <code>BspProfile</code>：板卡/载板 revision、BSP manifest、构建入口、组件提交、容器 digest、工具链、defconfig、基础 DTS、loader、分区布局、产物规则及已验证能力。Adapter 不猜测 defconfig、DT label、GPIO 或烧录偏移；缺失时在 preflight 阶段失败。</p>
+<pre><code class="language-typescript">interface BspProfile {
+  schemaVersion: '1';
+  id: string;
+  boardRevision: string;
+  bsp: { manifest: string; commit: string; family: 'rockchip-linux' | 'vendor-fork' };
+  environment: { containerDigest: string; toolchainTriple: string; toolchainSha256: string };
+  commands: { configure: CommandSpec; build: Record&lt;BuildStageName, CommandSpec&gt; };
+  boot: { loaderSha256: string; partitionLayoutSha256: string };
+  deviceTree: { baseDtb: string; permittedOverlays: string[] };
+  capabilities: Record&lt;string, 'verified' | 'experimental' | 'unsupported'&gt;;
+}
+</code></pre>
+<p>命令必须以参数数组执行，不通过 shell 拼接用户输入；设置 cwd、环境变量 allowlist、超时和取消信号，并将 stdout/stderr 原样保存。构建输出写入独立目录，禁止修改 SDK 源树中用户未声明的文件。</p>
+<h3 id="9-2-接口应从同步伪代码升级为异步-可取消契约">9.2 接口应从同步伪代码升级为异步、可取消契约</h3>
+<p>建议把通用 <code>VendorAdapter</code> 的 <code>build()</code> 拆成 <code>preflight/plan/execute/collect</code>，把 <code>program()</code> 与 <code>debug()</code> 作为可选 capability，而不是让 FPGA 时序接口强迫 SoC 返回伪数据。</p>
+<pre><code class="language-typescript">interface AdapterCapabilities { build: true; package: boolean; flash: boolean; debug: boolean; timing: boolean }
+interface VendorAdapterV2 {
+  readonly id: string;
+  readonly capabilities: AdapterCapabilities;
+  preflight(ctx: OperationContext): Promise&lt;Diagnostic[]&gt;;
+  plan(project: ProjectModel, ctx: OperationContext): Promise&lt;BuildPlan&gt;;
+  execute(plan: BuildPlan, ctx: OperationContext): AsyncIterable&lt;BuildEvent&gt;;
+  collect(runId: string, ctx: OperationContext): Promise&lt;BuildReport&gt;;
+  flash?(request: FlashRequest, ctx: OperationContext): AsyncIterable&lt;FlashEvent&gt;;
+}
+</code></pre>
+<p><code>OperationContext</code> 至少包含 workspace、AbortSignal、日志脱敏器、执行策略和批准令牌。<code>BuildReport</code> 记录 stage DAG、命令摘要、退出码、耗时、峰值资源、诊断、产物 SHA-256、配置/源码身份与日志位置；<code>success</code> 必须由必需 stage 全部成功且产物校验通过推导，不能只看最后一个进程退出码。</p>
+<h3 id="9-3-device-tree-生成的安全边界">9.3 Device Tree 生成的安全边界</h3>
+<p>Adapter 默认不从零生成板级 DTS，而是：选择 profile 的已验证 base DTS → 生成最小 overlay/受控 patch → <code>dtc</code> 编译 → schema/语义校验 → 与基础 DT 合并验证 → 输出 diff。PCIe RC 的 DT 负责控制器、PHY、时钟/复位和板级 PERST#；FPGA Endpoint 由 PCI 总线枚举，驱动按 PCI ID 绑定。所有示例中的节点 label、clock ID、reset ID、GPIO 与 <code>ranges</code> 都是板卡/BSP 相关占位符，未经目标 BSP 校验不得发布。</p>
+<p>Bridge Spec 必须同时产出：FPGA 寄存器头文件、Linux UAPI/驱动描述、设备树补丁（仅适用项）、协议版本与 ABI 哈希。地址、宽度、对齐、endianness、缓存一致性、DMA mask/IOMMU、IRQ 语义、复位时序和错误恢复均为必填或显式 <code>not-applicable</code>；禁止重复维护多份手写寄存器表。</p>
+<h3 id="9-4-flash-的事务与权限模型">9.4 Flash 的事务与权限模型</h3>
+<p>Flash 是高风险独立 capability。流程为 <code>discover → identify → snapshot layout → validate images → dry-run plan → explicit approval → write → verify → reboot/health-check</code>。请求必须携带稳定设备标识、期望 SoC/模式、profile ID 和镜像哈希；多设备或身份不一致即拒绝。禁止把串口设备路径当作 rkdeveloptool 的设备选择器，也禁止默认擦除和硬编码 LBA。全盘镜像、bootloader、GPT 与用户数据分区采用不同风险级别。</p>
+<h3 id="9-5-bridge-验证矩阵">9.5 Bridge 验证矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>静态检查</th>
+<th>启动检查</th>
+<th>功能/压力检查</th>
+<th>失败恢复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCIe</td>
+<td>lane/PHY/REFCLK/PERST 原理图；DT RC 配置</td>
+<td><code>lspci -nnvv</code>、link width/speed、AER</td>
+<td>BAR 边界、MSI/MSI-X、DMA 双向、IOMMU、长时吞吐</td>
+<td>link retrain、FLR/热复位、DMA 超时</td>
+</tr>
+<tr>
+<td>RGMII</td>
+<td>电压、时钟方向、delay 归属、MDIO/fixed-link 二选一</td>
+<td>stmmac/PHY 日志、协商结果</td>
+<td>iperf3 双向、丢包、不同包长</td>
+<td>link flap、PHY reset</td>
+</tr>
+<tr>
+<td>MIPI CSI/DSI</td>
+<td>lane mapping/polarity、时钟、endpoint graph</td>
+<td>media graph/DRM connector</td>
+<td>多格式、分辨率、帧率、CRC/丢帧</td>
+<td>stream restart、源丢失</td>
+</tr>
+<tr>
+<td>GPIO</td>
+<td>pinmux、电平、上下拉、占用冲突</td>
+<td>gpioinfo/IRQ 注册</td>
+<td>极性、抖动、IRQ storm</td>
+<td>stuck level、复位时序</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-6-明确纠正的设计假设">9.6 明确纠正的设计假设</h3>
+<ul>
+<li>RGMII 的延时只能由 MAC、PCB 或 PHY 中的明确一处/组合承担；<code>phy-mode</code> 必须与硬件一致。<code>fixed-link</code> 与“通过 MDIO 配置内部 PHY”是两种不同模型，不应同时描述为默认方案。</li>
+<li>MAC 地址来源是板级策略（OTP/NVMEM、bootloader 注入、生产配置），不能笼统假定 RK3588 OTP 一定已有可用唯一地址。</li>
+<li>Combo PHY、PCIe/SATA/USB3 复用、MIPI DPHY 共享和 GPIO 可用性均取决于封装、原理图和 BSP；附录中的“无冲突”只能作为待验证候选，不能作为设计承诺。</li>
+<li><code>update.img</code>、<code>trust.img</code>、<code>uboot.img</code>、FIT/Android boot image 等产物由 BSP 打包方案决定；Adapter 通过 profile 描述产物图，不固定某一种命名。</li>
+</ul>
+<h3 id="9-7-测试策略">9.7 测试策略</h3>
+<p>单元测试覆盖 profile schema、命令转义、日志解析、DT/Bridge 生成与诊断去重；契约测试用 fake toolchain 验证事件序列、取消、超时和失败传播；集成测试对锁定 BSP 做 clean/incremental build；HIL 测试用独占锁管理板卡，采集串口并验证冷启动、烧录恢复与 Bridge 压力。发布兼容矩阵的最小键为 <code>adapter + profile + BSP commit + board revision + boot media</code>。</p>
+<h2 id="附录">附录</h2>
+<h3 id="a-rk3588-引脚复用检查清单">A. RK3588 引脚复用检查清单</h3>
+<p>以下列出 Bridge 四种物理接口占用的 RK3588 主要引脚组及其潜在的冲突风险：</p>
+<h4 id="a-1-pcie-gen3-x4-引脚占用">A.1 PCIe Gen3 x4 引脚占用</h4>
+<table>
+<thead>
+<tr>
+<th>引脚组</th>
+<th>引脚</th>
+<th>功能</th>
+<th>冲突风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PCIE30X4_TX[3:0]</code></td>
+<td>TX0_P/N ~ TX3_P/N</td>
+<td>PCIe 发送</td>
+<td>独占，无复用</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_RX[3:0]</code></td>
+<td>RX0_P/N ~ RX3_P/N</td>
+<td>PCIe 接收</td>
+<td>独占，无复用</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_REFCLK</code></td>
+<td>REFCLK_P/N</td>
+<td>PCIe 参考时钟</td>
+<td>与 PCIe30X2 共享 PHY</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_PERSTn</code></td>
+<td>PERSTn</td>
+<td>PCIe 复位</td>
+<td>可复用为 GPIO</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_WAKEn</code></td>
+<td>WAKEn</td>
+<td>PCIe 唤醒</td>
+<td>可复用为 GPIO</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_CLKREQn</code></td>
+<td>CLKREQn</td>
+<td>时钟请求</td>
+<td>可复用为 GPIO</td>
+</tr>
+</tbody>
+</table>
+<p><strong>冲突检查</strong>:
+- ⚠️ PCIe30x4 与 PCIe30x2 共享同一 PHY，不能同时使用
+- ⚠️ PCIe30x4 与 SATA 部分引脚共享，若使用 SATA 需检查</p>
+<h4 id="a-2-ge-ethernet-rgmii-引脚占用">A.2 GE Ethernet (RGMII) 引脚占用</h4>
+<table>
+<thead>
+<tr>
+<th>引脚组</th>
+<th>引脚</th>
+<th>功能</th>
+<th>冲突风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GMAC0_TXCLK</code></td>
+<td>TXCLK</td>
+<td>发送时钟 (125MHz)</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>GMAC0_TXD[3:0]</code></td>
+<td>TXD0~TXD3</td>
+<td>发送数据</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>GMAC0_TXCTL</code></td>
+<td>TXCTL</td>
+<td>发送控制</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>GMAC0_RXCLK</code></td>
+<td>RXCLK</td>
+<td>接收时钟</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>GMAC0_RXD[3:0]</code></td>
+<td>RXD0~RXD3</td>
+<td>接收数据</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>GMAC0_RXCTL</code></td>
+<td>RXCTL</td>
+<td>接收控制</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>GMAC0_MDC</code></td>
+<td>MDC</td>
+<td>MDIO 时钟</td>
+<td>与 GMAC1 独立</td>
+</tr>
+<tr>
+<td><code>GMAC0_MDIO</code></td>
+<td>MDIO</td>
+<td>MDIO 数据</td>
+<td>与 GMAC1 独立</td>
+</tr>
+</tbody>
+</table>
+<p><strong>冲突检查</strong>:
+- ⚠️ RGMII 占用约 14 个专用引脚，不与普通 GPIO 冲突
+- ⚠️ GMAC0 与 GMAC1 引脚独立，可同时使用
+- ✅ RGMII 信号为高速信号，PCB 布局需做等长和阻抗匹配</p>
+<h4 id="a-3-mipi-csi-dsi-引脚占用">A.3 MIPI CSI/DSI 引脚占用</h4>
+<p><strong>MIPI CSI (输入)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>引脚组</th>
+<th>引脚</th>
+<th>功能</th>
+<th>冲突风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CSI_DPHY0_CLK</code></td>
+<td>CLK_P/N</td>
+<td>CSI 时钟</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>CSI_DPHY0_D[3:0]</code></td>
+<td>D0_P/N ~ D3_P/N</td>
+<td>CSI 数据</td>
+<td>独占</td>
+</tr>
+</tbody>
+</table>
+<p><strong>冲突检查</strong>:
+- ⚠️ CSI DPHY0 与 CSI DPHY1 独立，可同时使用（各有独立 DPHY）
+- ⚠️ CSI 使用 DPHY，不能与 DSI 共用同一 DPHY</p>
+<p><strong>MIPI DSI (输出)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>引脚组</th>
+<th>引脚</th>
+<th>功能</th>
+<th>冲突风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DSI_DPHY0_CLK</code></td>
+<td>CLK_P/N</td>
+<td>DSI 时钟</td>
+<td>独占</td>
+</tr>
+<tr>
+<td><code>DSI_DPHY0_D[3:0]</code></td>
+<td>D0_P/N ~ D3_P/N</td>
+<td>DSI 数据</td>
+<td>独占</td>
+</tr>
+</tbody>
+</table>
+<p><strong>冲突检查</strong>:
+- ⚠️ DSI0 与 DSI1 独立，可同时使用（各有独立 DPHY）
+- ⚠️ DSI DPHY0 与 LVDS 可能共享 IO 资源，需检查具体封装</p>
+<h4 id="a-4-gpio-引脚占用-与-bridge-相关">A.4 GPIO 引脚占用（与 Bridge 相关）</h4>
+<table>
+<thead>
+<tr>
+<th>GPIO Bank</th>
+<th>总引脚数</th>
+<th>预留情况</th>
+<th>可用性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPIO0</td>
+<td>32 (PA0~PD7)</td>
+<td>PMU 相关，部分被系统占用</td>
+<td>⚠️ 谨慎使用，PA0~PA7 通常可用</td>
+</tr>
+<tr>
+<td>GPIO1</td>
+<td>32 (PA0~PD7)</td>
+<td>部分被 UART2/I2C 占用</td>
+<td>✅ 大部分可用</td>
+</tr>
+<tr>
+<td>GPIO2</td>
+<td>32 (PA0~PD7)</td>
+<td>可能被 Camera/SPI 占用</td>
+<td>✅ 需检查具体电路</td>
+</tr>
+<tr>
+<td>GPIO3</td>
+<td>32 (PA0~PD7)</td>
+<td>部分被 SDMMC/I2S 占用</td>
+<td>✅ 可用，需检查</td>
+</tr>
+<tr>
+<td>GPIO4</td>
+<td>32 (PA0~PD7)</td>
+<td>部分被 GMAC1/PCIe 占用</td>
+<td>⚠️ 若使用 GMAC1 则受限</td>
+</tr>
+</tbody>
+</table>
+<p><strong>建议 GPIO 分配策略</strong>:
+1. 优先使用 GPIO1 或 GPIO3 中空闲的引脚
+2. 避免使用已被内核驱动占用的 GPIO（如 <code>sdmmc_det</code>, <code>wifi_reg_on</code> 等）
+3. 中断信号（<code>FPGA_IRQ</code>）使用 GPIO0（支持独立的 IRQ 功能）
+4. 检查当前板卡 BSP Device Tree 中的 <code>pinctrl</code> 配置，确认空闲引脚</p>
+<h4 id="a-5-综合冲突检查矩阵">A.5 综合冲突检查矩阵</h4>
+<table>
+<thead>
+<tr>
+<th>接口组合</th>
+<th>冲突可能性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCIe x4 + GMAC0</td>
+<td>⚠️ 待板级验证</td>
+<td>核对封装、原理图、电源域、时钟和 pinctrl</td>
+</tr>
+<tr>
+<td>PCIe x4 + MIPI CSI</td>
+<td>⚠️ 待板级验证</td>
+<td>核对 Combo PHY/DPHY 资源与实际走线</td>
+</tr>
+<tr>
+<td>PCIe x4 + MIPI DSI</td>
+<td>⚠️ 待板级验证</td>
+<td>核对 Combo PHY/DPHY 资源与实际走线</td>
+</tr>
+<tr>
+<td>GMAC0 + MIPI CSI</td>
+<td>⚠️ 待板级验证</td>
+<td>核对复用、电源域和板级连接</td>
+</tr>
+<tr>
+<td>GMAC0 + MIPI DSI</td>
+<td>⚠️ 待板级验证</td>
+<td>核对复用、电源域和板级连接</td>
+</tr>
+<tr>
+<td>MIPI CSI + MIPI DSI</td>
+<td>⚠️ 待板级验证</td>
+<td>不能仅凭控制器名称推断 DPHY 独立性</td>
+</tr>
+<tr>
+<td>PCIe30x4 + 其他 HSIO</td>
+<td>⚠️ 高风险</td>
+<td>以目标封装的 TRM、原理图和 BSP PHY 配置为准</td>
+</tr>
+<tr>
+<td>GMAC0 + GMAC1</td>
+<td>⚠️ 待板级验证</td>
+<td>控制器存在不代表目标板均已引出且供电可用</td>
+</tr>
+<tr>
+<td>所有四种接口同时使用</td>
+<td>⚠️ 未证明</td>
+<td>需完成资源分配表、SI/PI 评审及逐接口 HIL 验证</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b-关键文件参考">B. 关键文件参考</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>描述</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rockchip-sdk</code></td>
+<td>Rockchip 官方 BSP</td>
+<td>github.com/rockchip-linux</td>
+</tr>
+<tr>
+<td><code>rk3588 datasheet</code></td>
+<td>芯片手册</td>
+<td>Rockchip 官方</td>
+</tr>
+<tr>
+<td><code>rk3588 TRM</code></td>
+<td>技术参考手册</td>
+<td>Rockchip 官方</td>
+</tr>
+<tr>
+<td><code>rkdeveloptool</code></td>
+<td>烧录工具源码</td>
+<td>github.com/rockchip-linux/rkdeveloptool</td>
+</tr>
+<tr>
+<td>Linux PCI 文档</td>
+<td>PCI 驱动匹配与生命周期</td>
+<td>docs.kernel.org/PCI/pci.html</td>
+</tr>
+<tr>
+<td>Linux Devicetree 文档</td>
+<td>DT 使用模型与设备创建</td>
+<td>kernel.org/doc/html/latest/devicetree/usage-model.html</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-工具链清单">C. 工具链清单</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>路径/获取</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aarch64-linux-gnu-gcc</code></td>
+<td>ARM64 交叉编译</td>
+<td>Buildroot 集成</td>
+</tr>
+<tr>
+<td><code>dtc</code></td>
+<td>Device Tree 编译</td>
+<td>kernel/scripts/dtc</td>
+</tr>
+<tr>
+<td><code>mkimage</code></td>
+<td>固件打包</td>
+<td>u-boot/tools/mkimage</td>
+</tr>
+<tr>
+<td><code>rkdeveloptool</code></td>
+<td>烧录工具</td>
+<td>rkdeveloptool 源码编译</td>
+</tr>
+<tr>
+<td><code>adb</code></td>
+<td>Android Debug Bridge</td>
+<td>系统包或 Buildroot</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d-编译产物对照">D. 编译产物对照</h3>
+<table>
+<thead>
+<tr>
+<th>产物</th>
+<th>用途</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idbloader.img</code></td>
+<td>MiniLoader</td>
+<td>u-boot/</td>
+</tr>
+<tr>
+<td><code>trust.img</code></td>
+<td>TF-A</td>
+<td>u-boot/</td>
+</tr>
+<tr>
+<td><code>uboot.img</code></td>
+<td>U-Boot</td>
+<td>u-boot/</td>
+</tr>
+<tr>
+<td><code>boot.img</code></td>
+<td>Kernel + DTB + Ramdisk</td>
+<td>output/</td>
+</tr>
+<tr>
+<td><code>rootfs.squashfs</code></td>
+<td>根文件系统</td>
+<td>buildroot/output/images/</td>
+</tr>
+<tr>
+<td><code>update.img</code></td>
+<td>完整固件包</td>
+<td>output/</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e-文档更新记录">E. 文档更新记录</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>版本</th>
+<th>更新内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-13</td>
+<td>v1.2.0</td>
+<td>Bridge 细化设计</td>
+</tr>
+<tr>
+<td>2026-07-14</td>
+<td>v2.0.0</td>
+<td>引入 BSP profile、异步契约、DT/烧录安全边界、Bridge 验证矩阵与阶段门禁；纠正 PCI 枚举等假设</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>下一步行动</strong>：
+1. 创建 <code>.trae/roles/memory/tasks/rk3588-bsp-research.md</code> 调研 RK3588 BSP 结构
+2. 在 <code>src/adapters/rk3588/</code> 下实现 Phase 1 基础编译流程
+3. 创建 RK3588 板卡 manifest (<code>.trae/catalog/soc/rk3588/evoverse.md</code>)</p>
+</blockquote></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

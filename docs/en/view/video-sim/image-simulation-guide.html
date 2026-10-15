@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image Simulation Guide</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../video-sim.html">← Back to Video Sim</a>
+<span>SimISP image-simulation entry and operations.</span>
+<code>video-sim/image-simulation-guide.md</code>
+<a href="../../../video-sim/image-simulation-guide.md">Markdown source</a></p>
+<h1>Image Simulation Guide</h1></header>
+<main class="article"><h1 id="evoverse-simisp-user-manual">evoverse.simIsp User Manual</h1>
+<blockquote>
+<p><strong>Applicable SDK version</strong>: v1.0.0</p>
+</blockquote>
+<h2 id="1-overview">1. Overview</h2>
+<p><code>evoverse.simIsp</code> is the EVOVERSE SDK command dedicated to <strong>ISP (image signal processing) / image-processing IP simulation and verification</strong>. It compiles the testbench, RTL, and optional BFMs provided by the project, captures <code>result.hex</code>, then runs image-quality analysis with the Python backend and finally produces an analysis report covering PSNR, sharpness, white balance, histogram, Gamma, and more.</p>
+<blockquote>
+<p>The current v1.0.0 VSIX provides the Video Sim launch entry and the accompanying analysis capabilities, but does not yet ship a generic AXI-Stream BFM. If your project needs a BFM, put it in <code>sim/BFM/</code> or <code>sim/common/</code>.</p>
+</blockquote>
+<h3 id="differences-from-evoverse-sim">Differences from evoverse.sim</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th><code>evoverse.sim</code></th>
+<th><code>evoverse.simIsp</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Applicable scenario</td>
+<td>generic FPGA simulation</td>
+<td>ISP / image-processing IPs</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>sim.yaml</td>
+<td>video_sim.yaml</td>
+</tr>
+<tr>
+<td>Input data</td>
+<td>generic stimulus</td>
+<td>image / video pixel stream (AXI-Stream)</td>
+</tr>
+<tr>
+<td>Output artifacts</td>
+<td>VCD waveform</td>
+<td>result.png + JSON analysis report</td>
+</tr>
+<tr>
+<td>Analysis metrics</td>
+<td>none</td>
+<td>PSNR, sharpness, white balance, histogram, Gamma</td>
+</tr>
+</tbody>
+</table>
+<p>The two commands are fully independent and share zero code.</p>
+<h3 id="overall-data-flow">Overall data flow</h3>
+<pre><code>evoverse.simIsp
+    ↓
+parse sim/video_sim.yaml
+    ↓
+scan: RTL (rtl/) + testbench (sim/tb_*.v) + BFM (axis_video_source/sink)
+    ↓
+iverilog -g2012 compile → sim_isp.vvp
+    ↓
+vvp run the simulation → result.hex
+    ↓
+gen_output.py: result.hex → result.png
+    ↓
+analyze.py: golden.png vs result.png → JSON report
+    ↓
+Webview displays the report
+</code></pre>
+<h2 id="2-directory-structure">2. Directory structure</h2>
+<p>When you run <code>evoverse.simIsp</code>, the command looks for the <code>sim/</code> directory in the project root. The complete directory convention:</p>
+<pre><code>project/
+├── rtl/                         # user DUT (RTL design files, auto-scanned and included)
+│   ├── isp_denoise.v
+│   └── color_space.v
+└── sim/
+    ├── video_sim.yaml           # [required] ISP simulation configuration file
+    ├── BFM/                     # project-supplied BFMs (optional)
+    │   └── axis_video_*.v
+    ├── common/                  # local shared BFMs (optional)
+    │   └── axis_video_*.v
+    ├── tests/                   # testbench test cases
+    │   └── tb_isp.v
+    ├── tb_*.v / tb_*.sv         # testbenches may also sit directly in the sim/ root
+    ├── testdata/                # test data
+    │   ├── stimulus.hex         # input stimulus (read by axis_video_source)
+    │   ├── golden.png           # golden reference image
+    │   └── result.hex           # [simulation output] written by axis_video_sink
+    └── output/                  # [created automatically] analysis output
+        ├── images/
+        │   └── result.png       # image restored from result.hex
+        └── reports/
+            └── sim_isp_&lt;timestamp&gt;.json  # analysis report
+</code></pre>
+<h3 id="directory-notes">Directory notes</h3>
+<table>
+<thead>
+<tr>
+<th>Directory / file</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sim/video_sim.yaml</code></td>
+<td>✅ yes</td>
+<td>configuration file; the command activates by detecting this file</td>
+</tr>
+<tr>
+<td><code>rtl/</code></td>
+<td>no</td>
+<td>Verilog/SystemVerilog files of the user DUT, scanned recursively</td>
+</tr>
+<tr>
+<td><code>sim/BFM/</code></td>
+<td>no</td>
+<td>user-defined BFMs; the current version ships no generic BFM</td>
+</tr>
+<tr>
+<td><code>sim/common/</code></td>
+<td>no</td>
+<td>user-defined shared BFMs</td>
+</tr>
+<tr>
+<td><code>sim/tests/</code></td>
+<td>no</td>
+<td>testbench directory, scanned recursively for <code>tb_*.v</code> / <code>tb_*.sv</code></td>
+</tr>
+<tr>
+<td><code>sim/tb_*.v</code></td>
+<td>✅ yes</td>
+<td>at least one testbench file is required</td>
+</tr>
+<tr>
+<td><code>sim/testdata/</code></td>
+<td>recommended</td>
+<td>holds golden.png, stimulus.hex, and other test data</td>
+</tr>
+<tr>
+<td><code>sim/output/</code></td>
+<td>automatic</td>
+<td>created automatically at run time; holds images and reports</td>
+</tr>
+</tbody>
+</table>
+<h3 id="file-scanning-rules">File scanning rules</h3>
+<ul>
+<li><strong>BFM files</strong>: scans <code>sim/BFM/</code> and <code>sim/common/</code>. The runner also retains the ability to scan <code>bundled/video_sim/sim/common/</code>, but the current v0.9.0 package does not ship generic BFM files.</li>
+<li><strong>Testbenches</strong>: scans <code>tb_*.v</code>/<code>tb_*.sv</code> in the <code>sim/</code> root plus testbench files found recursively under <code>sim/tests/</code></li>
+<li><strong>RTL files</strong>: scans <code>rtl/</code> recursively for all <code>.v</code>, <code>.sv</code>, and <code>.vh</code> files</li>
+</ul>
+<h2 id="3-configuration-file-video_sim-yaml">3. Configuration file video_sim.yaml</h2>
+<p>The configuration file must sit at <code>sim/video_sim.yaml</code>.</p>
+<h3 id="complete-form">Complete form</h3>
+<pre><code class="language-yaml">adapter: video_sim
+
+params:
+  width: 1920
+  height: 1080
+  frames: 1
+  pixel_format: RGB888
+
+  golden: sim/testdata/golden.png
+  result: sim/testdata/result.hex
+
+metrics:
+  - psnr
+  - sharpness
+  - white_balance
+  - histogram
+  - gamma
+</code></pre>
+<h3 id="field-reference">Field reference</h3>
+<h4 id="top-level">Top level</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>adapter</code></td>
+<td>string</td>
+<td>✅ yes</td>
+<td>fixed value <code>video_sim</code>; distinguishes the simIsp command from sim</td>
+</tr>
+<tr>
+<td><code>params</code></td>
+<td>object</td>
+<td>✅ yes</td>
+<td>simulation parameters</td>
+</tr>
+<tr>
+<td><code>metrics</code></td>
+<td>string[]</td>
+<td>no</td>
+<td>analysis metrics to enable; all are enabled by default</td>
+</tr>
+</tbody>
+</table>
+<h4 id="params-parameters">params parameters</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>width</code></td>
+<td>number</td>
+<td>1920</td>
+<td>image width (pixels)</td>
+</tr>
+<tr>
+<td><code>height</code></td>
+<td>number</td>
+<td>1080</td>
+<td>image height (pixels)</td>
+</tr>
+<tr>
+<td><code>frames</code></td>
+<td>number</td>
+<td>1</td>
+<td>frame count (set to 1 for a single-frame image)</td>
+</tr>
+<tr>
+<td><code>pixel_format</code></td>
+<td>string</td>
+<td>RGB888</td>
+<td>pixel format, see the table below</td>
+</tr>
+<tr>
+<td><code>golden</code></td>
+<td>string</td>
+<td>-</td>
+<td>golden reference image path (relative to the project root, or absolute)</td>
+</tr>
+<tr>
+<td><code>result</code></td>
+<td>string</td>
+<td>-</td>
+<td>simulation output result.hex path (relative to the project root, or absolute)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="supported-pixel-formats">Supported pixel formats</h4>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Width</th>
+<th>tdata width</th>
+<th>Channels</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RGB888</code></td>
+<td>24 bit</td>
+<td>3 bytes</td>
+<td>3</td>
+<td>standard RGB 8-8-8; the format verified by the current tutorials</td>
+</tr>
+<tr>
+<td><code>BGR888</code></td>
+<td>24 bit</td>
+<td>3 bytes</td>
+<td>3</td>
+<td>BGR byte order</td>
+</tr>
+<tr>
+<td><code>RGBA8888</code></td>
+<td>32 bit</td>
+<td>4 bytes</td>
+<td>4</td>
+<td>RGBA byte order</td>
+</tr>
+<tr>
+<td><code>BGRA8888</code></td>
+<td>32 bit</td>
+<td>4 bytes</td>
+<td>4</td>
+<td>BGRA byte order</td>
+</tr>
+<tr>
+<td><code>RGB565</code></td>
+<td>16 bit</td>
+<td>2 bytes</td>
+<td>3</td>
+<td>input is two little-endian bytes, converted to RGB888</td>
+</tr>
+</tbody>
+</table>
+<p><code>result.hex</code> currently uses a <strong>one byte per line</strong> format. For example, a red RGB888 pixel is written as three consecutive lines <code>ff</code>, <code>00</code>, <code>00</code>. RAW/YUV formats have not completed end-to-end verification and are not promised by the v0.9.0 tutorials.</p>
+<h2 id="4-quick-start">4. Quick start</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><strong>Python</strong>: 3.10+, with <code>Pillow</code> and <code>numpy</code> installed</li>
+<li><strong>Icarus Verilog</strong>: iverilog + vvp; configure <code>evoverse.iverilogPath</code> in VS Code</li>
+<li><strong>EVOVERSE SDK</strong>: the extension is installed</li>
+</ul>
+<h3 id="step-1-create-the-project-structure">Step 1: Create the project structure</h3>
+<p>Create the <code>sim/</code> and <code>rtl/</code> directories under the project root:</p>
+<pre><code>mkdir sim                    # PowerShell
+mkdir sim\testdata
+mkdir sim\tests
+mkdir rtl
+</code></pre>
+<h3 id="step-2-write-the-dut-rtl">Step 2: Write the DUT (RTL)</h3>
+<p>Place the Verilog/SystemVerilog code of your image-processing IP under <code>rtl/</code>. The DUT must follow the AXI-Stream video interface convention—receive the pixel stream from <code>axis_video_source</code>, process it, and output it to <code>axis_video_sink</code>.</p>
+<h3 id="step-3-write-the-testbench">Step 3: Write the testbench</h3>
+<p>Create the testbench file under <code>sim/tests/</code> (or the <code>sim/</code> root); the name must start with <code>tb_</code>, e.g. <code>tb_my_isp.v</code>.</p>
+<p>The testbench must instantiate:
+- <code>axis_video_source</code> — reads pixels from stimulus.hex and streams them over AXI-Stream
+- your DUT
+- <code>axis_video_sink</code> — receives the DUT's output pixel stream and writes result.hex</p>
+<h3 id="step-4-prepare-the-test-data">Step 4: Prepare the test data</h3>
+<ol>
+<li>Prepare the input stimulus per your project's BFM convention. The SDK's <code>result.hex</code> converter uses one byte per line; if input and output share the format, <code>stimulus.hex</code> should use the same convention.</li>
+<li>Put the golden reference image <code>golden.png</code> into <code>sim/testdata/</code></li>
+</ol>
+<h3 id="step-5-create-the-configuration-file">Step 5: Create the configuration file</h3>
+<p>Create <code>video_sim.yaml</code> under <code>sim/</code>:</p>
+<pre><code class="language-yaml">adapter: video_sim
+
+params:
+  width: 64
+  height: 48
+  frames: 1
+  pixel_format: RGB888
+
+  golden: sim/testdata/golden.png
+  result: sim/testdata/result.hex
+
+metrics:
+  - psnr
+  - sharpness
+  - white_balance
+  - histogram
+  - gamma
+</code></pre>
+<h3 id="step-6-configure-the-iverilog-path">Step 6: Configure the iverilog path</h3>
+<p>Configure the Icarus Verilog installation path in the VS Code settings:</p>
+<pre><code class="language-json">{
+    &quot;evoverse.iverilogPath&quot;: &quot;C:/iverilog/bin&quot;
+}
+</code></pre>
+<h3 id="step-7-run-the-command">Step 7: Run the command</h3>
+<p>In VS Code press <code>Ctrl+Shift+P</code>, type <code>evoverse.simIsp</code>, and execute it.</p>
+<p>The command automatically:
+1. Parses <code>video_sim.yaml</code>
+2. Scans and compiles all source files
+3. Runs the simulation
+4. Generates result.png
+5. Runs the image-quality analysis
+6. Shows the analysis report in a Webview</p>
+<p>All output logs appear in VS Code's "Output" panel (select the "Sim ISP" channel).</p>
+<h2 id="5-bfm-notes">5. BFM notes</h2>
+<p>A BFM (Bus Functional Model) is a non-synthesizable model that emulates bus behavior during simulation. A project may supply its own BFMs following the interface responsibilities below; the files in the table are currently not part of the v0.9.0 VSIX bundle:</p>
+<h3 id="axis_video_source-video-source">axis_video_source — video source</h3>
+<p>Reads pixel data from <code>stimulus.hex</code> and outputs it pixel by pixel over the AXI-Stream interface.</p>
+<p>How it works:
+1. At the start of the simulation, <code>$readmemh</code> loads all of stimulus.hex into an internal array
+2. Pixels are sent one by one per the AXI-Stream ready/valid handshake
+3. <code>tuser</code> marks the first pixel of each frame (SOF); <code>tlast</code> marks the last pixel of each line (EOL)
+4. Supports a multi-frame replay mode and a flush mechanism (for IPs with pipeline latency)</p>
+<h3 id="axis_video_sink-video-sink">axis_video_sink — video sink</h3>
+<p>Receives the AXI-Stream pixel stream and writes <code>result.hex</code>.</p>
+<p>How it works:
+1. Opens the <code>result.hex</code> file at the start of the simulation
+2. Whenever <code>tvalid &amp; tready</code> are both high, writes <code>tdata</code> to the file in 8-bit hexadecimal form
+3. Protocol-compliance-checks <code>tuser</code> and <code>tlast</code>, and reports an error on violation
+4. After receiving <code>WIDTH × HEIGHT × FRAMES</code> pixels, sets <code>frame_done</code> and flushes the file
+5. Configurable backpressure mode (<code>C_READY_MODE</code> / <code>C_READY_RATE</code>) emulates downstream throughput limits</p>
+<h3 id="other-bfms">Other BFMs</h3>
+<table>
+<thead>
+<tr>
+<th>BFM</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reg_config.v</code></td>
+<td>register-configuration model; sends register read/write requests to the DUT</td>
+</tr>
+<tr>
+<td><code>ddr_model.v</code></td>
+<td>DDR memory behavioral model</td>
+</tr>
+<tr>
+<td><code>axi_frame_buffer.v</code></td>
+<td>AXI frame buffer model, for frame-buffer reads and writes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bfm-lookup-order">BFM lookup order</h3>
+<p>The command looks for BFM files in the following priority order (high to low):
+1. <code>sim/BFM/</code> — project-local BFMs
+2. <code>sim/common/</code> — project-local shared BFMs
+3. <code>bundled/video_sim/sim/common/</code> — reserved extension BFM directory; empty in the current v0.9.0 package</p>
+<p>For files with the same name, the higher priority wins.</p>
+<h2 id="6-analysis-metrics">6. Analysis metrics</h2>
+<h3 id="6-1-psnr-peak-signal-to-noise-ratio">6.1 PSNR (Peak Signal-to-Noise Ratio)</h3>
+<p>Measures how similar the output image is to the golden reference. The higher the value, the smaller the distortion.</p>
+<table>
+<thead>
+<tr>
+<th>PSNR value</th>
+<th>Grade</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&gt; 40 dB</td>
+<td>Excellent</td>
+<td>virtually no distortion; the difference is invisible to the eye</td>
+</tr>
+<tr>
+<td>&gt; 30 dB</td>
+<td>Good</td>
+<td>slight distortion, usually acceptable</td>
+</tr>
+<tr>
+<td>&gt; 20 dB</td>
+<td>Fair</td>
+<td>obvious distortion; optimization needed</td>
+</tr>
+<tr>
+<td>≤ 20 dB</td>
+<td>Poor</td>
+<td>severe distortion; the DUT may have a bug</td>
+</tr>
+</tbody>
+</table>
+<p>The analysis result includes: overall PSNR (dB), per-channel PSNR (B/G/R), and MSE.</p>
+<p>⚠ PSNR requires a <code>golden</code> reference image and an <code>output</code> image.</p>
+<h3 id="6-2-sharpness">6.2 Sharpness</h3>
+<p>Measures image clarity and edge-detail retention. Rated by combining Laplacian variance and Tenengrad.</p>
+<table>
+<thead>
+<tr>
+<th>Laplacian variance</th>
+<th>Grade</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥ 2000</td>
+<td>Outstanding</td>
+<td>ample sharpness, crisp edges</td>
+</tr>
+<tr>
+<td>≥ 800</td>
+<td>Excellent</td>
+<td>good sharpness, complete detail</td>
+</tr>
+<tr>
+<td>≥ 200</td>
+<td>Good</td>
+<td>moderate sharpness, generally acceptable</td>
+</tr>
+<tr>
+<td>≥ 50</td>
+<td>Fair</td>
+<td>soft; some detail is lost</td>
+</tr>
+<tr>
+<td>&lt; 50</td>
+<td>Blurry</td>
+<td>severely blurred; the DUT may over-denoise/filter</td>
+</tr>
+</tbody>
+</table>
+<p>The analysis result includes: Laplacian variance, mean Sobel gradient, and Tenengrad value.</p>
+<h3 id="6-3-white-balance">6.3 White Balance</h3>
+<p>Analyzes the image's color balance based on the gray-world assumption. Ideally the R, G, and B channel means should be equal.</p>
+<p>The analysis result includes:
+- <code>r_gain</code> / <code>g_gain</code> / <code>b_gain</code> — per-channel gain coefficients
+- <code>bias</code> — color-temperature tendency:
+  - <strong>Cool (bluish)</strong>: R/B ratio &lt; 0.85, the image leans blue
+  - <strong>Neutral</strong>: R/B ratio between 0.85 and 1.15, colors balanced
+  - <strong>Warm (yellowish)</strong>: R/B ratio &gt; 1.15, the image leans yellow
+- <code>white_point</code> — the RGB value of the white point in the brightest region</p>
+<h3 id="6-4-histogram">6.4 Histogram</h3>
+<p>Statistics of the RGB channel brightness distributions plus the brightness change of the output relative to the input.</p>
+<p>The analysis result includes:
+- Per-channel mean, standard deviation, median, min/max, and P5/P95 percentiles
+- <code>shift</code> — the direction and magnitude of the overall brightness shift, e.g. "brightness +12.3 (mean change)"</p>
+<h3 id="6-5-gamma">6.5 Gamma</h3>
+<p>Measures the deviation of the DUT's Gamma curve from the target (2.2 by default), fitted by sampling a 17-step grayscale ramp.</p>
+<table>
+<thead>
+<tr>
+<th>Deviation (Δ)</th>
+<th>Grade</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 0.05</td>
+<td>Excellent</td>
+<td>the Gamma curve almost perfectly matches the target</td>
+</tr>
+<tr>
+<td>&lt; 0.1</td>
+<td>Good</td>
+<td>slight deviation, practically imperceptible in real use</td>
+</tr>
+<tr>
+<td>&lt; 0.3</td>
+<td>Fair</td>
+<td>perceptible deviation; check the Gamma-correction logic</td>
+</tr>
+<tr>
+<td>≥ 0.3</td>
+<td>Large deviation</td>
+<td>severe deviation; the Gamma-correction module may be faulty</td>
+</tr>
+</tbody>
+</table>
+<p>The analysis result includes: measured Gamma, target Gamma, deviation, and the number of valid sample points.</p>
+<p>⚠ Gamma analysis requires a <code>golden</code> reference image (rich in gray levels) and an <code>output</code> image.</p>
+<h2 id="7-faq">7. FAQ</h2>
+<h3 id="q-it-says-iverilog-not-found">Q: It says "iverilog not found"</h3>
+<p><strong>Cause</strong>: the Icarus Verilog path is not configured, or is incorrect.</p>
+<p><strong>Fix</strong>:
+1. Confirm Icarus Verilog is installed (download: http://bleyer.org/icarus/)
+2. Configure <code>evoverse.iverilogPath</code> in the VS Code settings:
+   - Windows example: <code>C:/iverilog/bin</code>
+   - Linux example: <code>/usr/bin</code>
+3. Make sure the directory contains <code>iverilog.exe</code> (or <code>iverilog</code>) and <code>vvp.exe</code> (or <code>vvp</code>)</p>
+<h3 id="q-it-says-no-testbench-found">Q: It says "No testbench found"</h3>
+<p><strong>Cause</strong>: no testbench file was found under <code>sim/</code>.</p>
+<p><strong>Fix</strong>: make sure the testbench file matches one of the following:
+- placed in the <code>sim/</code> root, with a filename starting with <code>tb_</code> and the extension <code>.v</code> or <code>.sv</code>
+- placed under <code>sim/tests/</code>, with a filename starting with <code>tb_</code></p>
+<h3 id="q-it-says-result-hex-not-found">Q: It says "result.hex not found"</h3>
+<p><strong>Cause</strong>: <code>result.hex</code> was not generated after the simulation.</p>
+<p><strong>Possible cases</strong>:
+1. The testbench does not instantiate <code>axis_video_sink</code>, or instantiates it but wires it incorrectly
+2. The DUT did not output the pixel stream correctly, so the sink received no data
+3. The simulation exited abnormally before result.hex was written</p>
+<p><strong>Troubleshooting</strong>: check the simulation log (VS Code Output panel → "Sim ISP") for ERROR entries. Check that the <code>axis_video_sink</code> instantiation in the testbench is correct.</p>
+<h3 id="q-a-python-script-fails-with-no-module-named-pil-or-no-module-named-numpy">Q: A Python script fails with "No module named 'PIL'" or "No module named 'numpy'"</h3>
+<p><strong>Cause</strong>: the Pillow or numpy dependency is missing.</p>
+<p><strong>Fix</strong>:</p>
+<pre><code class="language-bash">pip install Pillow numpy
+</code></pre>
+<p>If you use a specific Python environment, configure it in the VS Code settings:</p>
+<pre><code class="language-json">{
+    &quot;evoverse.pythonPath&quot;: &quot;C:/path/to/python.exe&quot;
+}
+</code></pre>
+<p>When unset, Windows defaults to <code>py</code> and Linux/macOS defaults to <code>python3</code>.</p>
+<h3 id="q-the-analysis-report-says-an-output-comparison-image-is-required">Q: The analysis report says an "--output comparison image is required"</h3>
+<p><strong>Cause</strong>: some analyses (PSNR, Gamma) require both golden.png and result.png to exist. If the simulation produced no result.hex or result.png, those analyses are skipped automatically.</p>
+<p><strong>Fix</strong>: confirm the simulation completed normally and produced result.hex, and that gen_output.py successfully converted it to result.png.</p>
+<h3 id="q-image-size-mismatch-warning">Q: Image size mismatch warning</h3>
+<p><strong>Cause</strong>: golden.png and result.png resolutions do not match.</p>
+<p><strong>Fix</strong>: analyze.py automatically scales result.png to the size of golden.png. For an exact comparison, make sure <code>width</code>/<code>height</code> in <code>video_sim.yaml</code> match golden.png.</p>
+<h3 id="q-how-to-generate-stimulus-hex">Q: How to generate stimulus.hex</h3>
+<p>The current conversion convention is one 8-bit hexadecimal byte per line. RGB888 writes three consecutive lines—R, G, B—per pixel. You can generate it from an image with a Python script:</p>
+<pre><code class="language-python">from PIL import Image
+
+img = Image.open(&quot;input.png&quot;).convert(&quot;RGB&quot;)
+with open(&quot;stimulus.hex&quot;, &quot;w&quot;) as f:
+    for r, g, b in img.getdata():
+        f.write(f&quot;{r:02x}\n{g:02x}\n{b:02x}\n&quot;)
+</code></pre>
+<p>Or refer to the hex-parsing logic in the SDK's built-in <code>products/video-sim/scripts/gen_output.py</code>.</p>
+<h3 id="q-can-multiple-duts-be-analyzed-at-once">Q: Can multiple DUTs be analyzed at once</h3>
+<p>Each project can have only one <code>sim/video_sim.yaml</code>. To test multiple DUTs, instantiate different DUTs in the testbench and select among them through register configuration, or create a separate project directory per DUT.</p>
+<h3 id="q-how-to-view-detailed-logs">Q: How to view detailed logs</h3>
+<p>Open the "Output" panel in VS Code (<code>Ctrl+Shift+U</code>) and select the "Sim ISP" channel from the dropdown. Logs from every compile, simulation, and analysis step are printed there.</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

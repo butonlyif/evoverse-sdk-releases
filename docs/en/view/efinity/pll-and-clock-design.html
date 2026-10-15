@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PLL and Clock Design</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>PLL, clock-resource and constraint reference.</span>
+<code>efinity/pll-and-clock-design.md</code>
+<a href="../../../efinity/pll-and-clock-design.md">Markdown source</a></p>
+<h1>PLL and Clock Design</h1></header>
+<main class="article"><h1 id="efinity-pll-and-clock-design">Efinity PLL and Clock Design</h1>
+<blockquote>
+<p><strong>Version</strong>: v1.0
+<strong>Date updated</strong>: 2026-07-30
+<strong>Applicable tools</strong>: Efinity 2026.1 (Titanium / Trion / Topaz families)
+<strong>Sources</strong>: Efinity ISF Syntax Reference (ISF Importer/Exporter source code), efx_pll_cfg IP documentation, efx_pll_autoreset IP source code, Efinity design rules, Efinity RTL coding style guide</p>
+<p><strong>Related documents</strong>:
+- <a href="isf-syntax-reference.html">isf-syntax-reference.md</a> — ISF PLL creation and property-setting commands
+- <a href="design-rules.html">design-rules.md</a> — §2 PLL-lock merge rules in reset design
+- <a href="rtl-coding-style.html">rtl-coding-style.md</a> — §3 clock naming and clock-enable rules
+- <a href="ip-manager-guide.html">ip-manager-guide.md</a> — using PLL-related IPs in IP Manager</p>
+</blockquote>
+<hr />
+<h2 id="1-pll-architecture-overview">1. PLL architecture overview</h2>
+<p>The Efinity FPGA PLL (Phase-Locked Loop) is an analog hard macro built around a VCO (voltage-controlled oscillator); it generates the required frequencies from the reference clock through a feedback divider and output dividers.</p>
+<p><strong>Core parameter relationships:</strong>
+- <code>FVCO = FIN × (Feedback Divider)</code> — VCO frequency
+- <code>FCLKOUTx = FVCO / CLKOUTx_DIV</code> — frequency of each output channel</p>
+<p>In Efinity the PLL is configured as a hard macro through the <strong>Interface Designer (ISF)</strong>; it is not instantiated directly in RTL.</p>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §3.1 (BLOCK_TYPE list), where PLL is listed as a block type supported by all devices [isf-syntax-reference.md §3.1]</p>
+</blockquote>
+<hr />
+<h2 id="2-configuring-the-pll-via-isf">2. Configuring the PLL via ISF</h2>
+<h3 id="2-1-creating-a-pll-instance-with-create_block">2.1 Creating a PLL instance with create_block</h3>
+<p>Create the PLL block in the ISF with <code>design.create_block()</code>:</p>
+<pre><code class="language-python">design.create_block(&quot;my_pll&quot;, &quot;PLL&quot;)
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §3 (block creation), <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> (DesignAPI.create_block, line 192) [isf-syntax-reference.md §3]</p>
+</blockquote>
+<h3 id="2-2-pll-property-settings">2.2 PLL property settings</h3>
+<p>PLL properties are set through <code>design.set_property("inst", "PROP_NAME", "value", "PLL")</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FIN</code></td>
+<td>Input reference clock frequency (MHz)</td>
+<td><code>"50"</code></td>
+</tr>
+<tr>
+<td><code>CLKOUT0_EN</code></td>
+<td>Enable output channel 0</td>
+<td><code>"TRUE"</code> / <code>"FALSE"</code></td>
+</tr>
+<tr>
+<td><code>CLKOUT0_DIV</code></td>
+<td>Output channel 0 divide ratio</td>
+<td><code>"2"</code> (VCO/2)</td>
+</tr>
+<tr>
+<td><code>CLKOUT1_EN</code> ~ <code>CLKOUTx_EN</code></td>
+<td>Enable output channels 1..N</td>
+<td><code>"TRUE"</code> / <code>"FALSE"</code></td>
+</tr>
+<tr>
+<td><code>CLKOUT1_DIV</code> ~ <code>CLKOUTx_DIV</code></td>
+<td>Output channels 1..N divide ratios</td>
+<td><code>"4"</code>, <code>"8"</code>, etc.</td>
+</tr>
+<tr>
+<td><code>CLKOUTx_PHASE</code></td>
+<td>Output channel phase shift (degrees)</td>
+<td><code>"90"</code>, <code>"180"</code></td>
+</tr>
+<tr>
+<td><code>BANDWIDTH</code></td>
+<td>PLL loop bandwidth</td>
+<td><code>"LOW"</code>, <code>"MEDIUM"</code>, <code>"HIGH"</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §4.2 (PLL property examples) [isf-syntax-reference.md §4.2]</p>
+</blockquote>
+<h3 id="2-3-binding-the-pll-resource">2.3 Binding the PLL resource</h3>
+<pre><code class="language-python">design.assign_resource(&quot;my_pll&quot;, &quot;PLL_R0&quot;, &quot;PLL&quot;)
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §5.2 (assign_resource), <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> (DesignAPI.assign_resource, line 790) [isf-syntax-reference.md §5.2]</p>
+</blockquote>
+<h3 id="2-4-complete-isf-pll-example">2.4 Complete ISF PLL example</h3>
+<pre><code class="language-python"># === PLL: 50MHz → 100MHz (CLKOUT0) + 200MHz (CLKOUT1) ===
+design.create_block(&quot;sys_pll&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;FIN&quot;, &quot;50&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_DIV&quot;, &quot;10&quot;, &quot;PLL&quot;)     # 1000MHz/10 = 100MHz
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_DIV&quot;, &quot;5&quot;, &quot;PLL&quot;)      # 1000MHz/5 = 200MHz
+design.assign_resource(&quot;sys_pll&quot;, &quot;PLL_R0&quot;, &quot;PLL&quot;)
+</code></pre>
+<p>The PLL reference clock uses a dedicated GPIO created by <code>create_pll_input_clock_gpio</code> as the PLL clock source.</p>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §2.1 (<code>create_pll_input_clock_gpio</code>) [isf-syntax-reference.md §2.1]</p>
+</blockquote>
+<hr />
+<h2 id="3-configuring-the-pll-via-the-interface-designer-gui">3. Configuring the PLL via the Interface Designer GUI</h2>
+<p>In the Efinity GUI, the PLL can be configured graphically through the <strong>Interface Designer</strong>:</p>
+<ol>
+<li>Open the project, then go to <strong>Tools → Interface Designer</strong></li>
+<li>In the left panel, right-click → <strong>Create Block → PLL</strong></li>
+<li>Set FIN, per-channel divide ratios, phase, and other parameters in the property panel</li>
+<li>The GUI calculates and displays each channel's output frequency in real time</li>
+<li>Click <strong>Generate</strong> to generate the ISF and <code>peri.xml</code></li>
+</ol>
+<p>The Interface Designer-generated configuration is equivalent to a hand-written ISF. The generated ISF file lives under <code>constraints/</code>.</p>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §1 (ISF overview — the ISF lives in the PT step of the unified compile flow) [isf-syntax-reference.md §1]</p>
+</blockquote>
+<hr />
+<h2 id="4-pll-dynamic-reconfiguration-efx_pll_cfg-ip">4. PLL dynamic reconfiguration (efx_pll_cfg IP)</h2>
+<h3 id="4-1-feature-overview">4.1 Feature overview</h3>
+<p>The <code>efx_pll_cfg</code> IP core switches PLL configurations dynamically while the FPGA is running, without recompiling the bitstream. Core features:</p>
+<ul>
+<li>Stores and switches between up to <strong>85 PLL configurations</strong></li>
+<li>Can restore the original PLL settings from the bitstream (PCR, Peripheral Configuration Register)</li>
+<li>Two modes: <strong>Single Configuration</strong> and <strong>Multi Configuration</strong></li>
+</ul>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\pll-dyn-recfg-core-features.html</code> (Features page)</p>
+</blockquote>
+<h3 id="4-2-rtl-parameters">4.2 RTL parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RAM_INIT_FILE</code></td>
+<td>string</td>
+<td><code>"./efx_pll_cfg_mif6.mem"</code></td>
+<td>RAM hex file path in multi-config mode</td>
+</tr>
+<tr>
+<td><code>ENABLE_SHIFT_OUT</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>Enable shift output</td>
+</tr>
+<tr>
+<td><code>EN_SINGLE_CFG</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>Single-config mode enable (0 = multi-config, 1 = single-config)</td>
+</tr>
+<tr>
+<td><code>PCR_REFCLK_SEL</code></td>
+<td>int</td>
+<td><code>0</code></td>
+<td>PCR reference clock select</td>
+</tr>
+<tr>
+<td><code>SINGLE_CFG</code></td>
+<td>120-bit</td>
+<td>(default value)</td>
+<td>Configuration string in single-config mode</td>
+</tr>
+<tr>
+<td><code>OPTIMIZE_RESOURCE</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>Resource optimization enable</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\source_efinity\efx_pll_cfg.sv</code> (module port and parameter declarations)</p>
+</blockquote>
+<h3 id="4-3-rtl-ports">4.3 RTL ports</h3>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Direction</th>
+<th>Width</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pll_select_pcr</code></td>
+<td>input</td>
+<td>1</td>
+<td>Select PCR (original configuration)</td>
+</tr>
+<tr>
+<td><code>mif_selection</code></td>
+<td>input</td>
+<td>7</td>
+<td>MIF configuration select (up to 128 slots, 85 actually supported)</td>
+</tr>
+<tr>
+<td><code>pll_cfg_start</code></td>
+<td>input</td>
+<td>1</td>
+<td>Start reconfiguration</td>
+</tr>
+<tr>
+<td><code>pll_cfg_done</code></td>
+<td>output</td>
+<td>1</td>
+<td>Reconfiguration done</td>
+</tr>
+<tr>
+<td><code>pll_recfg_in_progress</code></td>
+<td>output</td>
+<td>1</td>
+<td>Reconfiguration in progress</td>
+</tr>
+<tr>
+<td><code>pll_cfg_rst_n_i</code></td>
+<td>input</td>
+<td>1</td>
+<td>Reset (active low)</td>
+</tr>
+<tr>
+<td><code>pll_cfg_clk_i</code></td>
+<td>input</td>
+<td>1</td>
+<td>Configuration clock input</td>
+</tr>
+<tr>
+<td><code>pll_cfg_data_o</code></td>
+<td>output</td>
+<td>1</td>
+<td>Configuration data output to the PLL</td>
+</tr>
+<tr>
+<td><code>pll_cfg_clk</code></td>
+<td>output</td>
+<td>1</td>
+<td>Configuration clock output to the PLL</td>
+</tr>
+<tr>
+<td><code>pll_cfg_data_out</code></td>
+<td>input</td>
+<td>1</td>
+<td>Configuration data read back from the PLL</td>
+</tr>
+<tr>
+<td><code>pll_cfg_data_in</code></td>
+<td>output</td>
+<td>1</td>
+<td>Configuration data written to the PLL</td>
+</tr>
+<tr>
+<td><code>pll_cfg_sel</code></td>
+<td>output</td>
+<td>1</td>
+<td>PLL configuration select</td>
+</tr>
+<tr>
+<td><code>refclk_sel</code></td>
+<td>output</td>
+<td>2</td>
+<td>Reference clock select</td>
+</tr>
+<tr>
+<td><code>pll_lock</code></td>
+<td>input</td>
+<td>1</td>
+<td>PLL lock status input</td>
+</tr>
+<tr>
+<td><code>user_pll_en</code></td>
+<td>output</td>
+<td>1</td>
+<td>User PLL enable</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\source_efinity\efx_pll_cfg.sv</code> (module port declarations)</p>
+</blockquote>
+<h3 id="4-4-configuration-modes">4.4 Configuration modes</h3>
+<p><strong>Multi Configuration (default):</strong>
+- Selected through the <code>Configuration Mode</code> parameter when configuring in IP Manager
+- Requires a RAM hex file (generated by the Interface Designer)
+- <code>EN_SINGLE_CFG = 0</code></p>
+<p><strong>Single Configuration:</strong>
+- Needs only one configuration; better resource usage
+- The configuration string is taken from the generated <code>.dyn_cfg.rpt</code> file
+- <code>EN_SINGLE_CFG = 1</code></p>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\pll-dyn-recfg-core-customize.html</code> (Table 1: Configuration Mode parameter description)</p>
+</blockquote>
+<h3 id="4-5-ip-manager-customization-parameters">4.5 IP Manager customization parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration Mode</td>
+<td>Multi Configuration / Single Configuration</td>
+<td>Multi-config or single-config mode</td>
+</tr>
+<tr>
+<td>RAM Hex File Path</td>
+<td>File path</td>
+<td>RAM hex file for multi-config</td>
+</tr>
+<tr>
+<td>Configuration Setting</td>
+<td>String</td>
+<td>Configuration string for single-config</td>
+</tr>
+<tr>
+<td>PLL Instance Name</td>
+<td>String</td>
+<td>Name of the PLL block created in the Interface Designer</td>
+</tr>
+<tr>
+<td>Reference Clock Setting</td>
+<td>External Clock 0/1, Core Clock 0/1</td>
+<td>Initial reference clock selection; must match the PCR setting</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\doc\topics\pll-dyn-recfg-core-customize.html</code> (Table 1)</p>
+</blockquote>
+<h3 id="4-6-underlying-pll-block-types">4.6 Underlying PLL block types</h3>
+<p>The <code>efx_pll_cfg</code> IP operates on the following hard-macro block types through the Interface Designer:
+- <code>EFX_FPLL_V1</code> — first-generation PLL
+- <code>EFX_FPLL_V2</code> — second-generation PLL</p>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\ipm\pt_block_define.txt</code></p>
+</blockquote>
+<hr />
+<h2 id="5-pll-autoreset-efx_pll_autoreset-ip">5. PLL Autoreset (efx_pll_autoreset IP)</h2>
+<h3 id="5-1-feature-overview">5.1 Feature overview</h3>
+<p><code>efx_pll_autoreset</code> is the Trion PLL Auto-Reset IP core (Trion families only); it automatically fires a reset pulse when the PLL loses lock. Core features:</p>
+<ul>
+<li>Checks the PLL lock status after a reset is triggered</li>
+<li>Automatically issues a reset pulse on timeout</li>
+<li>Supports 1–8 independent FSMs; each FSM can monitor one or more PLLs</li>
+</ul>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\ipm\doc\topics\pll-autoreset-core-features.html</code> (Features page)</p>
+</blockquote>
+<h3 id="5-2-rtl-parameters-and-ports">5.2 RTL parameters and ports</h3>
+<p><strong>Parameters:</strong>
+| Parameter | Description | Range |
+|------|------|------|
+| <code>N_FSM</code> | Number of FSMs | 1–8, default 8 |</p>
+<p><strong>Ports:</strong>
+| Port | Direction | Width | Description |
+|------|------|------|------|
+| <code>i_pll_rstn</code> | input | N_FSM | External reset input per PLL (active low) |
+| <code>i_pll_locked</code> | input | N_FSM | Lock status input per PLL |
+| <code>o_pll_rstn</code> | output | N_FSM | Reset output per PLL (external reset merged with the internal auto reset) |
+| <code>ro_clk</code> | output | 1 | Internal oscillator clock output (used as the FSM clock) |</p>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\source\efx_pll_autoreset.v</code> (module port and parameter declarations)</p>
+</blockquote>
+<h3 id="5-3-internal-architecture">5.3 Internal architecture</h3>
+<p>The IP consists of the following submodules:
+- <code>clk_gen</code> — internal oscillator clock generation
+- <code>EFX_GBUFCE</code> — global clock buffer (with clock enable)
+- <code>checker</code> — lock checking and reset-pulse generation for each FSM
+- Synchronizers — the <code>lock_filt</code> / <code>lock_sync</code> two-stage filtering prevents metastability</p>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\source\efx_pll_autoreset.v</code> (module implementation)</p>
+</blockquote>
+<h3 id="5-4-parameter-configuration">5.4 Parameter configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Options</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FSM Count</td>
+<td>1 ~ 8</td>
+<td>2</td>
+<td>Number of FSMs. Multiple PLLs can share one FSM (provided you do not care about the individual PLLs' start/stop ordering)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\ipm\doc\topics\pll-autoreset-core-params.html</code> (Table 1)</p>
+</blockquote>
+<hr />
+<h2 id="6-clock-tree-planning">6. Clock tree planning</h2>
+<h3 id="6-1-global-vs-regional-clocks">6.1 Global vs. regional clocks</h3>
+<p>The Efinity FPGA clock network divides into:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>ISF GPIO type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Global Clock (GCLK)</strong></td>
+<td><code>create_input_clock_gpio</code></td>
+<td>Global clock network, reaches the entire die</td>
+</tr>
+<tr>
+<td><strong>Regional Clock (RCLK)</strong></td>
+<td><code>create_regional_input_clock_gpio</code></td>
+<td>Regional clock; supported only on Trion and above</td>
+</tr>
+<tr>
+<td><strong>PLL Clock Input</strong></td>
+<td><code>create_pll_input_clock_gpio</code></td>
+<td>Dedicated PLL reference clock input</td>
+</tr>
+<tr>
+<td><strong>Clock Output</strong></td>
+<td><code>create_clockout_gpio</code></td>
+<td>Clock output to a pin</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §2.1 (GPIO command table), <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> [isf-syntax-reference.md §2.1]</p>
+</blockquote>
+<h3 id="6-2-clock-spines">6.2 Clock spines</h3>
+<p>Clocks in Efinity devices are distributed through <strong>clock spines</strong>. Each clock spine can drive the logic of one region. PLL outputs reach the target logic region through the global or regional clock network.</p>
+<h3 id="6-3-pll-connection-in-rtl">6.3 PLL connection in RTL</h3>
+<p>In RTL, the PLL output clocks are declared as top-level input ports:</p>
+<pre><code class="language-systemverilog">// The PLL is configured as a hard macro through the Interface Designer and is not instantiated in RTL
+// RTL declares only the clock ports output by the PLL and the lock signal
+input  wire pll_clk_out,   // working clock output by the PLL
+input  wire pll_locked,    // PLL lock indication
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> Efinity RTL coding style guide §7.3 (PLL configuration) [rtl-coding-style.md §7.3]</p>
+</blockquote>
+<hr />
+<h2 id="7-clock-domain-strategy">7. Clock domain strategy</h2>
+<h3 id="7-1-synchronous-clock-domains">7.1 Synchronous clock domains</h3>
+<p>Different output channels of the same PLL (CLKOUT0, CLKOUT1, ...) are <strong>synchronous</strong> (same VCO source) and need no CDC handling.</p>
+<h3 id="7-2-asynchronous-clock-domains-cdc">7.2 Asynchronous clock domains (CDC)</h3>
+<p>The following are asynchronous clock domains and require CDC handling:</p>
+<ul>
+<li>Between outputs of different PLL instances</li>
+<li>Between an external standalone crystal clock and PLL outputs</li>
+<li>Between multiple independent clock ports on the board</li>
+</ul>
+<p>For CDC handling rules see Efinity design rules §3 [design-rules.md §3] and the Efinity RTL coding style guide §6 [rtl-coding-style.md §6].</p>
+<h3 id="7-3-sdc-clock-group-declarations">7.3 SDC clock group declarations</h3>
+<pre><code class="language-tcl"># Asynchronous clock domains
+set_clock_groups -asynchronous \
+    -group [get_clocks clk_50m] \
+    -group [get_clocks sys_clk] \
+    -group [get_clocks video_clk]
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> Efinity RTL coding style guide §9.2 (clock grouping) [rtl-coding-style.md §9.2]</p>
+</blockquote>
+<hr />
+<h2 id="8-design-check-clock-rules">8. Design Check clock rules</h2>
+<p>The Design Check of the Efinity PT (Interface Designer) stage includes the following clock-related rules. Violations abort the compile.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Meaning</th>
+<th>Common cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clock_rule_capacity</code></td>
+<td>More clocks connected to one region than allowed</td>
+<td>Reduce the number of clock domains in that region, or spread the logic across more regions</td>
+</tr>
+<tr>
+<td><code>clock_rule_max_count</code></td>
+<td>Core clock count exceeds the maximum (32)</td>
+<td>Merge unnecessary clock domains; use clock enables instead of divided clocks</td>
+</tr>
+<tr>
+<td><code>clock_rule_lvds_rx_clock_source</code></td>
+<td>A PLL output clock drives LVDS Rx on a different side</td>
+<td>Ensure LVDS Rx on the same side uses the output clock of a PLL on that side</td>
+</tr>
+<tr>
+<td><code>clock_rule_pll_ref_clock_lvds_rx</code></td>
+<td>The PLL reference clock and LVDS Rx are not on the same side</td>
+<td>Move the PLL reference clock source to the same side as the LVDS Rx</td>
+</tr>
+<tr>
+<td><code>clock_rule_undefined_name</code></td>
+<td>A signal has no clock source defined</td>
+<td>Declare <code>create_clock</code> for every clock port in the SDC</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> the Design Check clock rule table (clock_rule_*) provided with the task requirements</p>
+</blockquote>
+<hr />
+<h2 id="9-ssc-spread-spectrum-clocking-pll">9. SSC (Spread-Spectrum Clocking) PLL</h2>
+<p>The spread-spectrum PLL (PLL_SSC) reduces EMI (electromagnetic interference). Create it in the ISF with <code>create_block</code>:</p>
+<pre><code class="language-python">design.create_block(&quot;ssc_pll&quot;, &quot;PLL_SSC&quot;)
+</code></pre>
+<p><code>PLL_SSC</code> is an independent type in the BLOCK_TYPE list [isf-syntax-reference.md §3.1]. The specific SSC parameters (modulation frequency, spread range) are set with <code>set_property</code>; <code>efinity-python-api.pdf</code> is authoritative.</p>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §3.1 (BLOCK_TYPE list includes <code>PLL_SSC</code>), <em>Efinity Design API Integration</em> (<code>designapi-integration.md</code>) §version compatibility (properties follow <code>efinity-python-api.pdf</code>) [isf-syntax-reference.md §3.1]</p>
+</blockquote>
+<hr />
+<h2 id="10-using-the-internal-oscillator-osc">10. Using the internal oscillator (OSC)</h2>
+<p>Efinity devices have a built-in internal oscillator (OSC) that can be created through the ISF:</p>
+<pre><code class="language-python">design.create_block(&quot;my_osc&quot;, &quot;OSC&quot;)
+</code></pre>
+<p>OSC is listed in the BLOCK_TYPE list as supported by all devices [isf-syntax-reference.md §3.1]. Typical OSC uses:
+- Power-on initial clock (transitional clock before the PLL locks)
+- Low-power standby clock
+- FSM clock source for <code>efx_pll_autoreset</code> (see §5)</p>
+<blockquote>
+<p><strong>Source:</strong> ISF Syntax Reference §3.1 (BLOCK_TYPE list includes <code>OSC</code>) [isf-syntax-reference.md §3.1]</p>
+</blockquote>
+<hr />
+<h2 id="11-clock-uncertainty-budget">11. Clock uncertainty budget</h2>
+<p>Use <code>set_clock_uncertainty</code> in the SDC to reserve jitter/skew margin for STA:</p>
+<pre><code class="language-tcl"># Jitter budget for PLL output clocks (typically 0.150–0.300 ns)
+set_clock_uncertainty 0.200 [get_clocks sys_clk]
+
+# External crystal clock
+set_clock_uncertainty 0.100 [get_clocks clk_50m]
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> Efinity design rules §4.2 (<code>set_clock_uncertainty 0.200</code> in the complete constraint template) [design-rules.md §4.2]</p>
+</blockquote>
+<hr />
+<h2 id="12-integrating-pll-lock-with-system-reset">12. Integrating PLL lock with system reset</h2>
+<h3 id="12-1-merging-pll-lock-into-reset">12.1 Merging PLL lock into reset</h3>
+<p>The PLL lock signal <code>pll_locked</code> must be merged with the external reset:</p>
+<pre><code class="language-systemverilog">// Hold system reset while the PLL is unlocked
+wire async_rst_n = rst_n_i &amp; pll_locked;
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> Efinity design rules §2.2 (merge with PLL lock) [design-rules.md §2.2]</p>
+</blockquote>
+<h3 id="12-2-asynchronous-reset-synchronous-release">12.2 Asynchronous reset, synchronous release</h3>
+<p>The merged reset must pass through a synchronized release chain:</p>
+<pre><code class="language-systemverilog">// 3-stage synchronizer: asynchronous assertion, synchronous release
+reg [2:0] rst_sync;
+always @(posedge sys_clk or negedge async_rst_n) begin
+    if (!async_rst_n)
+        rst_sync &lt;= 3'b000;
+    else
+        rst_sync &lt;= {rst_sync[1:0], 1'b1};
+end
+wire rst_n = rst_sync[2];
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> Efinity design rules §2.1 (asynchronous reset, synchronous release) [design-rules.md §2.1]</p>
+</blockquote>
+<hr />
+<h2 id="13-clock-naming-and-coding-rules">13. Clock naming and coding rules</h2>
+<h3 id="13-1-clock-naming">13.1 Clock naming</h3>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Naming</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input reference clock</td>
+<td><code>clk_&lt;freq&gt;m_i</code></td>
+<td><code>clk_50m_i</code>, <code>clk_100m_i</code></td>
+</tr>
+<tr>
+<td>System working clock</td>
+<td><code>sys_clk</code></td>
+<td><code>sys_clk</code></td>
+</tr>
+<tr>
+<td>Video/pixel clock</td>
+<td><code>&lt;domain&gt;_clk</code></td>
+<td><code>video_clk</code>, <code>pixel_clk</code></td>
+</tr>
+<tr>
+<td>PLL output</td>
+<td><code>pll_&lt;freq&gt;m</code></td>
+<td><code>pll_200m</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> Efinity RTL coding style guide §3.2 (clock naming) [rtl-coding-style.md §3.2]</p>
+</blockquote>
+<h3 id="13-2-clock-enables-instead-of-divided-clocks">13.2 Clock enables instead of divided clocks</h3>
+<p><strong>Never</strong> drive logic with a divided clock. Use a clock enable instead:</p>
+<pre><code class="language-systemverilog">// ❌ Forbidden
+always @(posedge clk_div2) begin
+    cnt &lt;= cnt + 1;
+end
+
+// ✅ Correct
+reg clk_en;
+always @(posedge sys_clk) begin
+    clk_en &lt;= ~clk_en;  // divide-by-2 enable
+end
+always @(posedge sys_clk) begin
+    if (clk_en)
+        cnt &lt;= cnt + 1;
+end
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> Efinity RTL coding style guide §3.3 (clock enables) [rtl-coding-style.md §3.3]</p>
+</blockquote>
+<hr />
+<h2 id="14-complete-design-examples">14. Complete design examples</h2>
+<h3 id="14-1-isf-example-multi-clock-domain-system">14.1 ISF example: multi-clock-domain system</h3>
+<pre><code class="language-python"># === Clock input ===
+design.create_input_clock_gpio(&quot;clk_50m&quot;)
+
+# === PLL: 50MHz → 100MHz + 200MHz + 25MHz ===
+design.create_block(&quot;sys_pll&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;FIN&quot;, &quot;50&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT0_DIV&quot;, &quot;10&quot;, &quot;PLL&quot;)     # 100MHz
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT1_DIV&quot;, &quot;5&quot;, &quot;PLL&quot;)      # 200MHz
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT2_EN&quot;, &quot;TRUE&quot;, &quot;PLL&quot;)
+design.set_property(&quot;sys_pll&quot;, &quot;CLKOUT2_DIV&quot;, &quot;40&quot;, &quot;PLL&quot;)     # 25MHz
+design.assign_resource(&quot;sys_pll&quot;, &quot;PLL_R0&quot;, &quot;PLL&quot;)
+</code></pre>
+<h3 id="14-2-sdc-example-complete-clock-constraints">14.2 SDC example: complete clock constraints</h3>
+<pre><code class="language-tcl"># Board clock declaration
+create_clock -name clk_50m  -period 20.000 [get_ports clk_50m]
+
+# PLL output clocks (referenced via get_pins on the PLL output pins)
+create_clock -name sys_clk   -period 10.000 [get_pins {sys_pll/CLKOUT0}]
+create_clock -name clk_200m  -period  5.000 [get_pins {sys_pll/CLKOUT1}]
+create_clock -name clk_25m   -period 40.000 [get_pins {sys_pll/CLKOUT2}]
+
+# Clock uncertainty (jitter budget)
+set_clock_uncertainty 0.200 [get_clocks sys_clk]
+set_clock_uncertainty 0.200 [get_clocks clk_200m]
+
+# Asynchronous clock groups (external crystal vs. PLL outputs)
+set_clock_groups -asynchronous \
+    -group {clk_50m} \
+    -group {sys_clk clk_200m clk_25m}
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> synthesized from the ISF Syntax Reference [isf-syntax-reference.md] and Efinity design rules §4 [design-rules.md §4]</p>
+</blockquote>
+<h3 id="14-3-rtl-example-pll-and-reset-integration">14.3 RTL example: PLL and reset integration</h3>
+<pre><code class="language-systemverilog">module top (
+    input  wire clk_50m_i,
+    input  wire rst_n_i,
+    output wire led_o
+);
+    // PLL outputs (generated by the Interface Designer, connected to top-level ports)
+    // At compile time, Efinity automatically connects the PLL clock to the signal used in RTL
+
+    // ---- Merge PLL lock into reset ----
+    wire async_rst_n = rst_n_i &amp; pll_locked;  // pll_locked comes from the PLL
+
+    // ---- 3-stage synchronized release ----
+    reg [2:0] rst_sync;
+    always @(posedge sys_clk or negedge async_rst_n) begin
+        if (!async_rst_n)
+            rst_sync &lt;= 3'b000;
+        else
+            rst_sync &lt;= {rst_sync[1:0], 1'b1};
+    end
+    wire rst_n = rst_sync[2];
+
+    // ---- User logic ----
+    // ...
+endmodule
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> Efinity design rules §2.2 (PLL lock merge) [design-rules.md §2.2]</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>Authoritative sources:</strong>
+- <code>isf-syntax-reference.md</code> — ISF PLL create_block, set_property, assign_resource
+- <code>design-rules.md</code> — §2 reset design (PLL lock merge), §4 SDC constraints
+- <code>rtl-coding-style.md</code> — §3 clocks and reset, §7.3 PLL configuration
+- <code>C:\Efinity\2026.1\ipm\ip\efx_pll_cfg\</code> — PLL dynamic reconfiguration IP (source_efinity/efx_pll_cfg.sv, ipm/doc/)
+- <code>C:\Efinity\2026.1\ipm\ip\efx_pll_autoreset\</code> — PLL Auto-Reset IP (source/, ipm/doc/)
+- <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code> — DesignAPI ISF command implementation
+- Design Check clock rules — from Efinity PT-stage DRC verification</p>
+</blockquote></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

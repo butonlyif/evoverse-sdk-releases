@@ -1,0 +1,1495 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 硬 IP：接口与 JTAG 参考</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>LVDS/MIPI/JTAG 硬核属性全表、bank 电压共存规则与 ISF 模板。</span>
+<code>efinity/Efinity硬IP-接口与JTAG参考.md</code>
+<a href="../../../efinity/Efinity硬IP-接口与JTAG参考.md">Markdown 源文件</a></p>
+<h1>Efinity 硬 IP：接口与 JTAG 参考</h1></header>
+<main class="article"><h1 id="efinity-硬-ip-lvds-mipi-jtag-接口参考">Efinity 硬 IP —— LVDS / MIPI / JTAG 接口参考</h1>
+<blockquote>
+<p><strong>适用版本</strong>：Efinity 2026.1
+<strong>调查日期</strong>：2026-09-25
+<strong>调查方式</strong>：实读 <code>2026.1\pt\bin\api_service\</code> Python 源码、<code>2026.1\examples\</code> 官方工程样本，逐条提取属性名 / 合法值 / 默认值 / builder 行为；每个属性标注源文件与行号。
+<strong>核心证据源</strong>（下文简写均省略前缀 <code>C:\Efinity\2026.1\</code>）：
+- <code>pt\bin\api_service\property\jtag_prop.py</code> —— JTAG 属性权威
+- <code>pt\bin\api_service\property\lvds_prop.py</code> —— LVDS（legacy / Adv / V3）属性权威
+- <code>pt\bin\api_service\property\mipi_prop.py</code> —— MIPI 像素级 TX/RX 属性权威
+- <code>pt\bin\api_service\property\mipi_dphy_prop.py</code> —— MIPI DPHY lane 级 TX/RX 属性权威
+- <code>pt\bin\api_service\property\mipi_hard_dphy_prop.py</code> + <code>mipi_hard_dphy_prop_id.py</code> —— 硬 DPHY 属性权威
+- <code>pt\bin\api_service\exim\isf_exporter.py</code> —— ISF builder（命令产出机制）
+- <code>pt\bin\api_service\common\object_db.py</code> —— block_type 字符串注册表
+- <code>pt\bin\common_device\iobank\iobank_rule.py</code> —— bank 电压 / LVDS bank 规则
+- <code>pt\bin\api_service\api_options\*.py</code> —— 静态合法值
+- <code>examples\helloworld-dbg_MULTI_USERS\Ti375C529_kit.isf</code> —— <strong>JTAG 官方 ISF 样本</strong>（helloworld-unified 系列不含 JTAG 实例）</p>
+</blockquote>
+<hr />
+<h2 id="1-概述与定位">1. 概述与定位</h2>
+<p>本卷覆盖三类接口型硬 IP，与《Efinity硬IP-PLL与OSC参考.md》《Efinity硬IP-DDR参考.md》构成硬 IP 系列：</p>
+<table>
+<thead>
+<tr>
+<th>族</th>
+<th>create_block 第 2 参（block_type 字符串）</th>
+<th>内部 ObjectType</th>
+<th>属性类（property\）</th>
+<th>ISF builder（isf_exporter.py）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JTAG</td>
+<td><code>"JTAG"</code></td>
+<td><code>jtag</code></td>
+<td><code>JTAGProp</code>（jtag_prop.py:25）</td>
+<td><code>JTAGISFBuilder</code>（:1551）</td>
+</tr>
+<tr>
+<td>LVDS</td>
+<td><code>"LVDS_TX"</code> / <code>"LVDS_RX"</code> / <code>"LVDS_BIDIR"</code></td>
+<td><code>lvds_tx</code> / <code>lvds_rx</code> / <code>lvds_bidir</code></td>
+<td><code>LVDSTxProp</code>（:861）/ <code>LVDSRxProp</code>（:301）/ <code>LVDSTxAdvProp</code>（:1074）/ <code>LVDSRxAdvProp</code>（:468）/ <code>EfxLvdsV3*Prop</code>（:1643/:1656/:1669）</td>
+<td><code>LVDSTxISFBuilder</code>（:2167）/ <code>LVDSRxISFBuilder</code>（:2272）/ <code>LVDSTxAdvISFBuilder</code>（:2381）/ <code>LVDSRxAdvISFBuilder</code>（:2403）/ <code>LVDSBidirAdvISFBuilder</code>（:2422）/ <code>EfxLVDS*V3ISFBuilder</code>（:2488-2510）</td>
+</tr>
+<tr>
+<td>MIPI 像素级</td>
+<td><code>"MIPI_TX"</code> / <code>"MIPI_RX"</code></td>
+<td><code>mipi_tx</code> / <code>mipi_rx</code></td>
+<td><code>MIPITxProp</code>（mipi_prop.py:551）/ <code>MIPIRxProp</code>（:209）</td>
+<td><code>MIPITxISFBuilder</code>（:1570）/ <code>MIPIRxISFBuilder</code>（:1640）</td>
+</tr>
+<tr>
+<td>MIPI DPHY lane 级</td>
+<td><code>"MIPI_TX_LANE"</code> / <code>"MIPI_RX_LANE"</code></td>
+<td><code>mipi_dphy_tx</code> / <code>mipi_dphy_rx</code></td>
+<td><code>MIPIDPhyTxProp</code>（mipi_dphy_prop.py:470）/ <code>MIPIDPhyRxProp</code>（:198）</td>
+<td><code>MIPIDPhyTxISFBuilder</code>（:1716）/ <code>MIPIDPhyRxISFBuilder</code>（:1812）</td>
+</tr>
+<tr>
+<td>MIPI 硬 DPHY</td>
+<td><code>"MIPI_DPHY_TX"</code> / <code>"MIPI_DPHY_RX"</code></td>
+<td><code>mipi_hard_dphy_tx</code> / <code>mipi_hard_dphy_rx</code></td>
+<td><code>MIPIHardDPHYTxProp</code>（mipi_hard_dphy_prop.py:122）/ <code>MIPIHardDPHYRxProp</code>（:324）</td>
+<td><code>MIPIHardDPHYTxISFBuilder</code>（:1912）/ <code>MIPIHardDPHYRxISFBuilder</code>（:1932）</td>
+</tr>
+</tbody>
+</table>
+<p>（ObjectType→字符串映射证据：object_db.py otype2str_map，jtag :116、mipi_tx/rx :119-120、mipi_dphy_tx/rx :121-122、lvds_tx/rx/bidir :123-125、mipi_hard_dphy_tx/rx :126-127。）</p>
+<p><strong>关键结论</strong>：</p>
+<ol>
+<li>三族硬 IP 都<strong>没有专用公开创建方法</strong>（对比 PLL 的 <code>create_block</code>/DDR 亦然）——公开面只有泛型三件套 <code>create_block</code> + <code>set_property</code> + <code>assign_resource</code>。</li>
+<li>JTAG 是<strong>唯一有官方 ISF 样本</strong>的接口硬 IP（<code>helloworld-dbg_MULTI_USERS</code>）；LVDS 与 MIPI 在全部 <code>examples\*.isf</code> 中无任何样本 → 本卷的 LVDS/MIPI ISF 模板按属性表构造，<strong>使用前必须过 <code>cli/import_gpio.bat --dry-run</code> 自检</strong>（同《Efinity硬IP-DDR参考.md》的处理）。</li>
+<li>三族全部受 §9 bank 电压规则约束：LVDS bank 强制 3.3 V，MIPI DPHY 要求 1.2 V bank，二者不能共存同一 bank。</li>
+</ol>
+<h3 id="1-1-block_type-命名反转陷阱-重要">1.1 block_type 命名反转陷阱（重要）</h3>
+<p><code>object_db.py</code> 中两个 MIPI DPHY 相关字符串<strong>命名方向相反</strong>，极易写错：</p>
+<table>
+<thead>
+<tr>
+<th>你想要的东西</th>
+<th>正确 block_type 字符串</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lane 级<strong>软</strong> DPHY（分立 lane，替代像素级 MIPI）</td>
+<td><code>"MIPI_TX_LANE"</code> / <code>"MIPI_RX_LANE"</code></td>
+<td>object_db.py:121-122（内部名 <code>mipi_dphy_tx/rx</code> → <code>MIPI_TX_LANE</code>/<code>MIPI_RX_LANE</code>）</td>
+</tr>
+<tr>
+<td><strong>硬</strong> DPHY 整块 IP（含 PLL/SSC 等完整 PHY）</td>
+<td><code>"MIPI_DPHY_TX"</code> / <code>"MIPI_DPHY_RX"</code></td>
+<td>object_db.py:126-127（内部名 <code>mipi_hard_dphy_tx/rx</code> → <code>MIPI_DPHY_TX</code>/<code>MIPI_DPHY_RX</code>）</td>
+</tr>
+</tbody>
+</table>
+<p>记忆法：<strong>字符串里带 <code>LANE</code> 的是 lane 级软 DPHY；字符串里带 <code>DPHY</code> 的才是硬 DPHY</strong>。写错时 PT 会按另一套属性集解析，表现为属性被拒或行为不符。</p>
+<h3 id="1-2-isf-支持白名单">1.2 ISF 支持白名单</h3>
+<p><code>isf_exporter.py</code> 的 <code>supp_block</code> 列出可进 ISF 的 block 类型（:149-173）：</p>
+<ul>
+<li>基础：<code>GPIO</code>、<code>PLL</code>、<code>IOBANK</code>、<code>JTAG</code>（:149）</li>
+<li>像素级 MIPI：<code>MIPI_TX</code>、<code>MIPI_RX</code>（:156-157）</li>
+<li>硬 DPHY：<code>MIPI_DPHY_TX</code>、<code>MIPI_DPHY_RX</code>（:160-161）</li>
+<li>lane 级 DPHY + LVDS：<code>MIPI_RX_LANE</code>、<code>MIPI_TX_LANE</code>、<code>LVDS_RX</code>、<code>LVDS_TX</code>、<code>LVDS_BIDIR</code>（:164-168）</li>
+</ul>
+<hr />
+<h2 id="2-创建三件套">2. 创建三件套</h2>
+<p>所有接口硬 IP 的 ISF 配置都由三种命令构成（<code>BlockISFBuilder</code> CommandType，isf_exporter.py:1252-1258；字符串映射 cmd2str_map :1260-1264）：</p>
+<pre><code class="language-python"># 1) 创建实例 —— 一次性 bootstrap（peri.xml 不存在时才允许执行）
+design.create_block(&quot;&lt;实例名&gt;&quot;, &quot;&lt;BLOCK_TYPE&gt;&quot;, [create 额外参数])
+
+# 2) 设置属性 —— 幂等，可重放
+design.set_property(&quot;&lt;实例名&gt;&quot;, &quot;&lt;PROP_NAME&gt;&quot;, &quot;&lt;值&gt;&quot;, &quot;&lt;BLOCK_TYPE&gt;&quot;)
+
+# 3) 分配硬件资源 —— 幂等，可重放
+design.assign_resource(&quot;&lt;实例名&gt;&quot;, &quot;&lt;RESOURCE&gt;&quot;, &quot;&lt;BLOCK_TYPE&gt;&quot;)
+</code></pre>
+<p><strong>要点</strong>：</p>
+<ul>
+<li><code>set_property</code> 第 4 参必须传精确 block_type 字符串（通用实现 isf_exporter.py:1379-1425）。</li>
+<li><code>assign_resource</code> 只有在实例的 <code>device</code>（RESOURCE）非空时才会由 builder 输出（<code>build_resasg_command</code>，isf_exporter.py:1427-1449）——JTAG 的 RESOURCE 即 <code>JTAG_USER1</code>/<code>JTAG_USER2</code>。</li>
+<li><strong>重放安全契约</strong>（《Efinity-ISF语法参考.md》与硬约束 §15）：<code>create_*</code> 是一次性 bootstrap；进入工程引用的常驻 ISF 只允许 <code>set_property</code> / <code>assign_resource</code> / <code>set_iobank_voltage</code> 等幂等命令。引导编译生成 <code>&lt;design&gt;.peri.xml</code> 后立即注释掉 <code>create_*</code> 行。详见《Efinity文件格式-peri.xml.md》。</li>
+<li>LVDS create 命令携带额外关键字参数（builder 依代际输出）：legacy TX 输出 <code>tx_mode="&lt;api_mode&gt;"</code>（<code>gen_extra_create_parameter</code>，isf_exporter.py:2225-2235）、legacy RX 输出 <code>rx_conn_type="&lt;api_mode&gt;"</code>（:2334-2344）；lane 级 DPHY TX 按 mode 输出 <code>mode="CLOCK_LANE"</code> 或 <code>mode="DATA_LANE"</code>（MIPIDPhyTxISFBuilder :1764-1767）。</li>
+</ul>
+<hr />
+<h2 id="3-jtag-硬-ip">3. JTAG 硬 IP</h2>
+<p>JTAG 用于 FPGA 配置后的边界扫描 / 用户调试通道。它是<strong>接口三族中唯一有官方 ISF 样本的硬 IP</strong>，本节属性表与模板可直接照抄。</p>
+<h3 id="3-1-属性全表">3.1 属性全表</h3>
+<p>jtag_prop.py 的 <code>jtag_prop_map</code>（:67-79）中<strong>全部条目均无默认值</strong>（<code>PropData(..., None)</code>）——所有属性都必须显式设置。合法值方面 <code>get_valid_option</code> 返回空集（:230-233），即 <strong>ISF 层面对值不做静态枚举校验</strong>，值由 PT 内部使用方式决定（引脚名约定见下）。</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>类型</th>
+<th>合法值</th>
+<th>默认值</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NAME</code></td>
+<td>string</td>
+<td>实例名字符串</td>
+<td>—</td>
+<td>实例名；reader 直接映射 <code>inst.name</code>（jtag_prop.py:84）</td>
+<td>jtag_prop.py:67-79, :84</td>
+</tr>
+<tr>
+<td><code>RESOURCE</code></td>
+<td>string</td>
+<td><code>JTAG_USER1</code> / <code>JTAG_USER2</code>（官方样本实证）；reader 映射 <code>inst.get_device()</code>（:85）</td>
+<td>—</td>
+<td>用户 JTAG 资源编号；与 <code>assign_resource</code> 第 2 参一致</td>
+<td>jtag_prop.py:67-79, :85；Ti375C529_kit.isf:185-186</td>
+</tr>
+<tr>
+<td><code>CAPTURE</code></td>
+<td>string</td>
+<td>引脚名（约定 <code>&lt;实例名&gt;_CAPTURE</code>）</td>
+<td>—</td>
+<td>CAPTURE 输出引脚对应的 RTL 端口名</td>
+<td>jtag_prop.py:39-51, :130-143</td>
+</tr>
+<tr>
+<td><code>DRCK</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_DRCK</code>）</td>
+<td>—</td>
+<td>DRCK（Drck clock）引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>RESET</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_RESET</code>）</td>
+<td>—</td>
+<td>RESET 引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>RUNTEST</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_RUNTEST</code>）</td>
+<td>—</td>
+<td>RUNTEST 引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>SEL</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_SEL</code>）</td>
+<td>—</td>
+<td>SEL 引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>SHIFT</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_SHIFT</code>）</td>
+<td>—</td>
+<td>SHIFT 引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>TCK</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_TCK</code>）</td>
+<td>—</td>
+<td>测试时钟引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>TDI</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_TDI</code>）</td>
+<td>—</td>
+<td>测试数据输入引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>TMS</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_TMS</code>）</td>
+<td>—</td>
+<td>测试模式选择引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>UPDATE</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_UPDATE</code>）</td>
+<td>—</td>
+<td>UPDATE 引脚</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>TDO</code></td>
+<td>string</td>
+<td>引脚名（<code>&lt;实例名&gt;_TDO</code>）</td>
+<td>—</td>
+<td>测试数据输出引脚</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>属性 ID 枚举 <code>JTAGPropId</code>（jtag_prop.py:26-37）；PropId→ISF 字符串映射 <code>__propid2str_map</code>（:39-51）、反向 <code>__str2propid_map</code>（:53-65）。</li>
+<li>引脚属性的读写经 <code>__set_pin_name</code> / <code>__get_pin_name</code>（:130-143）落到实例端口上——<strong>引脚属性值即 RTL 顶层端口名</strong>，auto-instantiation 会按它生成端口。</li>
+<li>writer（:102-119）+ reader（:81-100）构成 ISF 导入/导出闭环。</li>
+</ul>
+<h3 id="3-2-官方-isf-实录-完整模板-可运行">3.2 官方 ISF 实录（完整模板，可运行）</h3>
+<p>摘自 <code>examples\helloworld-dbg_MULTI_USERS\Ti375C529_kit.isf</code>（:103-104、:148-173、:185-186），双实例配置：</p>
+<pre><code class="language-tcl"># ========== ① bootstrap 段（一次性；引导编译生成 peri.xml 后注释掉）==========
+design.create_block(&quot;jtag_inst1&quot;,&quot;JTAG&quot;)        # Ti375C529_kit.isf:103
+design.create_block(&quot;jtag_inst2&quot;,&quot;JTAG&quot;)        # Ti375C529_kit.isf:104
+
+# ========== ② 重放安全段（幂等，常驻 ISF）==========
+# --- 实例 1：RESOURCE = JTAG_USER1 ---
+design.set_property(&quot;jtag_inst1&quot;,&quot;NAME&quot;,&quot;jtag_inst1&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;RESOURCE&quot;,&quot;JTAG_USER1&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;CAPTURE&quot;,&quot;jtag_inst1_CAPTURE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;DRCK&quot;,&quot;jtag_inst1_DRCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;RESET&quot;,&quot;jtag_inst1_RESET&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;RUNTEST&quot;,&quot;jtag_inst1_RUNTEST&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;SEL&quot;,&quot;jtag_inst1_SEL&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;SHIFT&quot;,&quot;jtag_inst1_SHIFT&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TCK&quot;,&quot;jtag_inst1_TCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TDI&quot;,&quot;jtag_inst1_TDI&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TMS&quot;,&quot;jtag_inst1_TMS&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;UPDATE&quot;,&quot;jtag_inst1_UPDATE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TDO&quot;,&quot;jtag_inst1_TDO&quot;,&quot;JTAG&quot;)
+# --- 实例 2：RESOURCE = JTAG_USER2（属性结构同构，值换 inst2）---
+design.set_property(&quot;jtag_inst2&quot;,&quot;NAME&quot;,&quot;jtag_inst2&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;RESOURCE&quot;,&quot;JTAG_USER2&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;CAPTURE&quot;,&quot;jtag_inst2_CAPTURE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;DRCK&quot;,&quot;jtag_inst2_DRCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;RESET&quot;,&quot;jtag_inst2_RESET&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;RUNTEST&quot;,&quot;jtag_inst2_RUNTEST&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;SEL&quot;,&quot;jtag_inst2_SEL&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;SHIFT&quot;,&quot;jtag_inst2_SHIFT&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TCK&quot;,&quot;jtag_inst2_TCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TDI&quot;,&quot;jtag_inst2_TDI&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TMS&quot;,&quot;jtag_inst2_TMS&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;UPDATE&quot;,&quot;jtag_inst2_UPDATE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TDO&quot;,&quot;jtag_inst2_TDO&quot;,&quot;JTAG&quot;)
+
+# ========== ③ 资源分配（幂等，常驻 ISF）==========
+design.assign_resource(&quot;jtag_inst1&quot;,&quot;JTAG_USER1&quot;,&quot;JTAG&quot;)   # Ti375C529_kit.isf:185
+design.assign_resource(&quot;jtag_inst2&quot;,&quot;JTAG_USER2&quot;,&quot;JTAG&quot;)   # Ti375C529_kit.isf:186
+</code></pre>
+<p><strong>多实例规则</strong>：一个工程可挂多个 JTAG 用户通道，每个实例占用一个独立 <code>JTAG_USERn</code> 资源；<code>RESOURCE</code> 属性值与 <code>assign_resource</code> 第 2 参必须一致。</p>
+<hr />
+<h2 id="4-lvds-硬-ip">4. LVDS 硬 IP</h2>
+<h3 id="4-1-代际机制">4.1 代际机制</h3>
+<p>LVDS 按 <code>design.lvds_type</code> 分三代，builder 依此分发（isf_exporter.py:340-405；属性类按代际 map 分发 lvds_prop.py RX :355-360、TX :910-915）：</p>
+<table>
+<thead>
+<tr>
+<th>代际</th>
+<th>TX 属性类</th>
+<th>RX 属性类</th>
+<th>TX builder</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>legacy（<code>lvds</code>）</td>
+<td><code>LVDSTxProp</code>（:861）</td>
+<td><code>LVDSRxProp</code>（:301）</td>
+<td><code>LVDSTxISFBuilder</code>（:2167）</td>
+<td>旧器件基础 LVDS</td>
+</tr>
+<tr>
+<td>Adv（<code>adv_lvds</code>）</td>
+<td><code>LVDSTxAdvProp</code>（:1074）</td>
+<td><code>LVDSRxAdvProp</code>（:468）</td>
+<td><code>LVDSTxAdvISFBuilder</code>（:2381，db 取 <code>design.lvds_type</code> :2390）</td>
+<td>主力代际，属性最全</td>
+</tr>
+<tr>
+<td>V3（<code>efx_lvds_v3</code>）</td>
+<td><code>EfxLvdsV3TxProp</code>（:1643）</td>
+<td><code>EfxLvdsV3RxProp</code>（:1656）</td>
+<td><code>EfxLVDSTxV3ISFBuilder</code>（:2488，仅换 <code>IntEfxLVDSV3API</code>）</td>
+<td>新一代器件</td>
+</tr>
+</tbody>
+</table>
+<p><code>LVDSBidirAdvProp</code>（lvds_prop.py:1369）不是独立属性集，而是 <strong>RX+TX 组合器</strong>：<code>build_lvds_prop</code> 按 <code>adv_lvds</code>（:1411-1416）或 <code>efx_lvds_v3</code>（:1417-1422）组装 RX/TX 属性；<code>is_rx_prop</code> 按属性名含 <code>RX</code>/<code>TX</code> 分流（:1438-1451）。Bidir ISF 由 <code>LVDSBidirAdvISFBuilder</code>（:2422）/ <code>EfxLVDSBidirV3ISFBuilder</code>（:2504）输出。</p>
+<h3 id="4-2-lvds_tx-属性表">4.2 LVDS_TX 属性表</h3>
+<p><strong>Adv 代（13 项，<code>LVDSTxAdvProp.PropId</code> lvds_prop.py:1083-1096；skip_isf_property_list 为空 :1103——全部可进 ISF）</strong>。默认值：LVDS 属性不在 prop 文件中定义 <code>PropData</code> 默认值，随器件库实例默认（全文无 <code>PropData(</code> 命中）。</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值（api_options\lvds_tx_adv_api_options.py:3-10）</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TX_MODE</code></td>
+<td><code>DATA</code> / <code>CLKOUT</code></td>
+<td>工作模式：数据或时钟输出（值映射 :1223-1234；create 额外参数 <code>tx_mode</code>）</td>
+<td>lvds_prop.py:1083-1096；isf_exporter.py:2225-2235</td>
+</tr>
+<tr>
+<td><code>TX_EN_SER</code></td>
+<td>使能串化（<code>1</code>/<code>0</code>）</td>
+<td>串化器使能</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_SER</code></td>
+<td><code>tx_serial_width</code> Range(1,10)</td>
+<td>串化比</td>
+<td>lvds_prop.py:1083-1096；api_options :7</td>
+</tr>
+<tr>
+<td><code>TX_HALF_RATE</code></td>
+<td>half-rate 使能</td>
+<td>半速率模式</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_DELAY</code></td>
+<td>Range(0,63)</td>
+<td>延迟级数</td>
+<td>lvds_prop.py:1083-1096；api_options :3</td>
+</tr>
+<tr>
+<td><code>TX_PRE_EMP</code></td>
+<td><code>LOW</code> / <code>MEDIUM_LOW</code> / <code>MEDIUM_HIGH</code> / <code>HIGH</code></td>
+<td>预加重（值映射 :1291-1305）</td>
+<td>lvds_prop.py:1083-1096；api_options :8</td>
+</tr>
+<tr>
+<td><code>TX_VOD</code></td>
+<td><code>LARGE</code> / <code>TYPICAL</code> / <code>SMALL</code></td>
+<td>输出驱动幅度（值映射 :1323-1335）</td>
+<td>lvds_prop.py:1083-1096；api_options :9</td>
+</tr>
+<tr>
+<td><code>TX_DIFF_TYPE</code></td>
+<td><code>LVDS</code> / <code>SUBLVDS</code> / <code>CUSTOM</code> / <code>SLVS</code></td>
+<td>差分标准（值映射 :1307-1321）</td>
+<td>lvds_prop.py:1083-1096；api_options :4</td>
+</tr>
+<tr>
+<td><code>TX_OUT_PIN</code></td>
+<td>引脚名</td>
+<td>数据输出 P/N 对应端口</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_OE_PIN</code></td>
+<td>引脚名</td>
+<td>输出使能端口</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_RST_PIN</code></td>
+<td>引脚名</td>
+<td>复位端口</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_FASTCLK_PIN</code></td>
+<td>引脚名</td>
+<td>快时钟端口</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_SLOWCLK_PIN</code></td>
+<td>引脚名</td>
+<td>慢时钟端口</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+</tbody>
+</table>
+<p><strong>legacy 代（<code>LVDSTxProp.PropId</code> lvds_prop.py:870-882；合法值 api_options\lvds_tx_api_options.py:3-9）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TX_MODE</code></td>
+<td><code>DATA</code> / <code>CLKOUT</code></td>
+<td>工作模式（值映射 :1223-1234）</td>
+<td>lvds_prop.py:870-882</td>
+</tr>
+<tr>
+<td><code>TX_EN_SER</code> / <code>TX_SER</code></td>
+<td>串化宽 <code>'2'</code>..<code>'8'</code></td>
+<td>串化使能 / 比率</td>
+<td>lvds_prop.py:870-882；api_options :6</td>
+</tr>
+<tr>
+<td><code>TX_OUTPUT_LOAD</code></td>
+<td><code>3</code> / <code>5</code> / <code>7</code> / <code>10</code>（pF）</td>
+<td>输出负载</td>
+<td>lvds_prop.py:870-882；api_options :4</td>
+</tr>
+<tr>
+<td><code>TX_SLOWCLK_DIV</code></td>
+<td><code>1</code> / <code>2</code></td>
+<td>慢时钟分频（值映射 div2 :1236-1244）</td>
+<td>lvds_prop.py:870-882；api_options :7</td>
+</tr>
+<tr>
+<td><code>TX_REDUCED_SWING</code></td>
+<td>摆幅削减使能</td>
+<td>降低摆幅</td>
+<td>lvds_prop.py:870-882</td>
+</tr>
+<tr>
+<td><code>TX_FASTCLK_PIN</code> / <code>TX_SLOWCLK_PIN</code> / <code>TX_OUT_PIN</code> / <code>TX_OE_PIN</code></td>
+<td>引脚名</td>
+<td>时钟 / 输出 / OE 端口</td>
+<td>lvds_prop.py:870-882</td>
+</tr>
+<tr>
+<td><code>TX_RST_PIN</code></td>
+<td>—</td>
+<td><strong>已废弃</strong>（"Not supported"，:896-899）——不要写进 ISF</td>
+<td>lvds_prop.py:896-899</td>
+</tr>
+<tr>
+<td><code>DIV2_CLKOUT</code></td>
+<td>—</td>
+<td><strong>skip ISF</strong>（:888）——不进 ISF 文件</td>
+<td>lvds_prop.py:888</td>
+</tr>
+</tbody>
+</table>
+<p>Trion 特例：TX <code>CLKOUT</code> 模式且未开串化时 PT 自动转 <code>DATA</code> 模式（PT-2701，lvds_prop.py:1040-1066）。</p>
+<h3 id="4-3-lvds_rx-属性表">4.3 LVDS_RX 属性表</h3>
+<p><strong>Adv 代（28 项，<code>LVDSRxAdvProp.PropId</code> lvds_prop.py:477-505）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值（api_options\lvds_rx_adv_api_options.py:3-10）</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RX_CONN_TYPE</code></td>
+<td><code>NORMAL</code> / <code>GCLK</code> / <code>RCLK</code> / <code>PLL_CLKIN</code> / <code>PLL_EXTFB</code></td>
+<td>连接类型（值映射 :786-802；create 额外参数 <code>rx_conn_type</code>）</td>
+<td>lvds_prop.py:477-505；isf_exporter.py:2334-2344</td>
+</tr>
+<tr>
+<td><code>RX_TERM</code></td>
+<td><code>ON</code> / <code>OFF</code> / <code>DYNAMIC</code></td>
+<td>端接（值映射 :804-816；DYNAMIC 走 <code>RX_TERM_PIN</code>）</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DESER</code></td>
+<td>串化比</td>
+<td>解串比（builder 跳过 <code>RX_DESER == "1"</code>，即禁串化时不输出 :2374-2375）</td>
+<td>lvds_prop.py:477-505；isf_exporter.py:2374-2375</td>
+</tr>
+<tr>
+<td><code>RX_EN_DESER</code></td>
+<td>解串使能</td>
+<td>使能解串器</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_HALF_RATE</code></td>
+<td>half-rate 使能</td>
+<td>半速率</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DELAY</code></td>
+<td>Range(0,63)</td>
+<td>延迟级数</td>
+<td>lvds_prop.py:477-505；api_options :5</td>
+</tr>
+<tr>
+<td><code>RX_DELAY_MODE</code></td>
+<td><code>STATIC</code> / <code>DYNAMIC</code> / <code>DPA</code></td>
+<td>延迟模式（值映射 :771-784）</td>
+<td>lvds_prop.py:477-505；api_options :6</td>
+</tr>
+<tr>
+<td><code>RX_FIFO</code></td>
+<td>FIFO 使能</td>
+<td>内部 FIFO</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_VOC_DRIVER</code></td>
+<td>VOC 驱动使能</td>
+<td>VOC 驱动</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_SLVS</code></td>
+<td>SLVS 使能</td>
+<td>SLVS 模式</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>DIFF_TYPE</code></td>
+<td><code>SLVS</code> / <code>LVDS</code></td>
+<td>差分标准（值映射 :818-826）——<strong>skip ISF</strong>（skip_isf_property_list，:512）</td>
+<td>lvds_prop.py:477-505, :512；api_options :3</td>
+</tr>
+<tr>
+<td><code>GBUF</code></td>
+<td>GBUF 选项</td>
+<td>全局缓冲（:504）</td>
+<td>lvds_prop.py:504</td>
+</tr>
+<tr>
+<td><code>RX_IN_PIN</code></td>
+<td>引脚名</td>
+<td>数据输入 P/N 端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_ENA_PIN</code> / <code>RX_RST_PIN</code></td>
+<td>引脚名</td>
+<td>使能 / 复位端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_LOCK_PIN</code></td>
+<td>引脚名</td>
+<td>锁定指示端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_TERM_PIN</code></td>
+<td>引脚名</td>
+<td>动态端接控制端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DLY_ENA_PIN</code> / <code>RX_DLY_INC_PIN</code> / <code>RX_DLY_RST_PIN</code></td>
+<td>引脚名</td>
+<td>DLY 动态控制端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DLYCLK_PIN</code></td>
+<td>引脚名</td>
+<td>DLY 时钟端口（:505）</td>
+<td>lvds_prop.py:505</td>
+</tr>
+<tr>
+<td><code>RX_DBG_PIN</code></td>
+<td>引脚名</td>
+<td>调试端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_FIFOCLK_PIN</code> / <code>RX_FIFO_EMPTY_PIN</code> / <code>RX_FIFO_RD_PIN</code></td>
+<td>引脚名</td>
+<td>FIFO 时钟 / 空 / 读端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_FASTCLK_PIN</code> / <code>RX_SLOWCLK_PIN</code></td>
+<td>引脚名</td>
+<td>快 / 慢时钟端口</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_FIFOCLK_INVERT_EN</code></td>
+<td>反相使能</td>
+<td><strong>被 <code>get_supported_props_list</code> 排除</strong>（:526）——当前版本不支持</td>
+<td>lvds_prop.py:526</td>
+</tr>
+</tbody>
+</table>
+<p><strong>legacy 代（<code>LVDSRxProp.PropId</code> lvds_prop.py:310-320；合法值 api_options\lvds_rx_api_options.py:3-8）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RX_CONN_TYPE</code></td>
+<td><code>NORMAL</code> / <code>PLL_CLKIN</code></td>
+<td>连接类型（值映射 :709-725）</td>
+<td>lvds_prop.py:310-320</td>
+</tr>
+<tr>
+<td><code>RX_TERM</code></td>
+<td><code>ON</code> / <code>OFF</code></td>
+<td>端接（值映射 :727-737）</td>
+<td>lvds_prop.py:310-320</td>
+</tr>
+<tr>
+<td><code>RX_EN_DELAY</code> / <code>RX_DELAY</code></td>
+<td>Range(0,63)</td>
+<td>延迟使能 / 级数</td>
+<td>lvds_prop.py:310-320；api_options :4</td>
+</tr>
+<tr>
+<td><code>RX_EN_DESER</code> / <code>RX_DESER</code></td>
+<td><code>'2'</code>..<code>'8'</code></td>
+<td>解串使能 / 比率（串化宽映射 :48-51）</td>
+<td>lvds_prop.py:310-320；api_options :5</td>
+</tr>
+<tr>
+<td><code>RX_IN_PIN</code> / <code>RX_FASTCLK_PIN</code> / <code>RX_SLOWCLK_PIN</code></td>
+<td>引脚名</td>
+<td>输入 / 时钟端口</td>
+<td>lvds_prop.py:310-320</td>
+</tr>
+<tr>
+<td><code>RX_RST_PIN</code></td>
+<td>—</td>
+<td><strong>已废弃</strong>（"Not supported"，:332-335）——不要写进 ISF</td>
+<td>lvds_prop.py:332-335</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-lvds-约束规则-check_properties-实证">4.4 LVDS 约束规则（check_properties 实证）</h3>
+<ol>
+<li><strong>非 NORMAL 连接类型必须禁串化</strong>：<code>RX_CONN_TYPE</code> 为 <code>GCLK</code>/<code>RCLK</code>/<code>PLL_CLKIN</code>/<code>PLL_EXTFB</code> 时 <code>RX_EN_DESER</code> 必须关闭，否则 PT 拒绝（lvds_prop.py:447-462、:636-649）。</li>
+<li><strong>DYNAMIC 端接需要引脚</strong>：<code>RX_TERM=DYNAMIC</code> 时必须配 <code>RX_TERM_PIN</code>。</li>
+<li>TX/RX 成对约束见 §9：LVDS 所在 bank 电压强制 <code>3.3 V LVTTL / LVCMOS</code>。</li>
+</ol>
+<hr />
+<h2 id="5-mipi-硬-ip">5. MIPI 硬 IP</h2>
+<h3 id="5-1-三种形态-先分清再用">5.1 三种形态（先分清再用）</h3>
+<table>
+<thead>
+<tr>
+<th>形态</th>
+<th>block_type</th>
+<th>粒度</th>
+<th>用途</th>
+<th>属性权威</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>像素级</td>
+<td><code>MIPI_TX</code> / <code>MIPI_RX</code></td>
+<td>整链（像素接口→DPHY 一体）</td>
+<td>摄像头 RX / 显示屏 TX 的传统软 IP 形态</td>
+<td>mipi_prop.py</td>
+</tr>
+<tr>
+<td>lane 级软 DPHY</td>
+<td><code>MIPI_TX_LANE</code> / <code>MIPI_RX_LANE</code></td>
+<td>单 lane</td>
+<td>自组 DPHY 链路（命名反转陷阱见 §1.1）</td>
+<td>mipi_dphy_prop.py</td>
+</tr>
+<tr>
+<td>硬 DPHY</td>
+<td><code>MIPI_DPHY_TX</code> / <code>MIPI_DPHY_RX</code></td>
+<td>整块硬 PHY（含 PLL/SSC）</td>
+<td>高性能硬核 DPHY</td>
+<td>mipi_hard_dphy_prop.py + mipi_hard_dphy_prop_id.py</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-像素级-mipi_rx-属性表-mipi_prop-py-218-252">5.2 像素级 MIPI_RX 属性表（mipi_prop.py:218-252）</h3>
+<p>默认值：prop 文件无 <code>PropData</code> 默认条目，随器件库实例默认。合法值：api_options\mipi_rx_api_options.py:3-12。</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STATUS_EN</code></td>
+<td>状态报告使能</td>
+<td><strong>RX 引脚属性的门控</strong>——为 0 时 builder 跳过 CLEAR_PIN/ERROR_PIN/ULPS_CLK_PIN/ULPS_PIN（isf_exporter.py:1700, :1709-1710）</td>
+<td>mipi_prop.py:232；isf_exporter.py:1697-1710</td>
+</tr>
+<tr>
+<td><code>CAL_CLK_FREQ</code></td>
+<td>Range(80,120)（MHz）</td>
+<td>校准时钟频率</td>
+<td>mipi_prop.py:219；api_options :3</td>
+</tr>
+<tr>
+<td><code>CAL_CLK_INVERTED_EN</code> / <code>PIXEL_CLK_INVERTED_EN</code></td>
+<td>反相使能</td>
+<td>时钟反相</td>
+<td>mipi_prop.py:220-221</td>
+</tr>
+<tr>
+<td><code>TCLK_SETTLE</code> / <code>THS_SETTLE</code></td>
+<td><code>[40..2590] step10</code>（ns 级枚举）</td>
+<td>LP-HS 切换建立时间（PT 内置计算器 :519-548/:807-844，可由工具算出）</td>
+<td>mipi_prop.py:233-234；api_options :11-12</td>
+</tr>
+<tr>
+<td><code>RXD0_LANE</code> .. <code>RXD4_LANE</code></td>
+<td><code>data0</code>/<code>data1</code>/<code>data2</code>/<code>data3</code>/<code>clk</code>/<code>unused</code></td>
+<td>lane 逻辑映射（PhyLane.str2loglane_map :505-517）</td>
+<td>mipi_prop.py:222-231</td>
+</tr>
+<tr>
+<td><code>RXD0_PN_SWAP</code> .. <code>RXD4_PN_SWAP</code></td>
+<td>P/N 交换使能</td>
+<td>差分对极性交换</td>
+<td>mipi_prop.py:222-231</td>
+</tr>
+<tr>
+<td><code>VC_ENA_PIN</code> / <code>VC_PIN</code></td>
+<td>引脚名 / 虚拟通道号</td>
+<td>Virtual Channel 使能与选择</td>
+<td>mipi_prop.py:250-251</td>
+</tr>
+<tr>
+<td><code>DATA_TYPE_PIN</code> / <code>VALID_PIN</code> / <code>DATA_PIN</code> / <code>CNT_PIN</code></td>
+<td>引脚名</td>
+<td>数据类型 / 有效 / 数据 / 计数输出端口</td>
+<td>mipi_prop.py:238, :246, :249</td>
+</tr>
+<tr>
+<td><code>HSYNC_PIN</code> / <code>VSYNC_PIN</code></td>
+<td>引脚名</td>
+<td>行 / 场同步端口</td>
+<td>mipi_prop.py:241, :252</td>
+</tr>
+<tr>
+<td><code>PIXEL_CLK_PIN</code></td>
+<td>引脚名</td>
+<td>像素时钟端口</td>
+<td>mipi_prop.py:243</td>
+</tr>
+<tr>
+<td><code>RSTN_PIN</code> / <code>DPHY_RSTN_PIN</code></td>
+<td>引脚名</td>
+<td>逻辑复位 / DPHY 复位端口</td>
+<td>mipi_prop.py:239, :244</td>
+</tr>
+<tr>
+<td><code>CAL_CLK_PIN</code></td>
+<td>引脚名</td>
+<td>校准时钟端口</td>
+<td>mipi_prop.py:235</td>
+</tr>
+<tr>
+<td><code>LANES_PIN</code></td>
+<td>引脚名</td>
+<td>激活 lane 数输出端口</td>
+<td>mipi_prop.py:242</td>
+</tr>
+<tr>
+<td><code>CLEAR_PIN</code> / <code>ERROR_PIN</code> / <code>ULPS_PIN</code> / <code>ULPS_CLK_PIN</code></td>
+<td>引脚名</td>
+<td>状态类端口——<strong>仅 STATUS_EN=1 时进 ISF</strong></td>
+<td>mipi_prop.py:236, :240, :247-248；isf_exporter.py:1709-1710</td>
+</tr>
+<tr>
+<td><code>TYPE_PIN</code></td>
+<td>—</td>
+<td><strong>已废弃</strong>（→ <code>DATA_TYPE_PIN</code>，:331）——用新名</td>
+<td>mipi_prop.py:245, :331</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-3-像素级-mipi_tx-属性表-mipi_prop-py-560-599">5.3 像素级 MIPI_TX 属性表（mipi_prop.py:560-599）</h3>
+<p>builder 先输出 <code>PHY_FREQ</code>/<code>ESC_CLK_FREQ</code> 再输出其余属性（<code>set_front</code>，isf_exporter.py:1626）。合法值：api_options\mipi_tx_api_options.py:3-19。</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PHY_FREQ</code></td>
+<td>OptionValidator 80.0→1500.0 MHz（1.25/2.5/5 步进，约 340 个值）</td>
+<td>DPHY 线速率（<strong>builder 置前输出</strong>）</td>
+<td>mipi_prop.py:564；api_options :4；isf_exporter.py:1626</td>
+</tr>
+<tr>
+<td><code>ESC_CLK_FREQ</code></td>
+<td>Range(11,20)（MHz）</td>
+<td>escape 时钟频率（<strong>builder 置前输出</strong>）</td>
+<td>mipi_prop.py:562；api_options :3；isf_exporter.py:1626</td>
+</tr>
+<tr>
+<td><code>REFCLK_FREQ</code></td>
+<td><code>6.0/12.0/19.2/25.0/26.0/27.0/38.4/52.0</code>（MHz）</td>
+<td>参考时钟频率</td>
+<td>mipi_prop.py:566；api_options :5</td>
+</tr>
+<tr>
+<td><code>REFCLK_INST</code> / <code>REFCLK_RES</code></td>
+<td>PLL 实例名 / 资源</td>
+<td>参考时钟来源绑定（STR 层空选项 :680-684，可不设）</td>
+<td>mipi_prop.py:567-568, :680-684</td>
+</tr>
+<tr>
+<td><code>CONT_PHY_CLK_EN</code></td>
+<td>PHY 持续使能</td>
+<td>连续时钟模式</td>
+<td>mipi_prop.py:561</td>
+</tr>
+<tr>
+<td><code>ESC_CLK_INVERTED_EN</code> / <code>PIXEL_CLK_INVERTED_EN</code></td>
+<td>反相使能</td>
+<td>时钟反相</td>
+<td>mipi_prop.py:563, :565</td>
+</tr>
+<tr>
+<td><code>TCLK_POST</code></td>
+<td><code>[113,121,129,137,145,169,209,249]</code></td>
+<td>CLK post 时序</td>
+<td>mipi_prop.py:569；api_options :6</td>
+</tr>
+<tr>
+<td><code>TCLK_PRE</code></td>
+<td><code>[250,300,400,550]</code></td>
+<td>CLK pre 时序</td>
+<td>mipi_prop.py:570；api_options :7</td>
+</tr>
+<tr>
+<td><code>TCLK_PREPARE</code></td>
+<td><code>[48,56,64,72]</code></td>
+<td>CLK prepare</td>
+<td>mipi_prop.py:571；api_options :8</td>
+</tr>
+<tr>
+<td><code>TCLK_TRAIL</code></td>
+<td><code>[16..112] step8</code></td>
+<td>CLK trail</td>
+<td>mipi_prop.py:572；api_options :9</td>
+</tr>
+<tr>
+<td><code>TCLK_ZERO</code></td>
+<td><code>[304,312,320,328,336,360,400,440]</code></td>
+<td>CLK zero</td>
+<td>mipi_prop.py:573；api_options :10</td>
+</tr>
+<tr>
+<td><code>THS_PREPARE</code></td>
+<td><code>[58,66,74,90]</code></td>
+<td>HS prepare</td>
+<td>mipi_prop.py:574；api_options :11</td>
+</tr>
+<tr>
+<td><code>THS_TRAIL</code></td>
+<td><code>[10..186] step8</code> + <code>970</code></td>
+<td>HS trail</td>
+<td>mipi_prop.py:575；api_options :12</td>
+</tr>
+<tr>
+<td><code>THS_ZERO</code></td>
+<td><code>[142,150,190,230]</code></td>
+<td>HS zero</td>
+<td>mipi_prop.py:576；api_options :13</td>
+</tr>
+<tr>
+<td><code>TXD0_LANE</code> .. <code>TXD4_LANE</code></td>
+<td><code>data0</code>/<code>data1</code>/<code>data2</code>/<code>data3</code>/<code>clk</code>/<code>unused</code></td>
+<td>lane 逻辑映射（:793-805）</td>
+<td>mipi_prop.py:577-581</td>
+</tr>
+<tr>
+<td><code>HRES_PIN</code> / <code>FRAME_MODE_PIN</code></td>
+<td>引脚名</td>
+<td>行分辨率 / 帧模式端口</td>
+<td>mipi_prop.py:585-586</td>
+</tr>
+<tr>
+<td><code>DATA_PIN</code> / <code>VALID_PIN</code> / <code>TYPE_PIN(DATA_TYPE_PIN)</code> / <code>VC_PIN</code> / <code>HSYNC_PIN</code> / <code>VSYNC_PIN</code> / <code>PIXEL_CLK_PIN</code> / <code>LANES_PIN</code></td>
+<td>引脚名</td>
+<td>视频时序与数据端口</td>
+<td>mipi_prop.py:582, :587-589, :592, :597-599</td>
+</tr>
+<tr>
+<td><code>ESC_CLK_PIN</code> / <code>RSTN_PIN</code> / <code>DPHY_RSTN_PIN</code></td>
+<td>引脚名</td>
+<td>escape 时钟 / 复位端口</td>
+<td>mipi_prop.py:583-584, :590</td>
+</tr>
+<tr>
+<td><code>ULPS_CLK_ENTER_PIN</code> / <code>ULPS_CLK_EXIT_PIN</code> / <code>ULPS_ENTER_PIN</code> / <code>ULPS_EXIT_PIN</code></td>
+<td>引脚名</td>
+<td>ULPS 进出握手端口</td>
+<td>mipi_prop.py:593-596</td>
+</tr>
+<tr>
+<td><code>TYPE_PIN</code></td>
+<td>—</td>
+<td><strong>已废弃</strong>（:712）——用 <code>DATA_TYPE_PIN</code>；TX writer 另剔除只读属性（:728-735）</td>
+<td>mipi_prop.py:591, :712, :728-735</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-4-lane-级软-dphy-属性表-mipi_dphy_prop-py">5.4 lane 级软 DPHY 属性表（mipi_dphy_prop.py）</h3>
+<p><strong>RX v1（<code>MIPIDPhyRxProp.PropId</code> :206-229；合法值 api_options\mipi_dphy_rx_api_options.py:3-8）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MODE</code></td>
+<td><code>DATA_LANE</code> / <code>CLOCK_LANE</code>（API 别名 <code>DATA</code>/<code>CLOCK</code>；值映射 :403-416）</td>
+<td>lane 角色</td>
+<td>mipi_dphy_prop.py:206-229, :403-416</td>
+</tr>
+<tr>
+<td><code>CONN_TYPE</code></td>
+<td><code>GCLK</code> / <code>RCLK</code>（值映射 :430-440）</td>
+<td>输出时钟连接类型</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>DELAY_MODE</code></td>
+<td><code>STATIC</code> / <code>DYNAMIC</code>（值映射 :418-428）</td>
+<td>延迟模式</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>DELAY</code></td>
+<td>Range(0,63)</td>
+<td>延迟级数</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>FIFO</code></td>
+<td>FIFO 使能</td>
+<td>内部 FIFO</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>REVERSIBLE</code></td>
+<td>lane 可逆使能</td>
+<td>lane 极性可配</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>HS_IN_PIN</code> / <code>HS_TERM_PIN</code> / <code>HS_ENA_PIN</code></td>
+<td>引脚名</td>
+<td>HS 输入 / 端接 / 使能端口</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>LP_P_IN_PIN</code> / <code>LP_P_OE_PIN</code> / <code>LP_P_OUT_PIN</code> / <code>LP_N_IN_PIN</code> / <code>LP_N_OE_PIN</code> / <code>LP_N_OUT_PIN</code></td>
+<td>引脚名</td>
+<td>LP 差分输入 / 输出 / OE 端口</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>CLKOUT_PIN</code> / <code>RST_PIN</code></td>
+<td>引脚名</td>
+<td>时钟输出 / 复位端口</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>DLY_ENA_PIN</code> / <code>DLY_INC_PIN</code> / <code>DLY_RST_PIN</code></td>
+<td>引脚名</td>
+<td>动态延迟控制端口</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>FIFO_RD_PIN</code> / <code>FIFO_EMPTY_PIN</code></td>
+<td>引脚名</td>
+<td>FIFO 读 / 空端口</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>GBUF</code></td>
+<td>GBUF 选项</td>
+<td>全局缓冲</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RX v2 增补（<code>EfxMIPIDPhyRxV2Prop</code> :344-372；合法值 api_options\mipi_dphy_rx_v2_api_options.py:3-11）</strong>：<code>CLK_SOURCE</code>（<code>CLK0</code>/<code>CLK1</code>，:352）、<code>SERIAL_WIDTH</code>（<code>8</code>/<code>16</code>，:353）、<code>RECEIVER_POWER</code>（<code>VCCAUX</code>/<code>VCCIO</code>，:354）、<code>DLYCLK_PIN</code>（:372）。</p>
+<p><strong>TX v1（<code>MIPIDPhyTxProp.PropId</code> :478-494；合法值 api_options\mipi_dphy_tx_api_options.py:3-6）</strong>：<code>MODE</code>（同 RX 四值；builder 按 mode 输出 create 参数 <code>mode="CLOCK_LANE"</code>/<code>"DATA_LANE"</code>，isf_exporter.py:1764-1767）、<code>DELAY</code>（Range(0,63)）、<code>REVERSIBLE</code>、<code>FASTCLK_PIN</code>/<code>SLOWCLK_PIN</code>、<code>HS_OE_PIN</code>/<code>HS_OUT_PIN</code>、六个 LP 引脚（<code>LP_N_IN/OE/OUT</code>、<code>LP_P_IN/OE/OUT</code>）、<code>RST_PIN</code>；<code>FASTCLK_INVERT_EN</code>/<code>SLOWCLK_INVERT_EN</code> 为 <strong>skip ISF</strong>（:508-513）。<strong>TX v2 增</strong> <code>SERIAL_WIDTH</code>（<code>8</code>/<code>16</code>，:586；合法值 mipi_dphy_tx_v2_api_options.py:7）。</p>
+<h3 id="5-5-硬-dphy-属性表-mipi_hard_dphy_prop-py-mipi_hard_dphy_prop_id-py">5.5 硬 DPHY 属性表（mipi_hard_dphy_prop.py + mipi_hard_dphy_prop_id.py）</h3>
+<p>硬 DPHY 属性分两类：<strong>参数类</strong>（经 <code>get_api_id_str2_param_name_map</code> 落到 PHY 参数）与<strong>引脚类</strong>（auto-instantiation 端口名）。API 属性字符串即 PropId 大写名。</p>
+<p><strong>TX 参数（MIPIHardDPHYTxProp，mipi_hard_dphy_prop.py:122；映射表 :264-308；合法值 api_options\mipi_hard_dphy_prop_id_tx_api_options.py:3-31）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>合法值</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REF_CLK_FREQUENCY</code></td>
+<td><code>12.0/19.2/25.0/26.0/27.0/38.4/52.0</code>（MHz）</td>
+<td>参考时钟频率</td>
+<td>prop.py:264-308；api_options :22</td>
+</tr>
+<tr>
+<td><code>PHY_BANDWIDTH</code></td>
+<td>Range(0,10000)（Mbps）</td>
+<td>PHY 线速率</td>
+<td>prop.py:264-308；api_options :17</td>
+</tr>
+<tr>
+<td><code>REF_CLK_SELECT</code> / <code>REF_CLK_NAME</code></td>
+<td><code>core</code>/<code>pll</code>/<code>gpio</code> / PLL 实例名</td>
+<td>参考时钟来源与实例</td>
+<td>prop.py:264-308；api_options :23-24</td>
+</tr>
+<tr>
+<td><code>ENABLE_TURNAROUND</code></td>
+<td>使能</td>
+<td>Turnaround 使能</td>
+<td>prop.py:264-308</td>
+</tr>
+<tr>
+<td><code>ENABLE_SSC</code> / <code>PLL_SSC_PERIOD</code> / <code>PLL_SSC_AMP</code> / <code>PLL_SSC_AMP_INIT</code></td>
+<td>使能 / Range(30,33) / Range(2500,4999) / Range(2501,5000)</td>
+<td>扩频时钟（SSC）配置</td>
+<td>prop.py:264-308；api_options :18-21</td>
+</tr>
+<tr>
+<td><code>ENABLE_ADV_TIMING</code></td>
+<td>使能</td>
+<td>高级时序参数使能</td>
+<td>prop.py:264-308</td>
+</tr>
+<tr>
+<td><code>PLL_PRE_DIV</code> / <code>PLL_FBK_INT</code> / <code>PLL_FBK_FRA</code> / <code>CYCLE_SEL</code></td>
+<td>Range(0,3) / Range(0,511) / Range(0,16777215) / Range(0,7)</td>
+<td>内部 PLL 分频 / 反馈配置</td>
+<td>prop.py:264-308；api_options :25-30</td>
+</tr>
+<tr>
+<td><code>DATA_WIDTH</code></td>
+<td><code>8</code> / <code>16</code></td>
+<td>内部数据位宽</td>
+<td>prop.py:264-308；api_options :14</td>
+</tr>
+<tr>
+<td><code>NUM_DATA_LANES</code></td>
+<td><code>1</code> / <code>2</code> / <code>4</code></td>
+<td>数据 lane 数</td>
+<td>prop.py:264-308；api_options :16</td>
+</tr>
+<tr>
+<td><code>PHY_LANE_0</code> .. <code>PHY_LANE_4</code></td>
+<td><code>unused</code>/<code>clk</code>/<code>data0</code>/<code>data1</code>/<code>data2</code>/<code>data3</code></td>
+<td>lane 物理映射（另有 <code>PHY_LANE_n_PN_SWAP</code> 极性交换）</td>
+<td>prop.py:264-308；api_options :19</td>
+</tr>
+<tr>
+<td><code>DLANE_HS_PRE_TIME</code> / <code>DLANE_HS_ZERO_TIME</code> / <code>DLANE_HS_TRAIL_TIME</code></td>
+<td>Range(0,255)</td>
+<td>data lane HS 时序</td>
+<td>prop.py:264-308；api_options :26-27</td>
+</tr>
+<tr>
+<td><code>CLANE_HS_PRE_TIME</code> / <code>CLANE_HS_ZERO_TIME</code> / <code>CLANE_HS_TRAIL_TIME</code> / <code>CLANE_CLK_PRE_TIME</code> / <code>CLANE_CLK_POST_TIME</code></td>
+<td>Range(0,255)</td>
+<td>clock lane 时序</td>
+<td>prop.py:264-308；api_options :25-28</td>
+</tr>
+<tr>
+<td><code>RX_CLK_ESC_CONN_TYPE</code> / <code>WORD_CLKOUT_HS_CONN_TYPE</code></td>
+<td><code>normal</code>/<code>rclk</code> / <code>rclk</code>/<code>gclk</code></td>
+<td>escape / word 时钟连接类型</td>
+<td>prop.py:264-308；api_options :12-13</td>
+</tr>
+<tr>
+<td><code>BUF_RX_CLK_ESC_NAME</code> / <code>BUF_WORD_CLKOUT_HS_NAME</code></td>
+<td>缓冲名</td>
+<td>escape / word 时钟缓冲实例</td>
+<td>prop.py:264-308</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RX 参数（MIPIHardDPHYRxProp，:324；映射表 :472-501；合法值 api_options\mipi_hard_dphy_prop_id_rx_api_options.py:3-18）</strong>：<code>CFG_CLK_FREQ</code>（Range(0,255)）、<code>DATA_RATE</code>（Range(80,2500) Mbps）、<code>DATA_WIDTH</code>（<code>8</code>/<code>16</code>）、<code>ENABLE_TURNAROUND</code>、<code>NUM_DATA_LANES</code>（<code>1</code>/<code>2</code>/<code>4</code>）、<code>PHY_LANE_0..4</code>（+<code>PN_SWAP</code>）、<code>PRE_TIME_CLK</code>/<code>PRE_TIME_LANE01</code>/<code>PRE_TIME_LANE23</code>（Range(0,255)）、<code>REF_CLK_NAME</code>、<code>RX_CLK_ESC_CONN_TYPE</code>/<code>WORD_CLKOUT_HS_CONN_TYPE</code>、<code>BUF_RX_CLK_ESC_NAME</code>/<code>BUF_WORD_CLKOUT_HS_NAME</code>（prop.py:472-501；api_options :3-18）。</p>
+<p><strong>TX 引脚类（MIPIHardDPHYTxPropId，mipi_hard_dphy_prop_id.py:5-120）</strong>：<code>RESET_N_PIN</code>、<code>PLL_UNLOCK_PIN</code>、<code>DEBUG_CLK_PIN</code>、<code>DIRECTION_PIN</code>、<code>ERR_*</code> 系列、<code>STOPSTATE_*</code> 系列、<code>TEST_*</code> 系列、<code>TX_DATA_HS_LAN0-3_PIN</code> 等。<strong>RX 引脚类（MIPIHardDPHYRxPropId，:129-248）</strong>：<code>RST0_N_PIN</code>/<code>RST1_N_PIN</code>、<code>LP_CLK1_PIN</code>、<code>ERR_SOT_HS_LAN0-3_PIN</code>、<code>ERR_SOT_SYNC_HS_LAN0-3_PIN</code> 等双通道引脚。完整引脚清单直接查阅这两个 PropId 文件（引脚名最终落到 auto-instantiation 生成的顶层端口）。</p>
+<hr />
+<h2 id="6-专用-api-内部层">6. 专用 API（内部层）</h2>
+<p><strong>公开面没有专用方法</strong>——脚本/ISF 只用 §2 三件套。专用 API 存在于 PT 内部，由 ISF builder 挂接（自动导入/导出时使用），对写 ISF 的用户透明：</p>
+<table>
+<thead>
+<tr>
+<th>Builder（isf_exporter.py）</th>
+<th>挂接点</th>
+<th>内部 API / Prop 构建</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>JTAGISFBuilder</code></td>
+<td><code>block_reg=jtag_reg</code>、<code>db_block_type=BlockType.jtag</code>、<code>api=ObjectType.jtag</code></td>
+<td><code>IntJTAGAPI.build_jtag_api</code> + <code>JTAGProp.build_jtag_prop</code></td>
+<td>:1551-1567</td>
+</tr>
+<tr>
+<td><code>MIPITxISFBuilder</code> / <code>MIPIRxISFBuilder</code></td>
+<td><code>db_block_type=BlockType.mipi</code></td>
+<td>内部 MIPI API + <code>MIPITxProp</code>/<code>MIPIRxProp</code></td>
+<td>:1570-1637, :1640-1713</td>
+</tr>
+<tr>
+<td><code>MIPIDPhyTxISFBuilder</code> / <code>MIPIDPhyRxISFBuilder</code></td>
+<td><code>db=design.mipi_dphy_type</code>（代际感知）</td>
+<td>内部 DPHY API + <code>MIPIDPhy*Prop</code></td>
+<td>:1716-1811, :1812-1911</td>
+</tr>
+<tr>
+<td><code>MIPIHardDPHYTxISFBuilder</code> / <code>MIPIHardDPHYRxISFBuilder</code></td>
+<td><code>db=BlockType.mipi_hard_dphy</code></td>
+<td>内部硬 DPHY API + <code>MIPIHardDPHY*Prop</code></td>
+<td>:1912-1930, :1932-1950</td>
+</tr>
+<tr>
+<td><code>LVDS*ISFBuilder</code>（legacy/Adv/V3 全系）</td>
+<td>legacy <code>db=BlockType.lvds</code>；Adv <code>db=design.lvds_type</code>；V3 仅换 <code>IntEfxLVDSV3API</code></td>
+<td>内部 LVDS API + <code>LVDS*Prop</code></td>
+<td>:2167-2510</td>
+</tr>
+</tbody>
+</table>
+<p>所有 builder 继承 <code>BlockISFBuilder</code>（:1247），命令产出统一走 <code>create_inst</code> / <code>set_prop</code> / <code>assign_resource</code> 三种 CommandType（:1252-1264）。用户侧若需编程访问，走 DesignAPI 泛型方法（见《Efinity-DesignAPI方法参考.md》）。</p>
+<hr />
+<h2 id="7-完整-isf-配置示例">7. 完整 ISF 配置示例</h2>
+<blockquote>
+<p><strong>JTAG</strong>（§3.2）是官方实录，可直接运行。<strong>LVDS / MIPI 在全部官方 examples 中没有 ISF 样本</strong>（本卷调查结论），以下模板按属性表构造——<strong>每次修改后必须自检</strong>：</p>
+<p><code>cli\import_gpio.bat --peri &lt;project&gt;.peri.xml --input &lt;file&gt;.isf --dry-run</code></p>
+<p>exit code 0 才有效（见《Efinity-ISF语法参考.md》与硬约束 §1/§15）。</p>
+</blockquote>
+<h3 id="7-1-lvds-示例-构造型-adv-代-tx-rx-对">7.1 LVDS 示例（构造型，Adv 代 TX + RX 对）</h3>
+<pre><code class="language-tcl"># ========== ① bootstrap（一次性；引导编译后注释掉）==========
+design.create_block(&quot;lvds_tx_inst&quot;, &quot;LVDS_TX&quot;, tx_mode=&quot;DATA&quot;)      # TX create 带 tx_mode（isf_exporter.py:2225-2235）
+design.create_block(&quot;lvds_rx_inst&quot;, &quot;LVDS_RX&quot;, rx_conn_type=&quot;NORMAL&quot;) # RX create 带 rx_conn_type（:2334-2344）
+
+# ========== ② TX 重放安全段（幂等）==========
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_MODE&quot;, &quot;DATA&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_EN_SER&quot;, &quot;1&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_SER&quot;, &quot;4&quot;, &quot;LVDS_TX&quot;)          # 串化比 1:4
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_DIFF_TYPE&quot;, &quot;LVDS&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_VOD&quot;, &quot;TYPICAL&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_PRE_EMP&quot;, &quot;MEDIUM_LOW&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_OUT_PIN&quot;, &quot;lvds_tx_out&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_FASTCLK_PIN&quot;, &quot;lvds_tx_fclk&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_SLOWCLK_PIN&quot;, &quot;lvds_tx_sclk&quot;, &quot;LVDS_TX&quot;)
+
+# ========== ③ RX 重放安全段（幂等）==========
+# 注意：NORMAL 才允许开解串（§4.4 规则 1）
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_CONN_TYPE&quot;, &quot;NORMAL&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_EN_DESER&quot;, &quot;1&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_DESER&quot;, &quot;4&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_TERM&quot;, &quot;ON&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_DELAY_MODE&quot;, &quot;STATIC&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_DELAY&quot;, &quot;0&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_IN_PIN&quot;, &quot;lvds_rx_in&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_FASTCLK_PIN&quot;, &quot;lvds_rx_fclk&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_SLOWCLK_PIN&quot;, &quot;lvds_rx_sclk&quot;, &quot;LVDS_RX&quot;)
+</code></pre>
+<h3 id="7-2-mipi-示例-构造型-像素级-rx">7.2 MIPI 示例（构造型，像素级 RX）</h3>
+<pre><code class="language-tcl"># ========== ① bootstrap（一次性）==========
+design.create_block(&quot;cam_mipi_rx&quot;, &quot;MIPI_RX&quot;)
+
+# ========== ② 重放安全段（幂等）==========
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;STATUS_EN&quot;, &quot;1&quot;, &quot;MIPI_RX&quot;)   # 必须先于引脚状态类属性（builder 跳过逻辑，isf_exporter.py:1709-1710）
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;CAL_CLK_FREQ&quot;, &quot;100&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RXD0_LANE&quot;, &quot;clk&quot;, &quot;MIPI_RX&quot;)     # lane0 = clock
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RXD1_LANE&quot;, &quot;data0&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RXD2_LANE&quot;, &quot;data1&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;PIXEL_CLK_PIN&quot;, &quot;cam_px_clk&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;DATA_PIN&quot;, &quot;cam_px_data&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;VALID_PIN&quot;, &quot;cam_px_valid&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RSTN_PIN&quot;, &quot;cam_rst_n&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;ERROR_PIN&quot;, &quot;cam_mipi_err&quot;, &quot;MIPI_RX&quot;)  # STATUS_EN=1 才有效
+</code></pre>
+<h3 id="7-3-硬-dphy-示例-构造型-tx">7.3 硬 DPHY 示例（构造型，TX）</h3>
+<pre><code class="language-tcl"># ========== ① bootstrap（一次性）==========
+design.create_block(&quot;hd_dphy_tx&quot;, &quot;MIPI_DPHY_TX&quot;)   # 注意：硬 DPHY 用 &quot;MIPI_DPHY_TX&quot;，不是 &quot;MIPI_TX_LANE&quot;
+
+# ========== ② 重放安全段（幂等）==========
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;REF_CLK_FREQUENCY&quot;, &quot;52.0&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_BANDWIDTH&quot;, &quot;800&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;NUM_DATA_LANES&quot;, &quot;2&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;DATA_WIDTH&quot;, &quot;16&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_0&quot;, &quot;clk&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_1&quot;, &quot;data0&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_2&quot;, &quot;data1&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_3&quot;, &quot;unused&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_4&quot;, &quot;unused&quot;, &quot;MIPI_DPHY_TX&quot;)
+</code></pre>
+<hr />
+<h2 id="8-常见错误与排查">8. 常见错误与排查</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>根因</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>二次编译报 <code>GPIO/PLL/JTAG ... exists</code></td>
+<td><code>create_*</code> 留在常驻 ISF 被重放</td>
+<td>引导编译生成 peri.xml 后立即注释 <code>create_*</code> 行（硬约束 §15）</td>
+</tr>
+<tr>
+<td>MIPI lane 属性全部不被识别</td>
+<td>block_type 写反：把硬 DPHY 写成 <code>MIPI_TX_LANE</code>（或反之）</td>
+<td>对照 §1.1：带 <code>LANE</code> = 软 lane 级；带 <code>DPHY</code> = 硬 DPHY（object_db.py:121-127）</td>
+</tr>
+<tr>
+<td><code>set_property</code> 第 4 参报未知 block</td>
+<td>字符串大小写/拼写错误</td>
+<td>只允许 §1 总表中的精确字符串（supp_block 白名单，isf_exporter.py:149-173）</td>
+</tr>
+<tr>
+<td>LVDS RX <code>GCLK/RCLK/PLL_CLKIN/PLL_EXTFB</code> + 串化被拒</td>
+<td>非 NORMAL 连接类型禁止解串</td>
+<td>关 <code>RX_EN_DESER</code>（lvds_prop.py:447-462, :636-649）</td>
+</tr>
+<tr>
+<td>MIPI RX 的 ERROR/ULPS/CLEAR 引脚没出现在生成端口里</td>
+<td><code>STATUS_EN</code> 为 0，builder 跳过状态类引脚</td>
+<td>先置 <code>STATUS_EN=1</code>（isf_exporter.py:1700, :1709-1710）</td>
+</tr>
+<tr>
+<td><code>assign_resource</code> 行没被导出</td>
+<td>实例 <code>device</code>（RESOURCE）为空</td>
+<td>builder 只在非空时输出（isf_exporter.py:1427-1449）；补设 RESOURCE</td>
+</tr>
+<tr>
+<td>ISF 里写了 <code>TYPE_PIN</code> 被拒/无效</td>
+<td>MIPI RX/TX 的 <code>TYPE_PIN</code> 已废弃</td>
+<td>改用 <code>DATA_TYPE_PIN</code>（mipi_prop.py:331, :712）</td>
+</tr>
+<tr>
+<td>ISF 里写了 legacy <code>RX_RST_PIN</code>/<code>TX_RST_PIN</code> 无效</td>
+<td>LVDS legacy 复位引脚已废弃（Adv 代重新引入）</td>
+<td>legacy 去掉该行；Adv 代正常使用（lvds_prop.py:332-335, :896-899）</td>
+</tr>
+<tr>
+<td><code>PHY_FREQ</code>/<code>ESC_CLK_FREQ</code> 等值报不合法</td>
+<td>不在静态合法值集合</td>
+<td>对照 §5.3 合法值（api_options 校验器 OptionValidator/RangeValidator）</td>
+</tr>
+<tr>
+<td><code>TCLK_*</code>/<code>THS_*</code> 手算值不在枚举里</td>
+<td>值集为离散枚举</td>
+<td>使用 §5.3 列出的合法值，或交由 PT 内置计算器生成（mipi_prop.py:519-548, :807-844）</td>
+</tr>
+<tr>
+<td>LVDS bank 报电压错误</td>
+<td>见 §9 专节</td>
+<td>见 §9</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-bank-电压共存规则专节-lvds-mipi-关键约束">9. Bank 电压共存规则专节（LVDS / MIPI 关键约束）</h2>
+<p><strong>规则引擎</strong>：<code>pt\bin\common_device\iobank\iobank_rule.py</code> 的 <code>IOBankChecker</code> 在 Design Check 阶段挂两条规则（<code>_build_rules</code> :108-113）：</p>
+<ol>
+<li><strong><code>io_bank_rule_voltage_assignment</code></strong>（<code>IOBankStandard</code>，:126-151）：逐 bank 校验每个 IO 的 voltage standard 是否在该 bank 的器件库支持表内——<code>checker.reg.is_io_standard_valid(device_db, bank, standard)</code>（:148-149），失败报 "I/O Voltage ... is not supported for the bank"（:150-151）。<strong>bank 能用什么电压由 device db 定义</strong>，规则只做机制校验。</li>
+<li><strong><code>io_bank_rule_lvds</code></strong>（<code>IOBankLVDS</code>，:155-195）：bank 内只要存在 LVDS 实例，该 bank 的 IO standard <strong>必须</strong>等于 <code>LVDS_IO_STANDARD = "3.3 V LVTTL / LVCMOS"</code>（:36），否则报 "I/O Voltage has to be set to ... when LVDS is used"（:193-194）。LVDS bank 集合由 <code>set_lvds_bank_map</code> 维护（:61-106）。</li>
+</ol>
+<p><strong>由此得出的共存结论（实操约束，与既有硬约束一致）</strong>：</p>
+<ul>
+<li><strong>MIPI DPHY bank 必须 1.2 V</strong>——具体数值由 device db 支持表定义（iobank_rule.py 只做机制校验，:48 注释提及 mipi dphy 走同一电压规则）。</li>
+<li><strong>LVDS bank 强制 3.3 V</strong>（上条规则 2，源码硬编码 :36）。</li>
+<li>一个 bank 无法同时满足「仅 1.2 V」与「必须 3.3 V」→ <strong>MIPI 与 LVDS 不能共存同一 bank</strong>。违规的第一表现形通常是 <code>io_bank_rule_voltage_assignment</code> 报错。</li>
+<li>ISF 中用 <code>design.set_iobank_voltage("&lt;bank&gt;", "&lt;voltage&gt;")</code> 声明 bank 电压（幂等，重放安全）；同一 bank 所有 IO 必须使用兼容该电压的 IO standard。</li>
+</ul>
+<p><strong>排查动作</strong>：报 <code>io_bank_rule_voltage_assignment</code> 时，按「检查该 bank 电压声明 → 列出 bank 内全部实例的 IO standard → 对照 device db 支持表 → 把 MIPI 与 LVDS 拆到不同 bank」四步处理。</p>
+<hr />
+<h2 id="10-交叉引用">10. 交叉引用</h2>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>《Efinity硬IP-PLL与OSC参考.md》</td>
+<td>硬 IP 系列第一卷：PLL/OSC 创建与属性</td>
+</tr>
+<tr>
+<td>《Efinity硬IP-DDR参考.md》</td>
+<td>硬 IP 系列第二卷：DDR 控制器（其「无官方样本 → 属性表构造 + dry-run」方法论与本卷 §7 一致）</td>
+</tr>
+<tr>
+<td>《Efinity-DesignAPI方法参考.md》</td>
+<td>泛型 <code>create_block</code>/<code>set_property</code>/<code>assign_resource</code> 的完整方法签名与语义</td>
+</tr>
+<tr>
+<td>《Efinity-ISF语法参考.md》</td>
+<td>ISF 执行模型（exec）、重放安全命令集、dry-run 自检流程</td>
+</tr>
+<tr>
+<td>《Efinity文件格式-peri.xml.md》</td>
+<td><code>&lt;design&gt;.peri.xml</code> 的 <code>efxpt:design_db</code> 结构——ISF 三件套命令的最终落点</td>
+</tr>
+<tr>
+<td>《Efinity工具链参考.md》</td>
+<td><code>efx_run --flow compile</code>、<code>import_gpio.bat --dry-run</code> 等命令行参数</td>
+</tr>
+<tr>
+<td>工作区硬约束 <code>rules-efinity-hard.md</code> §3/§15</td>
+<td>bank 电压与接口基线契约的规则原文</td>
+</tr>
+</tbody>
+</table></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

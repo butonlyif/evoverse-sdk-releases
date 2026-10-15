@@ -1,0 +1,1363 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity XML Schema Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Native fields and structure of the project XML.</span>
+<code>efinity/xml-project-schema.md</code>
+<a href="../../../efinity/xml-project-schema.md">Markdown source</a></p>
+<h1>Efinity XML Schema Reference</h1></header>
+<main class="article"><h1 id="efinity-project-file-xml-schema-reference-enf_proj">Efinity Project File XML Schema Reference (enf_proj)</h1>
+<blockquote>
+<p><strong>Applies to</strong>: Efinity 2026.1 (official examples carry <code>sw_version="2025.2.276"</code>; the schema is the same-version <code>enf_proj.xsd</code>)
+<strong>Last updated</strong>: 2026-09-25
+<strong>Evidence sources for this document</strong> (all first-hand reads; all paths absolute):</p>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authoritative schema</td>
+<td><code>c:\Efinity\2026.1\bin\enf_proj.xsd</code> (396 lines)</td>
+</tr>
+<tr>
+<td>Official example 1</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code> (109 lines, unified flow)</td>
+</tr>
+<tr>
+<td>Official example 2</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg\helloworld.xml</code> (107 lines, debug flow)</td>
+</tr>
+<tr>
+<td>Official example 3</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-ru\helloworld0\helloworld0.xml</code> (107 lines, usercode)</td>
+</tr>
+<tr>
+<td>Orchestrator</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run.py</code> (<code>parse_project_file</code> L635-990)</td>
+</tr>
+<tr>
+<td>PNR wrapper</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run_pnr.py</code></td>
+</tr>
+<tr>
+<td>Unified PT</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run_pt_unified.py</code></td>
+</tr>
+<tr>
+<td>Project database</td>
+<td><code>C:\Efinity\2026.1\python311\Lib\site-packages\projectdb\db.py</code></td>
+</tr>
+<tr>
+<td>Namespace constant</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run_common.py</code> L10</td>
+</tr>
+<tr>
+<td>EvoVerse generator</td>
+<td><code>c:\work\awesomsdk\sdk\cli\evoverse</code> (<code>_build_native_project_xml</code> L1868-1954)</td>
+</tr>
+<tr>
+<td>EvoVerse IP decision</td>
+<td><code>c:\work\awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr />
+<h2 id="1-positioning-namespace-and-layout-rules">1. Positioning, namespace, and layout rules</h2>
+<h3 id="1-1-what-the-project-file-is">1.1 What the project file is</h3>
+<p><code>&lt;project_name&gt;.xml</code> is the <strong>single entry file</strong> of an Efinity project: the GUI opening a project, <code>efx_run --flow compile</code> orchestrating a build, and the tool binaries (map/pnr/pgm) reading their configuration sections all start from it. It is defined by <code>enf_proj.xsd</code>, with targetNamespace:</p>
+<pre><code class="language-xml">xmlns:efx=&quot;http://www.efinixinc.com/enf_proj&quot;
+</code></pre>
+<p><strong>Evidence</strong>: <code>c:\Efinity\2026.1\bin\enf_proj.xsd</code> L1-L7; <code>c:\Efinity\2026.1\scripts\efx_run_common.py</code> L10 (<code>EFX_PRJ_XML_NAMESPACES = {'efx': 'http://www.efinixinc.com/enf_proj'}</code> — the orchestration scripts resolve by this prefix; a wrong namespace is equivalent to every <code>efx:</code> element not existing).</p>
+<h3 id="1-2-hard-layout-rules-violation-failure">1.2 Hard layout rules (violation = failure)</h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The project XML lives in the project root</td>
+<td>Every official example does this; do not invent subdirectories such as <code>efinity_project/</code></td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code> sits in the example root</td>
+</tr>
+<tr>
+<td>All relative paths resolve against <strong>the directory holding the XML file</strong></td>
+<td>SDC, RTL, ISF, flist — all of them</td>
+<td>§1.3 of this document</td>
+</tr>
+<tr>
+<td>The namespace must be exact</td>
+<td>Tools resolve by the prefix→URI mapping</td>
+<td><code>efx_run_common.py</code> L10</td>
+</tr>
+<tr>
+<td>Empty <code>&lt;efx:inter_file name=""&gt;</code></td>
+<td>See the dedicated ruling in §13; <strong>generators must not emit it</strong></td>
+<td>workspace hard rules §2 + official example L15</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-the-relative-path-resolution-base">1.3 The relative-path resolution base</h3>
+<p>The EvoVerse-side validation logic matches Efinity tool behavior — referenced paths always resolve <strong>relative to the project XML's parent directory</strong>:</p>
+<ul>
+<li>EvoVerse project-reference validation: <code>c:\work\awesomsdk\sdk\cli\evoverse</code> L1562-1570 (an <code>os.path.exists</code> check relative to the <code>project_xml</code> parent directory).</li>
+<li>The XSD's <code>file_type</code> notes that <code>name</code> "must include relative path" (<code>enf_proj.xsd</code> L123-126).</li>
+</ul>
+<p>Therefore, with the project XML in the root, <code>&lt;efx:sdc_file name="constraint/timing.sdc"/&gt;</code> points at <code>&lt;project_root&gt;/constraint/timing.sdc</code>.</p>
+<hr />
+<h2 id="2-root-element-efx-project-attributes-and-child-element-order">2. Root element <code>&lt;efx:project&gt;</code>: attributes and child element order</h2>
+<h3 id="2-1-child-element-order-xs-sequence-strictly-ordered">2.1 Child element order (<code>xs:sequence</code>, strictly ordered)</h3>
+<p>The XSD defines the children as an <code>xs:sequence</code> (<code>enf_proj.xsd</code> L9-43); <strong>the order must not be shuffled</strong>. Occurrences:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Element</th>
+<th>Occurrence</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>device_info</code></td>
+<td>1</td>
+<td>Device and timing model</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>design_info</code></td>
+<td>1</td>
+<td>Top-level module and source files</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>package_info</code></td>
+<td>0..1</td>
+<td><strong>Pending deprecation</strong> (XSD comment "will be deprecated")</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>interface_info</code></td>
+<td>0..1</td>
+<td>Interface Designer (peri file)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>constraint_info</code></td>
+<td>1</td>
+<td>SDC / inter / ISF constraints</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>isf_info</code></td>
+<td>0..1</td>
+<td>ISF scripts (the new location; unused by the official examples, see §6.4)</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>sim_info</code></td>
+<td>0..1</td>
+<td>Simulation</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>misc_info</code></td>
+<td>0..1</td>
+<td>Reserved section (unused by the official examples)</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>ooc_info</code></td>
+<td>0..1</td>
+<td>Out-of-Context compilation</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>ip_info</code></td>
+<td>0..1</td>
+<td>IP instances</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>synthesis</code></td>
+<td>0..1</td>
+<td>Synthesis options</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>place_and_route</code></td>
+<td>0..1</td>
+<td>Place-and-route options</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>bitstream_generation</code></td>
+<td>0..1</td>
+<td>Bitstream options</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>debugger</code></td>
+<td>0..1</td>
+<td>Debugger options</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>security</code></td>
+<td>0..1</td>
+<td>Encryption/signing</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Order sensitivity, evidenced</strong>: <code>&lt;efx:design_file&gt;</code> must appear before <code>top_vhdl_arch</code> — the EvoVerse adapter's comments explicitly record that violating this order makes Efinity reject the project XML on the next native load (<code>c:\work\awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code> L92-95).</p>
+</blockquote>
+<h3 id="2-2-root-element-attribute-table-enf_proj-xsd-l44-59">2.2 Root element attribute table (<code>enf_proj.xsd</code> L44-59)</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Default</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>✅</td>
+<td>—</td>
+<td>Project name</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Description</td>
+</tr>
+<tr>
+<td><code>sw_version</code></td>
+<td>✅</td>
+<td>—</td>
+<td>The Efinity version that produced the project (official examples: <code>2025.2.276</code>)</td>
+</tr>
+<tr>
+<td><code>last_change</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Last modifier</td>
+</tr>
+<tr>
+<td><code>last_change_date</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Retained backward-compatibility attribute</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Project path</td>
+</tr>
+<tr>
+<td><code>last_run_state</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Enum <code>pass</code>/<code>fail</code>/<code>crash</code>/empty — GUI status display; does not affect compilation</td>
+</tr>
+<tr>
+<td><code>last_run_flow</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Name of the last-run flow</td>
+</tr>
+<tr>
+<td><code>last_run_tool</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Last-run tool</td>
+</tr>
+<tr>
+<td><code>config_result_in_sync</code></td>
+<td>—</td>
+<td>empty</td>
+<td>GUI project/configuration sync marker</td>
+</tr>
+<tr>
+<td><code>design_ood</code> / <code>place_ood</code> / <code>route_ood</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Enum <code>sync</code>/<code>new</code>/<code>change</code>/empty — the GUI's "out-of-date" markers</td>
+</tr>
+<tr>
+<td><code>last_run_timing</code></td>
+<td>—</td>
+<td>empty</td>
+<td>Enum <code>core_only</code>/<code>unified_timing</code>/<code>unknown</code>/empty</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>These <code>last_run_*</code> / <code>*_ood</code> attributes are <strong>GUI bookmarks</strong>: the tools write them back after a run. The EvoVerse generator simply pins neutral values such as <code>last_run_state="pass"</code> (<code>sdk\cli\evoverse</code> L1868-1954 does exactly that).</p>
+</blockquote>
+<hr />
+<h2 id="3-efx-device_info-device-and-timing-model">3. <code>&lt;efx:device_info&gt;</code> — device and timing model</h2>
+<p><strong>Schema</strong> (<code>enf_proj.xsd</code> L63-85):</p>
+<table>
+<thead>
+<tr>
+<th>Child element</th>
+<th>Occurrence</th>
+<th>Default</th>
+<th>Type</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>family</code></td>
+<td>1</td>
+<td><code>Quantum</code></td>
+<td><code>non_empty_string</code></td>
+<td>Device family: Titanium / Trion / Quantum / Topaz</td>
+</tr>
+<tr>
+<td><code>device</code></td>
+<td>1</td>
+<td><code>Q10</code></td>
+<td><code>non_empty_string</code></td>
+<td>Specific part, e.g. <code>Ti60F225</code>, <code>T120F576</code></td>
+</tr>
+<tr>
+<td><code>timing_model</code></td>
+<td>0..1</td>
+<td><code>op1</code></td>
+<td>string</td>
+<td>Timing model speed grade</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Project XML ↔ peri.xml consistency</strong>: the unified PT stage validates that the project XML's device/timing_model matches the peri design database, and errors out on a mismatch (<code>c:\Efinity\2026.1\scripts\efx_run_pt_unified.py</code> L226-231). Switching devices must handle the peri.xml as well — changing only the project XML is not enough.</p>
+<p><strong>Workspace rule tie-in</strong>: the Ti35/Ti60 timing models <code>I4</code>/<code>I4L</code> are deprecated; use <code>C4</code> or <code>C5</code> (workspace hard rules §13). All three official examples use <code>C4</code>.</p>
+<hr />
+<h2 id="4-efx-design_info-top-level-module-and-source-files">4. <code>&lt;efx:design_info&gt;</code> — top-level module and source files</h2>
+<h3 id="4-1-attributes-enf_proj-xsd-l88-103">4.1 Attributes (<code>enf_proj.xsd</code> L88-103)</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Default</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>top_module</code></td>
+<td>✅</td>
+<td>—</td>
+<td>Synthesis top-level module name (→ map command line <code>root=&lt;name&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>top_vhdl_arch</code></td>
+<td>—</td>
+<td>empty</td>
+<td>VHDL top-level architecture name (→ <code>arch=&lt;name&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>unified_flow</code></td>
+<td>—</td>
+<td><strong><code>false</code></strong></td>
+<td>Whether the unified flow is enabled (the interface-designer-fused flow)</td>
+</tr>
+<tr>
+<td><code>partition_interface_allowed_off_perimeter</code></td>
+<td>—</td>
+<td><code>true</code></td>
+<td>Partition interfaces allowed off the perimeter</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>The XSD default of <code>unified_flow</code> is <code>false</code></strong> (<code>enf_proj.xsd</code> L101). Omitting the attribute = the standard dual flow; for the unified flow you must <strong>write <code>unified_flow="true"</code> explicitly</strong>. The official <code>helloworld-unified</code> example writes it; <code>helloworld-dbg</code>/<code>helloworld-ru</code> do not (i.e. false).</p>
+</blockquote>
+<h3 id="4-2-child-element-order-and-the-two-file-element-kinds">4.2 Child element order and the two file element kinds</h3>
+<p>Inside <code>design_info</code> it is again an <code>xs:sequence</code>: all <code>design_file</code> entries first (0..N), then the optional <code>top_vhdl_arch</code> last. <strong>Every <code>design_file</code> must precede <code>top_vhdl_arch</code></strong> (see the order-sensitivity evidence in §2.1).</p>
+<h3 id="4-3-efx-design_file-the-three-state-semantics-of-version-core">4.3 <code>&lt;efx:design_file&gt;</code> — the three-state semantics of version (core)</h3>
+<p><strong>Schema</strong> (<code>enf_proj.xsd</code> L123-136): <code>name</code> (required, includes the relative path), <code>version</code> (optional), <code>library</code> (optional, VHDL library name).</p>
+<p><code>efx_run.py</code> handles <code>version</code> in <strong>three</strong> states (<code>c:\Efinity\2026.1\scripts\efx_run.py</code> L703-715):</p>
+<table>
+<thead>
+<tr>
+<th><code>version</code> value</th>
+<th>Parse result</th>
+<th>What the map binary actually receives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Omitted</strong> (attribute not written)</td>
+<td>Added to the <code>extra_files</code> list</td>
+<td><code>-v &lt;file&gt;</code> (Verilog include semantics)</td>
+</tr>
+<tr>
+<td><strong><code>"na"</code></strong></td>
+<td>Added to the <code>flist</code> list</td>
+<td><code>--flist &lt;file&gt;</code> → map binary <code>--f</code></td>
+</tr>
+<tr>
+<td><strong>Any other value</strong> (e.g. <code>"v1.2"</code>)</td>
+<td><code>extra_files</code> + a <code>,t:&lt;version&gt;</code> suffix</td>
+<td><code>-v &lt;file&gt;,t:v1.2</code> (versioned compilation unit)</td>
+</tr>
+</tbody>
+</table>
+<p>Evidence chain: <code>efx_run.py</code> L703-715 (the three-state dispatch); the second mapping from <code>--flist</code> to the map binary is at <code>c:\Efinity\2026.1\scripts\efx_run_map.py</code> L44, L144 (<code>--flist</code> → map <code>--f</code>).</p>
+<p><strong>Practical meaning</strong>:</p>
+<pre><code class="language-xml">&lt;!-- Plain RTL source: write nothing --&gt;
+&lt;efx:design_file name=&quot;rtl/top.v&quot;/&gt;
+
+&lt;!-- flist manifest: version=&quot;na&quot;; the file content is other file paths, one per line --&gt;
+&lt;efx:design_file name=&quot;src/files.f&quot; version=&quot;na&quot;/&gt;
+
+&lt;!-- Versioned compilation unit (rare) --&gt;
+&lt;efx:design_file name=&quot;rtl/legacy.v&quot; version=&quot;1995&quot;/&gt;
+</code></pre>
+<hr />
+<h2 id="5-efx-interface_info-interface-designer-files">5. <code>&lt;efx:interface_info&gt;</code> — Interface Designer files</h2>
+<p><strong>Schema</strong> (<code>enf_proj.xsd</code> L106-113):</p>
+<table>
+<thead>
+<tr>
+<th>Child element</th>
+<th>Occurrence</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>peri_file</code></td>
+<td>1</td>
+<td>Interface Designer database file (<code>&lt;design&gt;.peri.xml</code>)</td>
+</tr>
+<tr>
+<td><code>interface_script_file</code></td>
+<td>0..N</td>
+<td>Interface scripts (synonymous with <code>isf_file</code> under <code>constraint_info</code>, see §6.4)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>The schema and the orchestration script disagree on the location (practical warning)</strong>: the XSD defines <code>peri_file</code> in the <code>interface_info</code> section (<code>enf_proj.xsd</code> L110-111), but <code>efx_run.py</code>'s <code>parse_project_file</code> actually reads <code>peri_file</code> from <strong>the <code>constraint_info</code> section</strong> (<code>efx_run.py</code> L983-990). Projects work because GUI-written projects are semantically compatible at both locations and because tools reading the XML themselves via <code>--prj</code> go through the <code>projectdb</code> layer (<code>db.py</code> L283 maps <code>inter_file</code> to <code>interface_constraint_file</code>; the peri is managed by the interface database system). <strong>Conclusion: copy the official examples' layout (never hand-write the peri file; it is produced by the PT tool) — do not invent a layout that is legal at only one of the two locations.</strong></p>
+</blockquote>
+<p><code>&lt;design&gt;.peri.xml</code> itself is a <strong>project source file in the PT tool's <code>efxpt:design_db</code> namespace</strong> — not part of this document's <code>enf_proj</code> system; neither users nor the SDK should ever hand-write it (workspace hard rules §1, §15).</p>
+<hr />
+<h2 id="6-efx-constraint_info-and-efx-isf_info-constraint-files">6. <code>&lt;efx:constraint_info&gt;</code> and <code>&lt;efx:isf_info&gt;</code> — constraint files</h2>
+<h3 id="6-1-constraint_info-children-enf_proj-xsd-l152-183-ordered-by-xs-sequence">6.1 constraint_info children (<code>enf_proj.xsd</code> L152-183, ordered by xs:sequence)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Element</th>
+<th>Occurrence</th>
+<th>Status</th>
+<th>Consumer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>sdc_file</code></td>
+<td>0..N</td>
+<td>valid</td>
+<td><code>efx_pnr</code> (timing constraints)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>unified_sdc_file</code></td>
+<td>0..N</td>
+<td>valid</td>
+<td>unified timing analysis (<code>efx_run_pnr.py</code> L224-241: multiple unified SDCs form a filelist)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>io_place_file</code></td>
+<td>0..1</td>
+<td><strong>deprecated</strong></td>
+<td>Legacy pin assignment (mapped to <code>user_io_assignment</code>)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>core_place_file</code></td>
+<td>0..1</td>
+<td><strong>deprecated</strong></td>
+<td>Legacy core placement (mapped to <code>fix_pins</code>)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>inter_file</code></td>
+<td>0..1</td>
+<td>valid</td>
+<td>→ efx_pnr's <code>sync_file</code> (only when name is non-empty, see §13)</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>interface_script_file</code></td>
+<td>0..N</td>
+<td>valid (old name)</td>
+<td>migrated to <code>isf_file</code> at load</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>isf_file</code></td>
+<td>0..N</td>
+<td>valid</td>
+<td>input to PT's <code>design_api.import_design()</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-the-constraint-cli-mapping-table-in-efx_run-py">6.2 The constraint → CLI mapping table in <code>efx_run.py</code></h3>
+<p>The mapping dictionary in <code>efx_run.py</code> L720-733 (verbatim):</p>
+<pre><code class="language-python">{'sdc_file': 'sdc_file',
+ 'unified_sdc_file': 'unified_sdc_file',
+ 'io_place_file': 'user_io_assignment',
+ 'core_place_file': 'fix_pins',
+ 'inter_file': 'sync_file'}
+</code></pre>
+<p>Key detail: L726 applies a <strong>truthiness check</strong> on <code>elem.get('name')</code> — entries whose <code>name</code> is an empty string or missing are <strong>silently skipped</strong>. This directly drives the ruling in §13.</p>
+<h3 id="6-3-how-sdcs-are-consumed">6.3 How SDCs are consumed</h3>
+<ul>
+<li>The PNR wrapper <code>efx_run_pnr.py</code> L174 passes <code>--prj &lt;xml&gt;</code> straight to the <code>efx_pnr</code> binary, which reads the SDC list from the XML itself.</li>
+<li>Under <code>use_unified_timing</code>, multiple SDCs form a filelist (<code>efx_run_pnr.py</code> L224-241).</li>
+<li><strong>Fallback when there is no <code>sync_file</code></strong>: on Trion/Titanium/Topaz devices the wrapper automatically looks for <code>.interface.csv</code> as the sync file (<code>efx_run_pnr.py</code> L203-206).</li>
+</ul>
+<h3 id="6-4-the-interface_script_file-isf_file-synonymous-migration">6.4 The interface_script_file → isf_file synonymous migration</h3>
+<p>The project-database load layer migrates explicitly (<code>c:\Efinity\2026.1\python311\Lib\site-packages\projectdb\db.py</code>):</p>
+<ul>
+<li>L283: <code>interface_constraint_file = inter_file</code></li>
+<li>L284: <code>interface_script_file_list = isf_file</code></li>
+<li>L731-737: <code>interface_script_file</code> elements are migrated to <code>isf_file</code> at load (source comment verbatim: <em>"because of some genius define two element type for same information"</em>).</li>
+</ul>
+<p><strong>In practice</strong>: always write <code>isf_file</code> in new projects; the two are equivalent when reading old projects.</p>
+<h3 id="6-5-the-relationship-between-isf_file-and-the-unified-pt-the-replay-mechanism">6.5 The relationship between isf_file and the unified PT (the replay mechanism)</h3>
+<p>Under the unified flow (<code>c:\Efinity\2026.1\scripts\efx_run_pt_unified.py</code> L233-267):</p>
+<ol>
+<li>Netlist interface extraction produces <code>&lt;design&gt;.unified.isf</code>, <strong>inserted at the head of the <code>peri_scripts</code> list</strong>;</li>
+<li>Each ISF in the list is executed via <code>design_api.import_design(script)</code>; any single failure fails the whole run.</li>
+</ol>
+<p>This is the toolchain root of workspace hard rule §15, "ISFs must be replay-safe (only <code>set_property</code>/<code>assign_pkg_pin</code> etc.; <code>create_*</code> only for the one-time bootstrap)": <strong>every unified build replays all ISFs referenced by the project XML onto the persisted peri.xml</strong>.</p>
+<h3 id="6-6-the-evidenced-rejection-of-empty-efx-isf_file-name">6.6 The evidenced rejection of empty <code>&lt;efx:isf_file name=""/&gt;</code></h3>
+<p>The EvoVerse generator's comments record that an empty <code>&lt;efx:isf_file name=""/&gt;</code> entry makes PT <strong>reject</strong> projects that carry a peri.xml (<code>c:\work\awesomsdk\sdk\cli\evoverse</code> L1884-1887, comment verbatim: <em>"an <code>&lt;efx:isf_file name=""/&gt;</code> entry makes PT reject projects that carry a peri.xml instead of an ISF"</em>). Hence the generator <strong>omits the whole line</strong> when the isf file name is empty, instead of writing an empty value.</p>
+<hr />
+<h2 id="7-efx-sim_info-efx-misc_info-efx-ooc_info">7. <code>&lt;efx:sim_info&gt;</code> / <code>&lt;efx:misc_info&gt;</code> / <code>&lt;efx:ooc_info&gt;</code></h2>
+<h3 id="7-1-sim_info-enf_proj-xsd-l199-211">7.1 sim_info (<code>enf_proj.xsd</code> L199-211)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Kind</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>top_module</code></td>
+<td><strong>Attribute</strong></td>
+<td><code>"sim"</code></td>
+<td>Simulation top (⚠️ older versions of this document miswrote it as a child element; it is an attribute)</td>
+</tr>
+<tr>
+<td><code>pt_sim_top_module</code></td>
+<td><strong>Attribute</strong></td>
+<td><code>"ptsim"</code></td>
+<td>PT simulation top</td>
+</tr>
+<tr>
+<td><code>sim_file</code></td>
+<td>Child element 0..N</td>
+<td>—</td>
+<td>Simulation source files; when present with a <code>.v/.sv/.vhd</code> suffix, <code>efx_run.py</code> converts them to <code>--tb</code> (<code>efx_run.py</code> L666-673)</td>
+</tr>
+<tr>
+<td><code>defmacro</code></td>
+<td>Child element 0..N</td>
+<td>—</td>
+<td>Simulation macro definitions (→ <code>verilog-macros=</code>)</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-xml">&lt;efx:sim_info top_module=&quot;tb_top&quot; pt_sim_top_module=&quot;ptsim&quot;&gt;
+    &lt;efx:sim_file name=&quot;sim/tb_top.v&quot;/&gt;
+&lt;/efx:sim_info&gt;
+</code></pre>
+<h3 id="7-2-misc_info-ooc_info">7.2 misc_info / ooc_info</h3>
+<ul>
+<li><code>misc_info</code> (L213-219): a reserved section; none of the three official examples use it.</li>
+<li><code>ooc_info</code> (L221-243): Out-of-Context compilation configuration, used only by hierarchical compile flows; normal projects do not write it.</li>
+</ul>
+<hr />
+<h2 id="8-efx-ip_info-ip-instances">8. <code>&lt;efx:ip_info&gt;</code> — IP instances</h2>
+<h3 id="8-1-schema-definition-enf_proj-xsd-l245-263">8.1 Schema definition (<code>enf_proj.xsd</code> L245-263)</h3>
+<p>Under <code>ip_info</code> there are 0..N <code>ip</code> elements (<code>ip_type</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Kind</th>
+<th>Required</th>
+<th>Default</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>instance_name</code></td>
+<td>Attribute</td>
+<td>✅</td>
+<td>—</td>
+<td>IP instance name</td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>Attribute</td>
+<td>✅</td>
+<td>—</td>
+<td>Points at the IP's <strong><code>settings.json</code></strong> (with path)</td>
+</tr>
+<tr>
+<td><code>ooc</code></td>
+<td>Attribute</td>
+<td>—</td>
+<td><code>false</code></td>
+<td>Whether to compile Out-of-Context</td>
+</tr>
+<tr>
+<td><code>ip_src_file</code></td>
+<td>Child element 0..N</td>
+<td>—</td>
+<td>—</td>
+<td>Additional IP source files (resolved relative to the IP root)</td>
+</tr>
+<tr>
+<td><code>ip_postmap_module</code></td>
+<td>Child element 0..1</td>
+<td>—</td>
+<td>—</td>
+<td>post-map replacement module name</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-2-a-complete-valid-example">8.2 A complete, valid example</h3>
+<pre><code class="language-xml">&lt;efx:ip_info&gt;
+    &lt;efx:ip instance_name=&quot;ddr_ctrl&quot; path=&quot;ip/ddr_ctrl/settings.json&quot; ooc=&quot;false&quot;&gt;
+        &lt;efx:ip_src_file name=&quot;ip/ddr_ctrl/synthesis/edn/ddr_ctrl_wrapper.v&quot;/&gt;
+    &lt;/efx:ip&gt;
+&lt;/efx:ip_info&gt;
+</code></pre>
+<h3 id="8-3-what-efx-ip-really-does-at-the-orchestration-layer-key-insight">8.3 What <code>&lt;efx:ip&gt;</code> really does at the orchestration layer (key insight)</h3>
+<p><code>efx_run.py</code> L676-683: every <code>&lt;efx:ip path="ip/&lt;m&gt;/settings.json"&gt;</code> is converted into adding <strong><code>ip/&lt;m&gt;</code> (the parent directory of settings.json) to source_dir → map command line <code>--dir ip/&lt;m&gt;</code></strong> — i.e. a <strong>full source scan</strong> of that directory. <code>--project_xml</code> is also passed to the tool core, which consumes <code>ip_src_file</code> on its own (resolved relative to the IP root — resolution fails if the file does not exist under the IP root).</p>
+<h3 id="8-4-evoverse-s-evidenced-decision-do-not-write-efx-ip">8.4 EvoVerse's evidenced decision: do not write <code>&lt;efx:ip&gt;</code></h3>
+<p>Comments in <code>c:\work\awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code> L100-106 (essentials):</p>
+<ul>
+<li><code>efx_run</code> turns every <code>&lt;efx:ip path="ip/&lt;m&gt;/settings.json"&gt;</code> into a <code>--dir ip/&lt;m&gt;</code> source scan;</li>
+<li>this <strong>compiles the same file a second time</strong> when it is already a <code>design_file</code> → the <code>VERI-1206</code> duplicate module error;</li>
+<li><code>ip_src_file</code> resolves relative to the IP root, but the SoC netlist does not exist under the IP root.</li>
+</ul>
+<p>Therefore the EvoVerse adapter's <code>publishGeneratedIp</code> (<code>ip.ts</code> L73-108) <strong>registers the generated IP sources as <code>design_file</code> only, deliberately writing no <code>&lt;efx:ip_info&gt;/&lt;efx:ip&gt;</code></strong>; <code>selectGeneratedSources</code> (L136-160) additionally filters out the <code>sim/</code>, <code>testbench/</code>, <code>template/</code>, <code>devkit/</code>, and <code>source_&lt;simulator&gt;/</code> directories so that non-synthesis sources are not scanned into the project.</p>
+<p><strong>Conclusion</strong>: <code>&lt;efx:ip&gt;</code> is an element of the "IP-integration toolchain (IP-generator-managed)" world; flows where sources are managed by hand or by a generator stay more controllable with <code>design_file</code>.</p>
+<hr />
+<h2 id="9-compile-option-sections-synthesis-place_and_route-bitstream_generation-debugger-security">9. Compile option sections: synthesis / place_and_route / bitstream_generation / debugger / security</h2>
+<p>The five sections share the same structure (the tool-section definitions in <code>enf_proj.xsd</code>): each holds 0..N <code>&lt;efx:param name="..." value="..."/&gt;</code> entries.</p>
+<h3 id="9-1-the-generic-efx-param-structure">9.1 The generic <code>&lt;efx:param&gt;</code> structure</h3>
+<pre><code class="language-xml">&lt;efx:param name=&quot;param_name&quot; value=&quot;param_value&quot;/&gt;
+</code></pre>
+<ul>
+<li>Both <code>name</code> and <code>value</code> are required strings; the interpretation of <code>value</code> belongs to each consuming layer (§10).</li>
+<li>Each section's parameter set is defined by the GUI's option database (the <code>tool_options</code> global element, <code>enf_proj.xsd</code> L372-394); the XSD itself <strong>does not validate</strong> param names — a wrong param name raises no schema error, it is just silently ignored by the tool or reported as a nonexistent option.</li>
+</ul>
+<h3 id="9-2-synthesis-efx_run-py-l738-795">9.2 synthesis (<code>efx_run.py</code> L738-795)</h3>
+<table>
+<thead>
+<tr>
+<th>param</th>
+<th>→ command line / behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>work_dir</code></td>
+<td><code>work-dir=&lt;dir&gt;</code>, and it is enforced (DEVINFRA-1142: work_dir from the XML takes precedence; CLI overrides are suppressed)</td>
+</tr>
+<tr>
+<td><code>def_veri_version</code> / <code>def_vhdl_version</code></td>
+<td><code>veri_options=verilog_mode=&lt;v&gt;</code> / <code>vhdl_mode=&lt;v&gt;</code> (e.g. <code>verilog_2k</code>)</td>
+</tr>
+<tr>
+<td><code>include</code></td>
+<td><code>I=&lt;path&gt;</code> (repeatable)</td>
+</tr>
+<tr>
+<td><code>opt_mode</code></td>
+<td><code>syn_options=mode=&lt;v&gt;</code> (e.g. <code>speed</code>/<code>area</code>)</td>
+</tr>
+<tr>
+<td><code>peri-syn-instantiation</code> / <code>peri-syn-inference</code></td>
+<td>Dispatched only under the unified flow (<code>un_flow</code>); the official unified example uses <code>1</code></td>
+</tr>
+<tr>
+<td><code>dynparam</code></td>
+<td><code>top-params=&lt;k&gt;=&lt;v&gt;</code> (dispatched twice, once for map and once for syn)</td>
+</tr>
+<tr>
+<td><code>defmacro</code></td>
+<td><code>verilog-macros=...</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>When <code>unified_flow="true"</code> and the CLI does not explicitly pass <code>--un_flow</code>, <code>efx_run.py</code> derives <code>un_flow=True</code> from the attribute (within L738-795).</p>
+</blockquote>
+<h3 id="9-3-place_and_route-efx_run-py-l797-840-efx_run_pnr-py-l168-182">9.3 place_and_route (<code>efx_run.py</code> L797-840 + <code>efx_run_pnr.py</code> L168-182)</h3>
+<p><strong>The orchestrator handles only two kinds of param</strong>:</p>
+<ol>
+<li><code>work_dir</code> → the PNR working directory;</li>
+<li>params prefixed with <code>qp_options=</code> (minus <code>anneal_random_seed</code>) → spliced into the vpr options.</li>
+</ol>
+<p><strong>The remaining pnr params are not translated to CLI by <code>efx_run.py</code></strong> — <code>efx_run_pnr.py</code> L168-182 parses the XML pnr params only for the <code>option_exists</code> dedup check, then L174 passes <code>--prj &lt;xml&gt;</code> straight to the <code>efx_pnr</code> binary, and <strong>the binary parses the <code>&lt;efx:place_and_route&gt;</code> section itself</strong>. This is the "dual-channel" model (§11.2) in typical action: do not expect a pnr param added to the XML to necessarily show up on the command line.</p>
+<p>Common pnr params (evidenced by the official examples): <code>active_capture_clk_edge</code> (Titanium must keep the default <code>negedge</code>), <code>retiming</code>, <code>oscillator_clock_divider</code>, <code>beneficial_skew</code>, etc.</p>
+<h3 id="9-4-bitstream_generation-efx_run-py-l842-867">9.4 bitstream_generation (<code>efx_run.py</code> L842-867)</h3>
+<table>
+<thead>
+<tr>
+<th>param</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code> / <code>width</code></td>
+<td>The official examples contain both <code>e_option</code> and <code>e_string</code> spellings (§12 comparison table); both are read</td>
+</tr>
+<tr>
+<td><code>cascade</code> / <code>cold_boot</code> / <code>randomize_iv_value</code> / <code>iv_value</code></td>
+<td><strong>Ignored</strong> by the orchestrator (the binary reads them itself via <code>--prj</code>)</td>
+</tr>
+<tr>
+<td><code>jtag_usercode</code></td>
+<td>Validated against the regex <code>^0x[a-fA-F0-9]{8}$</code>; on mismatch it is <strong>forced to 0xFFFFFFFF and written back into the project XML</strong> (side effect: the XML is rewritten by the tool)</td>
+</tr>
+<tr>
+<td><code>bitstream_compression</code> / <code>four_byte_addressing</code></td>
+<td>Valid params (the dbg example has <code>compression=on</code>; only some examples carry <code>four_byte_addressing</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-5-debugger-efx_run-py-l962-981">9.5 debugger (<code>efx_run.py</code> L962-981)</h3>
+<p><code>work_dir</code>, <code>auto_instantiation</code> (<code>on</code> → True, controls automatic debug-core instantiation at build time), <code>profile</code> (<code>NONE</code> → empty string). The official dbg example carries a debug core configuration.</p>
+<h3 id="9-6-security-efx_run-py-l877-960">9.6 security (<code>efx_run.py</code> L877-960)</h3>
+<p>Bitstream encryption/signing: <code>encrypt</code> → <code>--encrypt</code>, <code>sign</code> → <code>--sign</code>, <code>keypair</code> → <code>--keypair=</code>, plus the <code>sc_*</code> family (secure chip); IV-type values must be 24 characters long (12 bytes of hex).</p>
+<hr />
+<h2 id="10-param_value_type-in-depth-xml-value-types-and-the-consumption-chain">10. <code>param_value_type</code> in depth: XML value types and the consumption chain</h2>
+<h3 id="10-1-the-five-enumerations-enf_proj-xsd-l325-333">10.1 The five enumerations (<code>enf_proj.xsd</code> L325-333)</h3>
+<pre><code class="language-xml">&lt;xs:simpleType name=&quot;param_value_type&quot;&gt;
+    &lt;xs:restriction base=&quot;xs:string&quot;&gt;
+        &lt;xs:enumeration value=&quot;e_string&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_bool&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_option&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_integer&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_noarg&quot;/&gt;
+    &lt;/xs:restriction&gt;
+&lt;/xs:simpleType&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Enumeration</th>
+<th>Semantics</th>
+<th>Typical <code>value</code> in the XML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>e_string</code></td>
+<td>Free-form string</td>
+<td>Any text (paths, names, numbers all fine)</td>
+</tr>
+<tr>
+<td><code>e_bool</code></td>
+<td>Boolean</td>
+<td><strong><code>on</code> / <code>off</code></strong> (not true/false!)</td>
+</tr>
+<tr>
+<td><code>e_option</code></td>
+<td>Dropdown enumeration</td>
+<td>One of the predefined options (e.g. pgm <code>mode=active</code> as an <code>e_option</code>)</td>
+</tr>
+<tr>
+<td><code>e_integer</code></td>
+<td>Integer</td>
+<td>Decimal integer string</td>
+</tr>
+<tr>
+<td><code>e_noarg</code></td>
+<td>The "no-argument" switch</td>
+<td>Stored like e_bool as <code>on</code>/<code>off</code>; semantically "the option takes effect by existing, taking no value"</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-2-examples-of-xml-command-line-mapping">10.2 Examples of XML → command-line mapping</h3>
+<table>
+<thead>
+<tr>
+<th>XML</th>
+<th>After consumption</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;efx:param name="opt_mode" value="speed" value_type="e_option"/&gt;</code></td>
+<td><code>syn_options=mode=speed</code> (the value enters the option string as-is)</td>
+</tr>
+<tr>
+<td><code>&lt;efx:param name="auto_instantiation" value="on" value_type="e_bool"/&gt;</code></td>
+<td>the orchestration layer reads <code>on</code> → Python True (<code>efx_run.py</code> L962-981)</td>
+</tr>
+<tr>
+<td><code>&lt;efx:param name="retiming" value="2" value_type="e_integer"/&gt;</code></td>
+<td>read by the pnr core via <code>--prj</code>; the numeric value 2</td>
+</tr>
+<tr>
+<td>an <code>e_noarg</code>-style switch (value=<code>on</code>)</td>
+<td>when the core reads the XML it treats it as "option on, no associated value"; the orchestration layer generates no valued parameter for it</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-3-who-actually-consumes-value_type-an-important-clarification">10.3 Who actually consumes <code>value_type</code>? (an important clarification)</h3>
+<ul>
+<li><strong>The Python orchestration layer essentially does not</strong>: in the whole of <code>efx_run.py</code>, <code>value_type</code> is read exactly once at L803 and never used. The orchestration layer just carries <code>value</code> around as a plain string.</li>
+<li><strong>The GUI rendering layer does</strong>: <code>efinity_plugin/OptionSchema.py</code> L29-49 (<code>e_bool</code>/<code>e_noarg</code> → boolean widgets, <code>e_option</code> → comma-separated enum dropdown), <code>efinity_plugin/ProjectMeta.py</code> L1111-1159 (<code>e_bool</code>/<code>e_noarg</code> serialize as <code>'on'/''</code>), <code>aoe/core/common.py</code> L43-49 (the EFX_VT enum's historical lack of noarg), <code>projectdb/defines.py</code> L79-88 (ParameterType includes NOARG).</li>
+<li><strong>The tool binaries</strong>: when reading the XML themselves via <code>--prj</code>, they interpret values per their own section's parameter semantics.</li>
+</ul>
+<p><strong>Practical meaning</strong>: in a hand-written project XML, a wrong <code>value_type</code> usually does not fail the build (the orchestration layer ignores it) but breaks GUI display/editing behavior; boolean-semantic values must be <code>on</code>/<code>off</code> to be recognized reliably.</p>
+<hr />
+<h2 id="11-the-efx_run-py-parsing-landscape-orchestrator-s-view">11. The <code>efx_run.py</code> parsing landscape (orchestrator's view)</h2>
+<h3 id="11-1-parse_project_file-section-cli-master-table-efx_run-py-l635-990">11.1 <code>parse_project_file</code> section → CLI master table (<code>efx_run.py</code> L635-990)</h3>
+<table>
+<thead>
+<tr>
+<th>XML section</th>
+<th>Lines</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>device_info</code></td>
+<td>L653-663</td>
+<td><code>family=</code>/<code>device=</code>/<code>timing_model=</code> (only when the command line did not supply them)</td>
+</tr>
+<tr>
+<td><code>sim_info/sim_file</code></td>
+<td>L666-673</td>
+<td><code>--tb &lt;file&gt;</code> (converted only for .v/.sv/.vhd suffixes)</td>
+</tr>
+<tr>
+<td><code>ip_info/ip</code></td>
+<td>L676-683</td>
+<td>each IP's settings.json parent directory → <code>--dir &lt;dir&gt;</code></td>
+</tr>
+<tr>
+<td><code>design_info</code> scalars</td>
+<td>L689-701</td>
+<td><code>root=&lt;top_module&gt;</code>, <code>arch=&lt;top_vhdl_arch&gt;</code></td>
+</tr>
+<tr>
+<td><code>design_file</code></td>
+<td>L703-715</td>
+<td><code>-v</code> (omitted) / <code>--flist</code> (<code>na</code>) / <code>-v f,t:&lt;ver&gt;</code> (other), see §4.3</td>
+</tr>
+<tr>
+<td><code>constraint_info</code></td>
+<td>L720-733</td>
+<td>mapping table in §6.2; <strong>empty-name entries are skipped</strong></td>
+</tr>
+<tr>
+<td><code>synthesis</code></td>
+<td>L738-795</td>
+<td>see §9.2</td>
+</tr>
+<tr>
+<td><code>place_and_route</code></td>
+<td>L797-840</td>
+<td>only <code>work_dir</code> and <code>qp_options=</code> (§9.3)</td>
+</tr>
+<tr>
+<td><code>bitstream_generation</code></td>
+<td>L842-867</td>
+<td>see §9.4 (a failed jtag_usercode check writes back to the XML)</td>
+</tr>
+<tr>
+<td><code>security</code></td>
+<td>L877-960</td>
+<td><code>--encrypt</code>/<code>--sign</code>/<code>--keypair=</code>/<code>sc_*</code></td>
+</tr>
+<tr>
+<td><code>debugger</code></td>
+<td>L962-981</td>
+<td><code>work_dir</code>/<code>auto_instantiation</code>/<code>profile</code></td>
+</tr>
+<tr>
+<td><code>peri_file</code></td>
+<td>L983-990</td>
+<td><strong>read from under constraint_info</strong> (location discrepancy: the §5 warning)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="11-2-the-dual-channel-model-orchestrator-cli-translation-all-parameter-passing">11.2 The "dual-channel" model: orchestrator CLI translation ≠ all parameter passing</h3>
+<p><code>efx_run.py</code> has two parameter channels; understanding this explains what §9.3 observed:</p>
+<ol>
+<li><strong>The CLI channel</strong>: the orchestrator parses the XML and translates some parameters into sub-tool command-line arguments (the §11.1 master table).</li>
+<li><strong>The XML direct-read channel</strong>: the XML is passed as <code>--prj &lt;project.xml&gt;</code>, and each tool core <strong>parses the sections it cares about itself</strong>:</li>
+<li>Synthesis: with <code>--prj</code>, <code>--project_xml</code> is passed as well (<code>efx_run.py</code> L1200-1266);</li>
+<li>PNR: <code>--prj &lt;xml&gt;</code> passed straight through (<code>efx_run.py</code> L1273-1341 → <code>efx_run_pnr.py</code> L174);</li>
+<li>PT/unified: <code>--un_flow</code> + <code>--peri_netlist</code>, plus the project database is loaded to take <code>interface_script_file_list</code> and issue each as <code>--peri_scripts</code> (<code>efx_run.py</code> L1420-1495).</li>
+</ol>
+<p><strong>Corollary</strong>: a parameter written in the XML but not translated by the orchestrator can still take effect via the XML direct-read channel — "invisible on the command line" does not mean "not in effect"; conversely, to confirm a parameter's real effect, trust the tool reports/logs.</p>
+<hr />
+<h2 id="12-section-by-section-comparison-of-the-three-official-examples">12. Section-by-section comparison of the three official examples</h2>
+<p>All three examples: <code>Ti60F225</code> / Titanium / <code>C4</code>, <code>sw_version="2025.2.276"</code>, root-directory layout, <strong>all carry an empty <code>&lt;efx:inter_file name=""/&gt;</code> (L15 in each file)</strong>, and <strong>none contain the <code>interface_info</code> or <code>isf_info</code> sections</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Comparison point</th>
+<th>helloworld-unified</th>
+<th>helloworld-dbg</th>
+<th>helloworld-ru (helloworld0)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Path</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code></td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg\helloworld.xml</code></td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-ru\helloworld0\helloworld0.xml</code></td>
+</tr>
+<tr>
+<td>Line count</td>
+<td>109</td>
+<td>107</td>
+<td>107</td>
+</tr>
+<tr>
+<td><code>unified_flow</code></td>
+<td><strong><code>"true"</code></strong></td>
+<td>not written (= false)</td>
+<td>not written (= false)</td>
+</tr>
+<tr>
+<td><code>def_veri_version</code></td>
+<td><code>verilog_2k</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>isf_file</code></td>
+<td><code>Ti60F225_kit_pins.isf</code></td>
+<td>— (no ISF)</td>
+<td>— (no ISF)</td>
+</tr>
+<tr>
+<td><code>peri-syn-instantiation</code> / <code>inference</code></td>
+<td><code>1</code> / <code>1</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>peri-syn</code></td>
+<td>—</td>
+<td><code>0</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>retiming</code></td>
+<td><code>1</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>active_capture_clk_edge</code></td>
+<td><code>negedge</code> (the correct Titanium value)</td>
+<td><strong><code>posedge</code> (L85, debug-capture-specific)</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>oscillator_clock_divider</code></td>
+<td>—</td>
+<td>—</td>
+<td><code>DIV4</code></td>
+</tr>
+<tr>
+<td><code>jtag_usercode</code></td>
+<td>—</td>
+<td>—</td>
+<td><code>0x00000001</code></td>
+</tr>
+<tr>
+<td>value_type of pgm <code>mode</code>/<code>width</code></td>
+<td><strong><code>e_option</code></strong></td>
+<td><strong><code>e_string</code> (L77-78)</strong></td>
+<td><code>e_option</code></td>
+</tr>
+<tr>
+<td><code>bitstream_compression</code></td>
+<td>—</td>
+<td><code>on</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>four_byte_addressing</code></td>
+<td>present</td>
+<td><strong>absent</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Empty <code>inter_file</code></td>
+<td>L15 ✅</td>
+<td>L15 ✅</td>
+<td>L15 ✅</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Within the same official package, <code>value_type</code> spellings are inconsistent (pgm mode/width) and <code>active_capture_clk_edge</code> takes both negedge and posedge — evidence that <code>value_type</code> does not participate in compile semantics (§10.3), while <code>active_capture_clk_edge</code> is a <strong>flow-dependent</strong> parameter (the SPI active configuration scenario requires <code>negedge</code>, workspace hard rules §13; the dbg example's <code>posedge</code> is for selecting the LA capture clock edge — a debug configuration, not an SPI configuration scenario).</p>
+</blockquote>
+<hr />
+<h2 id="13-evidence-tension-ruling-the-empty-efx-inter_file-name">13. [Evidence-tension ruling] The empty <code>&lt;efx:inter_file name=""/&gt;</code></h2>
+<h3 id="13-1-the-conflict">13.1 The conflict</h3>
+<ul>
+<li><strong>Fact A (official examples)</strong>: L15 of all three 2025.2.276 official project XMLs is <code>&lt;efx:inter_file name=""/&gt;</code>, and the root attribute reads <code>last_run_state="pass"</code> (the previous build passed).</li>
+<li><strong>Fact B (workspace rules)</strong>: this repository's hard rules (<code>rules-efinity-hard.md</code> §2 / AGENTS.md §2) say "an empty <code>&lt;efx:inter_file name="" /&gt;</code> breaks the build" and require deletion on sight.</li>
+</ul>
+<h3 id="13-2-further-first-hand-reads-of-both-sides-evidence">13.2 Further first-hand reads of both sides' evidence</h3>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Content</th>
+<th>Points to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_run.py</code> L726</td>
+<td>applies the <code>elem.get('name')</code> truthiness check to <code>inter_file</code>; an empty name is <strong>silently skipped</strong></td>
+<td>The orchestration layer is harmless toward an empty inter_file</td>
+</tr>
+<tr>
+<td><code>efx_run_pnr.py</code> L203-206</td>
+<td>with no <code>sync_file</code>, it falls back to auto-finding <code>.interface.csv</code></td>
+<td>Empty/missing inter_file has a fallback on the PNR side</td>
+</tr>
+<tr>
+<td><code>sdk\cli\evoverse</code> L1884-1887</td>
+<td><strong>an empty <code>&lt;efx:isf_file name=""/&gt;</code> was observed making PT reject projects that carry a peri.xml</strong> (the same-family "empty-name reference" failure mode)</td>
+<td>The failure may occur at the PT/core layer rather than the orchestration layer</td>
+</tr>
+<tr>
+<td>Official example sw_version</td>
+<td><code>2025.2.276</code> (older than the 2026.1 tool)</td>
+<td>Room for a version-difference hypothesis</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-3-the-ruling">13.3 The ruling</h3>
+<ol>
+<li><strong>The two facts do not directly contradict</strong>: the orchestrator (<code>efx_run.py</code>) does skip an empty inter_file; but the full build chain also includes PT <code>import_design</code>, <code>projectdb</code> loading, and the <code>efx_pnr</code> core reading the XML directly — the failure may occur in those layers, or only in specific version combinations (the official examples passing with the 2025.2-era build does not make every version safe).</li>
+<li><strong>The same-family failure mode is evidenced</strong>: an empty <code>isf_file</code> making PT reject the project is an EvoVerse-side tested conclusion; "empty-name reference elements are unsafe" is a reasonable cross-element generalization.</li>
+<li><strong>Safe practice (this repository's enforcement position)</strong>:</li>
+<li>Generators <strong>do not write</strong> <code>&lt;efx:inter_file&gt;</code> (XSD <code>minOccurs=0</code>; omission is fully legal) — EvoVerse's <code>_build_native_project_xml</code> emits no such element;</li>
+<li>When a legacy GUI project carries an empty inter_file and builds fine: <strong>no need to panic-delete</strong>, but it must be revalidated after every toolchain upgrade;</li>
+<li><strong>Never</strong> "fix" an empty inter_file by filling in a junk non-empty value — that genuinely creates a broken sync_file reference;</li>
+<li>This repository's rules still follow the workspace hard rules: <code>&lt;efx:inter_file name=""/&gt;</code> is not allowed on generation paths.</li>
+</ol>
+<hr />
+<h2 id="14-project-xml-generation-practice-on-the-evoverse-side">14. Project XML generation practice on the EvoVerse side</h2>
+<blockquote>
+<p>Historical note: <code>c:\work\awesomsdk\scripts\projectxml.py</code> (add_ip L78-122), referenced by earlier tasks, no longer exists; its responsibilities migrated to the two places below. This section is the current authority.</p>
+</blockquote>
+<h3 id="14-1-sdk-generator-_build_native_project_xml-in-sdk-cli-evoverse-l1868-1954">14.1 SDK generator: <code>_build_native_project_xml</code> in <code>sdk\cli\evoverse</code> (L1868-1954)</h3>
+<p>Structural baseline: copied from <code>helloworld-unified</code> (the "copy and adapt" principle). Key decisions:</p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Write <code>unified_flow="true"</code> explicitly</td>
+<td>the §4.1 default is false; it must be explicit</td>
+</tr>
+<tr>
+<td><code>sw_version="2026.1"</code></td>
+<td>aligned with the toolchain</td>
+</tr>
+<tr>
+<td><strong>No <code>inter_file</code> written</strong></td>
+<td>the §13 ruling</td>
+</tr>
+<tr>
+<td>Omit the whole line when the isf file name is empty</td>
+<td>§6.6 (the L1884-1887 comment)</td>
+</tr>
+<tr>
+<td>Board presets</td>
+<td><code>BOARD_PRESETS</code> (L2564-2579): <code>ws-e1</code> = TJ180A484S/Titanium/C4; <code>T120F576_devkit</code> = Trion/C2</td>
+</tr>
+<tr>
+<td>Reference validation</td>
+<td>L1562-1570: every relative reference is existence-checked against the XML's parent directory</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-2-adapter-ip-registration-products-efinity-adapter-extension-src-capabilities-ip-ts">14.2 Adapter IP registration: <code>products\efinity-adapter\extension\src\capabilities\ip.ts</code></h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Location</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Register IP sources as <code>design_file</code> only</td>
+<td><code>publishGeneratedIp</code> L73-108</td>
+<td>avoid duplicate compilation by <code>--dir</code> scanning (VERI-1206) and <code>ip_src_file</code> resolution failures (§8.4)</td>
+</tr>
+<tr>
+<td><code>design_file</code> must precede <code>top_vhdl_arch</code></td>
+<td>the L92-95 comment</td>
+<td>order violation → Efinity refuses to load the project (§2.1)</td>
+</tr>
+<tr>
+<td>Filter out non-synthesis directories</td>
+<td><code>selectGeneratedSources</code> L136-160</td>
+<td>skip <code>sim/</code>, <code>testbench/</code>, <code>template/</code>, <code>devkit/</code>, <code>source_&lt;simulator&gt;/</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="15-minimal-working-template-revised">15. Minimal working template (revised)</h2>
+<p>Aligned with the official <code>helloworld-unified</code> structure and revised per this document: <strong>no <code>interface_info</code> section</strong> (none of the official examples have one; once the PT produces the peri.xml, the tools discover it through the project database), <strong>no empty <code>inter_file</code>/empty <code>isf_file</code></strong>, all <code>design_file</code> before <code>top_vhdl_arch</code>, booleans as <code>on/off</code>.</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;efx:project name=&quot;my_project&quot; description=&quot;minimal unified project&quot;
+             sw_version=&quot;2026.1&quot; last_change=&quot;evoverse&quot;
+             last_run_state=&quot;pass&quot; last_run_flow=&quot;compile&quot; last_run_tool=&quot;efx_run&quot;
+             config_result_in_sync=&quot;true&quot;
+             design_ood=&quot;sync&quot; place_ood=&quot;sync&quot; route_ood=&quot;sync&quot;
+             last_run_timing=&quot;unknown&quot;
+             xmlns:efx=&quot;http://www.efinixinc.com/enf_proj&quot;&gt;
+    &lt;efx:device_info&gt;
+        &lt;efx:family name=&quot;Titanium&quot;/&gt;
+        &lt;efx:device name=&quot;Ti60F225&quot;/&gt;
+        &lt;efx:timing_model name=&quot;C4&quot;/&gt;
+    &lt;/efx:device_info&gt;
+    &lt;efx:design_info top_module=&quot;my_top&quot; unified_flow=&quot;true&quot;&gt;
+        &lt;efx:design_file name=&quot;rtl/my_top.v&quot;/&gt;
+        &lt;!-- flist usage: version=&quot;na&quot; → --flist
+             &lt;efx:design_file name=&quot;src/files.f&quot; version=&quot;na&quot;/&gt; --&gt;
+    &lt;/efx:design_info&gt;
+    &lt;efx:constraint_info&gt;
+        &lt;efx:sdc_file name=&quot;constraint/timing.sdc&quot;/&gt;
+        &lt;efx:isf_file name=&quot;constraint/pins.isf&quot;/&gt;
+    &lt;/efx:constraint_info&gt;
+    &lt;efx:synthesis&gt;
+        &lt;efx:param name=&quot;work_dir&quot; value=&quot;work_syn&quot;/&gt;
+        &lt;efx:param name=&quot;def_veri_version&quot; value=&quot;verilog_2k&quot;/&gt;
+        &lt;efx:param name=&quot;opt_mode&quot; value=&quot;speed&quot;/&gt;
+        &lt;efx:param name=&quot;preadapt_bram&quot; value=&quot;off&quot; value_type=&quot;e_bool&quot;/&gt;
+    &lt;/efx:synthesis&gt;
+    &lt;efx:place_and_route&gt;
+        &lt;efx:param name=&quot;work_dir&quot; value=&quot;work_pnr&quot;/&gt;
+        &lt;efx:param name=&quot;active_capture_clk_edge&quot; value=&quot;negedge&quot;/&gt;
+        &lt;efx:param name=&quot;retiming&quot; value=&quot;1&quot;/&gt;
+    &lt;/efx:place_and_route&gt;
+    &lt;efx:bitstream_generation&gt;
+        &lt;efx:param name=&quot;mode&quot; value=&quot;active&quot;/&gt;
+        &lt;efx:param name=&quot;width&quot; value=&quot;1&quot;/&gt;
+        &lt;efx:param name=&quot;jtag_usercode&quot; value=&quot;0x00000000&quot;/&gt;
+    &lt;/efx:bitstream_generation&gt;
+    &lt;efx:debugger&gt;
+        &lt;efx:param name=&quot;auto_instantiation&quot; value=&quot;on&quot; value_type=&quot;e_bool&quot;/&gt;
+    &lt;/efx:debugger&gt;
+&lt;/efx:project&gt;
+</code></pre>
+<p><strong>Template essentials re-checked</strong> (against the body sections):</p>
+<table>
+<thead>
+<tr>
+<th>Essential</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unified_flow="true"</code> explicit</td>
+<td>§4.1 (default false)</td>
+</tr>
+<tr>
+<td><code>timing_model</code> uses <code>C4</code>, not <code>I4</code></td>
+<td>§3 (I4/I4L deprecated)</td>
+</tr>
+<tr>
+<td><code>design_file</code> before any <code>top_vhdl_arch</code></td>
+<td>§2.1 / §14.2</td>
+</tr>
+<tr>
+<td>SDC/ISF relative to the XML's directory</td>
+<td>§1.3</td>
+</tr>
+<tr>
+<td>No <code>inter_file</code>, no empty <code>isf_file</code></td>
+<td>§13 / §6.6</td>
+</tr>
+<tr>
+<td><code>jtag_usercode</code> matches the 8-digit hex regex</td>
+<td>§9.4 (otherwise rewritten to 0xFFFFFFFF)</td>
+</tr>
+<tr>
+<td><code>active_capture_clk_edge=negedge</code></td>
+<td>§9.3 / workspace hard rules §13</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-self-check-list-before-after-generating-or-modifying-a-project-xml">16. Self-check list (before/after generating or modifying a project XML)</h2>
+<ul>
+<li>[ ] The namespace is exactly <code>http://www.efinixinc.com/enf_proj</code> (§1.1)</li>
+<li>[ ] The project XML is in the project root; every relative reference exists relative to the XML's directory (§1.2, §1.3)</li>
+<li>[ ] Child element order follows <code>xs:sequence</code>: <code>device_info → design_info → … → constraint_info → …</code>; all <code>design_file</code> before <code>top_vhdl_arch</code> (§2.1)</li>
+<li>[ ] <code>unified_flow="true"</code> is written explicitly (default false) (§4.1)</li>
+<li>[ ] The three-state semantics of <code>design_file</code>'s <code>version</code> are used correctly: omitted = <code>-v</code>, <code>na</code> = <code>--flist</code>, other = versioned with <code>,t:</code> (§4.3)</li>
+<li>[ ] timing_model is not a deprecated value (use C4/C5 on Ti35/Ti60, not I4/I4L) (§3)</li>
+<li>[ ] No <code>&lt;efx:inter_file name=""/&gt;</code>, no empty <code>&lt;efx:isf_file name=""/&gt;</code> (§13, §6.6)</li>
+<li>[ ] ISFs are replay-safe (only idempotent set/assign commands; <code>create_*</code> only for the one-time bootstrap, then commented out) (§6.5)</li>
+<li>[ ] <code>peri.xml</code> exists, was produced by PT, is under version control, and is deleted by no build path (§5)</li>
+<li>[ ] Every clock port has a matching <code>create_clock</code> in the SDC, with clock names exactly matching the RTL/PLL outputs (§6.3, tied to the workspace SDC rules)</li>
+<li>[ ] Prefer <code>design_file</code> for hand-managed IP integration; use <code>&lt;efx:ip&gt;</code> only when you understand the <code>--dir</code> scanning behavior (§8.3, §8.4)</li>
+<li>[ ] <code>jtag_usercode</code> matches <code>^0x[a-fA-F0-9]{8}$</code> (otherwise it is rewritten) (§9.4)</li>
+<li>[ ] Boolean params use <code>on</code>/<code>off</code>; <code>value_type</code> agrees with GUI semantics (§10)</li>
+</ul>
+<hr />
+<p><em>Maintained by the EvoVerse SDK knowledge base; evidence citations follow the absolute paths in the text. If Efinity is upgraded, re-verify the §6.2/§11.1 mapping tables and the §13 ruling against a fresh read of the new <code>enf_proj.xsd</code> and <code>scripts/</code>.</em></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

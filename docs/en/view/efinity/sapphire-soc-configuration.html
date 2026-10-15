@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sapphire SoC Configuration</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Sapphire SoC and software configuration reference.</span>
+<code>efinity/sapphire-soc-configuration.md</code>
+<a href="../../../efinity/sapphire-soc-configuration.md">Markdown source</a></p>
+<h1>Sapphire SoC Configuration</h1></header>
+<main class="article"><h1 id="sapphire-soc-configuration-guide">Sapphire SoC Configuration Guide</h1>
+<blockquote>
+<p>Version: v1.0 | Based on Efinity 2026.1 | Last updated: 2026-07-30</p>
+<p>This document describes in detail the configuration parameters, usage, memory map, BSP structure, and typical application scenarios of the three Efinix Sapphire RISC-V SoC IP cores.</p>
+</blockquote>
+<hr />
+<h2 id="1-sapphire-soc-family-overview">1. Sapphire SoC family overview</h2>
+<p>Efinix offers three Sapphire RISC-V SoC IPs covering the full spectrum from low-cost soft cores to high-performance hardened SoCs:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>efx_soc (Sapphire RV32)</th>
+<th>efx_soc_rv64 (Sapphire RV64)</th>
+<th>efx_hard_soc (HP SoC)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IP version (2026.1)</strong></td>
+<td>3.4.0</td>
+<td>1.0.0</td>
+<td>1.23.0</td>
+</tr>
+<tr>
+<td><strong>ISA</strong></td>
+<td>RV32IMAC</td>
+<td>RV64IMAC</td>
+<td>RV64IMAC (hardened)</td>
+</tr>
+<tr>
+<td><strong>Core count</strong></td>
+<td>1–4</td>
+<td>1–4 (SMP)</td>
+<td>4 (hardened)</td>
+</tr>
+<tr>
+<td><strong>Implementation</strong></td>
+<td>Soft core (VexRiscv)</td>
+<td>Soft core (VexRiscv)</td>
+<td>Hardened (ASIC-like)</td>
+</tr>
+<tr>
+<td><strong>Applicable device families</strong></td>
+<td>Trion / Titanium</td>
+<td>Titanium / Topaz</td>
+<td>Titanium (Ti375)</td>
+</tr>
+<tr>
+<td><strong>L1 Cache</strong></td>
+<td>Configurable I$/D$ (1–4 way)</td>
+<td>Configurable I$/D$ (1–4 way)</td>
+<td>Hardened</td>
+</tr>
+<tr>
+<td><strong>L2 Cache</strong></td>
+<td>None</td>
+<td>Optional shared L2</td>
+<td>Hardened</td>
+</tr>
+<tr>
+<td><strong>FPU</strong></td>
+<td>Optional (F/D)</td>
+<td>Optional (F/D)</td>
+<td>Hardened</td>
+</tr>
+<tr>
+<td><strong>MMU</strong></td>
+<td>Optional</td>
+<td>Optional (Sv39)</td>
+<td>Hardened</td>
+</tr>
+<tr>
+<td><strong>External memory</strong></td>
+<td>AXI3 (optional DDR3/LPDDR3)</td>
+<td>AXI4 (DDR3/DDR4/LPDDR4)</td>
+<td>LPDDR4 (hardened controller)</td>
+</tr>
+<tr>
+<td><strong>Logic resource cost</strong></td>
+<td>~5K–15K LUTs</td>
+<td>~15K–30K LUTs</td>
+<td>~0 LUTs (CPU portion)</td>
+</tr>
+<tr>
+<td><strong>Typical fMAX</strong></td>
+<td>63–289 MHz</td>
+<td>200+ MHz</td>
+<td>400+ MHz</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Version-number sources: <code>C:\Efinity\2026.1\ipm\ip\efx_soc\efx_soc\ipm\ip_component.xml</code> line 6 (3.4.0); <code>efx_soc_rv64\ipm\ip_component.xml</code> line 6 (1.0.0); <code>efx_hard_soc\ipm\component.pickle</code> (1.23.0). ISA/core parameters: the IP directory's <code>ip_component.xml</code> port definitions and generator scripts.</p>
+</blockquote>
+<hr />
+<h2 id="2-soc-selection-guide">2. SoC selection guide</h2>
+<table>
+<thead>
+<tr>
+<th>Application scenario</th>
+<th>Recommended SoC</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple GPIO/peripheral control</td>
+<td>efx_soc (1 core)</td>
+<td>Smallest resource cost</td>
+</tr>
+<tr>
+<td>Sensor fusion, low-speed networking</td>
+<td>efx_soc (1 core + DDR3)</td>
+<td>Works on both Trion/Titanium</td>
+</tr>
+<tr>
+<td>Linux systems, high bandwidth</td>
+<td>efx_soc_rv64 (1–4 cores)</td>
+<td>RV64 + MMU required</td>
+</tr>
+<tr>
+<td>High-bandwidth video processing</td>
+<td>efx_soc_rv64 + EVSoC</td>
+<td>See the EVSoC reference design</td>
+</tr>
+<tr>
+<td>Highest performance, lowest power</td>
+<td>efx_hard_soc (Ti375C529 only)</td>
+<td>The hardened CPU consumes no FPGA resources</td>
+</tr>
+<tr>
+<td>Getting started / learning</td>
+<td>efx_soc (T8/T20/Xyloni)</td>
+<td>Lowest cost and complexity</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Sources: device applicability comes from the IP directory's fpga subdirectories (e.g. <code>efx_soc_rv64/fpga/fpga_ti180/soc.xml</code>) and <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §D–E.</p>
+</blockquote>
+<hr />
+<h2 id="3-efx_soc-sapphire-rv32-configuration-in-detail">3. efx_soc (Sapphire RV32) configuration in detail</h2>
+<h3 id="3-1-module-name-and-instantiation">3.1 Module name and instantiation</h3>
+<pre><code class="language-verilog">EfxSapphireSoc #(
+    // parameter list
+) soc_inst (
+    .io_systemClk(...),
+    .io_asyncReset(...),
+    ...
+);
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\ipm\ip\efx_soc\efx_soc\ipm\ip_component.xml</code> line 18 (moduleName = "EfxSapphireSoc").</p>
+</blockquote>
+<h3 id="3-2-core-configuration-parameters">3.2 Core configuration parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core Number</td>
+<td>1–4</td>
+<td>1</td>
+<td>Number of RISC-V cores</td>
+</tr>
+<tr>
+<td>Frequency</td>
+<td>MHz</td>
+<td>User-specified</td>
+<td>System clock frequency</td>
+</tr>
+<tr>
+<td>Peripheral Clock</td>
+<td>ENABLE/DISABLE</td>
+<td>DISABLE</td>
+<td>Independent peripheral clock domain</td>
+</tr>
+<tr>
+<td>Cache</td>
+<td>ENABLE/DISABLE</td>
+<td>ENABLE</td>
+<td>I$/D$ cache switch</td>
+</tr>
+<tr>
+<td>Custom Instruction</td>
+<td>ENABLE/DISABLE</td>
+<td>DISABLE</td>
+<td>Custom instruction interface</td>
+</tr>
+<tr>
+<td>FPU</td>
+<td>ENABLE/DISABLE</td>
+<td>DISABLE</td>
+<td>Floating-point unit (F/D extensions)</td>
+</tr>
+<tr>
+<td>MMU</td>
+<td>ENABLE/DISABLE</td>
+<td>DISABLE</td>
+<td>Memory management unit required for Linux</td>
+</tr>
+<tr>
+<td>Atomic Extension</td>
+<td>ENABLE/DISABLE</td>
+<td>DISABLE</td>
+<td>A extension (atomics)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: the parameter table of the Efinix official Sapphire SoC User Guide v5.4 IP Configuration Wizard.</p>
+</blockquote>
+<h3 id="3-3-cache-memory-configuration">3.3 Cache/memory configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Valid values</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data Cache Way</td>
+<td>1–4</td>
+<td>D$ set-associative ways</td>
+</tr>
+<tr>
+<td>Data Cache Size</td>
+<td>1–32 KB</td>
+<td>D$ size</td>
+</tr>
+<tr>
+<td>Instruction Cache Way</td>
+<td>1–4</td>
+<td>I$ set-associative ways</td>
+</tr>
+<tr>
+<td>Instruction Cache Size</td>
+<td>1–32 KB</td>
+<td>I$ size</td>
+</tr>
+<tr>
+<td>On-Chip RAM Size</td>
+<td>1–512 KB</td>
+<td>On-chip data RAM (ILM/DLM)</td>
+</tr>
+<tr>
+<td>External Memory Interface</td>
+<td>ENABLE/DISABLE</td>
+<td>AXI3 external memory interface</td>
+</tr>
+<tr>
+<td>External Memory Data Width</td>
+<td>16/32/64/128</td>
+<td>DDR data width</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: the official Efinix Sapphire SoC IP Configuration parameter table.</p>
+</blockquote>
+<h3 id="3-4-peripheral-configuration-each-can-be-enabled-disabled-in-the-ip-wizard">3.4 Peripheral configuration (each can be enabled/disabled in the IP Wizard)</h3>
+<table>
+<thead>
+<tr>
+<th>Peripheral</th>
+<th>Max count</th>
+<th>Bus</th>
+<th>Typical address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UART</td>
+<td>3</td>
+<td>APB3</td>
+<td>0xf8010000</td>
+</tr>
+<tr>
+<td>SPI</td>
+<td>3</td>
+<td>APB3</td>
+<td>0xf8014000</td>
+</tr>
+<tr>
+<td>I2C</td>
+<td>3</td>
+<td>APB3</td>
+<td>0xf8018000</td>
+</tr>
+<tr>
+<td>GPIO</td>
+<td>2 (configurable width)</td>
+<td>APB3</td>
+<td>0xf8000000</td>
+</tr>
+<tr>
+<td>User Timer</td>
+<td>3</td>
+<td>APB3</td>
+<td>Configurable</td>
+</tr>
+<tr>
+<td>APB3 Slave</td>
+<td>5</td>
+<td>APB3</td>
+<td>Configurable</td>
+</tr>
+<tr>
+<td>AXI4 Master</td>
+<td>1</td>
+<td>AXI4</td>
+<td>0xfa000000</td>
+</tr>
+<tr>
+<td>AXI4 Slave</td>
+<td>2</td>
+<td>AXI4</td>
+<td>Configurable</td>
+</tr>
+<tr>
+<td>User Interrupt</td>
+<td>Up to 24</td>
+<td>PLIC</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Watchdog</td>
+<td>1</td>
+<td>APB3</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Sources: the official Sapphire SoC IP Configuration parameter table (address definitions in soc.h) and the efx_soc port definitions (the <code>${PERI_*}</code> conditional ports in <code>ip_component.xml</code>).</p>
+</blockquote>
+<h3 id="3-5-debug-configuration">3.5 Debug configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Soft Debug Tap</td>
+<td>Soft JTAG TAP (consumes a small amount of logic)</td>
+</tr>
+<tr>
+<td>FPGA USER TAP</td>
+<td>Uses the FPGA's native JTAG user TAP</td>
+</tr>
+<tr>
+<td>JTAG with GPIO</td>
+<td>JTAG signals routed through GPIO pins</td>
+</tr>
+<tr>
+<td>Co-Debug</td>
+<td>A single FTDI channel debugs both RTL and the RISC-V core</td>
+</tr>
+<tr>
+<td>Target Board</td>
+<td>Select the target board (debug configuration is linked automatically)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: the IP Configuration parameter table.</p>
+</blockquote>
+<hr />
+<h2 id="4-efx_soc_rv64-sapphire-rv64-configuration-in-detail">4. efx_soc_rv64 (Sapphire RV64) configuration in detail</h2>
+<h3 id="4-1-module-name-and-instantiation">4.1 Module name and instantiation</h3>
+<pre><code class="language-verilog">EfxSapphireSocRV64 #(
+    // parameter list
+) soc_inst (
+    .io_systemClk(...),
+    .io_systemReset(...),
+    .io_peripheralClk(...),
+    .io_memoryClk(...),
+    ...
+);
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\ipm\ip\efx_soc_rv64\ipm\ip_component.xml</code> line 18 (moduleName = "EfxSapphireSocRV64").</p>
+</blockquote>
+<h3 id="4-2-enhancements-over-efx_soc">4.2 Enhancements over efx_soc</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>efx_soc (RV32)</th>
+<th>efx_soc_rv64 (RV64)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Address space</td>
+<td>32-bit (4 GB)</td>
+<td>64-bit (huge address space)</td>
+</tr>
+<tr>
+<td>L2 Cache</td>
+<td>Not supported</td>
+<td>Optional shared L2</td>
+</tr>
+<tr>
+<td>External memory interface</td>
+<td>AXI3</td>
+<td>AXI4 (higher bandwidth)</td>
+</tr>
+<tr>
+<td>DDR support</td>
+<td>DDR3/LPDDR3</td>
+<td>DDR3/DDR4/LPDDR4</td>
+</tr>
+<tr>
+<td>MMU</td>
+<td>Optional, basic</td>
+<td>Optional Sv39 (Linux-ready)</td>
+</tr>
+<tr>
+<td>Driven peripherals</td>
+<td>Basic peripheral drivers</td>
+<td>Extended drivers (Camera, RTC, temperature sensor)</td>
+</tr>
+<tr>
+<td>SMP support</td>
+<td>Supported</td>
+<td>Supported (incl. SMP timer interrupt)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Sources: the <code>efx_soc_rv64/ipm/ip_component.xml</code> port definitions (<code>${DDR}==1</code> brings in dedicated memoryClk/memoryReset) and the extended driver list under <code>efx_soc_rv64/embedded_sw/software/standalone/driver/</code>.</p>
+</blockquote>
+<h3 id="4-3-extended-driver-peripherals-rv64-only">4.3 Extended-driver peripherals (RV64 only)</h3>
+<p>The RV64 BSP includes extra hardware drivers:</p>
+<table>
+<thead>
+<tr>
+<th>Driver</th>
+<th>Files</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Camera</td>
+<td><code>cam/</code> directory</td>
+<td>IMX219/IMX708 cameras</td>
+</tr>
+<tr>
+<td>RTC</td>
+<td><code>rtc/</code> directory</td>
+<td>DS3231/PCF8523 real-time clocks</td>
+</tr>
+<tr>
+<td>Temperature Sensor</td>
+<td><code>sensor/</code> directory</td>
+<td>EMC1413 temperature sensor</td>
+</tr>
+<tr>
+<td>L2 Cache Control</td>
+<td><code>l2ctrl/</code></td>
+<td>L2 cache flush/configuration</td>
+</tr>
+<tr>
+<td>Watchdog</td>
+<td><code>watchdog/</code></td>
+<td>Watchdog timer</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: the directory structure of <code>C:\Efinity\2026.1\ipm\ip\efx_soc_rv64\embedded_sw\software\standalone\driver\</code>.</p>
+</blockquote>
+<h3 id="4-4-supported-fpga-boards">4.4 Supported FPGA boards</h3>
+<p>RV64 ships ready-to-run FPGA example projects:</p>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>Directory</th>
+<th>Key configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60 F225</td>
+<td><code>fpga/fpga_ti60/</code></td>
+<td>Includes a HyperRAM top level</td>
+</tr>
+<tr>
+<td>Ti180 J484</td>
+<td><code>fpga/fpga_ti180/</code></td>
+<td>LPDDR4x example</td>
+</tr>
+<tr>
+<td>Ti375 C529</td>
+<td><code>fpga/fpga_ti375/</code></td>
+<td>High-performance configuration</td>
+</tr>
+<tr>
+<td>T120 F324/F576</td>
+<td><code>fpga/fpga_t120/</code></td>
+<td>Trion-family RV64</td>
+</tr>
+<tr>
+<td>Tz170</td>
+<td><code>fpga/fpga_tz170/</code></td>
+<td>Topaz family</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: the <code>C:\Efinity\2026.1\ipm\ip\efx_soc_rv64\fpga\</code> directory.</p>
+</blockquote>
+<hr />
+<h2 id="5-efx_hard_soc-high-performance-soc-configuration-in-detail">5. efx_hard_soc (High-Performance SoC) configuration in detail</h2>
+<h3 id="5-1-core-characteristics">5.1 Core characteristics</h3>
+<p><code>efx_hard_soc</code> is a hardened 4-core RISC-V SoC dedicated to the Ti375 family; its CPU cores consume no FPGA logic resources:</p>
+<ul>
+<li><strong>Module name</strong>: <code>Axi4Peripheral_wrapper</code></li>
+<li><strong>Implementation</strong>: ASIC-hardened on the Ti375 die</li>
+<li><strong>LPDDR4 memory controller</strong>: Hardened (built in)</li>
+<li><strong>AXI4 Slave interface</strong>: For user logic to hook into</li>
+<li><strong>Co-Debug</strong>: Supported</li>
+<li><strong>Performance</strong>: Far above the soft cores, with lower power</li>
+</ul>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\ipm\ip\efx_hard_soc\ipm\component.pickle</code> (displayName = "Sapphire High Performance SoC", isHardIP = 1).</p>
+</blockquote>
+<h3 id="5-2-key-parameters">5.2 Key parameters</h3>
+<p>Configuration parameters extracted from <code>component.pickle</code> (summary):</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PLL_SOC_SYS_CLK_REF_FREQ</td>
+<td>100 MHz</td>
+<td>System PLL reference clock</td>
+</tr>
+<tr>
+<td>PLL_SOC_SYS_CLKOUT1_FREQ</td>
+<td>1000 MHz</td>
+<td>System clock output</td>
+</tr>
+<tr>
+<td>PLL_SOC_MEM_CLKOUT1_FREQ</td>
+<td>250 MHz</td>
+<td>Peripheral PLL output</td>
+</tr>
+<tr>
+<td>PLL_LPDDR4_CLKOUT3_FREQ</td>
+<td>533 MHz</td>
+<td>LPDDR4 clock</td>
+</tr>
+<tr>
+<td>DDR_DATA_WIDTH</td>
+<td>32</td>
+<td>DDR data width</td>
+</tr>
+<tr>
+<td>DDR_MEMORY_DENSITY</td>
+<td>8G</td>
+<td>Memory density (2G–16G)</td>
+</tr>
+<tr>
+<td>DDR_MEMORY_TYPE</td>
+<td>LPDDR4x / LPDDR4</td>
+<td>Memory type (by device family)</td>
+</tr>
+<tr>
+<td>INTF_UINTR</td>
+<td>8</td>
+<td>Number of user interrupt ports</td>
+</tr>
+<tr>
+<td>CO_DEBUG</td>
+<td>0</td>
+<td>Co-Debug switch</td>
+</tr>
+<tr>
+<td>INTF_JTAG_TYPE</td>
+<td>0 (FPGA USER TAP)</td>
+<td>JTAG type</td>
+</tr>
+<tr>
+<td>SPI/I2C/GPIO peripherals</td>
+<td>Optional</td>
+<td>Standard peripherals (same as RV32/RV64)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: the parameters section of <code>C:\Efinity\2026.1\ipm\ip\efx_hard_soc\ipm\component.pickle</code>.</p>
+</blockquote>
+<h3 id="5-3-usage-restrictions">5.3 Usage restrictions</h3>
+<ul>
+<li><strong>Ti375C529 only</strong>: only the Ti375C529 device is supported (see the Ti375 branch of <code>EmbeddedSystem-Solution</code>)</li>
+<li>No <code>efx_soc</code> or <code>efx_soc_rv64</code> needed — it is a standalone IP</li>
+<li>The BSP ships together with efx_hard_soc's <code>embedded_sw/</code></li>
+</ul>
+<blockquote>
+<p>Source: <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §D.1 (Ti375C529 uses efx_hard_soc).</p>
+</blockquote>
+<hr />
+<h2 id="6-processor-configuration-summary">6. Processor configuration summary</h2>
+<h3 id="6-1-choosing-the-core-count">6.1 Choosing the core count</h3>
+<table>
+<thead>
+<tr>
+<th>Cores</th>
+<th>Suitable scenarios</th>
+<th>Resource cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>GPIO control, simple protocol bridging</td>
+<td>Lowest</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Real-time tasks + background tasks</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>4</td>
+<td>SMP Linux, video processing</td>
+<td>Highest</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-cache-configuration-recommendations">6.2 Cache configuration recommendations</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>I$</th>
+<th>D$</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small bare-metal programs</td>
+<td>1–4 KB</td>
+<td>1–4 KB</td>
+<td>On-chip RAM suffices</td>
+</tr>
+<tr>
+<td>Medium applications</td>
+<td>4–8 KB</td>
+<td>4–8 KB</td>
+<td>CoreMark/network stacks</td>
+</tr>
+<tr>
+<td>Linux</td>
+<td>16–32 KB</td>
+<td>16–32 KB</td>
+<td>What the OS needs</td>
+</tr>
+<tr>
+<td>AI/inference</td>
+<td>8–16 KB</td>
+<td>8–16 KB</td>
+<td>Balance performance vs. resources</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-memory-map">7. Memory map</h2>
+<h3 id="7-1-typical-address-space-efx_soc-efx_soc_rv64">7.1 Typical address space (efx_soc / efx_soc_rv64)</h3>
+<table>
+<thead>
+<tr>
+<th>Region</th>
+<th>Base address</th>
+<th>Size</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPIO0</td>
+<td>0xf8000000</td>
+<td>4 KB</td>
+<td>GPIO controller</td>
+</tr>
+<tr>
+<td>UART0</td>
+<td>0xf8010000</td>
+<td>4 KB</td>
+<td>Serial port 0</td>
+</tr>
+<tr>
+<td>UART1</td>
+<td>0xf8011000</td>
+<td>4 KB</td>
+<td>Serial port 1</td>
+</tr>
+<tr>
+<td>SPI0</td>
+<td>0xf8014000</td>
+<td>4 KB</td>
+<td>SPI controller 0</td>
+</tr>
+<tr>
+<td>SPI1</td>
+<td>0xf8015000</td>
+<td>4 KB</td>
+<td>SPI controller 1</td>
+</tr>
+<tr>
+<td>I2C0</td>
+<td>0xf8018000</td>
+<td>4 KB</td>
+<td>I2C controller 0</td>
+</tr>
+<tr>
+<td>I2C1</td>
+<td>0xf8019000</td>
+<td>4 KB</td>
+<td>I2C controller 1</td>
+</tr>
+<tr>
+<td>APB Slave 0</td>
+<td>0xf8800000</td>
+<td>64 KB</td>
+<td>User APB peripheral 0</td>
+</tr>
+<tr>
+<td>APB Slave 1</td>
+<td>0xf8810000</td>
+<td>64 KB</td>
+<td>User APB peripheral 1</td>
+</tr>
+<tr>
+<td>On-Chip RAM</td>
+<td>0xf9000000</td>
+<td>Configurable</td>
+<td>On-chip data RAM</td>
+</tr>
+<tr>
+<td>AXI Master</td>
+<td>0xfa000000</td>
+<td>16 MB</td>
+<td>User AXI4 master</td>
+</tr>
+<tr>
+<td>External DDR</td>
+<td>0x80000000</td>
+<td>Configurable</td>
+<td>External memory space</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Sources: the official Sapphire SoC IP Configuration parameter table (address columns in the Ruby/Jade migration documents) and the memory-map definitions in <code>soc.h</code>.</p>
+</blockquote>
+<hr />
+<h2 id="8-bus-and-peripheral-attachment">8. Bus and peripheral attachment</h2>
+<h3 id="8-1-bus-structure">8.1 Bus structure</h3>
+<pre><code>                    ┌─────────────┐
+                    │  RISC-V CPU │ (1–4 cores)
+                    └──────┬──────┘
+                           │ AXI4
+                    ┌──────┴──────┐
+                    │  AXI Interconnect  │
+                    └──┬───┬───┬──┘
+              ┌────────┘   │   └────────┐
+              ▼            ▼            ▼
+        ┌──────────┐ ┌──────────┐ ┌──────────┐
+        │ APB Bridge│ │ AXI Slave│ │ DDR Ctrl │
+        └─────┬────┘ └──────────┘ └──────────┘
+              │
+    ┌────┬────┼────┬────┐
+    ▼    ▼    ▼    ▼    ▼
+  UART SPI  I2C  GPIO APBx
+</code></pre>
+<h3 id="8-2-attaching-custom-peripherals">8.2 Attaching custom peripherals</h3>
+<p><strong>APB3 slave</strong> (simple register access):
+- Use the APB Slave 0–4 interfaces
+- See the <code>apb3Demo</code> example</p>
+<p><strong>AXI4 master</strong> (high-bandwidth data movement):
+- Use the AXI Master interface
+- See the <code>axi4Demo</code> example
+- Configurable data width (32/64/128-bit)</p>
+<p><strong>AXI4 slave</strong> (CPU-initiated access):
+- Use the AXI Slave 0/1 interfaces
+- See how DMA is attached in the EVSoC reference design</p>
+<blockquote>
+<p>Source: the example list in <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §L.1.</p>
+</blockquote>
+<hr />
+<h2 id="9-interrupt-controllers">9. Interrupt controllers</h2>
+<h3 id="9-1-clint-core-local-interruptor">9.1 CLINT (Core Local Interruptor)</h3>
+<ul>
+<li>Provides software interrupts + timer interrupts</li>
+<li>Per-core <code>mtime</code> / <code>mtimecmp</code> registers</li>
+<li>Replaced the old Machine Timer in v2.0</li>
+</ul>
+<h3 id="9-2-plic-platform-level-interrupt-controller">9.2 PLIC (Platform-Level Interrupt Controller)</h3>
+<ul>
+<li>Manages all peripheral interrupts</li>
+<li>Supports interrupt priorities</li>
+<li>Up to 24 user interrupt sources (PLIC IDs are configurable)</li>
+</ul>
+<p><strong>Peripheral interrupt ID assignments:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Peripheral</th>
+<th>Default interrupt IDs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UART0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>UART1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>SPI0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>SPI1</td>
+<td>5</td>
+</tr>
+<tr>
+<td>I2C0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>I2C1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>GPIO0</td>
+<td>12, 13</td>
+</tr>
+<tr>
+<td>User Interrupt A–H</td>
+<td>25–32 (configurable)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Sources: the official Sapphire SoC IP Configuration parameter table and the interrupt ID definitions in <code>soc.h</code>.</p>
+</blockquote>
+<hr />
+<h2 id="10-bootloader-design">10. Bootloader design</h2>
+<h3 id="10-1-bootloader-functions">10.1 Bootloader functions</h3>
+<ul>
+<li>Initializes the DDR controller (if present)</li>
+<li>Loads the application from SPI Flash into RAM</li>
+<li>Jumps to the application entry point</li>
+</ul>
+<h3 id="10-2-bootloader-size-configuration">10.2 Bootloader size configuration</h3>
+<p>The bootloader's On-Chip RAM size is set in the IP configuration wizard:</p>
+<table>
+<thead>
+<tr>
+<th>On-Chip RAM size</th>
+<th>Bootloader type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 KB – 512 KB</td>
+<td>A precompiled bootloader matching that size</td>
+</tr>
+<tr>
+<td>&gt; 512 KB</td>
+<td>Requires a larger RAM allocation</td>
+</tr>
+</tbody>
+</table>
+<p>The precompiled bootloaders live at:</p>
+<pre><code>C:\Efinity\2026.1\ipm\ip\efx_soc\efx_soc\generator\bootloader\
+</code></pre>
+<blockquote>
+<p>Source: the <code>C:\Efinity\2026.1\ipm\ip\efx_soc\efx_soc\generator\bootloader\</code> directory (contains precompiled <code>*.hex</code> files for 1K–512K).</p>
+</blockquote>
+<hr />
+<h2 id="11-debug-setup">11. Debug setup</h2>
+<h3 id="11-1-openocd-configuration">11.1 OpenOCD configuration</h3>
+<p>The OpenOCD configuration files generated with the SoC are at:</p>
+<pre><code>embedded_sw/&lt;soc&gt;/bsp/efinix/EfxSapphireSoc/openocd/
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>debug.cfg</code></td>
+<td>Debug configuration</td>
+</tr>
+<tr>
+<td><code>flash.cfg</code></td>
+<td>Flash programming</td>
+</tr>
+<tr>
+<td><code>ftdi.cfg</code></td>
+<td>FTDI connection</td>
+</tr>
+<tr>
+<td><code>ftdi_ti.cfg</code></td>
+<td>Titanium-specific FTDI</td>
+</tr>
+<tr>
+<td><code>external.cfg</code></td>
+<td>External debugger</td>
+</tr>
+<tr>
+<td><code>debug_softTap.cfg</code></td>
+<td>Soft TAP debugging</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: the <code>C:\Efinity\2026.1\ipm\ip\efx_soc\efx_soc\embedded_sw\bsp\efinix\EfxSapphireSoc\openocd\</code> directory.</p>
+</blockquote>
+<h3 id="11-2-co-debug-configuration">11.2 Co-Debug configuration</h3>
+<p>Co-Debug lets a single FTDI cable debug both the RTL and the RISC-V core at the same time. Set <code>CO_DEBUG</code> to ENABLE in the IP configuration wizard.</p>
+<hr />
+<h2 id="12-soc-ddr-calibration-flow">12. SoC + DDR calibration flow</h2>
+<ol>
+<li><strong>Enable DDR in the IP configuration wizard</strong></li>
+<li><strong>Use the <code>efx_socddr_calrst</code> IP</strong> to handle the DDR calibration and reset sequence</li>
+<li><strong>Compile the RTL + generate the .hex</strong></li>
+<li><strong>After programming, the bootloader runs DDR calibration</strong></li>
+<li><strong>The application runs from DDR</strong></li>
+</ol>
+<blockquote>
+<p>Source: official AN043 (TSE MAC + Sapphire SoC lwIP example, DDR calibration flow).</p>
+</blockquote>
+<hr />
+<h2 id="13-bsp-and-firmware-development">13. BSP and firmware development</h2>
+<h3 id="13-1-bsp-structure">13.1 BSP structure</h3>
+<pre><code>embedded_sw/&lt;soc&gt;/
+├── bsp/efinix/EfxSapphireSoc/
+│   ├── include/
+│   │   ├── soc.h          # peripheral addresses and interrupt ID definitions
+│   │   ├── soc.mk         # build rules
+│   │   └── bsp.h          # BSP API header
+│   ├── linker/
+│   │   ├── default.ld     # standard linker script
+│   │   ├── freertos.ld    # FreeRTOS linker script
+│   │   └── bootloader.ld  # bootloader linker script
+│   └── openocd/           # OpenOCD debug configuration
+├── config/                # Windows Eclipse project configuration
+├── config_linux/          # Linux Eclipse project configuration
+├── software/              # 26 bare-metal examples
+└── tool/                  # helper scripts such as binGen.py
+</code></pre>
+<blockquote>
+<p>Sources: <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §L.2 and the IP directory's <code>embedded_sw/</code> structure.</p>
+</blockquote>
+<h3 id="13-2-example-firmware-list-efx_soc">13.2 Example firmware list (efx_soc)</h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apb3Demo</code></td>
+<td>APB3 slave example</td>
+</tr>
+<tr>
+<td><code>Axi4Demo</code></td>
+<td>User AXI4 master example</td>
+</tr>
+<tr>
+<td><code>bootloader</code></td>
+<td>System bootloader</td>
+</tr>
+<tr>
+<td><code>clintTimerInterruptDemo</code></td>
+<td>CLINT timer interrupt</td>
+</tr>
+<tr>
+<td><code>coremark</code></td>
+<td>CoreMark performance benchmark</td>
+</tr>
+<tr>
+<td><code>customInstructionDemo</code></td>
+<td>Custom instruction extension</td>
+</tr>
+<tr>
+<td><code>dCacheFlushDemo</code></td>
+<td>D$ flush</td>
+</tr>
+<tr>
+<td><code>dhrystone</code></td>
+<td>Dhrystone performance benchmark</td>
+</tr>
+<tr>
+<td><code>gpioDemo</code></td>
+<td>GPIO control and interrupts</td>
+</tr>
+<tr>
+<td><code>i2cDemo</code></td>
+<td>I²C DAC control</td>
+</tr>
+<tr>
+<td><code>memTest</code></td>
+<td>Memory test</td>
+</tr>
+<tr>
+<td><code>smpDemo</code></td>
+<td>Multi-core SMP</td>
+</tr>
+<tr>
+<td><code>spiDemo</code></td>
+<td>SPI transmit/receive</td>
+</tr>
+<tr>
+<td><code>uartDemo</code></td>
+<td>UART transmit/receive</td>
+</tr>
+<tr>
+<td><code>fpuDemo</code></td>
+<td>FPU example</td>
+</tr>
+<tr>
+<td><code>userInterruptDemo</code></td>
+<td>User interrupt sources</td>
+</tr>
+<tr>
+<td>… (26 in total)</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §L.1.</p>
+</blockquote>
+<h3 id="13-3-build-system">13.3 Build system</h3>
+<pre><code># Build a single example
+cd embedded_sw/&lt;soc&gt;/software/standalone/&lt;example&gt;
+make
+
+# Using the Eclipse IDE
+File → Import → Efinity RISC-V Embedded Software IDE
+# Select the BSP path; the toolchain is configured automatically
+</code></pre>
+<p>Toolchain: <code>riscv64-unknown-elf-gcc</code> (GCC 13.4.0 in 2026.1).</p>
+<hr />
+<h2 id="14-resource-utilization-reference">14. Resource utilization reference</h2>
+<h3 id="14-1-an043-measured-data-efinity-2023-1-tse-mac-sapphire-soc">14.1 AN043 measured data (Efinity 2023.1, TSE MAC + Sapphire SoC)</h3>
+<table>
+<thead>
+<tr>
+<th>FPGA</th>
+<th>LUTs</th>
+<th>FFs</th>
+<th>BRAM</th>
+<th>DSP</th>
+<th>fMAX TSEMAC</th>
+<th>fMAX SoC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60 F225 C4</td>
+<td>17,958</td>
+<td>15,117</td>
+<td>176</td>
+<td>4</td>
+<td>245 MHz</td>
+<td>289 MHz</td>
+</tr>
+<tr>
+<td>Ti180 M484 C4</td>
+<td>24,224</td>
+<td>28,669</td>
+<td>284</td>
+<td>4</td>
+<td>245 MHz</td>
+<td>289 MHz</td>
+</tr>
+<tr>
+<td>Ti180 J484 C4</td>
+<td>24,369</td>
+<td>28,668</td>
+<td>284</td>
+<td>4</td>
+<td>233 MHz</td>
+<td>241 MHz</td>
+</tr>
+<tr>
+<td>T120 F324</td>
+<td>15,678</td>
+<td>14,223</td>
+<td>204</td>
+<td>4</td>
+<td>134 MHz</td>
+<td>63 MHz</td>
+</tr>
+<tr>
+<td>T120 F576</td>
+<td>15,588</td>
+<td>14,215</td>
+<td>204</td>
+<td>4</td>
+<td>134 MHz</td>
+<td>65 MHz</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §K (AN043 v1.3 resource reference).</p>
+</blockquote>
+<h3 id="14-2-typical-soc-only-resource-cost-no-tse-mac">14.2 Typical SoC-only resource cost (no TSE MAC)</h3>
+<table>
+<thead>
+<tr>
+<th>SoC configuration</th>
+<th>~LUTs</th>
+<th>~FFs</th>
+<th>~BRAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RV32 1-core, no cache</td>
+<td>~5K</td>
+<td>~4K</td>
+<td>~10</td>
+</tr>
+<tr>
+<td>RV32 1-core, 4KB I$/D$</td>
+<td>~8K</td>
+<td>~6K</td>
+<td>~20</td>
+</tr>
+<tr>
+<td>RV64 1-core, 16KB I$/D$</td>
+<td>~15K</td>
+<td>~12K</td>
+<td>~40</td>
+</tr>
+<tr>
+<td>RV64 4-core SMP</td>
+<td>~30K</td>
+<td>~25K</td>
+<td>~80</td>
+</tr>
+<tr>
+<td>Hard SoC (Ti375)</td>
+<td>~0</td>
+<td>~0</td>
+<td>~0</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: estimated from AN043 data and Efinity project experience (excluding the DDR controller).</p>
+</blockquote>
+<hr />
+<h2 id="15-complete-design-examples">15. Complete design examples</h2>
+<h3 id="15-1-embeddedsystem-solution">15.1 EmbeddedSystem-Solution</h3>
+<ul>
+<li><strong>Repository</strong>: https://github.com/Efinix-Inc/EmbeddedSystem-Solution</li>
+<li><strong>SoC</strong>: efx_hard_soc (Ti375) / efx_soc (Ti180/T120)</li>
+<li><strong>OS</strong>: Linux + FreeRTOS</li>
+<li><strong>Key IPs</strong>: TSEMAC + SD/eMMC + DMA + Wi-Fi daughterboard</li>
+</ul>
+<blockquote>
+<p>Source: <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §D.</p>
+</blockquote>
+<h3 id="15-2-evsoc-edge-vision-soc">15.2 EVSoC (Edge Vision SoC)</h3>
+<ul>
+<li><strong>Repository</strong>: https://github.com/Efinix-Inc/evsoc</li>
+<li><strong>SoC</strong>: Sapphire RISC-V SoC</li>
+<li><strong>Key modules</strong>: MIPI CSI-2 RX + DMA + Display (DSI/HDMI)</li>
+<li><strong>Supported boards</strong>: T120F324, T120F576, Ti60F225, Ti180J484</li>
+</ul>
+<blockquote>
+<p>Source: <em>Efinity Reference Design Index</em> (<code>reference-design-index.md</code>) §E.</p>
+</blockquote>
+<hr />
+<p><strong>File location</strong>: <code>docs-en/efinity/sapphire-soc-configuration.md</code></p>
+<p><strong>Companion documents</strong>:
+- <a href="toolchain-reference.html">toolchain-reference.md</a> — compilation toolchain
+- <a href="reference-design-index.html">reference-design-index.md</a> — reference design index
+- <a href="version-migration-guide.html">version-migration-guide.md</a> — v1→v2 migration steps
+- <a href="design-rules.html">design-rules.md</a> — RTL coding rules</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 时序分析指南</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>STA、WNS/TNS 和关键路径参考。</span>
+<code>efinity/时序分析指南.md</code>
+<a href="../../../efinity/时序分析指南.md">Markdown 源文件</a></p>
+<h1>Efinity 时序分析指南</h1></header>
+<main class="article"><h1 id="efinix-fpga-时序分析指南">Efinix FPGA 时序分析指南</h1>
+<blockquote>
+<p><strong>版本</strong>: v1.0
+<strong>更新日期</strong>: 2026-07-30
+<strong>关联文档</strong>:
+- EVOVERSE-SDK-完整设计说明书.md（主设计文档）
+- SDK-ARCHITECTURE-VISION.md（架构愿景——L4 AI Intelligence 层的时序诊断能力）
+- <a href="Efinity工具链参考.html">efinity-toolchain-reference.md</a>（工具链参考——STA Tcl 命令详细用法）
+- <a href="Efinity优化设计.html">efinity-optimization-design.md</a>（优化设计——方向三：数据路径分析与Pipeline深度分析）
+- <a href="../sdk/用户使用手册.html">用户使用手册.md</a>（§9 时序分析与诊断——用户操作指南）</p>
+</blockquote>
+<p>本文档介绍如何在 EvoVerse SDK 中对 Efinix FPGA 设计进行完整的时序分析、诊断和优化。</p>
+<hr />
+<h2 id="目录">目录</h2>
+<ol>
+<li><a href="#1-时序分析基础概念">时序分析基础概念</a></li>
+<li><a href="#2-sdc-约束编写">SDC 约束编写</a></li>
+<li><a href="#3-build-report-解读">Build Report 解读</a></li>
+<li><a href="#4-时序诊断自动根因分析">时序诊断：自动根因分析</a></li>
+<li><a href="#5-数据路径分析与可视化">数据路径分析与可视化</a></li>
+<li><a href="#6-pipeline-深度分析冗余打拍检测">Pipeline 深度分析：冗余打拍检测</a></li>
+<li><a href="#7-编译策略优化">编译策略优化</a></li>
+<li><a href="#8-交互式-tcl-console">交互式 Tcl Console</a></li>
+<li><a href="#9-典型优化流程">典型优化流程</a></li>
+<li><a href="#10-常见违例模式与解法">常见违例模式与解法</a></li>
+</ol>
+<hr />
+<h2 id="1-时序分析基础概念">1. 时序分析基础概念</h2>
+<h3 id="1-1-核心术语">1.1 核心术语</h3>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Setup Time</strong></td>
+<td>数据必须在时钟沿到达前稳定的最小时间。违例 = 数据太慢</td>
+</tr>
+<tr>
+<td><strong>Hold Time</strong></td>
+<td>数据必须在时钟沿到达后保持稳定的最小时间。违例 = 数据太快</td>
+</tr>
+<tr>
+<td><strong>Slack</strong></td>
+<td>时序余量。正值 = 满足，负值 = 违例。是 <strong>Required Time − Arrival Time</strong></td>
+</tr>
+<tr>
+<td><strong>WNS</strong> (Worst Negative Slack)</td>
+<td>最差负 slack，整个设计中最严重违例的 slack 值</td>
+</tr>
+<tr>
+<td><strong>TNS</strong> (Total Negative Slack)</td>
+<td>所有违例路径 slack 的总和，反映违例总量</td>
+</tr>
+<tr>
+<td><strong>Tlogic</strong></td>
+<td>组合逻辑延迟（LUT、MUX、加法器等 cell 延迟之和）</td>
+</tr>
+<tr>
+<td><strong>Tnet</strong></td>
+<td>布线延迟（net 上信号的传播延迟）</td>
+</tr>
+<tr>
+<td><strong>Tclk_skew</strong></td>
+<td>时钟偏斜（同一时钟到达不同寄存器的延迟差）</td>
+</tr>
+<tr>
+<td><strong>Critical Path</strong></td>
+<td>关键路径：slack 最小（最差）的时序路径，是优化的首要目标</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-时序路径模型">1.2 时序路径模型</h3>
+<pre><code>启动寄存器 CK→Q → [Tlogic] → [Tnet] → 捕获寄存器 D 端
+                                                ↑
+                                             Setup/Hold window
+
+Data Arrival Time = Tclk_launch + Tcko + Tlogic + Tnet
+Data Required Time = Tclk_capture + Tperiod − Tsetup − Tuncertainty
+
+Slack = Required Time − Arrival Time
+</code></pre>
+<ul>
+<li><strong>setup slack &lt; 0</strong>：数据到得太晚，没赶上下一个时钟沿采样</li>
+<li><strong>hold slack &lt; 0</strong>：数据到得太早，覆盖了当前时钟沿采样的上一个数据</li>
+</ul>
+<h3 id="1-3-efinix-架构对时序的影响">1.3 Efinix 架构对时序的影响</h3>
+<ul>
+<li><strong>LUT4 架构</strong>：每个 LUT 只能实现 4 输入函数，深逻辑链（≥3 LUT 无寄存器打断）容易出现 setup 违例</li>
+<li><strong>Quantum 架构的 IO Block</strong>：有专用的输入/输出寄存器，不占用核心逻辑，延迟更短</li>
+<li><strong>全局时钟网络</strong>：Efinix 用全局时钟 spine，时钟偏斜通常很小（&lt;0.1ns）</li>
+<li><strong>DSP/RAM 内置寄存器</strong>：这些硬块的输出寄存器是"免费"的，不用则形成长组合路径</li>
+</ul>
+<hr />
+<h2 id="2-sdc-约束编写">2. SDC 约束编写</h2>
+<h3 id="2-1-基本约束模板">2.1 基本约束模板</h3>
+<pre><code class="language-sdc"># ========== 时钟定义 ==========
+create_clock -period 10.0 -name sys_clk  [get_ports clk_i]
+create_clock -period 6.734 -name video_clk [get_ports video_clk_i]
+
+# ========== 异步时钟域 ==========
+set_clock_groups -asynchronous \
+    -group [get_clocks sys_clk] \
+    -group [get_clocks video_clk]
+
+# ========== 生成时钟（PLL 输出）==========
+# 如果 PLL 在 Interface Designer 中配置，Efinity 会自动推导
+# 手动场景：
+create_generated_clock -name pll_clk_200m \
+    -source [get_ports clk_i] -multiply_by 4 \
+    [get_pins PLL_inst/clk_out]
+
+# ========== I/O 延迟 ==========
+# 输入：外部器件 clock-to-out + 板级走线 = 3ns max
+set_input_delay -clock sys_clk -max 3.0 [get_ports {data_in[*]}]
+set_input_delay -clock sys_clk -min 1.5 [get_ports {data_in[*]}]
+
+# 输出：板级走线 + 外部器件 setup = 2.5ns max
+set_output_delay -clock sys_clk -max 2.5 [get_ports {data_out[*]}]
+set_output_delay -clock sys_clk -min 1.0 [get_ports {data_out[*]}]
+
+# ========== 伪路径（确认异步才加）==========
+# 不要在整个 CDC 路径上加 false_path！
+# 正确做法：set_clock_groups 切断时钟域间分析，
+# 然后只在同步链前两级（不确定数据处）加 false_path
+set_false_path -from [get_cells sync_ff_reg[0]] -to [get_cells sync_ff_reg[1]]
+</code></pre>
+<h3 id="2-2-常见错误">2.2 常见错误</h3>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>后果</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>忘记 <code>set_clock_groups -asynchronous</code></td>
+<td>工具尝试满足异步时钟间的同步关系，布局被扰乱</td>
+<td>确认异步后立即加上</td>
+</tr>
+<tr>
+<td><code>set_false_path</code> 覆盖整条 CDC</td>
+<td>掩盖真正的违例，可能漏掉缺失同步器的信号</td>
+<td>只覆盖同步链本身</td>
+</tr>
+<tr>
+<td>I/O delay 全用 0</td>
+<td>工具不知道外部条件，可能把关键资源错配给不重要的 I/O</td>
+<td>给合理的保守值</td>
+</tr>
+<tr>
+<td>时钟 period 设错</td>
+<td>工具按错误频率优化 → 重新编译</td>
+<td>用示波器/器件手册确认</td>
+</tr>
+<tr>
+<td>多条 <code>create_clock</code> 用同一个 port</td>
+<td>覆盖前一条定义</td>
+<td>每个时钟 port 只定义一次</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-3-sdc-放置位置">2.3 SDC 放置位置</h3>
+<pre><code>&lt;project&gt;/
+  constraints/
+    top.sdc          ← 主约束文件，在 Efinity 项目 XML 中引用
+</code></pre>
+<p>EvoVerse SDK 在每次 Build 前会自动检查 SDC 文件是否存在。如果缺失，会弹出警告。</p>
+<hr />
+<h2 id="3-build-report-解读">3. Build Report 解读</h2>
+<h3 id="3-1-触发方式">3.1 触发方式</h3>
+<p>在 VS Code 中打开 EvoVerse 项目后：</p>
+<ul>
+<li><strong>命令面板</strong> → <code>EvoVerse: Build</code>（或快捷键）</li>
+<li>或者在 MCP Server 中调用 <code>build_project</code></li>
+</ul>
+<p>编译完成后，如果设置了 <code>"evoverse.build.autoOpenReport": true</code>，会自动打开 Build Report。</p>
+<h3 id="3-2-report-面板-tab-说明">3.2 Report 面板 Tab 说明</h3>
+<p>Build Report 包含以下 Tab：</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overview</strong></td>
+<td>编译概览：器件、Top Module、耗时、时序状态（All Met / N violations）</td>
+</tr>
+<tr>
+<td><strong>Resources</strong></td>
+<td>资源占用饼图：LUT、FF、RAM、DSP、PLL 使用率</td>
+</tr>
+<tr>
+<td><strong>Timing</strong></td>
+<td>按时钟域分组的 WNS/TNS/违例路径数，每个时钟域一条</td>
+</tr>
+<tr>
+<td><strong>Critical Paths</strong></td>
+<td>每条违例路径的 hop-by-hop 延迟列表（按 slack 排序）</td>
+</tr>
+<tr>
+<td><strong>Tcl Console</strong></td>
+<td>交互式 STA 查询</td>
+</tr>
+<tr>
+<td><strong>Optimization</strong></td>
+<td>编译策略优化建议（由 BuildStrategyAdvisor 生成）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-从-overview-快速判断">3.3 从 Overview 快速判断</h3>
+<ul>
+<li><strong>All Met, 利用率 50% 以下</strong>：设计轻松收敛，关注资源效率即可</li>
+<li><strong>All Met, 利用率 80%+</strong>：设计稳定，但后续加功能可能触发违例</li>
+<li><strong>N violations, N ≤ 5</strong>：数量少，优先诊断单条路径</li>
+<li><strong>N violations, N ≥ 10 且集中在一个时钟域</strong>：可能存在系统性架构问题（频率过高？长路径模式？</li>
+</ul>
+<h3 id="3-4-从-timing-tab-快速定位">3.4 从 Timing Tab 快速定位</h3>
+<p>Timing Tab 按时钟域列出。优先关注：
+1. WNS 最负的时钟域
+2. TNS 最大的时钟域（违例总量最大）
+3. 违例路径数最多的时钟域（普遍性问题）</p>
+<hr />
+<h2 id="4-时序诊断-自动根因分析">4. 时序诊断：自动根因分析</h2>
+<h3 id="4-1-触发方式">4.1 触发方式</h3>
+<p>Build 完成后若有违例，会弹出通知：</p>
+<blockquote>
+<p>Build 完成但有 3 条时序违例（WNS=−1.2ns）。是否运行时序诊断？</p>
+</blockquote>
+<p>点击 <strong>"诊断时序"</strong>，或通过命令面板 → <code>EvoVerse: Diagnose Timing</code> 手动触发。</p>
+<h3 id="4-2-诊断引擎工作流程">4.2 诊断引擎工作流程</h3>
+<pre><code>CriticalPath[] → extractFeatures() → classify() → queryByCategory() → scoreFingerprint() → Diagnosis[]
+</code></pre>
+<p><strong>第一步：特征提取</strong>
+对每条违例路径计算：
+- cell 数量和比例（<code>logicRatio</code>）
+- route 数量和比例（<code>netRatio</code>）
+- 是否跨时钟域（<code>crossClock</code>）
+- 是否起始于 IO port（<code>startsAtPort</code>）
+- 是否经过 RAM/DSP（<code>throughBlock</code>）</p>
+<p><strong>第二步：分类</strong>
+按优先级匹配 7 大类：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>判定条件</th>
+<th>置信度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CDC</strong></td>
+<td>start/end 的时钟名不同</td>
+<td>0.7</td>
+</tr>
+<tr>
+<td><strong>I/O</strong></td>
+<td>startsAtPort 或 endsAtPort</td>
+<td>0.8</td>
+</tr>
+<tr>
+<td><strong>资源瓶颈</strong></td>
+<td>经过 RAM 或 DSP</td>
+<td>0.8～0.85</td>
+</tr>
+<tr>
+<td><strong>长组合逻辑</strong></td>
+<td>≥3 个 cell + logic 占比 &gt; 0.5</td>
+<td>0.85</td>
+</tr>
+<tr>
+<td><strong>高扇出</strong></td>
+<td>net 占比 &gt; 0.4</td>
+<td>0.6</td>
+</tr>
+<tr>
+<td><strong>时钟架构</strong></td>
+<td>同一时钟域 ≥3 条违例</td>
+<td>自动升级</td>
+</tr>
+<tr>
+<td><strong>未知</strong></td>
+<td>不满足以上任何条件</td>
+<td>0.3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>第三步：知识库召回</strong>
+按类别查找内建的 14 条知识库条目，每条都带 fingerprint 匹配打分。</p>
+<p><strong>第四步：生成建议</strong>
+按匹配分排序，返回最优的根因诊断和修复方案。</p>
+<h3 id="4-3-诊断结果界面">4.3 诊断结果界面</h3>
+<p>诊断 Webview 包含三个 Tab：</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>诊断结果</strong></td>
+<td>根因分析 + 修复建议（含示例代码）+ 证据展示</td>
+</tr>
+<tr>
+<td><strong>数据路径</strong></td>
+<td>Mermaid 路径拓扑图 + 延迟火焰图 + 延迟分解</td>
+</tr>
+<tr>
+<td><strong>Pipeline 分析</strong></td>
+<td>三阶段冗余打拍分析报告</td>
+</tr>
+</tbody>
+</table>
+<p>左上角可以<strong>切换违例路径</strong>（按 slack 排序的下拉选择器）。</p>
+<p>右下角有 <strong>"Ask LLM"</strong> 按钮，将当前路径的诊断上下文 + RTL 片段 + SDC 发送给 LLM 获取更深层的分析。</p>
+<hr />
+<h2 id="5-数据路径分析与可视化">5. 数据路径分析与可视化</h2>
+<h3 id="5-1-datapathtracer-输出">5.1 DataPathTracer 输出</h3>
+<p>DataPathTracer 将一条 timing report 中的 hop 序列重新组织为结构化的数据流：</p>
+<pre><code>Hop 序列:
+  cam_top/cap_reg[3]/CK→Q  ← 启动寄存器
+  LUT4: cam_top/cap_next[3]  ← 组合逻辑
+  NET: cap_next[3]           ← 布线
+  LUT4: cam_top/fifo_wr      ← 组合逻辑 (跨模块!)
+  NET: fifo_wr                ← 布线
+  u_fifo/wr_ptr[0]/SETUP     ← 捕获寄存器
+</code></pre>
+<p>结构化为：</p>
+<pre><code>模块 cam_top 内部:
+  register → logic(LUT4) → route → logic(LUT4) ───跨模块边界──→ 模块 u_fifo:
+                                                                  route → register
+</code></pre>
+<h3 id="5-2-延迟分解">5.2 延迟分解</h3>
+<table>
+<thead>
+<tr>
+<th>组成部分</th>
+<th>含义</th>
+<th>优化方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>logicNs</strong></td>
+<td>组合逻辑延迟</td>
+<td>减少 LUT 层数、插入流水线</td>
+</tr>
+<tr>
+<td><strong>routeNs</strong></td>
+<td>布线延迟</td>
+<td>检查高扇出、逻辑复制、Floorplan</td>
+</tr>
+<tr>
+<td><strong>registerNs</strong></td>
+<td>寄存器 CK→Q + Setup</td>
+<td>无法优化（工艺固定）</td>
+</tr>
+<tr>
+<td><strong>clockOverheadNs</strong></td>
+<td>时钟余量（skew + uncertainty）</td>
+<td>减少时钟不确定性设置，或调整 PLL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-3-mermaid-拓扑图">5.3 Mermaid 拓扑图</h3>
+<p>DataPathTracer 自动生成 Mermaid 流程图，展示数据通路的结构：</p>
+<ul>
+<li>绿色节点：延迟占比 &lt; 12%</li>
+<li>黄色节点：延迟占比 12%～25%</li>
+<li>红色节点：延迟占比 ≥ 25%（瓶颈！）</li>
+<li>模块边界用虚线标注</li>
+</ul>
+<hr />
+<h2 id="6-pipeline-深度分析-冗余打拍检测">6. Pipeline 深度分析：冗余打拍检测</h2>
+<h3 id="6-1-不是简单的-找到寄存器就去掉">6.1 不是简单的"找到寄存器就去掉"</h3>
+<p>这是最复杂的分析模块。去掉一个寄存器会牵动整个数据通路的时序契约——伴生的控制信号、计数器、帧标记、初始化序列都可能不同步。</p>
+<h3 id="6-2-三阶段分析">6.2 三阶段分析</h3>
+<pre><code>阶段一（时序可行性）    阶段二（信号依赖）        阶段三（等效性）
+    ↓                      ↓                        ↓
+findCandidateRegisters() → analyzeSignalDep()  → checkEquivalence()
+    ↓                      ↓                        ↓
+候选寄存器列表            依赖分析报告              最终建议
+(slack 预估值)           (7 类检查)              (actionable? 风险等级)
+</code></pre>
+<p><strong>阶段一：时序可行性</strong>（纯数量计算）</p>
+<p>找到路径上相邻的两个寄存器（跨模块边界最常见），预估去掉一个后的 slack：
+- slack &gt; 0 → 继续分析
+- slack ≤ 0 → 标记为"去掉后仍违例"，不进入阶段二</p>
+<p><strong>阶段二：信号依赖分析</strong>（7 项检查）</p>
+<table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>判断逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>握手协议</strong></td>
+<td>候选寄存器是否与 valid/ready 在同一个 always 块中</td>
+</tr>
+<tr>
+<td><strong>帧标记</strong></td>
+<td>是否伴生 last/sof/eof 信号</td>
+</tr>
+<tr>
+<td><strong>计数器</strong></td>
+<td>数据延迟改变后，帧计数/行计数是否还能对齐</td>
+</tr>
+<tr>
+<td><strong>反馈环路</strong></td>
+<td>去掉一拍后是否破坏了闭环逻辑（如积分器）</td>
+</tr>
+<tr>
+<td><strong>多消费者</strong></td>
+<td>该寄存器输出是否被多个下游模块消费</td>
+</tr>
+<tr>
+<td><strong>初始化时序</strong></td>
+<td>复位/初始化序列是否依赖当前的延迟拍数</td>
+</tr>
+<tr>
+<td><strong>SVA</strong></td>
+<td>仿真验证中的 <code>##N</code> 延迟断言是否受影响</td>
+</tr>
+</tbody>
+</table>
+<p><strong>阶段三：等效性</strong></p>
+<p>生成前后时序契约对比，标注所有不一致点。<strong>不确定时宁可保守</strong>——标注"需要人工确认"，不给操作按钮。</p>
+<h3 id="6-3-硬约束">6.3 硬约束</h3>
+<ul>
+<li><strong>永不给"只去掉单个寄存器"的建议</strong>：识别到伴生信号后，必须整组处理</li>
+<li><strong>所有伴生信号都会被标注</strong>：即使看似无关的 debug 计数器也要检查</li>
+<li><strong><code>actionable = false</code> 时不给操作按钮</strong>：仅展示分析结论，等待人工判断</li>
+</ul>
+<h3 id="6-4-仿真回归">6.4 仿真回归</h3>
+<p>Pipeline 分析建议修改 RTL 后，需要验证等效性。EvoVerse SDK 提供一键仿真回归：</p>
+<ul>
+<li>命令面板 → <code>EvoVerse: Run Simulation Regression</code></li>
+<li>自动调用 <code>iverilog</code> / <code>vvp</code> 对比修改前后测试向量的输出</li>
+<li>差异报告直接嵌入诊断 Webview</li>
+</ul>
+<hr />
+<h2 id="7-编译策略优化">7. 编译策略优化</h2>
+<h3 id="7-1-buildstrategyadvisor">7.1 BuildStrategyAdvisor</h3>
+<p>编译完成后自动分析 BuildSummary，在 Build Report 的 <strong>Optimization</strong> Tab 中给出策略建议。每条建议都有：</p>
+<ul>
+<li><strong>触发原因</strong>：引用具体报告数据</li>
+<li><strong>预期效果</strong>：量化预估</li>
+<li><strong>风险等级</strong>：low / medium / high</li>
+<li><strong>操作按钮</strong>（仅 auto 类型）：一键应用 + Rebuild</li>
+</ul>
+<h3 id="7-2-策略类型">7.2 策略类型</h3>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>触发条件</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AOE 面积优化</strong></td>
+<td>资源利用率高（≥80%）+ 时序宽松</td>
+<td>auto</td>
+</tr>
+<tr>
+<td><strong>AOE 关闭</strong></td>
+<td>资源利用率低（&lt;60%）+ 时序紧张</td>
+<td>auto</td>
+</tr>
+<tr>
+<td><strong>Retiming</strong></td>
+<td>路径上寄存器分布不均</td>
+<td>manual</td>
+</tr>
+<tr>
+<td><strong>PNR Effort High</strong></td>
+<td>WNS 很近（−0.1～−0.5ns）</td>
+<td>auto</td>
+</tr>
+<tr>
+<td><strong>Seed Sweep</strong></td>
+<td>布局结果波动大</td>
+<td>manual</td>
+</tr>
+<tr>
+<td><strong>DSP Packing</strong></td>
+<td>乘法器未被映射到 DSP 块</td>
+<td>manual</td>
+</tr>
+<tr>
+<td><strong>BRAM Output Register</strong></td>
+<td>RAM 读路径出现违例</td>
+<td>manual</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-3-aoe-决策矩阵">7.3 AOE 决策矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>资源利用率</th>
+<th>时序状态</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥80%</td>
+<td>All Met</td>
+<td><strong>保持</strong> AOE，面积优先级正确</td>
+</tr>
+<tr>
+<td>≥80%</td>
+<td>违例</td>
+<td><strong>放松</strong> AOE：允许面积增大换取时序</td>
+</tr>
+<tr>
+<td>&lt;60%</td>
+<td>All Met</td>
+<td><strong>开启</strong> AOE：面积可优化</td>
+</tr>
+<tr>
+<td>&lt;60%</td>
+<td>违例</td>
+<td><strong>关闭</strong> AOE：有空间就优先保时序</td>
+</tr>
+<tr>
+<td>60-80%</td>
+<td>违例</td>
+<td>视具体资源瓶颈而定，优先关闭受影响模块的 AOE</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-交互式-tcl-console">8. 交互式 Tcl Console</h2>
+<h3 id="8-1-触发方式">8.1 触发方式</h3>
+<p>命令面板 → <code>EvoVerse: Open Timing Console</code></p>
+<h3 id="8-2-预设模板">8.2 预设模板</h3>
+<table>
+<thead>
+<tr>
+<th>模板</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Top 10 Setup Paths</td>
+<td>查看最严重的 10 条 setup 违例</td>
+</tr>
+<tr>
+<td>Top 10 Setup (Slack &lt; 1ns)</td>
+<td>查看 slack 小于 1ns 的路径</td>
+</tr>
+<tr>
+<td>All Clocks Report</td>
+<td>所有时钟域的时序汇总</td>
+</tr>
+<tr>
+<td>Clock Tree Report</td>
+<td>时钟树延迟和偏斜</td>
+</tr>
+<tr>
+<td>Unconstrained Paths</td>
+<td>列出无约束的路径（SDC 遗漏检查）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-3-自定义-tcl">8.3 自定义 Tcl</h3>
+<pre><code class="language-tcl"># 查看特定寄存器组的时序
+report_timing -setup -npaths 20 -to [get_cells &quot;video_pipe/*&quot;]
+
+# 查看 DDR 接口相关路径
+report_timing -setup -npaths 10 -from [get_ports {ddr_dq[*]}]
+
+# 列出所有时钟
+report_clocks
+
+# 查看某模块的层次
+get_cells u_cam_top/u_capture/*
+</code></pre>
+<hr />
+<h2 id="9-典型优化流程">9. 典型优化流程</h2>
+<h3 id="9-1-标准工作流">9.1 标准工作流</h3>
+<pre><code>Step 1: 编写 SDC
+  ↓
+Step 2: Build（Ctrl+Shift+B 或 EvoVerse: Build）
+  ↓
+Step 3: 查看 Build Report → Timing Tab
+  ├─ All Met? → 完成 ✓
+  └─ 有违例 →
+       ↓
+Step 4: 诊断时序（Diagnose Timing）
+  ↓
+Step 5: 查看诊断建议
+  ├─ 先试低风险工具选项（Optimization Tab）
+  │   · Effort Level High
+  │   · Seed Sweep
+  │   · Retiming → Rebuild → 回到 Step 2
+  ↓
+Step 6: 若工具选项不足 → 查看 RTL 级建议
+  ├─ 长组合链 → 插入流水线
+  ├─ 高扇出 → (* max_fanout = N *)
+  ├─ CDC → 补同步器 + 改约束
+  ├─ I/O → 配置 IO register + IO delay
+  └─ 资源瓶颈 → 打开 RAM/DSP 输出寄存器
+  ↓
+Step 7: 改 RTL → Rebuild → 回到 Step 2
+  ↓
+Step 8 (高级): 若仍有困难路径
+  ├─ 打开 &quot;数据路径分析&quot; Tab → 找到瓶颈 hop
+  ├─ 打开 &quot;Pipeline 分析&quot; Tab → 检查跨模块冗余打拍
+  └─ &quot;Ask LLM&quot; → 将完整上下文给 LLM 分析
+</code></pre>
+<h3 id="9-2-优先级原则">9.2 优先级原则</h3>
+<ol>
+<li><strong>先约束、后 RTL</strong>：SDC 错误/遗漏是最常见的根本原因</li>
+<li><strong>先选项、后手改</strong>：Effort Level / Retiming 是无痛优化</li>
+<li><strong>先局部、后架构</strong>：尽量不降频，除非多条路径普遍违例</li>
+<li><strong>先慢路径、后快路径</strong>：setup 违例 &gt; hold 违例（hold 通常工具能自动修）</li>
+</ol>
+<hr />
+<h2 id="10-常见违例模式与解法">10. 常见违例模式与解法</h2>
+<h3 id="10-1-模式-a-长组合逻辑链">10.1 模式 A：长组合逻辑链</h3>
+<p><strong>症状</strong>：Tlogic 占比 &gt; 60%，连续 3+ 个 LUT/MUX 无寄存器</p>
+<p><strong>根因</strong>：<code>assign data_o = f(g(h(data_i)))</code> 这种"一句话算完"</p>
+<p><strong>解法</strong>：</p>
+<pre><code class="language-systemverilog">// ❌ assign result = stage3(stage2(stage1(data_i)));
+// ✅
+reg [W-1:0] pipe1, pipe2;
+always @(posedge clk) pipe1 &lt;= stage1(data_i);
+always @(posedge clk) pipe2 &lt;= stage2(pipe1);
+assign result = stage3(pipe2);
+</code></pre>
+<p><strong>代价</strong>：多 2 拍延迟</p>
+<h3 id="10-2-模式-b-高扇出">10.2 模式 B：高扇出</h3>
+<p><strong>症状</strong>：Tnet 占比 &gt; 40%，一个信号驱动几百个 sink</p>
+<p><strong>解法</strong>：</p>
+<pre><code class="language-systemverilog">(* max_fanout = 100 *) reg shared_enable;
+</code></pre>
+<h3 id="10-3-模式-c-cdc-违例">10.3 模式 C：CDC 违例</h3>
+<p><strong>症状</strong>：路径 start 和 end 在不同时钟域</p>
+<p><strong>解法</strong>：</p>
+<pre><code class="language-sdc"># 第一步：切断跨时钟域同步分析
+set_clock_groups -asynchronous \
+    -group [get_clocks clk_a] \
+    -group [get_clocks clk_b]
+</code></pre>
+<pre><code class="language-systemverilog">// 第二步：确保有同步器
+(* ASYNC_REG = &quot;TRUE&quot; *) reg [2:0] sync_ff;
+always @(posedge clk_dst)
+    sync_ff &lt;= {sync_ff[1:0], src_signal};
+</code></pre>
+<h3 id="10-4-模式-d-i-o-路径">10.4 模式 D：I/O 路径</h3>
+<p><strong>症状</strong>：经过 IO port 的路径违例</p>
+<p><strong>解法</strong>：
+1. 补 <code>set_input_delay</code> / <code>set_output_delay</code>
+2. 在 Interface Designer 中勾选 pin 的 "Register"
+3. 在 RTL 中：输入第一拍就打拍，输出最后一拍是寄存器</p>
+<h3 id="10-5-模式-e-时钟架构问题">10.5 模式 E：时钟架构问题</h3>
+<p><strong>症状</strong>：同一时钟域 ≥3 条违例，单点优化无法收敛</p>
+<p><strong>解法</strong>：
+- 频率是否太高？（TJ180 LUT4 深逻辑的实用上限约 100-150MHz）
+- 考虑用 PLL 降低该时钟域频率
+- 或拆分数据通路：慢域做控制，快域做数据处理</p>
+<h3 id="10-6-模式-f-资源瓶颈">10.6 模式 F：资源瓶颈</h3>
+<p><strong>症状</strong>：经过 BRAM/DSP 的路径违例</p>
+<p><strong>解法</strong>：</p>
+<pre><code class="language-systemverilog">// BRAM: 打开输出寄存器（免费！）
+(* ram_style = &quot;block&quot; *) reg [W-1:0] mem [0:D-1];
+reg [W-1:0] mem_rd;
+always @(posedge clk) begin
+    if (wr_en) mem[wr_addr] &lt;= wr_data;
+    mem_rd &lt;= mem[rd_addr];  // ← 这个寄存器存在 BRAM 内部，不占用逻辑
+end
+
+// DSP: 寄存输入和输出
+(* use_dsp = &quot;yes&quot; *)
+reg [17:0] a_r, b_r, p_r;
+always @(posedge clk) begin
+    a_r &lt;= a; b_r &lt;= b;  // 输入寄存器
+    p_r &lt;= a_r * b_r;     // 输出寄存器
+end
+</code></pre>
+<h3 id="10-7-跨模块冗余打拍">10.7 跨模块冗余打拍</h3>
+<p><strong>症状</strong>：两个模块各自在接口处打了寄存器</p>
+<pre><code>模块 A: always @(posedge clk) data_o &lt;= data_next;  // 打了一拍
+模块 B: always @(posedge clk) data_r &lt;= data_i;     // 又打了一拍
+</code></pre>
+<p><strong>解法</strong>：通过 Pipeline 深度分析确定是否可以去掉某一侧的寄存器（详见第 6 章）</p>
+<hr />
+<h2 id="附录-相关文件索引">附录：相关文件索引</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>extension/src/toolchain/timingDiagnoser.ts</code></td>
+<td>规则引擎：特征提取 + 分类 + 知识库匹配</td>
+</tr>
+<tr>
+<td><code>extension/src/toolchain/timingKnowledgeBase.ts</code></td>
+<td>14 条内置知识库条目</td>
+</tr>
+<tr>
+<td><code>products/efinity-adapter/extension/src/capabilities/timingConsole.ts</code></td>
+<td>交互式 STA 驱动（sta_tclsh）</td>
+</tr>
+<tr>
+<td><code>extension/src/toolchain/dataPathTracer.ts</code></td>
+<td>数据路径追踪与延迟分解</td>
+</tr>
+<tr>
+<td><code>extension/src/toolchain/pipelineDepthAnalyzer.ts</code></td>
+<td>三阶段 Pipeline 深度分析</td>
+</tr>
+<tr>
+<td><code>extension/src/toolchain/buildStrategyAdvisor.ts</code></td>
+<td>编译策略推荐引擎（AOE/Retiming/Effort）</td>
+</tr>
+<tr>
+<td><code>extension/src/toolchain/copilotContext.ts</code></td>
+<td>LLM 上下文构建器</td>
+</tr>
+<tr>
+<td><code>products/efinity-adapter/extension/src/capabilities/report.ts</code></td>
+<td>Efinity 报告解析（→ BuildSummary / TimingSummary）</td>
+</tr>
+<tr>
+<td><code>docs/efinity-optimization-design.md</code></td>
+<td>完整设计文档</td>
+</tr>
+<tr>
+<td><code>docs/efinity-coding-style.md</code></td>
+<td>FPGA 编码风格指南</td>
+</tr>
+</tbody>
+</table></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

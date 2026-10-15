@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FPGA CDC 模式</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>跨时钟域设计模式。</span>
+<code>efinity/FPGA-CDC模式.md</code>
+<a href="../../../efinity/FPGA-CDC模式.md">Markdown 源文件</a></p>
+<h1>FPGA CDC 模式</h1></header>
+<main class="article"><h1 id="fpga-cdc-模式-clock-domain-crossing">FPGA CDC 模式 — Clock Domain Crossing</h1>
+<blockquote>
+<p><strong>EvoVerse SDK · Knowledge Base — Cross-Vendor Supplement</strong></p>
+<p><strong>目标读者</strong>：所有需要跨时钟域设计（CDC）的 Efinix FPGA 用户；时序诊断与 AI 协作者</p>
+<p><strong>Last updated</strong>: 2026-07-30</p>
+<p><strong>范围</strong>：以 Efinity 2026.1 官方 CDC 文档（<code>efinity-timing-closure.pdf §5</code> + <code>tim-clk-relationships.html</code> + <code>tim-clk-syncronizers.html</code> + <code>tim-sync-metastable.html</code>）为权威，辅以 formal.org Module 7 + UBC ELEX 7660 Lec 11 + MPI Lesson 11 + Embedded Design CDC Part 1。</p>
+<p><strong>关联文档</strong>：
+- <a href="FPGA-STA基础.html">FPGA-STA基础.md</a> — Slack/Skew/Setup/Hold 基础
+- <a href="FPGA-MTBF与Metastability.html">FPGA-MTBF与Metastability.md</a> — 亚稳态与 MTBF 计算
+- <a href="FPGA-时钟约束Cookbook.html">FPGA-时钟约束Cookbook.md</a> — <code>set_clock_groups</code> / <code>set_false_path</code>
+- <a href="Efinity设计规范.html">Efinity设计规范.md</a> — 复位设计 + CDC 综合</p>
+</blockquote>
+<hr />
+<h2 id="目录">目录</h2>
+<ol>
+<li><a href="#1-为什么-cdc-至关重要">为什么 CDC 至关重要</a></li>
+<li><a href="#2-mtbf-概念简述">MTBF 概念（简述）</a></li>
+<li><a href="#3-三种经典-cdc-模式">三种经典 CDC 模式</a></li>
+<li><a href="#4-数据一致性问题">数据一致性问题</a></li>
+<li><a href="#5-efinity-async_reg-属性">Efinity <code>async_reg</code> 属性</a></li>
+<li><a href="#6-efinity-cdc-约束支持">Efinity CDC 约束支持</a></li>
+<li><a href="#7-实战案例缺失-dac-脉冲">实战案例：缺失 DAC 脉冲</a></li>
+<li><a href="#8-efinity-推荐模板完整-2-ff-synchronizer">Efinity 推荐模板：完整 2-FF Synchronizer</a></li>
+<li><a href="#9-模式选型决策表">模式选型决策表</a></li>
+</ol>
+<hr />
+<h2 id="1-为什么-cdc-至关重要">1. 为什么 CDC 至关重要</h2>
+<p><strong>核心矛盾</strong>：两个异步时钟的边沿相位关系是<strong>不可预测</strong>的——STA 工具<strong>无法</strong>保证跨 CDC 路径的 setup/hold 满足，因此<strong>必出现</strong>亚稳态事件。</p>
+<blockquote>
+<p>"When two clocks are asynchronous – independently generated – their clock edges will drift relative to each other. This means that it is guaranteed that at some point in time the setup and hold requirements of the latching clock will be violated. This will result in metastable behaviour."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>仿真不会发现 CDC bug</strong>：</p>
+<blockquote>
+<p>"CDC issues don't always show up in simulation — they can pass all your testbenches and still cause intermittent failures in hardware."
+—— Source: [B10] Embedded Design CDC Part 1</p>
+<p>"Simulation finds CDC bugs very rarely. A simulation run samples a handful of timing relationships between the source and destination clocks; the metastability window is measured in picoseconds. A CDC bug may require a specific phase alignment that appears once in ten million cycles."
+—— Source: [B9] formal.org Module 7</p>
+</blockquote>
+<p><strong>所有真实 SoC 都包含多个异步时钟域</strong>：</p>
+<blockquote>
+<p>"Every real SoC contains multiple asynchronous clock domains — a CPU core running at 1 GHz, a USB PHY at 480 MHz, a memory controller at 800 MHz, a low-power always-on domain at 32 kHz — and data must move between them. That movement is a potential CDC violation."
+—— Source: [B9] formal.org Module 7</p>
+</blockquote>
+<p><strong>结论</strong>：</p>
+<blockquote>
+<p>"Synchronization problems due to clock domain crossings can have serious consequences. Since they are random and potentially infrequent events they are unlikely to be found during testing and may only be discovered after a design goes into production. To avoid CDC problems you should minimize clock domain crossings, use only commonly-accepted synchronization methods and ensure the MTBF calculated by CAD tools are appropriate for the application."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<hr />
+<h2 id="2-mtbf-概念-简述">2. MTBF 概念（简述）</h2>
+<p><strong>MTBF (Mean Time Between Failures)</strong>：两次亚稳态导致的失效之间的平均时间。MTBF 公式：</p>
+<pre><code>MTBF = e^(T_s / C_2) / (C_1 · f_d · f_c)
+</code></pre>
+<p>变量含义详见 <a href="FPGA-MTBF与Metastability.html">FPGA-MTBF与Metastability.md §3</a>。</p>
+<p><strong>关键性质</strong>：MTBF 随 slack <code>T_s</code> <strong>指数</strong>增长 → 增加 setup slack（即使 100 ps）可让 MTBF 提升一个数量级。</p>
+<blockquote>
+<p>"Since MTBF increases exponentially with slack time (T_s), the most effective way to increase the MTBF is to increase the slack time."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>目标</strong>：普通消费/工业设计 ≥ 10⁹ 年（10 亿年）；医疗/航天 ≥ 10¹⁵ 年（Intel TimeQuest 报告标准）。</p>
+<hr />
+<h2 id="3-三种经典-cdc-模式">3. 三种经典 CDC 模式</h2>
+<h3 id="3-1-2-ff-synchronizer-双触发器同步器">3.1 2-FF Synchronizer（双触发器同步器）</h3>
+<p><strong>用途</strong>：<strong>单比特</strong>控制信号 / 状态标志 / 中断请求 / 单 bit 数据
+<strong>结构</strong>：源域寄存器 → 目的域 2 级级联寄存器</p>
+<p><strong>Efinity 推荐写法</strong>（见 <a href="#8-efinity-推荐模板完整-2-ff-synchronizer">§8</a>）：</p>
+<pre><code class="language-verilog">(* async_reg = &quot;true&quot; *)
+reg sync_ff1, sync_ff2;
+
+always @(posedge dst_clk or negedge arst_n) begin
+    if (!arst_n) begin
+        sync_ff1 &lt;= 1'b0;
+        sync_ff2 &lt;= 1'b0;
+    end else begin
+        sync_ff1 &lt;= async_in;       // 可能亚稳
+        sync_ff2 &lt;= sync_ff1;       // 一周期后稳定
+    end
+end
+
+wire dst_safe = sync_ff2;
+</code></pre>
+<blockquote>
+<p>"The most common way to increase the MTBF is to use two flip-flops in series to build a 'synchronizer': The use of two flip-flops with no intermediate delays allows for a settling time, T_S, approximately equal to one clock cycle. This is usually sufficient to ensure a sufficiently high MTBF at the output of the second flip-flop. However, if necessary, additional flip-flops can be placed in series."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>适用条件</strong>：
+- 源时钟频率<strong>远低于</strong>目的时钟频率（保证目的域能在一个周期内稳定采样源信号）
+- 信号是<strong>单 bit</strong></p>
+<p>Source: [B4] MPI Lesson 11（"Double Flip-Flop Synchroniser" criteria）</p>
+<blockquote>
+<p>"This Technique can be used if the following criteria is satisfied:
+- The source clock domain is slower than destination clock domain
+- CDC is on a control signal (either single bit or multibit).
+It is enough to input the output data from the slower clock domain into a double FF synchroniser, running with the faster clock."
+—— Source: [B4] MPI Lesson 11</p>
+</blockquote>
+<p><strong>注意</strong>：单 bit 同步器<strong>不能</strong>直接用于 multi-bit 信号（见 <a href="#4-数据一致性问题">§4</a>）。</p>
+<h3 id="3-2-gray-code-格雷码">3.2 Gray Code（格雷码）</h3>
+<p><strong>用途</strong>：<strong>FIFO 指针 / 计数器</strong>——任何<strong>相邻两个值仅变化 1 bit</strong>的编码</p>
+<p><strong>为何有效</strong>：跨 CDC 时即便某 bit 被亚稳采样为任意值，相邻两个指针值的差异最多 1 bit，因此<strong>比较结果仅有 4 种可能</strong>（正确、正确、错 1、错 1），不会引入灾难性误读。</p>
+<p><strong>Decimal/Binary/Gray 对照</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>Decimal</th>
+<th>Binary</th>
+<th>Gray Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0000</td>
+<td>0000</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0001</td>
+<td>0001</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0010</td>
+<td>0011</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0011</td>
+<td>0010</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0100</td>
+<td>0110</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0101</td>
+<td>0111</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0110</td>
+<td>0101</td>
+</tr>
+<tr>
+<td>7</td>
+<td>0111</td>
+<td>0100</td>
+</tr>
+<tr>
+<td>8</td>
+<td>1000</td>
+<td>1100</td>
+</tr>
+</tbody>
+</table>
+<p>Source: [B4] MPI Lesson 11（"Decimal/Binary/Gray Code Table"）</p>
+<p><strong>转换公式</strong>（n-bit）：</p>
+<pre><code>gray = binary ^ (binary &gt;&gt; 1)
+binary = gray while (gray &gt;&gt;= 1) binary ^= gray
+</code></pre>
+<p><strong>应用</strong>：异步 FIFO 读/写指针通过 2-FF 同步后用 Gray code 比较 empty/full。</p>
+<blockquote>
+<p>"Translating the write/read address to gray code, we can deal with the comparison to check the FIFO status. A double-FF synchroniser is enough when moving read and write address between clock domains. Gray code ensures that only one bit is changed (avoiding multiple-bit metastability)."
+—— Source: [B4] MPI Lesson 11</p>
+</blockquote>
+<h3 id="3-3-4-phase-handshake-四相握手机制">3.3 4-Phase Handshake（四相握手机制）</h3>
+<p><strong>用途</strong>：<strong>任意多 bit 数据</strong>（不限连续性）</p>
+<p><strong>协议</strong>：
+1. source 置 <code>req</code> + 给出 data
+2. dest 采样 data，置 <code>ack</code>（需经 2 周期同步延迟以保证 data coherency）
+3. source 撤销 <code>req</code>
+4. dest 撤销 <code>ack</code></p>
+<blockquote>
+<p>"Reliable transfer of data can be done using a 'four-phase handshake.' This requires generating a request status signal along with the data and using an acknowledge signal to indicate that the data has been captured. Both req and ack need to be synchronized because they cross clock domains."
+"Sequence:
+- req is asserted at the same time that the data is output
+- ack is asserted after the data has been captured; this requires two (latching) clock cycles to ensure data coherency
+- req is de-asserted to prepare for the next transfer
+- ack is de-asserted to indicate that the receiver is ready for the next transfer"
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>特点</strong>：协议正确性<strong>与时钟频率比无关</strong>，但每笔传输需 2-4 周期延迟，吞吐率受限。</p>
+<blockquote>
+<p>"This method works regardless of the frequencies of the two clocks. However, the one- to two-cycle delay per transfer that is required to synchronize changes on the handshaking signals limits the transfer rate."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<h3 id="3-4-async-fifo-异步-fifo">3.4 Async FIFO（异步 FIFO）</h3>
+<p><strong>用途</strong>：<strong>高带宽</strong>多 bit 数据流（数百 MHz 以上）</p>
+<p><strong>结构</strong>：双口 RAM（独立读/写端口）+ Gray-coded 读/写指针 + 2-FF 同步</p>
+<blockquote>
+<p>"When faster CDC transfers are required, an asynchronous FIFO – a FIFO with independent read and write clocks – can be used. This requires a dual-ported memory with independent read and write ports."
+"Since asynchronous FIFOs are commonly available as tested IP blocks there's no need to design your own. For example, the Intel FPGA IP library contains a FIFO that can be configured for asynchronous operation with independent read and write clocks."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>Efinity IP 支持</strong>：IP Catalog <code>C:\Efinity\2026.1\ipm\ip\efx_fifo\*</code> 提供 Dual-Clock FIFO IP（详细参数见 <a href="Efinity-IP-Manager使用指南.html">Efinity-IP-Manager使用指南.md</a>）。</p>
+<hr />
+<h2 id="4-数据一致性问题">4. 数据一致性问题</h2>
+<p><strong>核心问题</strong>：将多 bit 数据拆成多个 1-bit synchronizer <strong>并行</strong>会引入数据不一致。</p>
+<blockquote>
+<p>"To synchronize the transfer of multiple bits you might be tempted to use multiple single-bit synchronizers in parallel. However, this approach can fail when the input changes close to the latching clock edge. Even if the output of each synchronizer output settles to a valid logic level, each synchronizer could settle to either the value before or after the input change. The binary value latched by this (bad) multi-bit synchronizer could be completely different than the value launched."
+"For example, a two-bit value changing from 01 to 10 could be captured as 00, 01, 10 or 11 depending on whether each synchronizer settles to the value before or after the change."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>正确做法</strong>：
+- 多 bit 数据 + <strong>CDC</strong>：用 4-phase handshake 或 async FIFO
+- 计数器 / 指针：用 Gray code
+- 单 bit + <strong>CDC</strong>：2-FF synchronizer</p>
+<hr />
+<h2 id="5-efinity-async_reg-属性">5. Efinity <code>async_reg</code> 属性</h2>
+<p><strong>关键属性</strong>：标记寄存器为 CDC synchronizer——综合阶段<strong>禁止</strong>合并 / 优化 / 复制这些寄存器。</p>
+<blockquote>
+<p>"To designate a register as a synchronizer, use the <code>async_reg</code> synthesis attribute. When <code>async_reg</code> is true, synthesis does not perform optimization to reduce, merge, or duplicate these registers."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-clk-relationships.html</code> ([A3.3])</p>
+</blockquote>
+<p><strong>Verilog 语法</strong>：</p>
+<pre><code class="language-verilog">(* async_reg = &quot;true&quot; *) reg [1:0] sync_ff;
+</code></pre>
+<p><strong>VHDL 语法</strong>：</p>
+<pre><code class="language-vhdl">attribute async_reg: boolean;
+attribute async_reg of x : signal is true;
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-clk-syncronizers.html</code> ([A3.4])</p>
+</blockquote>
+<p>详见 <a href="Efinity设计规范.html">Efinity设计规范.md §CDC</a> 与 <a href="FPGA-MTBF与Metastability.html">FPGA-MTBF与Metastability.md §7</a>。</p>
+<hr />
+<h2 id="6-efinity-cdc-约束支持">6. Efinity CDC 约束支持</h2>
+<p>Efinity 提供完整 SDC 命令集约束 CDC 路径：</p>
+<h3 id="6-1-set_clock_groups">6.1 <code>set_clock_groups</code></h3>
+<p><strong>互斥时钟组</strong>（multiplexed clocks — 同一时刻只有一个被选中）：</p>
+<pre><code class="language-sdc">set_clock_groups -exclusive -group {clk1 clk2} -group {clk3} -group {clk4}
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-add-clock-set-clock-groups.html</code> ([A3.8])</p>
+<p>"Compares exclusive vs. asynchronous clock groups and provides constraint examples."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-unrelated-clk.html</code> ([A3.7])</p>
+</blockquote>
+<p><strong>异步时钟组</strong>（independent clocks）：</p>
+<pre><code class="language-sdc">set_clock_groups -asynchronous -group {clk_a} -group {clk_b}
+</code></pre>
+<h3 id="6-2-set_false_path">6.2 <code>set_false_path</code></h3>
+<p><strong>单向剪断</strong>：</p>
+<pre><code class="language-sdc">set_false_path -from clk1 -to clk2
+set_false_path -from clk2 -to clk1
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-set-false-path.html</code> ([A3.9])</p>
+</blockquote>
+<p><strong>到端口</strong>：</p>
+<pre><code class="language-sdc">set_false_path -from clk1 -to [get_ports testout]
+</code></pre>
+<p>详见 <a href="FPGA-时序例外Cookbook.html">FPGA-时序例外Cookbook.md §1</a>。</p>
+<h3 id="6-3-cdc-同步器-efinity-模板">6.3 CDC 同步器 Efinity 模板</h3>
+<blockquote>
+<p>"(<em> async_reg = "true" </em>) reg [1:0] x;"  (Verilog)
+"attribute async_reg: boolean; attribute async_reg of x : signal is true;"  (VHDL)
+—— Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §5 "Metastable Synchronizer Circuit"</code> ([A1])</p>
+</blockquote>
+<p>完整 RTL 模板见 <a href="#8-efinity-推荐模板完整-2-ff-synchronizer">§8</a>。</p>
+<hr />
+<h2 id="7-实战案例-缺失-dac-脉冲">7. 实战案例：缺失 DAC 脉冲</h2>
+<p><strong>真实硬件 bug</strong>（来自 Embedded Design CDC Part 1 [B10]）：</p>
+<blockquote>
+<p>"The DAC state machine ran on clk10MHz. The DAC_in_pulse trigger was generated in the clk200MHz domain:
+- clk200MHz period: 5 ns
+- clk10MHz period: 100 ns
+- DAC_in_pulse HIGH for ONE clk200MHz cycle = 5 ns
+- clk10MHz samples every 100 ns
+The pulse is 20× shorter than the sampling clock period!"</p>
+</blockquote>
+<p><strong>问题</strong>：5 ns 脉冲在 100 ns 采样时钟下可能完全错过，导致 DAC 输出缺脉冲。</p>
+<p><strong>修复</strong>：把脉冲生成器迁移到与状态机相同的时钟域（clk10MHz）。</p>
+<p><strong>经验教训</strong>：
+1. <strong>CDC 不只是亚稳态问题</strong>——CDC 还包含<strong>信号丢失</strong>（过短脉冲）、<strong>数据不一致</strong>（multi-bit skew）
+2. <strong>所有跨域信号都需要 audit</strong>：即使是单 bit 标志
+3. <strong>CDC 分析清单</strong>：
+   - 是否存在过短脉冲（&lt; 1 dest cycle）
+   - 是否 multi-bit（用 handshake/FIFO）
+   - 同步器是否带 <code>async_reg</code>
+   - 是否加 <code>set_clock_groups</code> / <code>set_false_path</code></p>
+<hr />
+<h2 id="8-efinity-推荐模板-完整-2-ff-synchronizer">8. Efinity 推荐模板：完整 2-FF Synchronizer</h2>
+<h3 id="8-1-单-bit-信号同步">8.1 单 bit 信号同步</h3>
+<pre><code class="language-verilog">module cdc_sync_single #(
+    parameter [0:0] INIT = 1'b0
+) (
+    input  wire dst_clk,
+    input  wire dst_rst_n,    // 目的域异步复位（低有效）
+    input  wire async_in,
+    output wire sync_out
+);
+    (* async_reg = &quot;true&quot; *)
+    reg meta, settled;
+
+    always @(posedge dst_clk or negedge dst_rst_n) begin
+        if (!dst_rst_n) begin
+            meta    &lt;= INIT;
+            settled &lt;= INIT;
+        end else begin
+            meta    &lt;= async_in;
+            settled &lt;= meta;
+        end
+    end
+
+    assign sync_out = settled;
+endmodule
+</code></pre>
+<h3 id="8-2-异步复位信号-cdc">8.2 异步复位信号 CDC</h3>
+<p>复位信号是<strong>最危险的 CDC 信号</strong>——复位撤消若发生亚稳，可能导致部分寄存器退出 reset 而另一些未退出 → 整个系统状态错乱。</p>
+<p><strong>标准做法：reset synchronizer</strong></p>
+<pre><code class="language-verilog">module cdc_reset_sync #(
+    parameter [0:0] INIT = 1'b1   // 高有效复位时 INIT=1
+) (
+    input  wire dst_clk,
+    input  wire async_rst_in,
+    output wire sync_rst_n
+);
+    (* async_reg = &quot;true&quot; *)
+    reg sync_ff1, sync_ff2;
+
+    always @(posedge dst_clk) begin
+        sync_ff1 &lt;= async_rst_in;
+        sync_ff2 &lt;= sync_ff1;
+    end
+
+    assign sync_rst_n = sync_ff2;
+endmodule
+</code></pre>
+<h3 id="8-3-多-bit-数据用握手协议-4-phase">8.3 多 bit 数据用握手协议（4-phase）</h3>
+<pre><code class="language-verilog">module cdc_handshake_send (
+    input  wire src_clk,
+    input  wire src_rst_n,
+    input  wire [7:0] src_data,
+    input  wire src_valid,
+    output wire src_ready,
+
+    input  wire dst_clk,
+    input  wire dst_rst_n,
+    output reg [7:0] dst_data,
+    output reg dst_valid,
+    input  wire dst_ready,
+
+    output wire dst_ack_sync
+);
+    // req sync
+    (* async_reg = &quot;true&quot; *) reg req_s1, req_s2;
+    (* async_reg = &quot;true&quot; *) reg ack_s1, ack_s2;
+
+    // sender side
+    always @(posedge src_clk or negedge src_rst_n) begin
+        if (!src_rst_n) src_ready &lt;= 1'b0;
+        else            src_ready &lt;= ack_s2;  // synchronized ack
+    end
+
+    always @(posedge src_clk or negedge src_rst_n) begin
+        if (!src_rst_n) begin
+            dst_data   &lt;= 8'h0;
+            // req pulse generation omitted — handled in handshake FSM
+        end else if (src_valid &amp;&amp; src_ready) begin
+            dst_data &lt;= src_data;
+        end
+    end
+
+    // receiver side
+    always @(posedge dst_clk or negedge dst_rst_n) begin
+        if (!dst_rst_n) begin
+            dst_valid &lt;= 1'b0;
+            ack_s1    &lt;= 1'b0;
+            ack_s2    &lt;= 1'b0;
+        end else begin
+            ack_s1 &lt;= req_s2;          // sync req to dest
+            ack_s2 &lt;= ack_s1;          // settled
+            if (req_s2 &amp;&amp; !ack_s2) begin
+                dst_valid &lt;= 1'b1;
+                // capture data
+            end else if (dst_ready) begin
+                dst_valid &lt;= 1'b0;
+            end
+        end
+    end
+
+    // req sync
+    always @(posedge dst_clk or negedge dst_rst_n) begin
+        if (!dst_rst_n) begin
+            req_s1 &lt;= 1'b0;
+            req_s2 &lt;= 1'b0;
+        end else begin
+            req_s1 &lt;= src_valid;
+            req_s2 &lt;= req_s1;
+        end
+    end
+
+    assign dst_ack_sync = ack_s2;
+endmodule
+</code></pre>
+<p>（完整 4-phase handshake FSM 实现参考 Xilinx App Note XAPP051 / Intel AN 584 [B1] §5.4）</p>
+<h3 id="8-4-异步-fifo-指针同步">8.4 异步 FIFO 指针同步</h3>
+<pre><code class="language-verilog">module cdc_gray_sync #(
+    parameter ADDR_W = 4
+) (
+    input  wire dst_clk,
+    input  wire dst_rst_n,
+    input  wire [ADDR_W-1:0] gray_in,
+    output wire [ADDR_W-1:0] gray_out
+);
+    (* async_reg = &quot;true&quot; *)
+    reg [ADDR_W-1:0] meta, settled;
+
+    always @(posedge dst_clk or negedge dst_rst_n) begin
+        if (!dst_rst_n) begin
+            meta    &lt;= {ADDR_W{1'b0}};
+            settled &lt;= {ADDR_W{1'b0}};
+        end else begin
+            meta    &lt;= gray_in;
+            settled &lt;= meta;
+        end
+    end
+
+    assign gray_out = settled;
+endmodule
+</code></pre>
+<hr />
+<h2 id="9-模式选型决策表">9. 模式选型决策表</h2>
+<table>
+<thead>
+<tr>
+<th>信号类型</th>
+<th>时钟关系</th>
+<th>推荐模式</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>单 bit 标志 / 中断</strong></td>
+<td>同步但有相位差</td>
+<td>2-FF synchronizer + <code>async_reg</code></td>
+<td>不需要 set_false_path</td>
+</tr>
+<tr>
+<td><strong>单 bit 异步控制</strong></td>
+<td>异步 / 不同源</td>
+<td>2-FF synchronizer + <code>async_reg</code> + <code>set_clock_groups -asynchronous</code></td>
+<td>推荐</td>
+</tr>
+<tr>
+<td><strong>异步复位信号</strong></td>
+<td>异步</td>
+<td>Reset Synchronizer（2-FF + <code>async_reg</code>）</td>
+<td>必须，不能省略</td>
+</tr>
+<tr>
+<td><strong>多 bit 数据（低速）</strong></td>
+<td>异步</td>
+<td>4-phase Handshake</td>
+<td>吞吐率受限</td>
+</tr>
+<tr>
+<td><strong>多 bit 数据（高速）</strong></td>
+<td>异步</td>
+<td>Async FIFO + Gray-coded 指针</td>
+<td>Efinity <code>efx_fifo</code> IP</td>
+</tr>
+<tr>
+<td><strong>计数器 / 指针</strong></td>
+<td>异步</td>
+<td>Gray code + 2-FF sync</td>
+<td>仅限相邻值差异 1 bit</td>
+</tr>
+<tr>
+<td><strong>数据流</strong></td>
+<td>异步 + 高带宽</td>
+<td>Async FIFO</td>
+<td><code>efx_fifo</code></td>
+</tr>
+<tr>
+<td><strong>同时钟域</strong></td>
+<td>同步（共用 PLLx）</td>
+<td>走时序约束即可，<strong>无需</strong> synchronizer</td>
+<td>若同源即可，不算 CDC</td>
+</tr>
+</tbody>
+</table>
+<p><strong>通用规则</strong>：
+1. 跨时钟域必须 <code>async_reg</code>
+2. 多 bit 数据必须用 handshake 或 FIFO（<strong>绝不</strong>多路并行 2-FF）
+3. 任何 2-FF 之间不能有组合逻辑（否则 settling time 不足）</p>
+<blockquote>
+<p>"An unavoidable consequence of using a synchronizer is that one (latch) clock cycle of delay is added to the signal."
+—— Source: [B3] UBC ELEX 7660 Lec 11</p>
+<p>"The resolution time doubles and the MTBF improves exponentially — typically by many orders of magnitude. For most technologies and clock frequencies, two flip-flops provide MTBF measured in millions or billions of years, which is adequate for functional correctness. High-reliability designs occasionally use three flip-flops for an additional exponential improvement."
+—— Source: [B9] formal.org Module 7</p>
+</blockquote>
+<hr />
+<h2 id="附录-a-efinity-cdc-检查工具">附录 A — Efinity CDC 检查工具</h2>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Design Check</td>
+<td><code>evoverse design validate</code></td>
+<td>静态检查 <code>async_reg</code> 使用 / 跨域信号未约束</td>
+</tr>
+<tr>
+<td>Timing Browser</td>
+<td>Efinity GUI → Timing Browser</td>
+<td>可视化跨域路径</td>
+</tr>
+<tr>
+<td>STA Report</td>
+<td><code>pt_timing.rpt</code></td>
+<td>列出所有 CDC 路径 slack（Infinity = 已设 false path）</td>
+</tr>
+</tbody>
+</table>
+<p>详见 <a href="Efinity工具链参考.html">Efinity工具链参考.md</a> 与 <a href="时序分析指南.html">时序分析指南.md §3-4</a>。</p>
+<hr />
+<h2 id="附录-b-跨厂商资料来源索引">附录 B — 跨厂商资料来源索引</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>来源</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[B1]</td>
+<td>Intel AN 584 v21.3 §5.4</td>
+<td>Application Note</td>
+</tr>
+<tr>
+<td>[B3]</td>
+<td>UBC ELEX 7660 Lec 11</td>
+<td>大学讲义</td>
+</tr>
+<tr>
+<td>[B4]</td>
+<td>Max Planck Institute — Lesson 11 (CDC, Gray Code, FIFO)</td>
+<td>大学讲义</td>
+</tr>
+<tr>
+<td>[B9]</td>
+<td>Formal.org Module 7 — Clock Domain Crossing</td>
+<td>形式化验证</td>
+</tr>
+<tr>
+<td>[B10]</td>
+<td>Embedded Design — Clock Domain Crossing in FPGAs (DAC 案例)</td>
+<td>工程实战</td>
+</tr>
+<tr>
+<td>[A1]</td>
+<td>Efinity Timing Closure User Guide §5 "Clock Synchronizers"</td>
+<td>官方 PDF</td>
+</tr>
+<tr>
+<td>[A3.3]</td>
+<td>Efinity topics — <code>tim-clk-relationships.html</code></td>
+<td>官方 HTML</td>
+</tr>
+<tr>
+<td>[A3.4]</td>
+<td>Efinity topics — <code>tim-clk-syncronizers.html</code></td>
+<td>官方 HTML</td>
+</tr>
+<tr>
+<td>[A3.5]</td>
+<td>Efinity topics — <code>tim-sync-metastable.html</code></td>
+<td>官方 HTML</td>
+</tr>
+<tr>
+<td>[A3.7]</td>
+<td>Efinity topics — <code>tim-unrelated-clk.html</code></td>
+<td>官方 HTML</td>
+</tr>
+<tr>
+<td>[A3.8]</td>
+<td>Efinity topics — <code>tim-add-clock-set-clock-groups.html</code></td>
+<td>官方 HTML</td>
+</tr>
+<tr>
+<td>[A3.9]</td>
+<td>Efinity topics — <code>tim-set-false-path.html</code></td>
+<td>官方 HTML</td>
+</tr>
+</tbody>
+</table>
+<p>研究来源索引原记录于内部研究笔记 §E；该临时笔记不随仓库发布。</p>
+<hr />
+<p><strong>End of FPGA CDC 模式</strong></p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

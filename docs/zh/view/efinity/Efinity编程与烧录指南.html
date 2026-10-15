@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 编程与烧录参考</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>Programmer 调用和设备操作。</span>
+<code>efinity/Efinity编程与烧录指南.md</code>
+<a href="../../../efinity/Efinity编程与烧录指南.md">Markdown 源文件</a></p>
+<h1>Efinity 编程与烧录参考</h1></header>
+<main class="article"><h1 id="efinity-编程与烧录指南">Efinity 编程与烧录指南</h1>
+<blockquote>
+<p>版本: v1.0 | 基于 Efinity 2026.1 (AN033 v1.3 / AN061 / efx_pgm --help)</p>
+</blockquote>
+<h2 id="1-概述">1. 概述</h2>
+<p>Efinity 支持多种 FPGA 配置（configuration）模式。本文涵盖配置原理、命令行工具、硬件连接、SEU 防护、FlashShell 脚本 API 以及与 EvoVerse SDK 的集成。</p>
+<p><strong>关键术语：</strong>
+- <strong>Active 模式</strong>：FPGA 作为主设备（master），主动从外部 SPI Flash 读取比特流
+- <strong>Passive 模式</strong>：FPGA 作为从设备（slave），由外部主设备（MCU/CPU/JTAG 调试器）提供比特流
+- <strong>JTAG</strong>：始终可用，不受其他 pin 配置影响</p>
+<blockquote>
+<p>来源：AN033 v1.3 "Titanium Configuration"</p>
+</blockquote>
+<p><strong>专用配置引脚（Titanium）：</strong>
+| 引脚 | 方向 | 说明 |
+|------|------|------|
+| CDONE | 输出（开漏，内部上拉） | 配置完成指示 |
+| CRESET_N | 输入（低有效，内部上拉） | 配置复位 |
+| TCK, TMS, TDI, TDO | JTAG（内部上拉） | JTAG 接口 |
+| SSL_N, CDI[0:7], CCK, SSU_N | 多功能（配置后复用为 User IO） | SPI Active/Passive 接口 |</p>
+<blockquote>
+<p>来源：AN033 v1.3 — Dedicated Config Pins</p>
+</blockquote>
+<hr />
+<h2 id="2-命令行参考">2. 命令行参考</h2>
+<p>efx_pgm 的所有参数按功能类别组织。</p>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> 完整输出（Efinity 2026.1）</p>
+</blockquote>
+<h3 id="2-1-基本输入-输出参数">2.1 基本输入/输出参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--project-xml arg</code></td>
+<td>工程 XML 文件</td>
+</tr>
+<tr>
+<td><code>--source arg</code></td>
+<td>输入 LBF/HEX 文件</td>
+</tr>
+<tr>
+<td><code>--periph arg</code></td>
+<td>外设配置文件（来自 Interface Designer 的 LPF）</td>
+</tr>
+<tr>
+<td><code>--dest arg</code></td>
+<td>输出 HEX 文件路径</td>
+</tr>
+<tr>
+<td><code>--help</code></td>
+<td>帮助信息</td>
+</tr>
+<tr>
+<td><code>--query_bitstreams</code></td>
+<td>查询设备是否支持比特流（退出码 0=支持）</td>
+</tr>
+<tr>
+<td><code>--query_security_version</code></td>
+<td>查询安全层设备版本号（打印返回值后退出）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> — Primary Options</p>
+</blockquote>
+<h3 id="2-2-通用配置参数">2.2 通用配置参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--device arg</code></td>
+<td>—</td>
+<td>FPGA 器件型号</td>
+</tr>
+<tr>
+<td><code>--family arg</code></td>
+<td>—</td>
+<td>FPGA 器件族（Trion / Titanium / Topaz）</td>
+</tr>
+<tr>
+<td><code>--displayed_device arg</code></td>
+<td>—</td>
+<td>写入比特流头部的器件名称</td>
+</tr>
+<tr>
+<td><code>--generate_header arg</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>是否写入可选头部到比特流</td>
+</tr>
+<tr>
+<td><code>--timestamp arg</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>是否写入时间戳到比特流头部</td>
+</tr>
+<tr>
+<td><code>--width arg</code></td>
+<td><code>1,2,4,8,16,32</code></td>
+<td>编程位宽</td>
+</tr>
+<tr>
+<td><code>--settings_file arg</code></td>
+<td>—</td>
+<td>设置文件路径</td>
+</tr>
+<tr>
+<td><code>--interface_designer_settings arg</code></td>
+<td>—</td>
+<td>Interface Designer 生成的设置文件</td>
+</tr>
+<tr>
+<td><code>--periph_override arg</code></td>
+<td>—</td>
+<td>CSV 文件覆盖 Interface Designer LPF 设置</td>
+</tr>
+<tr>
+<td><code>--mode</code></td>
+<td>—</td>
+<td>FPGA 配置模式</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> — General Options</p>
+</blockquote>
+<h3 id="2-3-hex-生成选项">2.3 HEX 生成选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--oscillator_clock_divider</code></td>
+<td><code>DIV8, DIV4, DIV2, DIV1</code></td>
+<td><code>DIV8</code></td>
+<td>SPI Active 编程时钟分频</td>
+</tr>
+<tr>
+<td><code>--bitstream_compression</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td><code>on</code></td>
+<td>压缩比特流使能</td>
+</tr>
+<tr>
+<td><code>--optimize_bram_data</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>—</td>
+<td>优化 BRAM 帧数据</td>
+</tr>
+<tr>
+<td><code>--spi_low_power_mode</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td><code>on</code></td>
+<td>编程后将 Flash 置于低功耗模式</td>
+</tr>
+<tr>
+<td><code>--io_weak_pullup</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td><code>on</code></td>
+<td>配置期间使能 IO 弱上拉</td>
+</tr>
+<tr>
+<td><code>--jtag_usercode</code></td>
+<td>unsigned integer</td>
+<td>—</td>
+<td>JTAG USERCODE</td>
+</tr>
+<tr>
+<td><code>--enable_roms</code></td>
+<td><code>on, off, smart</code></td>
+<td><code>smart</code></td>
+<td>使能用户 RAM 中已初始化的存储器</td>
+</tr>
+<tr>
+<td><code>--release_tri_then_reset</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td><code>on</code></td>
+<td>进入用户模式前先释放 IO 三态再复位</td>
+</tr>
+<tr>
+<td><code>--activate_tri_then_reset</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>—</td>
+<td>退出用户模式前 IO 三态</td>
+</tr>
+<tr>
+<td><code>--osc_user_enable</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>—</td>
+<td>用户模式下启用内部振荡器</td>
+</tr>
+<tr>
+<td><code>--osc_user_div_select</code></td>
+<td><code>DIV8, DIV4, DIV2, DIV1</code></td>
+<td>—</td>
+<td>用户模式振荡器分频选择</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> — HEX Generation Options</p>
+</blockquote>
+<h3 id="2-4-crc-校验选项">2.4 CRC 校验选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable_crc_check</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>编程期间使能 CRC 校验</td>
+</tr>
+<tr>
+<td><code>--enable_pcr_crc_check</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>PCR CRC 校验</td>
+</tr>
+<tr>
+<td><code>--enable_seu_crc_check</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>用户模式 SEU CRC 校验</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> — HEX Generation Options</p>
+</blockquote>
+<h3 id="2-5-多镜像与远程更新选项">2.5 多镜像与远程更新选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable_cbsel</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>SPI Active 使用 CBSEL[1:0] 引脚选择镜像</td>
+</tr>
+<tr>
+<td><code>--enable_remote_update</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>使能远程更新</td>
+</tr>
+<tr>
+<td><code>--remote_update_retries</code></td>
+<td>unsigned integer</td>
+<td>远程更新重试次数</td>
+</tr>
+<tr>
+<td><code>--flash_addr_2</code></td>
+<td>unsigned integer</td>
+<td>多镜像 #2 的 Flash 字节地址</td>
+</tr>
+<tr>
+<td><code>--flash_addr_3</code></td>
+<td>unsigned integer</td>
+<td>多镜像 #3 的 Flash 字节地址</td>
+</tr>
+<tr>
+<td><code>--flash_addr_4</code></td>
+<td>unsigned integer</td>
+<td>多镜像 #4 的 Flash 字节地址</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> — HEX Generation Options</p>
+</blockquote>
+<h3 id="2-6-菊花链选项">2.6 菊花链选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable_daisy_chain</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>SPI Active/Passive 菊花链使能</td>
+</tr>
+<tr>
+<td><code>--daisy_chain_length</code></td>
+<td>unsigned integer</td>
+<td>菊花链总 bit 数</td>
+</tr>
+<tr>
+<td><code>--four_byte_addressing</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>Active 模式 4 字节寻址（Ti35/Ti60 仅支持 3 字节）</td>
+</tr>
+<tr>
+<td><code>--active_capture_clk_edge</code></td>
+<td><code>posedge</code> / <code>negedge</code></td>
+<td>SPI Active 采样时钟边沿</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> — HEX Generation Options；AN033 — Ti35/Ti60 3-byte addressing limit</p>
+</blockquote>
+<h3 id="2-7-外部时钟选项">2.7 外部时钟选项</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable_external_master_clock</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>SPI Active 外部时钟源选择</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code> — HEX Generation Options</p>
+</blockquote>
+<hr />
+<h2 id="3-配置模式详解">3. 配置模式详解</h2>
+<h3 id="3-1-模式对比">3.1 模式对比</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>主/从</th>
+<th>接口</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPI Active (serial)</td>
+<td>FPGA 主</td>
+<td>SSL_N, CCK, CDI[0], SSU_N</td>
+<td>独立上电自启动（最常用）</td>
+</tr>
+<tr>
+<td>SPI Active (parallel)</td>
+<td>FPGA 主</td>
+<td>SSL_N, CCK, CDI[0:7], SSU_N</td>
+<td>超快速启动</td>
+</tr>
+<tr>
+<td>SPI Passive (serial)</td>
+<td>外部主</td>
+<td>Same as Active but FPGA slave</td>
+<td>外部 MCU 提供比特流</td>
+</tr>
+<tr>
+<td>SPI Passive (parallel)</td>
+<td>外部主</td>
+<td>Same as Active parallel</td>
+<td>外部高速配置</td>
+</tr>
+<tr>
+<td>JTAG</td>
+<td>外部调试器</td>
+<td>TCK, TMS, TDI, TDO</td>
+<td>调试（始终可用）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：AN033 v1.3 — Configuration Modes</p>
+</blockquote>
+<h3 id="3-2-spi-active-指令集">3.2 SPI Active 指令集</h3>
+<p>FPGA 在 SPI Active 模式下向 Flash 发送的标准 SPI 读指令：</p>
+<table>
+<thead>
+<tr>
+<th>指令码</th>
+<th>模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0BH</td>
+<td>x1 Fast Read</td>
+<td>单线快速读取</td>
+</tr>
+<tr>
+<td>3BH</td>
+<td>x2 Fast Read</td>
+<td>双线快速读取</td>
+</tr>
+<tr>
+<td>6BH</td>
+<td>x4/x8 (双 Flash)</td>
+<td>四线/八线快速读取</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：AN033 v1.3 — SPI Active Instructions</p>
+</blockquote>
+<h3 id="3-3-配置时间估算">3.3 配置时间估算</h3>
+<p>配置时间公式（AN061）：</p>
+<pre><code>Configuration Time = Bitstream Size ÷ (Config Clock × Data Bus Width)
+</code></pre>
+<ul>
+<li>除数越大，配置越快：降低 <code>--oscillator_clock_divider</code>（DIV8→DIV1）或增加 <code>--width</code></li>
+<li>压缩可减小比特流体积（Titanium 约 50%）</li>
+</ul>
+<blockquote>
+<p>来源：AN061 — Topaz Configuration</p>
+</blockquote>
+<hr />
+<h2 id="4-器件比特流尺寸">4. 器件比特流尺寸</h2>
+<table>
+<thead>
+<tr>
+<th>器件族</th>
+<th>器件型号</th>
+<th>最大比特流大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Titanium</td>
+<td>Ti35 / Ti60</td>
+<td>13,686,496 bits（~50% 压缩后）</td>
+</tr>
+<tr>
+<td>Topaz</td>
+<td>Tz50</td>
+<td>13.7M bits</td>
+</tr>
+<tr>
+<td>Topaz</td>
+<td>Tz75 / Tz100</td>
+<td>38.4M bits</td>
+</tr>
+<tr>
+<td>Topaz</td>
+<td>Tz110 / Tz170</td>
+<td>50.1M bits</td>
+</tr>
+<tr>
+<td>Topaz</td>
+<td>Tz200 / Tz325</td>
+<td>106M bits</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：AN033 v1.3（Titanium）；AN061（Topaz）</p>
+</blockquote>
+<hr />
+<h2 id="5-多镜像与远程更新">5. 多镜像与远程更新</h2>
+<h3 id="5-1-多镜像选择-cbsel">5.1 多镜像选择（CBSEL）</h3>
+<p>通过 CBSEL[1:0] 硬件引脚选择从不同的 Flash 地址加载不同的镜像：</p>
+<ul>
+<li>需要 <code>--enable_cbsel on</code></li>
+<li>使用 <code>--flash_addr_2</code>、<code>--flash_addr_3</code>、<code>--flash_addr_4</code> 指定各镜像在 Flash 中的起始字节地址</li>
+<li>典型用途：Golden Image + Update Image 的双镜像方案</li>
+</ul>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code>；AN033 — Multi-Image</p>
+</blockquote>
+<h3 id="5-2-远程更新-remote-update">5.2 远程更新（Remote Update）</h3>
+<p>FPGA 在用户模式下通过内部逻辑触发重新配置：</p>
+<ul>
+<li><code>--enable_remote_update on</code></li>
+<li><code>--remote_update_retries N</code> 设置重试次数</li>
+<li>通常与 CBSEL 组合使用，实现安全固件更新（更新失败自动回退到 Golden Image）</li>
+</ul>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code>；AN033 — Remote Update</p>
+</blockquote>
+<hr />
+<h2 id="6-seu-检测与修正">6. SEU 检测与修正</h2>
+<p>单粒子翻转（SEU）是 SRAM FPGA 在辐射环境中的关键可靠性问题。Efinity 支持两层次的 SEU 防护。</p>
+<h3 id="6-1-seu-crc-检测">6.1 SEU CRC 检测</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable_seu_crc_check</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>使能用户模式 SEU CRC 检查</td>
+</tr>
+<tr>
+<td><code>--seu_mode</code></td>
+<td><code>automatic</code> / <code>manual</code></td>
+<td>自动扫描（周期触发）或手动触发</td>
+</tr>
+<tr>
+<td><code>--seu_wait_interval</code></td>
+<td>unsigned integer</td>
+<td>自动模式下两次 CRC 检查的等待间隔</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code>；AN061 — SEU</p>
+</blockquote>
+<h3 id="6-2-seu-修正-correction">6.2 SEU 修正（Correction）</h3>
+<p>需先开启 <code>--enable_seu_crc_check</code>。修正模式：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>有效值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--seu_enable_correction</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>使能 SEU 修正</td>
+</tr>
+<tr>
+<td><code>--seu_correction_mode</code></td>
+<td><code>manual, timer, monitor, autofix</code></td>
+<td>修正模式</td>
+</tr>
+<tr>
+<td><code>--seu_correction_timer</code></td>
+<td>unsigned integer</td>
+<td>Timer 模式最大等待时间</td>
+</tr>
+<tr>
+<td><code>--seu_correction_clearable</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>UNFIXABLE 状态可清除</td>
+</tr>
+<tr>
+<td><code>--seu_correction_err_inject</code></td>
+<td><code>on</code> / <code>off</code></td>
+<td>错误注入（调试用）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>manual</strong>：由用户逻辑触发修正</li>
+<li><strong>timer</strong>：定时触发修正</li>
+<li><strong>monitor</strong>：持续监控，检测到错误即修正</li>
+<li><strong>autofix</strong>：自动检测并修正</li>
+</ul>
+<blockquote>
+<p>来源：<code>efx_pgm --help</code>；AN061 — SEU Correction</p>
+</blockquote>
+<hr />
+<h2 id="7-硬件连接参考">7. 硬件连接参考</h2>
+<h3 id="7-1-专用配置引脚">7.1 专用配置引脚</h3>
+<table>
+<thead>
+<tr>
+<th>引脚</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CDONE</td>
+<td>输出，开漏，上拉</td>
+<td>配置完成后拉高；可用于复位外部器件或触发下一个动作</td>
+</tr>
+<tr>
+<td>CRESET_N</td>
+<td>输入，低有效，上拉</td>
+<td>拉低可重新触发配置流程</td>
+</tr>
+<tr>
+<td>TCK / TMS / TDI / TDO</td>
+<td>JTAG，上拉</td>
+<td>始终可用，与 GPIO 功能无关</td>
+</tr>
+<tr>
+<td>SSL_N</td>
+<td>多功能</td>
+<td>SPI 片选（配置中）；配置后复用为 User IO</td>
+</tr>
+<tr>
+<td>CDI[0:7]</td>
+<td>多功能</td>
+<td>SPI 数据输入（配置中）；配置后复用为 User IO</td>
+</tr>
+<tr>
+<td>CCK</td>
+<td>多功能</td>
+<td>SPI 时钟（配置中）；配置后复用为 User IO</td>
+</tr>
+<tr>
+<td>SSU_N</td>
+<td>多功能</td>
+<td>SPI 从选（配置中）；配置后复用为 User IO</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：AN033 v1.3 — Dedicated Config Pins</p>
+</blockquote>
+<h3 id="7-2-topaz-特有">7.2 Topaz 特有</h3>
+<ul>
+<li>JTAG_VCCIO_SEL 引脚用于 BR4 bank 的 JTAG 电压选择</li>
+<li>支持 3 字节和 4 字节 SPI Flash 寻址（Titanium Ti35/Ti60 仅 3 字节）</li>
+</ul>
+<blockquote>
+<p>来源：AN061 — Topaz Dedicated Pins；AN033 — Ti35/Ti60 3-byte only</p>
+</blockquote>
+<hr />
+<h2 id="8-flashshell-脚本-api">8. FlashShell 脚本 API</h2>
+<p>Efinity 提供 FlashShell Python API，位于 <code>C:\Efinity\2026.1\pgm\flashshell\</code>，用于脚本化烧录操作：</p>
+<ul>
+<li>通过 Python 调用实现自动化烧录流程</li>
+<li>可用于产线批量烧录、CI/CD 流水线等场景</li>
+</ul>
+<blockquote>
+<p>来源：<code>C:\Efinity\2026.1\pgm\flashshell\</code> 目录结构</p>
+</blockquote>
+<h3 id="8-1-编程器目录结构">8.1 编程器目录结构</h3>
+<pre><code>C:\Efinity\2026.1\pgm\
+├── bin/efx_pgm/      — 编程器核心二进制文件
+├── bin/flash_db/     — Flash 器件数据库（型号、ID、参数）
+├── bin/webui/        — 编程器 Web UI（EvoVerse SDK 扩展调用）
+├── doc/              — 编程器文档
+├── flashshell/       — FlashShell Python API（脚本化编程）
+├── fli/              — Flash Loader Images（Titanium/Topaz/Trion 初始化镜像）
+├── log/              — 编程器运行日志
+└── rtl/spiloaderv2/  — SPI Loader RTL（用于嵌入式 Flash 烧录参考设计）
+</code></pre>
+<blockquote>
+<p>来源：<code>C:\Efinity\2026.1\pgm\</code> 目录结构</p>
+</blockquote>
+<hr />
+<h2 id="9-与-evoverse-sdk-集成">9. 与 EvoVerse SDK 集成</h2>
+<h3 id="9-1-编译流程中的编程步骤">9.1 编译流程中的编程步骤</h3>
+<p>EvoVerse SDK 的编译流程 <code>efx_run --flow compile</code> 已包含<code>pgm</code>步骤：</p>
+<pre><code>map → PT(interface) → pnr → pgm
+</code></pre>
+<p>用户无需单独调用 efx_pgm。</p>
+<blockquote>
+<p>来源：EvoVerse SDK <code>buildRunner.ts</code>（toolchain/buildRunner.ts）</p>
+</blockquote>
+<h3 id="9-2-独立编程场景">9.2 独立编程场景</h3>
+<p>当需要将已生成的比特流烧录到 FPGA 时，SDK 调用 efx_pgm 并传入工程 XML 和配置模式：</p>
+<pre><code class="language-powershell">efx_pgm --project-xml &lt;project.xml&gt; --mode active
+</code></pre>
+<blockquote>
+<p>来源：EvoVerse SDK <code>buildRunner.ts</code> — standalone programming invocation</p>
+</blockquote>
+<h3 id="9-3-编程器-web-ui">9.3 编程器 Web UI</h3>
+<p>SDK 扩展可调用 <code>C:\Efinity\2026.1\pgm\bin\webui\</code> 中的编程器 Web UI，为用户提供图形化烧录界面。</p>
+<blockquote>
+<p>来源：<code>C:\Efinity\2026.1\pgm\bin\webui\</code> 目录结构</p>
+</blockquote>
+<hr />
+<h2 id="10-常见问题排查">10. 常见问题排查</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>可能原因</th>
+<th>检查项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>烧录失败、Flash 未检测到</td>
+<td>Flash 型号不在数据库中</td>
+<td>检查 <code>pgm/bin/flash_db/</code></td>
+</tr>
+<tr>
+<td>比特流过大</td>
+<td>未启用压缩</td>
+<td>确认 <code>--bitstream_compression on</code>（默认开启）</td>
+</tr>
+<tr>
+<td>SPI Active 启动失败</td>
+<td>时钟分频过高</td>
+<td>增大 <code>--oscillator_clock_divider</code>（DIV1→DIV8）</td>
+</tr>
+<tr>
+<td>多镜像不工作</td>
+<td>CBSEL 引脚未正确配置</td>
+<td>确认 <code>--enable_cbsel on</code> 且地址合法</td>
+</tr>
+<tr>
+<td>SEU 修正不生效</td>
+<td>未开启 CRC 检查</td>
+<td>确认 <code>--enable_seu_crc_check on</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>来源：综合 efx_pgm --help 参数与 AN033/AN061 硬件约束推导的排查指南</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>文档版本：</strong> v1.0<br />
+<strong>适用工具链：</strong> Efinity 2026.1<br />
+<strong>数据来源：</strong> <code>efx_pgm --help</code> 完整输出、AN033 v1.3、AN061、<code>C:\Efinity\2026.1\pgm\</code> 目录结构、EvoVerse SDK <code>buildRunner.ts</code></p>
+</blockquote></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

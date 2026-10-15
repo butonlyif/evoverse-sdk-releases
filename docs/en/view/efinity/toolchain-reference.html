@@ -1,0 +1,2058 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Toolchain Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The authoritative reference for Efinity 2026.1 commands, parameters and the Adapter&#x27;s isolated run domains.</span>
+<code>efinity/toolchain-reference.md</code>
+<a href="../../../efinity/toolchain-reference.md">Markdown source</a></p>
+<h1>Efinity Toolchain Reference</h1></header>
+<main class="article"><h1 id="efinity-toolchain-reference">Efinity Toolchain Reference</h1>
+<blockquote>
+<p><strong>Applies to</strong>: Efinity 2026.1 (installation root <code>C:\Efinity\2026.1</code>, referred to below as <code>%EFINITY_HOME%</code>)
+<strong>Last updated</strong>: 2026-09-25
+<strong>Evidence policy</strong>: every option ground truth in this document (name / type / legal values / default / applicable device group) comes from a first-hand read of the options XMLs — <code>%EFINITY_HOME%\bin\efx_map_options.xml</code>, <code>efx_pnr_options.xml</code>, <code>efx_pgm_options.xml</code> (<strong>no <code>--help</code> run is needed or relied upon</strong>); flow orchestration and exit codes come from a line-by-line read of the sources <code>%EFINITY_HOME%\scripts\efx_run.py</code>, <code>efx_run_pnr.py</code>, <code>efx_run_pt_unified.py</code>. Every claim is annotated with <code>path + line number</code>.
+<strong>Scope of this volume</strong>: the four main compile-chain tools (efx_run / efx_map / efx_pnr / efx_pgm) + the efx_sta Tcl shell + environment variables. For ISF syntax see <em>Efinity ISF Syntax Reference</em>; for the DesignAPI nine-step flow see <em>Efinity DesignAPI Reference</em>; for SDC and report artifacts see <em>Efinity File Formats: SDC and Report Artifacts</em>; for programming scripts and bin helper tools see <em>Efinity Helper Tools and Scripts Reference</em>; for the project XML structure see <em>Efinity XML Project File Schema Reference</em>.</p>
+</blockquote>
+<hr />
+<h2 id="1-toolchain-overview-and-the-unified-flow-pipeline">1. Toolchain overview and the unified flow pipeline</h2>
+<h3 id="1-0-evoverse-dual-python-runtime-domains">1.0 EvoVerse dual Python runtime domains</h3>
+<p>EvoVerse does not require customers to replace their system Python with the version bundled with Efinity, and never installs Python automatically:</p>
+<ul>
+<li>The SDK's specification, Design Assurance, layered simulation orchestration, CLI, and MCP use the customer's system Python 3.11+. Before startup they actually import <code>encodings</code>, <code>json</code>, <code>hashlib</code>, and the verification engine; a version number alone does not count as usable.</li>
+<li>Efinity Build, DesignAPI, IPM, and Debug are managed solely by the Efinity Adapter. For the selected installation, the Adapter first runs its <code>bin\setup.bat</code>, then uses the vendor interpreter chosen by that environment; the SDK never assembles version directories such as <code>python311</code>.</li>
+<li>Both subprocesses strip the other side's leftover <code>PYTHONHOME</code>, <code>PYTHONPATH</code>, and Python PATH entries. A failing runtime domain is never silently taken over by the other Python.</li>
+<li>Build, DesignAPI, IPM, and Debug report capabilities separately. For example, when native <code>efx_run.bat --flow compile</code> is available, a DesignAPI incompatibility does not block Build.</li>
+</ul>
+<p>The Workbench Runtime domains panel reports interpreter and API probe results only. It does not mean simulation, a Questa license, native compilation, timing, or hardware validation has passed.</p>
+<h3 id="1-1-tools-and-script-assets-at-a-glance">1.1 Tools and script assets at a glance</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Executable / script</th>
+<th>Location</th>
+<th>Python wrapper (invoked by efx_run)</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flow orchestration</td>
+<td><code>efx_run.bat</code> → <code>efx_run.py</code></td>
+<td><code>bin\</code> / <code>scripts\</code></td>
+<td>—</td>
+<td>Chains all steps below (§2)</td>
+</tr>
+<tr>
+<td>Synthesis</td>
+<td><code>efx_map.exe</code></td>
+<td><code>bin\</code></td>
+<td><code>efx_run_map.py</code> (via <code>run_synthesis</code>)</td>
+<td>RTL → technology-mapped netlist (.vdb)</td>
+</tr>
+<tr>
+<td>Interface design (PT)</td>
+<td>embedded in <code>pt\</code> (DesignAPI)</td>
+<td><code>pt\bin\</code></td>
+<td><code>efx_run_pt_unified.py</code></td>
+<td>IO/PLL/DDR configuration → <code>&lt;design_name&gt;.peri.xml</code></td>
+</tr>
+<tr>
+<td>Place-and-route + STA</td>
+<td><code>efx_pnr.exe</code></td>
+<td><code>bin\</code></td>
+<td><code>efx_run_pnr.py</code> (<code>run_pnr</code>)</td>
+<td>Place-and-route + static timing analysis</td>
+</tr>
+<tr>
+<td>STA Tcl shell</td>
+<td><code>efx_sta.exe</code></td>
+<td><code>bin\</code></td>
+<td>same (<code>--sta_tclsh</code> swaps the binary name, §6)</td>
+<td>STA-only variant of efx_pnr; interactive/batch Tcl</td>
+</tr>
+<tr>
+<td>Bitstream generation</td>
+<td><code>efx_pgm.exe</code></td>
+<td><code>bin\</code></td>
+<td><code>efx_run_pgm.py</code> (<code>run_pgm</code>)</td>
+<td>Generates .bit/.hex; does not program</td>
+</tr>
+<tr>
+<td>Programming</td>
+<td><code>ftdi_program.py</code></td>
+<td><code>pgm\bin\efx_pgm\</code></td>
+<td><code>--flow program</code> (<code>run_program</code>, reads <code>bin\hw_tools.json</code>)</td>
+<td>JTAG/SPI programming; see the helper tools volume</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\bin\</code> directory listing (<code>efx_sta.exe</code>, <code>efx_map.exe</code>, etc.); <code>scripts\efx_run.py</code> L1718 (<code>run_program</code> begins), L1991-2014 (call sites of each <code>run_*</code>). <code>efx_pgm.exe</code> only produces bitstreams and never programs devices — the programming chain (ftdi_program / flashshell) is covered entirely in <em>Efinity Helper Tools and Scripts Reference</em>.</p>
+</blockquote>
+<h3 id="1-2-the-unified-flow-pipeline-the-seven-do_-steps-of-the-compile-flow">1.2 The unified flow pipeline (the seven do_ steps of the compile flow)</h3>
+<p><code>efx_run.py</code> expands each flow into a set of boolean switches (<code>build_cmdline_options</code> first sets each to False at L265-298, then sets them per flow branch). <code>compile</code> (the default flow) expands to <strong>seven steps</strong> (L332-340):</p>
+<pre><code class="language-python">elif re.match('^nosim$|^compile$', args.flow):     # efx_run.py L332
+    args.use_prj_name = True
+    args.do_map = True              # 1. Synthesis
+    args.do_pt_generation = True    # 2. Interface Designer (PT)
+    args.do_pnr = True              # 3. Place-and-route + STA
+    args.do_pgm = True              # 4. Bitstream generation
+    args.do_security = True         # 5. Security layer (survives only in --prj mode, see below)
+    args.do_security_sc = True      # 6. Security layer SC (same)
+    args.do_export_bitstream = True # 7. Export bitstream artifacts
+</code></pre>
+<p>Actual execution order inside <code>run_flow()</code> (L1991-2014, compile main line):</p>
+<pre><code>run_synthesis(map)                          # L1991
+run_debugger_auto_instantation (optional)    # L1995, when debug_profile
+run_pt('default')                           # L1996  ← after map, before pnr
+run_pnr (may run run_early_phys_syn first)  # L2000-2003
+run_pgm                                     # L2005
+run_security / run_security_sc              # L2006-2007
+run_export_bitstream                        # L2008
+</code></pre>
+<p>That is, <strong>map → PT(interface) → pnr → pgm → security → export_bitstream</strong>. Two key orchestration rules:</p>
+<ul>
+<li><strong>The two security steps survive only under <code>--prj</code> (project XML mode)</strong>: at the end of <code>build_cmdline_options</code>, non-prj mode force-resets <code>args.do_security = False; args.do_security_sc = False</code> (L553-555).</li>
+<li><strong>debug_profile hijacks the PT step</strong>: under the <code>compile</code>/<code>full</code> flow, if a debug profile is given beyond <code>--flow</code>, then <code>do_auto_instantiate_dbg=True</code>, <code>do_dbg_pt_generation=True</code>, and plain <code>do_pt_generation=False</code> (L140-145) — the standard PT is replaced by "auto core insertion + dbg PT".</li>
+</ul>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\scripts\efx_run.py</code>. The internals of the PT step (the nine-step DesignAPI orchestration inside <code>efx_run_pt_unified.py</code>) are not expanded in this volume; see <em>Efinity DesignAPI Reference</em>.</p>
+</blockquote>
+<h3 id="1-3-exit-code-semantics">1.3 Exit code semantics</h3>
+<p><strong>efx_run.py: binary exit code</strong> (<code>__main__</code>, L2130-2151):</p>
+<table>
+<thead>
+<tr>
+<th>Exit code</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td><code>run_flow</code> returns True (and, in <code>--prj</code> mode, the project XML has been written back, <code>update_project_file</code> L2141-2142)</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Any step fails: a subprocess exits non-zero (<code>CalledProcessError</code>, L2015-2021), a <code>--timeout</code> expiry (<code>TimeoutExpired</code>, L2022-2028), or any other Python exception (L2029-2032, L2144-2146)</td>
+</tr>
+</tbody>
+</table>
+<p>Two notes: (1) inside <code>run_flow</code>, <code>success = e</code> (L2032) assigns the exception object to success, and <code>__main__</code> then <code>raise</code>s it as the final catch-all — so <strong>any exception ultimately converges to exit 1</strong>; (2) <code>update_project_file</code> (from L2046) merges this run's command-line opts back into the project XML after success — the project file is "a living document updated by the orchestrator".</p>
+<p><strong>efx_run_pt_unified.py: three-valued status code, but WARNING_SKIP and OK both map to 0</strong> (<code>sys.exit(ret)</code>, L393):</p>
+<table>
+<thead>
+<tr>
+<th>PTFlowRunnerStatusCode</th>
+<th>exit code</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OK</td>
+<td>0</td>
+<td>PT completed normally</td>
+</tr>
+<tr>
+<td>WARNING_SKIP</td>
+<td>0</td>
+<td><code>EFX_SKIP_PT</code> is not <code>'0'</code> (L127-129), or the family is not trion/titanium/topaz (L138-140)</td>
+</tr>
+<tr>
+<td>ERROR</td>
+<td>1</td>
+<td>device/family missing (L133-135, L142-145) or any exception (L390-392)</td>
+</tr>
+</tbody>
+</table>
+<p>So from the caller's perspective a direct PT invocation has only two states, 0/1; <strong>"skipped" counts as success</strong> — one reason AGENTS.md §7 opposes stitching flows together with <code>EFX_SKIP_PT</code>: it silently turns "should have run but didn't" into green. The full semantics of the three-valued enum and the nine-step flow are in <em>Efinity DesignAPI Reference</em>.</p>
+<h3 id="1-4-direct-pt-invocation-and-isf-self-checks-efx_run_pt_unified-py-import_gpio">1.4 Direct PT invocation and ISF self-checks (efx_run_pt_unified.py / import_gpio)</h3>
+<h4 id="1-4-1-blank-pt-baseline-direct-invocation-without-peri_scripts">1.4.1 Blank PT baseline (direct invocation without <code>--peri_scripts</code>)</h4>
+<p>When <code>efx_run_pt_unified.py</code> is run without <code>--peri_scripts</code>, the import loop is empty and no ISF is executed; it directly produces a <strong>blank <code>&lt;project_name&gt;.peri.xml</code></strong> containing only the device's default peripheral database:</p>
+<pre><code class="language-powershell"># Run from the project root (design_dir defaults to the current directory)
+python efx_run_pt_unified.py &lt;design&gt; &lt;family&gt; &lt;device&gt; --project_xml &lt;project&gt;.xml
+# Output: &lt;project_root&gt;\&lt;project_name&gt;.peri.xml (blank baseline)
+</code></pre>
+<p>Key behaviors (source: <code>C:\Efinity\2026.1\scripts\efx_run_pt_unified.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Behavior</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>peri_scripts</code> defaults to an empty list; the import loop does not run</td>
+<td>L377-378 (<code>if args.peri_scripts is None: d['peri_scripts'] = []</code>); the import loop consumes this list</td>
+</tr>
+<tr>
+<td><code>design_api.generate()</code> is still called with an empty script list to produce the peripheral design</td>
+<td>PTFlowRunner main body</td>
+</tr>
+<tr>
+<td>In project_xml mode peri.xml is always written to the <strong>project root</strong> (same directory as the project XML), not outflow</td>
+<td><code>proj_path / f"{proj_db.project_name}.peri.xml"</code></td>
+</tr>
+<tr>
+<td><code>--output_dir</code> defaults to <code>&lt;design_dir&gt;/outflow</code>; <code>--work_dir</code> defaults to <code>work_pt</code></td>
+<td>argparse definition near L365</td>
+</tr>
+</tbody>
+</table>
+<h4 id="1-4-2-the-first-import-semantics-of-the-isf-dry-run-self-check">1.4.2 The "first import" semantics of the ISF dry-run self-check</h4>
+<p>The SDK's bundled <code>sdk/cli/import_gpio.bat</code> (→ <code>import_gpio_cli.py</code>) is a thin wrapper: load the peri.xml → call Efinity's official <code>DesignAPI.import_design()</code> (ISF path) / <code>ImportGPIODesign</code> (CSV path) → report issues; <code>--dry-run</code> only parses and reports, without writing back to the peri.xml.</p>
+<p><strong>Understand this: import operates on the peri.xml design library passed via <code>--peri</code>.</strong> <code>assign_pkg_pin</code> can only assign pins to GPIO instances that <strong>already exist</strong> in the peri.xml; when the instance does not exist, the import fails outright (observed error signature <code>Unknown instance</code>). The ISF's <code>create_*_gpio</code> calls are what create the instances first — therefore:</p>
+<blockquote>
+<p><strong>The self-check baseline must be a blank PT first import (the blank peri.xml of §1.4.1); never use a peri.xml that has already imported GPIOs.</strong> A dry-run against a library that already contains GPIOs will, because the instances already exist, produce results completely different from the real build flow (where PT, after synthesis, consumes the persisted peri.xml and replays the ISFs).</p>
+</blockquote>
+<h4 id="1-4-3-standard-ci-fixed-baseline-procedure">1.4.3 Standard CI fixed-baseline procedure</h4>
+<pre><code class="language-powershell"># 1. Blank PT produces the first-import baseline (see §1.4.1)
+# 2. Dry-run the ISF under test; only exit 0 counts as valid
+import_gpio.bat --peri &lt;project&gt;.peri.xml --input constraints\xxx.isf --dry-run
+</code></pre>
+<p>Repeat the two steps "blank PT → dry-run" on every <code>constraints/*.isf</code> change; the baseline must be freshly produced by the current toolchain on site — never reuse a hand-kept peri.xml or one left over from a historical build.</p>
+<h4 id="1-4-4-output-isolation-for-investigative-runs">1.4.4 Output isolation for investigative runs</h4>
+<p>A direct PT invocation creates <code>outflow/</code> and <code>work_pt/</code> in the project directory. Investigative runs — troubleshooting, ISF validation — should explicitly point at isolated output directories:</p>
+<pre><code class="language-powershell">python efx_run_pt_unified.py ... --output_dir &lt;isolated_dir&gt;\outflow --work_dir &lt;isolated_dir&gt;\work_pt
+</code></pre>
+<p>Note that <code>--output_dir</code> only isolates intermediate artifacts; peri.xml is always written to the project root (§1.4.1) and is never redirected by this parameter.</p>
+<hr />
+<h2 id="2-efx_run-py-the-flow-orchestrator">2. efx_run.py — the flow orchestrator</h2>
+<p>The entry point <code>bin\efx_run.bat</code> invokes <code>scripts\efx_run.py</code> (about 2,152 lines). The legal <code>--flow</code> enumeration is hardcoded inside <code>parse_options()</code> (L182-184).</p>
+<h3 id="2-1-complete-flow-enumeration">2.1 Complete --flow enumeration</h3>
+<p>The official document <code>doc\topics\cli-run-flow.html</code> L215-216 lists 14 public flows (excluding <code>dbg_auto</code>); the source <code>choices</code> actually holds 15 (L182-184). The complete table:</p>
+<table>
+<thead>
+<tr>
+<th>flow</th>
+<th>Public docs</th>
+<th>Expanded steps (<code>build_cmdline_options</code>)</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compile</code></td>
+<td>✓ (<strong>default</strong>)</td>
+<td>map + pt_generation + pnr + pgm + security + security_sc + export_bitstream (L332-340)</td>
+<td>Standard one-shot compile</td>
+</tr>
+<tr>
+<td><code>map</code></td>
+<td>✓</td>
+<td>map (L341-345)</td>
+<td>Synthesis only</td>
+</tr>
+<tr>
+<td><code>interface</code></td>
+<td>✓</td>
+<td>pt_generation (L353-355)</td>
+<td>Interface Designer only</td>
+</tr>
+<tr>
+<td><code>pnr</code></td>
+<td>✓</td>
+<td>pnr (L356-358)</td>
+<td>Place-and-route only</td>
+</tr>
+<tr>
+<td><code>pgm</code></td>
+<td>✓</td>
+<td>pgm + security + security_sc + export_bitstream (L359-364)</td>
+<td>Bitstream only</td>
+</tr>
+<tr>
+<td><code>program</code></td>
+<td>✓</td>
+<td>program (L370-372)</td>
+<td>Command-line programming (reads the <code>bin\hw_tools.json</code> configuration)</td>
+</tr>
+<tr>
+<td><code>full</code></td>
+<td>✓</td>
+<td>rtl_sim + map_sim + pnr_sim + map + pt + pnr + pgm + security×2 + export (L373-384)</td>
+<td>Full flow including simulation</td>
+</tr>
+<tr>
+<td><code>rtlsim</code></td>
+<td>✓</td>
+<td>rtl_sim (L346-347)</td>
+<td>RTL simulation</td>
+</tr>
+<tr>
+<td><code>mapsim</code></td>
+<td>✓</td>
+<td>map_sim (L322-323; alias <code>simmap</code>)</td>
+<td>Post-synthesis simulation</td>
+</tr>
+<tr>
+<td><code>pnrsim</code></td>
+<td>✓</td>
+<td>pnr_sim (L330-331; alias <code>simvpr</code>)</td>
+<td>Post-PNR simulation</td>
+</tr>
+<tr>
+<td><code>ptsimrtl</code></td>
+<td>✓</td>
+<td>export_pt_sim + pt_sim_rtl (L324-326; alias <code>simptrtl</code>)</td>
+<td>Post-PT RTL simulation</td>
+</tr>
+<tr>
+<td><code>ptsimfc</code></td>
+<td>✓</td>
+<td>export_pt_sim + pt_sim_fc (L327-329; alias <code>simptfc</code>)</td>
+<td>Post-PT fast-current simulation</td>
+</tr>
+<tr>
+<td><code>sta_tclsh</code></td>
+<td>✓</td>
+<td>sta_tclsh (L537-539, requires <code>--prj</code>, §6)</td>
+<td>Command-line STA Tcl shell</td>
+</tr>
+<tr>
+<td><code>setup_efxlib</code></td>
+<td>✓</td>
+<td>setup_efxlib (L540-541, compiles simulation libraries)</td>
+<td>Simulation library preparation</td>
+</tr>
+<tr>
+<td><code>dbg_auto</code></td>
+<td>✗ (internal use by <code>efx_run_pnr_sweep.py</code> only; source comment HD-529, L180-181)</td>
+<td>map + auto_instantiate_dbg + dbg_pt_generation (L348-352)</td>
+<td>Automatic debug-core insertion flow</td>
+</tr>
+</tbody>
+</table>
+<p>There are also many flow branches such as <code>fcv</code> / <code>remap</code> / <code>premap</code> / <code>unimap</code> / <code>stfmap</code> / <code>efx_export</code> (L385-536), all gated behind the <code>INTERNAL</code> internal switch (<code>EfxInternalCmdLineOpts</code>, L185, L231); they are not externally available and are not covered here.</p>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\scripts\efx_run.py</code> L178-234, L322-541; <code>C:\Efinity\2026.1\doc\topics\cli-run-flow.html</code> L213-219.</p>
+</blockquote>
+<h3 id="2-2-complete-command-line-parameter-table">2.2 Complete command-line parameter table</h3>
+<p>From <code>parse_options()</code> (L188-233). The table follows the argparse definition order.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type / default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>design</code> (positional)</td>
+<td>required</td>
+<td>Project name or full <code>.xml</code> path; a <code>.xml</code> suffix automatically sets <code>--prj</code> (<code>resolve_prj_xml_filename</code> L147-176)</td>
+</tr>
+<tr>
+<td><code>--prj</code></td>
+<td>flag</td>
+<td>Explicitly enables project XML mode; the project file is resolved as <code>&lt;design&gt;.xml</code></td>
+</tr>
+<tr>
+<td><code>-f</code>, <code>--flow</code></td>
+<td>enum, default <code>compile</code></td>
+<td>Full table in §2.1 (the default is filled in by <code>build_cmdline_options</code> L262)</td>
+</tr>
+<tr>
+<td><code>--family</code></td>
+<td>string, default <code>Titanium</code></td>
+<td>Default logic at L308-320</td>
+</tr>
+<tr>
+<td><code>-d</code>, <code>--device</code></td>
+<td>string, per-family default</td>
+<td>Trion→<code>T8F81</code>, Titanium→<code>Ti60F225</code>, Topaz→<code>TP50F256</code>, otherwise <code>UNKNOWN</code> (L315-319)</td>
+</tr>
+<tr>
+<td><code>--timing_model</code></td>
+<td>string</td>
+<td>Passing <code>I4</code>/<code>I4L</code> on Ti35/Ti60 raises <code>ValueError</code> immediately (L557-567, §9.4)</td>
+</tr>
+<tr>
+<td><code>-t</code>, <code>--tcl_script</code></td>
+<td>filename</td>
+<td>Consumed only by the <code>sta_tclsh</code> flow; omitting it opens the interactive shell (L194)</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>append nargs='+'</td>
+<td>Additional HDL source files; <strong>mutually exclusive with <code>--flist</code></strong> (same mutually exclusive group, L197-199)</td>
+</tr>
+<tr>
+<td><code>--flist</code></td>
+<td>append</td>
+<td>File-list path (listing additional HDL sources)</td>
+</tr>
+<tr>
+<td><code>--tb</code></td>
+<td>append</td>
+<td>Testbench HDL files (simulation flows only)</td>
+</tr>
+<tr>
+<td><code>--tb_top</code></td>
+<td>string</td>
+<td>Testbench top-level module name (simulation flows only)</td>
+</tr>
+<tr>
+<td><code>--dir</code></td>
+<td>append</td>
+<td>Source search directories (repeatable)</td>
+</tr>
+<tr>
+<td><code>--map_opts</code></td>
+<td>append nargs='+'</td>
+<td>Passed through to efx_map as <code>name=value</code> (§2.3)</td>
+</tr>
+<tr>
+<td><code>--pt_opts</code></td>
+<td>append nargs='+'</td>
+<td>Passed through to Interface Designer</td>
+</tr>
+<tr>
+<td><code>--pnr_opts</code></td>
+<td>append nargs='+'</td>
+<td>Passed through to efx_pnr (dest is <code>vpr_opts</code>)</td>
+</tr>
+<tr>
+<td><code>--pgm_opts</code></td>
+<td>append nargs='+'</td>
+<td>Passed through to efx_pgm</td>
+</tr>
+<tr>
+<td><code>-m</code>, <code>--modelsim</code></td>
+<td>flag</td>
+<td>Use ModelSim / Questa</td>
+</tr>
+<tr>
+<td><code>--sim_opts</code></td>
+<td>append nargs='+'</td>
+<td>Passed through to the simulator</td>
+</tr>
+<tr>
+<td><code>--aldec</code></td>
+<td>flag</td>
+<td>Use Aldec Active-HDL / Riviera-PRO</td>
+</tr>
+<tr>
+<td><code>--ncsim</code></td>
+<td>flag</td>
+<td>Use Cadence simulators</td>
+</tr>
+<tr>
+<td><code>--output_dir</code></td>
+<td>string, default <code>outflow</code></td>
+<td>L238, L263</td>
+</tr>
+<tr>
+<td><code>--work_dir</code></td>
+<td>string</td>
+<td>Working directory for each tool (can be overridden by work_dir in the project XML, L759-761, L808-811)</td>
+</tr>
+<tr>
+<td><code>--timeout</code></td>
+<td>int</td>
+<td>Cumulative timeout across all steps (seconds), timed with <code>time.monotonic</code> (L1976-1977); timeout → exit 1</td>
+</tr>
+<tr>
+<td><code>--un_flow</code></td>
+<td>on/off (<code>nargs='?'</code>)</td>
+<td>Unified Netlist Flow; set to True when the project XML has <code>unified_flow="true"</code> and the parameter is not given explicitly (L749-753)</td>
+</tr>
+<tr>
+<td><code>--physical_syn_input</code></td>
+<td>filepath</td>
+<td>Physical synthesis request file; runs <code>run_early_phys_syn</code> before pnr (L2000-2002)</td>
+</tr>
+<tr>
+<td><code>--res_compare</code></td>
+<td>flag</td>
+<td>Compare synthesis resource usage against reference values</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\scripts\efx_run.py</code> L178-233, L236-320. The official document carries the same table: <code>doc\topics\cli-run-flow.html</code> (from L200).</p>
+</blockquote>
+<h3 id="2-3-the-pass-through-option-mechanism-opt-name-value">2.3 The pass-through option mechanism (--opt name=value)</h3>
+<p>The four <code>*_opts</code> parameters are all <strong>string lists</strong> with <code>append nargs='+'</code>; every element must be in <code>name=value</code> form. The orchestrator expands each group into <code>--opt</code>-prefixed arguments for the target tool:</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Splicing code (efx_run.py)</th>
+<th>Form received by the target tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>efx_map</td>
+<td>L1245 <code>[sys.argv.extend(['--opt'] + x) for x in args.map_opts]</code></td>
+<td><code>efx_map ... --opt mode=area --opt retiming=1</code></td>
+</tr>
+<tr>
+<td>efx_pnr</td>
+<td>L1317 <code>argv.extend(['--opt'] + x)</code></td>
+<td><code>efx_pnr ... --opt seed=42</code></td>
+</tr>
+<tr>
+<td>efx_pgm</td>
+<td>L1370 <code>[sys.argv.extend(['--opt'] + x) for x in args.pgm_opts]</code></td>
+<td><code>efx_pgm ... --opt bitstream_compression=off</code></td>
+</tr>
+<tr>
+<td>PT</td>
+<td>L1448 <code>for x in chain(*args.pt_opts)</code></td>
+<td>DesignAPI parameter dictionary</td>
+</tr>
+</tbody>
+</table>
+<p>Three guardrails:</p>
+<ol>
+<li><strong><code>option_exists()</code> deduplication</strong> (L2037-2043): a <code>^option=</code> regex checks whether the pass-through list already has an option with the same name, so automatically injected orchestrator options (such as <code>root=</code>, <code>arch=</code>, <code>sdc_file=</code>) never overwrite values the user passed explicitly (L693-701, L726-733).</li>
+<li><strong>The <code>name</code> in <code>name=value</code> must be the registered name from the options XML</strong> (§8); CLI hyphenated-style variants are not accepted (for efx_map you pass <code>retiming=2</code>, not <code>--retiming 2</code>).</li>
+<li><strong>Write-back to the project XML on success</strong>: after a successful <code>--prj</code>-mode build, <code>update_project_file</code> (from L2046) merges the opts back into the matching project XML sections (<code>&lt;param&gt;</code> under <code>&lt;synthesis&gt;</code> / <code>&lt;place_and_route&gt;</code> / <code>&lt;bitstream_generation&gt;</code>), so the GUI and the CLI share one parameter truth.</li>
+</ol>
+<h3 id="2-4-automatic-mapping-from-project-xml-to-pass-through-options">2.4 Automatic mapping from project XML to pass-through options</h3>
+<p>After reading the project XML, <code>parse_project_file()</code> (L635-990) generates pass-through options automatically. Key mappings (consistent with the references in <em>Efinity XML Project File Schema Reference</em>):</p>
+<table>
+<thead>
+<tr>
+<th>Project XML element</th>
+<th>Generated pass-through option</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;constraint_info&gt;/&lt;sdc_file&gt;</code> (multiple)</td>
+<td><code>vpr_opts += [sdc_file=a,b,c]</code> (comma-joined, empty names filtered out)</td>
+<td>L729-733</td>
+</tr>
+<tr>
+<td><code>&lt;constraint_info&gt;/&lt;unified_sdc_file&gt;</code></td>
+<td><code>vpr_opts += [unified_sdc_file=...]</code></td>
+<td>L720, L729-733</td>
+</tr>
+<tr>
+<td><code>&lt;constraint_info&gt;/&lt;inter_file&gt;</code></td>
+<td><code>vpr_opts += [sync_file=&lt;name&gt;]</code> — <strong>silently skipped when <code>name</code> is an empty string</strong> (falsy <code>elem.get('name')</code>); an empty <code>&lt;efx:inter_file name=""/&gt;</code> therefore loses the interface file outright and the build must fail</td>
+<td>L720 (mapping table), L726-727</td>
+</tr>
+<tr>
+<td><code>def_veri_version</code> / <code>def_vhdl_version</code> of <code>&lt;design_info&gt;</code></td>
+<td><code>map_opts += [veri_options=verilog_mode=...,vhdl_mode=...]</code></td>
+<td>L741-747</td>
+</tr>
+<tr>
+<td><code>&lt;synthesis&gt;/&lt;param name="opt_mode"&gt;</code></td>
+<td><code>map_opts += [syn_options=mode=&lt;value&gt;]</code></td>
+<td>L771-772</td>
+</tr>
+<tr>
+<td><code>&lt;synthesis&gt;/&lt;param name="peri-syn-instantiation"|"peri-syn-inference"&gt;</code></td>
+<td>Forwarded to map only when <code>unified_flow="true"</code></td>
+<td>L749-753, L775-780</td>
+</tr>
+<tr>
+<td><code>&lt;place_and_route&gt;/&lt;param&gt;</code></td>
+<td>Passed through one by one as <code>vpr_opts</code>; the <code>value_type</code> attribute is read but <strong>not consumed by the orchestration layer</strong> (L802-803); <code>qp_options=</code>-prefixed parameters are merged into one entry (L813-840)</td>
+<td>L797-840</td>
+</tr>
+<tr>
+<td><code>&lt;bitstream_generation&gt;/&lt;param&gt;</code></td>
+<td>Passed through one by one as <code>pgm_opts</code> (deduplicated by <code>option_exists</code>)</td>
+<td>L847-867</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-5-typical-invocations">2.5 Typical invocations</h3>
+<pre><code class="language-powershell"># Standard compile (map → PT → pnr → pgm → security → export)
+efx_run.bat my_design                       # project file is my_design.xml; CWD must be the project directory
+
+# Explicit project + specified device
+efx_run.bat my_design --flow compile --family Titanium -d Ti60F225
+
+# Synthesis only / bitstream only
+efx_run.bat my_design --flow map
+efx_run.bat my_design --flow pgm
+
+# Pass-through options (name=value, §2.3)
+efx_run.bat my_design --map_opts mode=area --pnr_opts seed=42
+
+# Interactive STA shell (§6)
+efx_run.bat --flow sta_tclsh my_design.xml
+
+# Batch STA script
+efx_run.bat --flow sta_tclsh --tcl_script report.tcl my_design.xml
+</code></pre>
+<hr />
+<h2 id="3-efx_map-complete-synthesis-options">3. efx_map — complete synthesis options</h2>
+<p><code>efx_map.exe</code> (<code>bin\</code>) synthesizes RTL into a technology-mapped netlist (.vdb). Option ground truth comes from <code>bin\efx_map_options.xml</code> (namespace <code>enf_topt</code>, 39 option entries in total: 32 in the all group + 2 Trion + 5 Titanium, L3-47).</p>
+<p><strong>About the six columns</strong>: "XML-only?" = the option does not appear in the option tables of the official document <code>doc\topics\cli-map-opts.html</code> (determination method in §8.2); it can only be set via <code>--opt name=value</code> pass-through or a project XML <code>&lt;synthesis&gt;/&lt;param&gt;</code>.</p>
+<h3 id="3-1-common-group-family_name-all-xml-l3-36">3.1 Common group (family_name="all", XML L3-36)</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--allow-const-ram-index</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Allow constant RAM address indexing</td>
+</tr>
+<tr>
+<td><code>--blackbox-error</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Black-box module handling: 1 = error, 0 = downgrade to warning</td>
+</tr>
+<tr>
+<td><code>--blast_const_operand_adders</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Blast constant-operand adders</td>
+</tr>
+<tr>
+<td><code>--bram_output_regs_packing</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Pack output registers into BRAM</td>
+</tr>
+<tr>
+<td><code>--bram-push-tco-outreg</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Push TCO output registers into BRAM</td>
+</tr>
+<tr>
+<td><code>--create-onehot-fsms</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Force one-hot FSM encoding</td>
+</tr>
+<tr>
+<td><code>--fanout-limit</code></td>
+<td>e_integer</td>
+<td>0~2000</td>
+<td>0</td>
+<td>✅</td>
+<td>Fanout limit; 0 = unlimited</td>
+</tr>
+<tr>
+<td><code>--hdl-compile-unit</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>HDL compile-unit mode</td>
+</tr>
+<tr>
+<td><code>--hdl-loop-limit</code></td>
+<td>e_integer</td>
+<td>0~99999</td>
+<td>20000</td>
+<td>✅</td>
+<td>HDL loop unrolling limit</td>
+</tr>
+<tr>
+<td><code>--infer-clk-enable</code></td>
+<td>e_option</td>
+<td>0,1,2,3,4</td>
+<td>3</td>
+<td>✅</td>
+<td>Clock-enable inference level (0 = disabled, 4 = most aggressive)</td>
+</tr>
+<tr>
+<td><code>--infer-sync-set-reset</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Infer synchronous set/reset</td>
+</tr>
+<tr>
+<td><code>--enable-mark-debug</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Enable <code>(* mark_debug *)</code> signal extraction (relied on by the debug flow)</td>
+</tr>
+<tr>
+<td><code>--max_ram</code></td>
+<td>e_integer</td>
+<td>-1~9999</td>
+<td>-1</td>
+<td>❌ (documented)</td>
+<td>Maximum RAM blocks; -1 = unlimited</td>
+</tr>
+<tr>
+<td><code>--max_mult</code></td>
+<td>e_integer</td>
+<td>-1~9999</td>
+<td>-1</td>
+<td>❌</td>
+<td>Maximum multipliers; -1 = unlimited</td>
+</tr>
+<tr>
+<td><code>--max-bit-blast-mem-size</code></td>
+<td>e_integer</td>
+<td>0~99999</td>
+<td>10240</td>
+<td>✅</td>
+<td>Memories larger than this many bits are not bit-blasted</td>
+</tr>
+<tr>
+<td><code>--min-sr-fanout</code></td>
+<td>e_integer</td>
+<td>0~9999</td>
+<td>0</td>
+<td>✅</td>
+<td>Set/reset signal replication threshold</td>
+</tr>
+<tr>
+<td><code>--min-ce-fanout</code></td>
+<td>e_integer</td>
+<td>0~9999</td>
+<td>0</td>
+<td>✅</td>
+<td>Clock-enable replication threshold</td>
+</tr>
+<tr>
+<td><code>--mode</code></td>
+<td>e_option</td>
+<td>speed,area,cong,power,speed2,area2</td>
+<td>speed</td>
+<td>❌</td>
+<td>Synthesis optimization mode</td>
+</tr>
+<tr>
+<td><code>--mult-auto-pipeline</code></td>
+<td>e_integer</td>
+<td>0~36</td>
+<td>0</td>
+<td>✅</td>
+<td>Multiplier automatic pipeline stages</td>
+</tr>
+<tr>
+<td><code>--mult-decomp-retime</code></td>
+<td>e_option</td>
+<td>0,1,2</td>
+<td>1</td>
+<td>✅</td>
+<td>Multiplier decomposition retiming</td>
+</tr>
+<tr>
+<td><code>--operator-sharing</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Operator sharing (saves area, hurts timing)</td>
+</tr>
+<tr>
+<td><code>--optimize-adder-tree</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Adder-tree optimization</td>
+</tr>
+<tr>
+<td><code>--optimize-zero-init-rom</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Zero-initialized ROM optimization</td>
+</tr>
+<tr>
+<td><code>--peri-syn-instantiation</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Peripheral primitive instantiation (Unified Netlist Flow; forwarded by the orchestrator when the project XML has <code>unified_flow="true"</code>, efx_run.py L776-777)</td>
+</tr>
+<tr>
+<td><code>--peri-syn-inference</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Peripheral primitive inference (same, L779-780)</td>
+</tr>
+<tr>
+<td><code>--ram-decomp-mode</code></td>
+<td>e_option</td>
+<td>0,1,2</td>
+<td>0</td>
+<td>✅</td>
+<td>RAM decomposition mode</td>
+</tr>
+<tr>
+<td><code>--retiming</code></td>
+<td>e_option</td>
+<td>0,1,2</td>
+<td>2</td>
+<td>❌</td>
+<td>Retiming level; <strong>2 can only redistribute existing registers, never create new ones</strong> (§9.1)</td>
+</tr>
+<tr>
+<td><code>--seq_opt</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>❌</td>
+<td>Master switch for sequential optimization</td>
+</tr>
+<tr>
+<td><code>--seq-opt-sync-only</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Apply sequential optimization to synchronous logic only</td>
+</tr>
+<tr>
+<td><code>--use-logic-for-small-mem</code></td>
+<td>e_integer</td>
+<td>0~9999</td>
+<td>64</td>
+<td>✅</td>
+<td>Implement RAMs smaller than this many bits in logic</td>
+</tr>
+<tr>
+<td><code>--use-logic-for-small-rom</code></td>
+<td>e_integer</td>
+<td>0~9999</td>
+<td>64</td>
+<td>✅</td>
+<td>Implement ROMs smaller than this many bits in logic</td>
+</tr>
+<tr>
+<td><code>--max_threads</code></td>
+<td>e_integer</td>
+<td>-1~1024</td>
+<td>-1</td>
+<td>❌</td>
+<td>Maximum threads; -1 = automatic</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-device-specific-groups">3.2 Device-specific groups</h3>
+<p>Trion group (XML L37-40):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mult_input_regs_packing</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Multiplier input register packing</td>
+</tr>
+<tr>
+<td><code>--mult_output_regs_packing</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>Multiplier output register packing</td>
+</tr>
+</tbody>
+</table>
+<p>Titanium group (XML L41-47, details in §9.1):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--dsp-input-regs-packing</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>DSP input register packing</td>
+</tr>
+<tr>
+<td><code>--dsp-output-regs-packing</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>DSP output register packing</td>
+</tr>
+<tr>
+<td><code>--dsp-mac-packing</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>1</td>
+<td>✅</td>
+<td>DSP MAC (multiply-accumulate) packing</td>
+</tr>
+<tr>
+<td><code>--insert-carry-skip</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Insert carry-skip chains</td>
+</tr>
+<tr>
+<td><code>--pack-luts-to-comb4</code></td>
+<td>e_option</td>
+<td>0,1</td>
+<td>0</td>
+<td>✅</td>
+<td>Pack LUTs into Comb4</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\bin\efx_map_options.xml</code>, 48 lines in full. The "XML-only?" determination is based on <code>C:\Efinity\2026.1\doc\topics\cli-map-opts.html</code> Table 1 (L178-357): the official document covers only 9 of the XML options — <code>--max_threads</code>, <code>--max_mult</code>, <code>--max_ram</code>, <code>--infer-clk-enable</code>, <code>--infer-sync-set-reset</code>, <code>--mode</code>, <code>--fanout-limit</code>, <code>--seq_opt</code>, <code>--retiming</code>.</p>
+</blockquote>
+<h3 id="3-3-efx_map-cli-only-options-documented-not-in-the-options-xml">3.3 efx_map CLI-only options (documented, not in the options XML)</h3>
+<p>The following options appear in <code>cli-map-opts.html</code> Table 1 but not in <code>efx_map_options.xml</code>; they are inherent to direct CLI invocation (<strong>not applicable</strong> as pass-throughs — the orchestrator generates them automatically, or they are one-off call parameters):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+<th>Relationship to the orchestrator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--project</code> / <code>--project-xml</code></td>
+<td>Project and project XML paths</td>
+<td>Assembled by efx_run</td>
+</tr>
+<tr>
+<td><code>--work-dir</code> / <code>--output-dir</code></td>
+<td>Working and output directories</td>
+<td>Generated by the orchestrator from <code>--work_dir</code> / the project XML <code>work_dir</code> param (<code>work-dir=</code>, efx_run.py L738, L760-764)</td>
+</tr>
+<tr>
+<td><code>--root</code> / <code>--arch</code></td>
+<td>Top-level module and architecture name</td>
+<td>Derived from the project XML by the orchestrator, with duplicate injection prevented (L693-701)</td>
+</tr>
+<tr>
+<td><code>--settings_file</code></td>
+<td>Synthesis settings file</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>--write-efx-verilog</code></td>
+<td>Write out post-synthesis EFX Verilog</td>
+<td><code>write_efx_verilog</code> param pass-through (L738)</td>
+</tr>
+<tr>
+<td><code>--binary-db</code></td>
+<td>Output binary database</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>--top-params</code> / <code>--verilog-macros</code></td>
+<td>Top-level parameter overrides / Verilog macros</td>
+<td>Generated automatically from <code>&lt;dynparam&gt;</code>/<code>&lt;defmacro&gt;</code> (L783-792)</td>
+</tr>
+<tr>
+<td><code>--gated-clk-to-ce</code></td>
+<td>Gated clock to clock-enable conversion</td>
+<td>CLI only</td>
+</tr>
+<tr>
+<td><code>--message-verbosity</code> / <code>--suppress_info_msgs</code> / <code>--suppress_warning_msgs</code> / <code>--msg_suppression_list</code></td>
+<td>Message control</td>
+<td>CLI only</td>
+</tr>
+<tr>
+<td><code>--incdir</code></td>
+<td>Include directories</td>
+<td>Generates <code>I=</code> from <code>&lt;param name="include"&gt;</code> (L767-768)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-efx_pnr-complete-place-and-route-options">4. efx_pnr — complete place-and-route options</h2>
+<p><code>efx_pnr.exe</code> (<code>bin\</code>) performs place-and-route + STA. <strong>Key architectural point: <code>efx_pnr_options.xml</code> registers only "optimization parameters that can be written into the project XML <code>&lt;place_and_route&gt;</code> params" (namespace <code>enf_topt</code>, just 8 entries); CLI-inherent parameters such as SDC/interface files are not in it</strong> — the two lists must be read separately.</p>
+<h3 id="4-1-options-xml-parameters-all-8">4.1 Options XML parameters (all 8)</h3>
+<p>all group (XML L3-9):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--optimization_level</code></td>
+<td>e_option</td>
+<td>TIMING_1,TIMING_2,TIMING_3,CONGESTION_1,CONGESTION_2,CONGESTION_3,POWER_1,POWER_2</td>
+<td>(empty string)</td>
+<td>✅</td>
+<td>P&amp;R optimization target; empty = use the tool's built-in default strategy</td>
+</tr>
+<tr>
+<td><code>--seed</code></td>
+<td>e_integer</td>
+<td>1 (XML registered value)</td>
+<td>1</td>
+<td>❌</td>
+<td>Placement random seed; use <code>efx_run_pnr_sweep.bat</code> (<code>bin\</code>) for multi-seed sweeps</td>
+</tr>
+<tr>
+<td><code>--placer_effort_level</code></td>
+<td>e_option</td>
+<td>1,2,3,4,5</td>
+<td>2</td>
+<td>✅</td>
+<td>Placer effort level; higher gives better QoR at longer compile time</td>
+</tr>
+<tr>
+<td><code>--max_threads</code></td>
+<td>e_integer</td>
+<td>-1~9999</td>
+<td>-1</td>
+<td>❌</td>
+<td>Maximum threads; -1 = automatic</td>
+</tr>
+<tr>
+<td><code>--print_critical_path</code></td>
+<td>e_integer</td>
+<td>1~1000</td>
+<td>10</td>
+<td>❌</td>
+<td>Number of critical paths printed in the report</td>
+</tr>
+</tbody>
+</table>
+<p>Titanium group (XML L10-12):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--beneficial_skew</code></td>
+<td>e_option</td>
+<td>off,on</td>
+<td>on</td>
+<td>❌</td>
+<td>Beneficial clock-skew optimization (Titanium-specific; suspect it first when chasing hold violations, §9.2)</td>
+</tr>
+</tbody>
+</table>
+<p>TitaniumX group (XML L13-15):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--packing_level</code></td>
+<td>e_option</td>
+<td>NONE,MINIMAL,BASIC,L1,L2,L3</td>
+<td>L1</td>
+<td>✅</td>
+<td>TitaniumX packing level</td>
+</tr>
+</tbody>
+</table>
+<p>"XML-only?" determination: the five tables of <code>cli-pnr-opts.html</code> (L178-365) cover only <code>--seed</code> (Table 3 Placement, L322) and <code>--beneficial_skew</code> (Table 4 Route, L335); <code>--optimization_level</code>, <code>--placer_effort_level</code>, and <code>--packing_level</code> are <strong>absent from the official CLI documentation</strong>.</p>
+<h3 id="4-2-cli-inherent-options-official-document-cli-pnr-opts-html-not-in-the-options-xml">4.2 CLI-inherent options (official document <code>cli-pnr-opts.html</code>, not in the options XML)</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Location in official docs</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--help</code> / <code>--help-verbose</code></td>
+<td>Table 1</td>
+<td>Help</td>
+</tr>
+<tr>
+<td><code>--prj</code></td>
+<td>Table 1</td>
+<td>Project XML</td>
+</tr>
+<tr>
+<td><code>--family</code> / <code>--device</code> / <code>--circuit</code></td>
+<td>Table 1</td>
+<td>Device and design name (<code>--circuit</code> is the design name, auto-filled by the orchestrator at L130)</td>
+</tr>
+<tr>
+<td><code>--settings_file</code></td>
+<td>Table 1</td>
+<td>PNR settings file</td>
+</tr>
+<tr>
+<td><code>--verbose</code></td>
+<td>Table 1</td>
+<td>Verbose output</td>
+</tr>
+<tr>
+<td><code>--route</code></td>
+<td>Table 1</td>
+<td>Routing only</td>
+</tr>
+<tr>
+<td><code>--place</code></td>
+<td>Table 1</td>
+<td>Full placement (= global + detailed)</td>
+</tr>
+<tr>
+<td><code>--global_place</code> / <code>--detail_place</code> / <code>--pack</code></td>
+<td>Table 1</td>
+<td>Single-stage runs</td>
+</tr>
+<tr>
+<td><code>--work_dir</code> / <code>--output_dir</code></td>
+<td>Table 2</td>
+<td>Directories (default <code>work_pnr</code> / outflow)</td>
+</tr>
+<tr>
+<td><code>--sdc_file</code></td>
+<td>Table 2</td>
+<td>Conventional SDC; multiple files comma-separated (generated automatically by the orchestrator at L729-733)</td>
+</tr>
+<tr>
+<td><code>--sync_file</code></td>
+<td>Table 2 (L280-283)</td>
+<td>Interface sync file (<code>.interface.csv</code>); mapped automatically from the project XML <code>&lt;inter_file&gt;</code> (efx_run.py L720, L726-727)</td>
+</tr>
+<tr>
+<td><code>--operating_conditions</code></td>
+<td>Table 2</td>
+<td>Timing model; the orchestrator maps <code>--timing_model</code> to it (efx_run_pnr.py L135)</td>
+</tr>
+<tr>
+<td><code>--suppress_info_msgs</code> / <code>--suppress_warning_msgs</code> / <code>--msg_suppression_list</code></td>
+<td>Table 2</td>
+<td>Message control</td>
+</tr>
+<tr>
+<td><code>--max_router_iterations</code></td>
+<td>Table 4</td>
+<td>Maximum router iterations</td>
+</tr>
+<tr>
+<td><code>--load_route</code></td>
+<td>Table 4</td>
+<td>Load an existing routing result</td>
+</tr>
+<tr>
+<td><code>--physical_packing</code></td>
+<td>Table 5</td>
+<td>Early-placement-based physical DSP packing (QoR up, compile time up)</td>
+</tr>
+<tr>
+<td><code>--sta_tclsh</code> / <code>--sta_tclsh_script</code></td>
+<td>(not listed in a table; see §6)</td>
+<td>Injected by efx_run under the sta_tclsh flow (L1326-1330)</td>
+</tr>
+<tr>
+<td><code>--vdb_file</code> / <code>--blif_file</code></td>
+<td>(not listed)</td>
+<td>Input netlists (selected automatically at efx_run_pnr.py L141-148)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>For the erratum on the element name that mounts SDC files (<code>unified_sdc_file</code> is the correct element name; <code>unified_sdc_filelist</code> does not exist) and the message-ID catalog, see <em>Efinity File Formats: SDC and Report Artifacts</em> §3.4, §6.</p>
+</blockquote>
+<hr />
+<h2 id="5-efx_pgm-complete-bitstream-options-namespace-exception">5. efx_pgm — complete bitstream options (namespace exception)</h2>
+<p><code>efx_pgm.exe</code> (<code>bin\</code>) generates configuration bitstreams (.bit/.hex). <strong>Exception warning: the namespace of <code>efx_pgm_options.xml</code> is <code>http://www.efinixinc.com/enf_proj</code> and its schemaLocation points to <code>enf_proj.xsd</code> (XML L2) — it reuses the project XML schema instead of <code>enf_topt.xsd</code></strong>. This differs from the other two tools (<code>enf_topt</code>); in practice it means pgm parameters are isomorphic to the project XML <code>&lt;bitstream_generation&gt;/&lt;param&gt;</code>, and the orchestrator passes them through directly as <code>&lt;param name value&gt;</code> (efx_run.py L847-867).</p>
+<h3 id="5-1-options-xml-parameters-all-18">5.1 Options XML parameters (all 18)</h3>
+<p>all group (XML L3-19):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mode</code></td>
+<td>e_option</td>
+<td>active,passive</td>
+<td>active</td>
+<td>❌</td>
+<td>Configuration mode family (fine-grained modes such as JTAG are handled at the programming-script layer)</td>
+</tr>
+<tr>
+<td><code>--width</code></td>
+<td>e_option</td>
+<td>1,2,4,8,16,32</td>
+<td>1</td>
+<td>❌</td>
+<td>Configuration data width</td>
+</tr>
+<tr>
+<td><code>--cold_boot</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>off</td>
+<td>✅</td>
+<td>Cold boot mode</td>
+</tr>
+<tr>
+<td><code>--cascade</code></td>
+<td>e_option</td>
+<td>off,cascade_first_device,cascade_chained_device</td>
+<td>off</td>
+<td>✅</td>
+<td>Multi-device cascade role</td>
+</tr>
+<tr>
+<td><code>--enable_roms</code></td>
+<td>e_option</td>
+<td>on,off,smart</td>
+<td>smart</td>
+<td>❌</td>
+<td>Enable user-RAM initialization memories; smart = automatic by content</td>
+</tr>
+<tr>
+<td><code>--spi_low_power_mode</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>on</td>
+<td>❌</td>
+<td>Put SPI flash into low-power mode after programming</td>
+</tr>
+<tr>
+<td><code>--io_weak_pullup</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>on</td>
+<td>❌</td>
+<td>Weak IO pull-up during configuration</td>
+</tr>
+<tr>
+<td><code>--oscillator_clock_divider</code></td>
+<td>e_option</td>
+<td>DIV8,DIV4,DIV2,DIV1</td>
+<td>DIV8</td>
+<td>❌</td>
+<td>SPI Active programming clock divider</td>
+</tr>
+<tr>
+<td><code>--bitstream_compression</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>on</td>
+<td>❌</td>
+<td>Compress the bitstream</td>
+</tr>
+<tr>
+<td><code>--active_capture_clk_edge</code></td>
+<td>e_option</td>
+<td>posedge,negedge</td>
+<td><strong>posedge</strong></td>
+<td>❌</td>
+<td>SPI Active sampling edge — the all group defaults to posedge, <strong>the Titanium group overrides it to negedge</strong> (L23, §9.3; setting it back to posedge breaks SPI Active configuration)</td>
+</tr>
+<tr>
+<td><code>--release_tri_then_reset</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>on</td>
+<td>❌</td>
+<td>Release IO tri-state before reset when entering user mode</td>
+</tr>
+<tr>
+<td><code>--generate_bit</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>on</td>
+<td>✅</td>
+<td>Generate .bit</td>
+</tr>
+<tr>
+<td><code>--generate_bitbin</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>off</td>
+<td>✅</td>
+<td>Generate .bit.bin</td>
+</tr>
+<tr>
+<td><code>--generate_hex</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>on</td>
+<td>✅</td>
+<td>Generate .hex</td>
+</tr>
+<tr>
+<td><code>--generate_hexbin</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>off</td>
+<td>✅</td>
+<td>Generate .hex.bin</td>
+</tr>
+</tbody>
+</table>
+<p>Titanium group (XML L20-24, details in §9.3):</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>XML-only?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--enable_external_master_clock</code></td>
+<td>e_bool</td>
+<td>on,off</td>
+<td>off</td>
+<td>❌</td>
+<td>SPI Active uses an external master clock</td>
+</tr>
+<tr>
+<td><code>--jtag_usercode</code></td>
+<td>e_string</td>
+<td>32-bit hex</td>
+<td>0xFFFFFFFF</td>
+<td>❌</td>
+<td>JTAG USERCODE register value</td>
+</tr>
+<tr>
+<td><code>--active_capture_clk_edge</code></td>
+<td>e_option</td>
+<td>posedge,negedge</td>
+<td><strong>negedge</strong> (overrides the all group)</td>
+<td>❌</td>
+<td>Titanium-specific override</td>
+</tr>
+</tbody>
+</table>
+<p>"XML-only?" determination: the three tables of <code>cli-pgm-opts.html</code> (L178-425) do not cover <code>--cold_boot</code>, <code>--cascade</code>, <code>--generate_bit</code>, <code>--generate_bitbin</code>, <code>--generate_hex</code>, <code>--generate_hexbin</code>; the other 12 are all documented. <strong>These six XML-only options are exactly the "artifact generation switches + multi-device configuration" family — common in GUI projects, and in pure CLI pass-through mode they are the only channel to set them.</strong></p>
+<h3 id="5-2-cli-inherent-options-official-document-cli-pgm-opts-html-not-in-the-options-xml">5.2 CLI-inherent options (official document <code>cli-pgm-opts.html</code>, not in the options XML)</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Location in official docs</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--project-xml</code></td>
+<td>Table 1 (L197)</td>
+<td>Project XML</td>
+</tr>
+<tr>
+<td><code>--source</code></td>
+<td>Table 1</td>
+<td>Input LBF/HEX</td>
+</tr>
+<tr>
+<td><code>--periph</code></td>
+<td>Table 1</td>
+<td>Peripheral configuration (the Interface Designer LPF)</td>
+</tr>
+<tr>
+<td><code>--dest</code></td>
+<td>Table 1</td>
+<td>Output HEX path</td>
+</tr>
+<tr>
+<td><code>--query_bitstreams</code></td>
+<td>Table 1</td>
+<td>Query whether the device supports bitstreams (exit 0 = supported / 1 = not supported)</td>
+</tr>
+<tr>
+<td><code>--query_security_version</code></td>
+<td>Table 1</td>
+<td>Query the security layer version</td>
+</tr>
+<tr>
+<td><code>--family</code> / <code>--device</code> / <code>--displayed_device</code></td>
+<td>Table 2</td>
+<td>Device; <code>--displayed_device</code> writes the display name into the bitstream header</td>
+</tr>
+<tr>
+<td><code>--generate_header</code> / <code>--timestamp</code></td>
+<td>Table 2</td>
+<td>Optional bitstream header / timestamp</td>
+</tr>
+<tr>
+<td><code>--settings_file</code> / <code>--interface_designer_settings</code></td>
+<td>Table 2</td>
+<td>Settings file / the Interface Designer <code>*_or.ini</code></td>
+</tr>
+<tr>
+<td><code>--periph_override</code></td>
+<td>Table 2</td>
+<td>CSV overrides for LPF settings</td>
+</tr>
+<tr>
+<td><code>--optimize_bram_data</code></td>
+<td>Table 3</td>
+<td>Optimize BRAM frame data</td>
+</tr>
+<tr>
+<td><code>--enable_crc_check</code> / <code>--enable_pcr_crc_check</code> / <code>--enable_seu_crc_check</code></td>
+<td>Table 3</td>
+<td>Programming-time / PCR / user-mode SEU CRC checks</td>
+</tr>
+<tr>
+<td><code>--enable_cbsel</code> / <code>--enable_remote_update</code> / <code>--remote_update_retries</code> / <code>--flash_addr_2</code> / <code>--flash_addr_3</code> / <code>--flash_addr_4</code></td>
+<td>Table 3</td>
+<td>CBSEL image selection / remote update / multi-image flash addresses</td>
+</tr>
+<tr>
+<td><code>--enable_daisy_chain</code> / <code>--daisy_chain_length</code></td>
+<td>Table 3</td>
+<td>Daisy chain</td>
+</tr>
+<tr>
+<td><code>--four_byte_addressing</code></td>
+<td>Table 3</td>
+<td>SPI Active 4-byte addressing</td>
+</tr>
+<tr>
+<td><code>--seu_mode</code> / <code>--seu_wait_interval</code> / <code>--activate_tri_then_reset</code> / <code>--osc_user_enable</code> / <code>--osc_user_div_select</code></td>
+<td>Table 3</td>
+<td>SEU mode and user-mode oscillator/tri-state control</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Entries flagged "missing default" in older versions of this document — <code>--jtag_usercode</code> (all group) and the <code>--osc_user_*</code> family — have been corrected against the XML: <code>--jtag_usercode</code> is registered only in the Titanium group (XML L22); <code>--osc_user_*</code> exists only at the CLI layer, with no XML registration and therefore no verifiable default.</p>
+</blockquote>
+<h3 id="5-3-programming-is-not-this-tool-s-job">5.3 Programming is not this tool's job</h3>
+<p><code>efx_pgm.exe</code> only produces bitstreams. Programming goes through <code>pgm\bin\efx_pgm\ftdi_program.py</code> (the <code>run_program</code> behind <code>--flow program</code> lands on the same script chain, from efx_run.py L1718, reading <code>bin\hw_tools.json</code>). Details of <code>--scan_usb</code> / <code>--url</code> / <code>-m jtag</code> and related parameters are all in <em>Efinity Helper Tools and Scripts Reference</em> §2.</p>
+<hr />
+<h2 id="6-efx_sta-the-command-line-sta-tcl-shell">6. efx_sta — the command-line STA Tcl shell</h2>
+<p><code>bin\efx_sta.exe</code> is an <strong>STA-only variant binary</strong> of <code>efx_pnr.exe</code>: the two share the same wrapper script <code>scripts\efx_run_pnr.py</code>, switching only the executable name by flow (L112, L325):</p>
+<pre><code class="language-python">exe_name = 'efx_pnr' if not args.sta_tclsh else &quot;efx_sta&quot;   # efx_run_pnr.py L112
+</code></pre>
+<h3 id="6-1-how-to-enter-it-must-go-through-efx_run-and-must-use-prj">6.1 How to enter it (must go through efx_run, and must use --prj)</h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_run.bat --flow sta_tclsh &lt;project&gt;.xml</code></td>
+<td>Official usage: <code>doc\topics\tim-tcl-cli.html</code> L207-216</td>
+</tr>
+<tr>
+<td>The flow sets <code>do_sta_tclsh=True</code>; <strong>without <code>--prj</code> it raises immediately</strong> <code>"The sta_tclsh flow requires --prj to be specified"</code></td>
+<td>efx_run.py L537-539, L1285-1286</td>
+</tr>
+<tr>
+<td>The orchestrator injects <code>--sta_tclsh</code> into the wrapper script; if <code>-t/--tcl_script</code> is given it also injects <code>--sta_tclsh_script &lt;file&gt;</code></td>
+<td>efx_run.py L1326-1330</td>
+</tr>
+<tr>
+<td>The sta_tclsh flow <strong>does not write <code>&lt;design&gt;.log</code></strong> (it bypasses the unified logging branch)</td>
+<td>efx_run.py L1968-1971</td>
+</tr>
+<tr>
+<td>The execution point is still <code>run_pnr(args, True)</code>, at the tail of <code>run_flow</code>, mutually exclusive with the other steps</td>
+<td>efx_run.py L2013</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-interactive-and-batch-modes">6.2 Interactive and batch modes</h3>
+<p>Official document (<code>tim-tcl-cli.html</code> L171-179):</p>
+<ul>
+<li><strong>Interactive mode</strong>: <code>efx_run.bat --flow sta_tclsh helloworld.xml</code> — the terminal shows a <code>tclsh</code>-like interactive console where you enter Tcl commands one at a time.</li>
+<li><strong>Batch mode</strong>: <code>efx_run.bat --flow sta_tclsh --tcl_script example_report.tcl helloworld.xml</code> — runs the script and exits.</li>
+<li>Prerequisite: <strong>the design has been fully compiled</strong>; an uncompiled design raises an error (L171-173).</li>
+</ul>
+<h3 id="6-3-capability-boundaries">6.3 Capability boundaries</h3>
+<p>The shell is backed by the Tcl stack under <code>bin\</code> (<code>libtcl.dll</code>, <code>tcl86.dll</code>, <code>libqtimer.dll</code>, <code>libtiming_report_cmds.dll</code>, <code>libsdc_get_cmds.dll</code>, etc., per the bin directory listing). The SDC query commands (<code>get_timing_paths</code> family) and the report command catalog are in <em>Efinity File Formats: SDC and Report Artifacts</em>; EvoVerse's timing diagnosis does not talk to efx_sta directly — it parses the pnr report and then runs the six-category fingerprint engine (<code>sdk/extension/src/toolchain/timingDiagnoser.ts</code>). The full landscape of bin helper tools (including efx_sta's Tcl package loading chain) is in <em>Efinity Helper Tools and Scripts Reference</em> §7.4.</p>
+<hr />
+<h2 id="7-environment-variables-setup-bat-and-efx_skip_pt">7. Environment variables (setup.bat) and EFX_SKIP_PT</h2>
+<h3 id="7-1-the-complete-environment-variable-table-set-by-bin-setup-bat">7.1 The complete environment variable table set by <code>bin\setup.bat</code></h3>
+<p><code>setup.bat</code> was read in full — 60 lines (<code>C:\Efinity\2026.1\bin\setup.bat</code>). Every subprocess (including Adapter-managed build/DesignAPI) must <code>call setup.bat</code> before invoking the vendor interpreter — this layer is exactly what isolates the dual runtime domains of §1.0.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value / rule</th>
+<th>Line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EFINITY_BINPATH</code></td>
+<td><code>%~dp0</code> (the bin directory holding setup.bat, backslash style)</td>
+<td>L3</td>
+</tr>
+<tr>
+<td><code>EFINITY_HOME</code></td>
+<td>One level above bin; <strong>afterwards rewritten to forward slashes (unix style)</strong>: <code>set EFINITY_HOME=%EFINITY_HOME:\=/%</code></td>
+<td>L6, L21</td>
+</tr>
+<tr>
+<td><code>PATH</code> (8 entries prepended)</td>
+<td><code>python311\bin;bin;pgm\bin;debugger\bin;debugger\svf_player\bin;debugger\serdes_debug_tool\bin;scripts;ipm\bin\ip_packager</code></td>
+<td>L17</td>
+</tr>
+<tr>
+<td><code>PYTHONHOME</code></td>
+<td><code>%EFINITY_HOME%\python311</code> — <strong>pins the vendor interpreter; this is exactly why the dual runtime domains must clear it</strong></td>
+<td>L18</td>
+</tr>
+<tr>
+<td><code>EFXPT_HOME</code></td>
+<td><code>%EFINITY_HOME%/pt</code></td>
+<td>L22</td>
+</tr>
+<tr>
+<td><code>EFXPGM_HOME</code></td>
+<td><code>%EFINITY_HOME%/pgm</code></td>
+<td>L23</td>
+</tr>
+<tr>
+<td><code>EFXDBG_HOME</code></td>
+<td><code>%EFINITY_HOME%/debugger</code></td>
+<td>L24</td>
+</tr>
+<tr>
+<td><code>EFXIPM_HOME</code></td>
+<td><code>%EFINITY_HOME%/ipm</code></td>
+<td>L25</td>
+</tr>
+<tr>
+<td><code>EFXSVF_HOME</code></td>
+<td><code>%EFINITY_HOME%/debugger/svf_player</code></td>
+<td>L26</td>
+</tr>
+<tr>
+<td><code>EFXSERDESDBG_HOME</code></td>
+<td><code>%EFINITY_HOME%/debugger/serdes_debug_tool</code></td>
+<td>L27</td>
+</tr>
+<tr>
+<td><code>EFINITY_USER_DIR_INI</code></td>
+<td><code>%LOCALAPPDATA%/efinity/user_dir.ini</code> (user-directory pointer; <code>set_efinity_user_dir_env</code> is also called at efx_run.py startup, L2132)</td>
+<td>L28</td>
+</tr>
+<tr>
+<td><code>QT_LOGGING_CONF</code></td>
+<td><code>bin\lc.ini</code></td>
+<td>L39</td>
+</tr>
+<tr>
+<td><code>QT_PLUGIN_PATH</code></td>
+<td><code>%EFINITY_HOME%/bin</code></td>
+<td>L40</td>
+</tr>
+<tr>
+<td><code>QT_QPA_PLATFORM_PLUGIN_PATH</code></td>
+<td><code>%EFINITY_HOME%/python311/platforms</code></td>
+<td>L41</td>
+</tr>
+<tr>
+<td><code>QTWEBENGINE_CHROMIUM_FLAGS</code></td>
+<td><code>--disable-gpu</code></td>
+<td>L42</td>
+</tr>
+<tr>
+<td><code>TCMALLOC_DISABLE_REPLACEMENT</code></td>
+<td>Set to 1 under ARM64 (the Prism emulation layer), disabling TCMalloc</td>
+<td>L46-48</td>
+</tr>
+</tbody>
+</table>
+<p>Two installation-robustness rules (also from setup.bat, worth writing into CI preflight checks):</p>
+<ul>
+<li><strong>Non-ASCII characters in the installation path → warning</strong> (L9-14); <code>EFINITY_USER_DIR_INI</code> pointing at a non-ASCII path → warning (L30-36). efx_run.py additionally has the hard check <code>check_paths_ascii</code> (L2135).</li>
+<li>Only <code>setup.bat --run</code> does <code>start efinity.exe</code> to launch the GUI; without arguments it just sets the environment variables and returns (L50-56) — scripted calls should use the argument-less form.</li>
+</ul>
+<h3 id="7-2-efx_skip_pt">7.2 EFX_SKIP_PT</h3>
+<p>It appears only in <code>efx_run_pt_unified.py</code> (L127-129):</p>
+<pre><code class="language-python">if os.getenv('EFX_SKIP_PT', '0') != '0':
+    print(&quot;Skipping Interface Designer flow due to EFX_SKIP_PT environment variable&quot;)
+    return PTFlowRunnerStatusCode.WARNING_SKIP
+</code></pre>
+<ul>
+<li>Semantics: set it to any value other than <code>'0'</code> (<code>1</code>, <code>true</code>, <code>yes</code> all work) and the entire PT step is skipped, <strong>with the exit code still 0</strong> (§1.3, WARNING_SKIP = 0).</li>
+<li><strong>EvoVerse position: forbidden on production build paths</strong> (AGENTS.md §7, No Workaround Tools). It is an official debug backdoor for "the interface is frozen, I only want to rerun the backend", but its silent-success behavior lets configuration errors of the "PT should have run but didn't" kind (a missing peri.xml, <code>&lt;inter_file name=""/&gt;</code>) slip past compile checks and explode only at board-level validation. The root-cause fix is always to fix the project configuration, never to set this variable.</li>
+<li>In a normal build it should be unset; CI may add an assertion that <code>EFX_SKIP_PT</code> is not defined.</li>
+</ul>
+<hr />
+<h2 id="8-options-xml-ground-truth-and-the-xml-only-determination-method">8. Options XML ground truth and the XML-only determination method</h2>
+<h3 id="8-1-architectural-differences-among-the-three-options-xmls">8.1 Architectural differences among the three options XMLs</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>namespace</th>
+<th>schema</th>
+<th>Entries (all / family-specific)</th>
+<th>Relationship to the project XML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bin\efx_map_options.xml</code></td>
+<td><code>enf_topt</code></td>
+<td><code>enf_topt.xsd</code></td>
+<td>32 / Trion 2 + Titanium 5</td>
+<td>Values written by the orchestrator into <code>&lt;synthesis&gt;/&lt;param&gt;</code> and read back</td>
+</tr>
+<tr>
+<td><code>bin\efx_pnr_options.xml</code></td>
+<td><code>enf_topt</code></td>
+<td><code>enf_topt.xsd</code></td>
+<td>5 / Titanium 1 + TitaniumX 1</td>
+<td>Values written into <code>&lt;place_and_route&gt;/&lt;param&gt;</code> (the <code>qp_options=</code> merge mechanism, efx_run.py L813-840)</td>
+</tr>
+<tr>
+<td><code>bin\efx_pgm_options.xml</code></td>
+<td><strong><code>enf_proj</code> (exception)</strong></td>
+<td><strong><code>enf_proj.xsd</code></strong></td>
+<td>15 / Titanium 3</td>
+<td>Isomorphic to <code>&lt;bitstream_generation&gt;/&lt;param&gt;</code>, passed through directly</td>
+</tr>
+</tbody>
+</table>
+<p>The option element structure is uniform across the three files:</p>
+<pre><code class="language-xml">&lt;efx:option name=&quot;--mode&quot; value=&quot;speed,area,cong,power,speed2,area2&quot; default=&quot;speed&quot; value_type=&quot;e_option&quot;/&gt;
+</code></pre>
+<ul>
+<li>Four <code>value_type</code> kinds: <code>e_option</code> (enumeration, value = comma-separated legal values), <code>e_integer</code> (<strong>value=<code>min,max</code> is a closed interval</strong>, e.g. <code>--fanout-limit value="0,2000"</code> = 0..2000; special case <code>--seed value="1"</code> a single value), <code>e_bool</code> (value = on,off), <code>e_string</code> (only <code>--jtag_usercode</code>).</li>
+<li><code>options_group</code> groups by <code>family_name</code> + <code>device_name</code>; <strong>a same-named option in a sub-group overrides the all-group default</strong> (the only instance: <code>--active_capture_clk_edge</code> all=posedge → Titanium=negedge).</li>
+<li>Family-specific options are legal only for that family: passing a Titanium-group option to a Trion project is rejected by the tool.</li>
+</ul>
+<h3 id="8-2-how-to-determine-xml-only-options-without-running-help">8.2 How to determine XML-only options (without running --help)</h3>
+<p>The steps used to determine the "XML-only?" column of this document, reusable for future version upgrades:</p>
+<ol>
+<li>Read <code>bin\efx_*_options.xml</code> for all registered options (source of truth: name / default / legal values).</li>
+<li>The matching official CLI documentation page (DITA-generated; the body starts around L168, earlier lines are navigation boilerplate):</li>
+<li><code>doc\topics\cli-map-opts.html</code> (Table 1 Synthesis Options, from L178)</li>
+<li><code>doc\topics\cli-pnr-opts.html</code> (Table 1-5, L178-365)</li>
+<li><code>doc\topics\cli-pgm-opts.html</code> (Table 1-3, L178-425)</li>
+<li>Present in XML but absent from the HTML tables → <strong>XML-only</strong>: not shown by <code>--help</code>, settable only via <code>--opt name=value</code> pass-through or a project XML param.</li>
+<li>Present in HTML but absent from XML → a CLI-inherent parameter (§3.3 / §4.2 / §5.2), generated automatically by the orchestrator or not stored in the project XML.</li>
+</ol>
+<p>The complete 2026.1 XML-only set (marked table by table in this document):</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>XML-only options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>efx_map</td>
+<td>23 entries in the all group (those marked ✅ in §3.1) + 2 Trion + 5 Titanium</td>
+</tr>
+<tr>
+<td>efx_pnr</td>
+<td><code>--optimization_level</code>, <code>--placer_effort_level</code>, <code>--packing_level</code></td>
+</tr>
+<tr>
+<td>efx_pgm</td>
+<td><code>--cold_boot</code>, <code>--cascade</code>, <code>--generate_bit</code>, <code>--generate_bitbin</code>, <code>--generate_hex</code>, <code>--generate_hexbin</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-3-the-two-layer-validation-split-between-efx_run-py-and-the-options-xmls">8.3 The two-layer validation split between efx_run.py and the options XMLs</h3>
+<ul>
+<li><strong>Orchestration layer</strong> (efx_run.py <code>parse_project_file</code>): does existence checks and deduplication only (<code>option_exists</code>), <strong>never consumes <code>value_type</code></strong> (read at L802-803 and discarded) — type legality is validated by the tool binaries themselves. This conclusion matches <em>Efinity XML Project File Schema Reference</em>.</li>
+<li><strong>Tool layer</strong> (efx_map/efx_pnr/efx_pgm): validates enumerations/ranges against the options XML; an illegal value errors out immediately (exit ≠ 0 → converged to exit 1 by efx_run).</li>
+<li><strong>Empty-name truth check</strong>: when <code>elem.get('name')</code> is falsy the orchestrator skips option generation (L726) — <code>&lt;efx:inter_file name=""/&gt;</code> generates no <code>sync_file=</code> and raises no "empty name" error; the error is deferred until pnr cannot find the interface file. This is the source-level evidence for AGENTS.md §7's "an empty <code>&lt;efx:inter_file&gt;</code> is a configuration bug".</li>
+</ul>
+<hr />
+<h2 id="9-key-titanium-device-settings-retained-chapter">9. Key Titanium device settings (retained chapter)</h2>
+<p>A summary of Titanium-family settings that differ from the generic defaults, or are family-specific, across the four tools.</p>
+<h3 id="9-1-efx_map-xml-l41-47">9.1 efx_map (XML L41-47)</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Generic default</th>
+<th>Titanium default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--dsp-input-regs-packing</code></td>
+<td>N/A</td>
+<td><code>1</code> (on)</td>
+<td>DSP input register packing</td>
+</tr>
+<tr>
+<td><code>--dsp-output-regs-packing</code></td>
+<td>N/A</td>
+<td><code>1</code> (on)</td>
+<td>DSP output register packing</td>
+</tr>
+<tr>
+<td><code>--dsp-mac-packing</code></td>
+<td>N/A</td>
+<td><code>1</code> (on)</td>
+<td>DSP MAC packing</td>
+</tr>
+<tr>
+<td><code>--insert-carry-skip</code></td>
+<td>N/A</td>
+<td><code>0</code> (off)</td>
+<td>Carry-skip chains</td>
+</tr>
+<tr>
+<td><code>--pack-luts-to-comb4</code></td>
+<td>N/A</td>
+<td><code>0</code> (off)</td>
+<td>LUT packing into Comb4</td>
+</tr>
+</tbody>
+</table>
+<p>Keep the three DSP packing options at 1 (on) — turning them off costs DSP utilization; <code>--retiming 2</code> (default) <strong>only redistributes existing registers and cannot create new ones</strong> — pipeline stages must be written by hand.</p>
+<h3 id="9-2-efx_pnr-xml-l10-12">9.2 efx_pnr (XML L10-12)</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Generic default</th>
+<th>Titanium default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--beneficial_skew</code></td>
+<td>N/A</td>
+<td><code>on</code> (on)</td>
+<td>Beneficial clock skew; <strong>when chasing hold violations, first check whether it introduced them</strong>, then touch the constraints</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-3-efx_pgm-xml-l13-l20-24">9.3 efx_pgm (XML L13, L20-24)</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>all-group default</th>
+<th>Titanium default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--active_capture_clk_edge</code></td>
+<td><code>posedge</code></td>
+<td><code>negedge</code> (override)</td>
+<td><strong>Must stay at negedge</strong>; setting it back to posedge breaks SPI Active configuration</td>
+</tr>
+<tr>
+<td><code>--enable_external_master_clock</code></td>
+<td>N/A</td>
+<td><code>off</code></td>
+<td>SPI Active external master clock</td>
+</tr>
+<tr>
+<td><code>--jtag_usercode</code></td>
+<td>N/A</td>
+<td><code>0xFFFFFFFF</code></td>
+<td>JTAG USERCODE</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-4-efx_run-defaults-and-the-timing-model-hard-check">9.4 efx_run defaults and the timing-model hard check</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default family</td>
+<td><code>Titanium</code> (L309-311)</td>
+<td>efx_run.py</td>
+</tr>
+<tr>
+<td>Default device</td>
+<td><code>Ti60F225</code> (L317)</td>
+<td>efx_run.py</td>
+</tr>
+<tr>
+<td>Timing model</td>
+<td>On Ti35/Ti60, <code>I4</code>/<code>I4L</code> are <strong>deprecated</strong>; passing one raises <code>ValueError</code> → exit 1; use <code>C4</code>/<code>C5</code> instead</td>
+<td>L557-567</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-5-titaniumx-efx_pnr-xml-l13-15">9.5 TitaniumX (efx_pnr, XML L13-15)</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--packing_level</code></td>
+<td><code>L1</code></td>
+<td>Legal values NONE,MINIMAL,BASIC,L1,L2,L3</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-cross-references-and-official-documentation">10. Cross-references and official documentation</h2>
+<h3 id="10-1-evoverse-knowledge-base-sibling-volumes-everything-this-volume-omits-lives-there">10.1 EvoVerse knowledge base sibling volumes (everything this volume omits lives there)</h3>
+<table>
+<thead>
+<tr>
+<th>Volume</th>
+<th>Scope boundary</th>
+<th>Referenced from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Efinity DesignAPI Reference</em></td>
+<td>The nine-step flow of <code>efx_run_pt_unified.py</code>, the full three-state semantics of PTFlowRunnerStatusCode, the DesignAPI facade classes</td>
+<td>§1.3, §1.4</td>
+</tr>
+<tr>
+<td><em>Efinity File Formats: SDC and Report Artifacts</em></td>
+<td>The full SDC command set, the <code>unified_sdc_file</code> element-name erratum, <code>--sync_file</code> belonging to efx_pnr, tool report XSDs, the message-ID catalog</td>
+<td>§4.2</td>
+</tr>
+<tr>
+<td><em>Efinity Helper Tools and Scripts Reference</em></td>
+<td>ftdi_program.py's eight programming modes, flashshell, flash loader bitstreams, every helper EXE under <code>bin\</code>, efx_sta's Tcl package loading chain</td>
+<td>§1.1, §5.3, §6.3</td>
+</tr>
+<tr>
+<td><em>Efinity XML Project File Schema Reference</em></td>
+<td>The complete <code>enf_proj.xsd</code> element set, orchestrator-layer behavior for empty <code>&lt;inter_file&gt;</code> names and <code>value_type</code>, official examples</td>
+<td>§2.4, §8.3</td>
+</tr>
+<tr>
+<td><em>Efinity Design Optimization</em> / <em>Efinity Design Rules</em> / <em>Efinity ISF Syntax Reference</em></td>
+<td>Optimization strategy and timing closure / RTL coding and CDC / ISF syntax</td>
+<td>Strategic meaning of the §9 parameters</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-2-documentation-shipped-inside-the-official-installation">10.2 Documentation shipped inside the official installation</h3>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLI option topic pages (the determination basis for §3-§5 of this document)</td>
+<td><code>C:\Efinity\2026.1\doc\topics\cli-{map,pnr,pgm}-opts.html</code></td>
+</tr>
+<tr>
+<td>efx_run usage and flow tables</td>
+<td><code>doc\topics\cli-run-flow.html</code>, <code>cli-flow-option.html</code></td>
+</tr>
+<tr>
+<td>STA Tcl Console</td>
+<td><code>doc\topics\tim-tcl-cli.html</code></td>
+</tr>
+<tr>
+<td>Options XML schemas</td>
+<td><code>bin\enf_topt.xsd</code> (for map/pnr), <code>bin\enf_proj.xsd</code> (reused by pgm, see §5)</td>
+</tr>
+<tr>
+<td>In-depth PDFs (synthesis / timing closure / user guide / programming)</td>
+<td><code>doc\pdf\efinity-synthesis.pdf</code>, <code>efinity-timing-closure.pdf</code>, <code>efinity-ug.pdf</code>, <code>efinity-pgm.pdf</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Maintained by the EvoVerse SDK knowledge base; evidence is current as of the Efinity 2026.1 installation state (read on 2026-09-25). When upgrading the toolchain version, rerun the options-XML comparison per the §8.2 procedure to revise incrementally.</em></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

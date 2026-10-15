@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Debugger 参考</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>片上调试工具入口与操作边界。</span>
+<code>efinity/Efinity-Debugger参考.md</code>
+<a href="../../../efinity/Efinity-Debugger参考.md">Markdown 源文件</a></p>
+<h1>Efinity Debugger 参考</h1></header>
+<main class="article"><h1 id="efinity-debugger-参考">Efinity Debugger 参考</h1>
+<blockquote>
+<p>版本: v1.0 | 基于 Efinity 2026.1 (HLP-EFN-DBG-v2.0)</p>
+</blockquote>
+<h2 id="1-debugger-概述">1. Debugger 概述</h2>
+<p>Efinity Debugger 是基于 JTAG 接口的 FPGA 硬件调试工具，提供两个透视图（Perspective）：</p>
+<ul>
+<li><strong>Profile Editor Perspective</strong>：手动配置调试核心（Debug Core）的界面</li>
+<li><strong>Debug Perspective</strong>：运行时观察探针信号值的界面</li>
+</ul>
+<p>Debugger 包含两种调试核心：
+- <strong>Virtual I/O (VIO)</strong>：支持探针输入和输出，模拟虚拟 IO
+- <strong>Logic Analyzer (LA)</strong>：采样和捕获内部信号波形</p>
+<p><strong>最低频率要求：</strong> 调试核心的最低工作频率为 2 倍的 JTAG TCK 频率。</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\hlp-dbg-intro.html</code></p>
+<hr />
+<h2 id="2-调试工作流程">2. 调试工作流程</h2>
+<ol>
+<li>创建 debug profile（VIO 和/或 LA 核心）</li>
+<li>生成 debug design file 并添加到项目</li>
+<li>编译</li>
+<li>烧录 FPGA</li>
+<li>运行 Debugger GUI 观察探针值</li>
+</ol>
+<hr />
+<h2 id="3-debug-profile-json-格式">3. Debug Profile JSON 格式</h2>
+<p>Debug Profile 是一个 JSON 文件，定义调试核心的配置。关键结构：</p>
+<pre><code class="language-json">{
+    &quot;debug_cores&quot;: [
+        {
+            &quot;name&quot;: &quot;vio0&quot;,
+            &quot;type&quot;: &quot;vio&quot;,
+            &quot;uuid&quot;: &quot;b60ce617846c46eb85bdb96be34cc1b0&quot;,
+            &quot;probes&quot;: [
+                {&quot;name&quot;: &quot;counter&quot;, &quot;width&quot;: 29, &quot;init&quot;: null},
+                {&quot;name&quot;: &quot;vio_reverse&quot;, &quot;width&quot;: 1, &quot;init&quot;: &quot;0x0&quot;}
+            ]
+        },
+        {
+            &quot;name&quot;: &quot;la0&quot;,
+            &quot;type&quot;: &quot;la&quot;,
+            &quot;uuid&quot;: &quot;55ccee6a763c4221a397cfa01e4fa0b2&quot;,
+            &quot;probes&quot;: [
+                {&quot;name&quot;: &quot;counter&quot;, &quot;width&quot;: 29, &quot;probe_type&quot;: 1}
+            ],
+            &quot;data_depth&quot;: 1024,
+            &quot;trigin_en&quot;: false,
+            &quot;trigout_en&quot;: false,
+            &quot;capture_control&quot;: false,
+            &quot;input_pipeline&quot;: 1,
+            &quot;auto_inserted&quot;: false
+        }
+    ],
+    &quot;session&quot;: {&quot;debug_widget&quot;: [], &quot;wizard&quot;: {}},
+    &quot;jtag_user&quot;: &quot;USER1&quot;
+}
+</code></pre>
+<p><strong>关键字段：</strong>
+| 字段 | 说明 |
+|------|------|
+| <code>debug_cores</code> | 调试核心数组，可包含多个 VIO 和 LA |
+| <code>type</code> | 核心类型：<code>"vio"</code> 或 <code>"la"</code> |
+| <code>uuid</code> | 128 位唯一标识符，用于 JTAG 路由 |
+| <code>probes[].probe_type</code> | LA 探针类型：1=Data and Trigger |
+| <code>data_depth</code> | LA 缓冲区深度（使用片上 RAM）|
+| <code>trigin_en</code> / <code>trigout_en</code> | 触发输入/输出使能 |
+| <code>capture_control</code> | 捕获控制使能（消耗更多资源）|
+| <code>auto_inserted</code> | 是否由 Debug Wizard 自动生成 |
+| <code>jtag_user</code> | JTAG USER TAP：<code>"USER1"</code> 或 <code>"USER2"</code> |</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\examples\helloworld-dbg_GOLDEN\dbg_manual.json</code></p>
+<hr />
+<h2 id="4-vio-debug-core">4. VIO Debug Core</h2>
+<p><strong>用途：</strong> 在调试过程中驱动内部信号（输出探针）和观察内部信号（输入探针）。</p>
+<p><strong>参数：</strong>
+| 参数 | 说明 |
+|------|------|
+| <code>NUM_PROBE_IN</code> | 输入探针数量（从 FPGA 读取的信号）|
+| <code>NUM_PROBE_OUT</code> | 输出探针数量（驱动 FPGA 的信号）|
+| <code>PROBE_INn_WIDTH</code> | 第 n 个输入探针的位宽 |
+| <code>PROBE_OUTn_WIDTH</code> | 第 n 个输出探针的位宽 |
+| <code>UUID</code> | 128 位唯一标识 |
+| <strong>数据深度</strong> | 4096 |</p>
+<p><strong>探针类型：</strong>
+- Probe Inputs (probe_in): 从设计读取信号值
+- Probe Outputs (probe_out): 向设计写入信号值（可设置初始值 <code>init</code>）</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-vio.html</code></p>
+<hr />
+<h2 id="5-la-debug-core">5. LA Debug Core</h2>
+<p><strong>用途：</strong> 捕获内部信号的时序波形，类似逻辑分析仪。</p>
+<p><strong>参数：</strong>
+| 参数 | 说明 |
+|------|------|
+| Buffer Depth | 缓冲区深度（4K、8K、16K 等），使用片上 RAM |
+| input_pipeline | 输入流水线级数（0-2）|
+| Capture Control | 启用后可在 Debug Perspective 的 Capture Setup 中切换捕获模式 |
+| Trigger Enable | 支持 triggers 来启动/停止捕获 |</p>
+<p><strong>探针类型 (probe_type)：</strong>
+| 值 | 类型 | 说明 |
+|----|------|------|
+| 1 | Data and Trigger | 数据 + 触发 |
+| 2 | Data Only | 仅数据 |
+| 3 | Trigger Only | 仅触发 |</p>
+<p><strong>捕获模式（Capture Mode）：</strong>
+- <strong>Immediately</strong>: 下载 bitstream 后立即开始捕获
+- <strong>Wait for Trigger</strong>: 等待触发条件满足后开始捕获</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-la.html</code></p>
+<hr />
+<h2 id="6-debug-wizard-调试向导">6. Debug Wizard（调试向导）</h2>
+<p><strong>用途：</strong> 为 Logic Analyzer 提供自动化的添加流程。适用于多层级复杂设计。</p>
+<p><strong>工作流程：</strong>
+1. 启动 Debug Wizard
+2. 选择 buffer depth（影响 RAM 使用量）
+3. 可选启用 Capture Control
+4. 选择 JTAG User TAP（USER1/USER2）
+5. 选择信号源：Elaborated Netlist 或 Post-Map 网表
+6. 选择信号并通过箭头添加（支持正则过滤）
+7. 指定每个信号的探针类型（Data+Trigger / Data Only / Trigger Only）
+8. 点击 Next，向导自动生成核心并连接
+9. 开启 Enable Auto Instantiation
+10. 点击 Finish</p>
+<p><strong>生成文件：</strong>
+| 文件 | 说明 |
+|------|------|
+| <code>debug_profile.wizard.json</code> | 向导创建的 debug profile |
+| <code>debug_TEMPLATE.v</code> | 调试模板（含模块实例化）|
+| <code>debug_top.v</code> | 调试核心的 RTL 逻辑 |</p>
+<p><strong>注意：</strong>
+- 需要 JTAG_USER1 或 JTAG_USER2 资源，如果该资源被 Debugger 占用，其他 JTAG 功能将无法使用
+- 时钟域为 "Undefined" 的信号在 post-map 网表中无时钟驱动，需手动添加 LA 核心</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-wizard.html</code></p>
+<hr />
+<h2 id="7-mark_debug-综合属性">7. mark_debug 综合属性</h2>
+<p><strong>用途：</strong> 在 RTL 中标记需要调试的信号，综合工具自动生成包含这些信号的 debug profile。</p>
+<p><strong>Verilog 用法：</strong></p>
+<pre><code class="language-verilog">(* mark_debug = &quot;true&quot; *) wire [7:0] debug_signal;
+// 或
+(* mark_debug = &quot;1&quot; *) reg debug_reg;
+</code></pre>
+<p><strong>VHDL 用法：</strong></p>
+<pre><code class="language-vhdl">attribute mark_debug : string;
+attribute mark_debug of debug_signal : signal is &quot;true&quot;;
+</code></pre>
+<p><strong>综合选项：</strong>
+- 启用：<code>efx_map --enable-mark-debug</code>（或 GUI 中开启 synthesis option）
+- 综合完成后生成 <code>debug_profile.mark_debug.json</code>
+- 可在 Debug Wizard 中导入该 profile</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-mark-debug.html</code></p>
+<hr />
+<h2 id="8-debugger-auto-instantiation">8. Debugger Auto Instantiation</h2>
+<p><strong>项目 XML 配置 (<code>&lt;efx:debugger&gt;</code> 段)：</strong></p>
+<pre><code class="language-xml">&lt;efx:debugger&gt;
+    &lt;efx:profile name=&quot;profile_path&quot;/&gt;
+    &lt;efx:auto_instantiation name=&quot;&quot;/&gt;
+    &lt;efx:work_dir name=&quot;work_directory&quot;/&gt;
+&lt;/efx:debugger&gt;
+</code></pre>
+<p><strong>参数：</strong>
+| 参数 | 说明 |
+|------|------|
+| <code>profile</code> | debug profile JSON 文件路径 |
+| <code>auto_instantiation</code> | 是否启用自动实例化 |
+| <code>work_dir</code> | 调试核心工作目录 |</p>
+<p><strong>在 GUI 中：</strong> Project Editor → Debugger tab → Debugger Auto Instantiation 开关</p>
+<p><strong>CLI 触发条件（efx_run.py 源码验证，2026.1）：</strong> <code>efx_run --flow compile</code> 调度 <code>run_debugger_auto_instantation</code> 前有两道静默检查（<code>check_and_set_auto_dbg_mark_dbg</code>）：</p>
+<ol>
+<li>XML <code>profile</code> 参数指向的文件<strong>必须真实存在</strong>（<code>os.path.isfile</code>，相对 CWD=工程根）——不存在时 debug 流程<strong>整个静默跳过，日志无任何警告</strong>，编译照常"成功"</li>
+<li>mark_debug 自动生成流程（<code>--mark_debug</code> 模式）仅当 <code>profile</code> 值<strong>精确等于</strong> <code>outflow/debug_profile.mark_debug.json</code>（<code>args.output_dir + "/debug_profile.mark_debug.json"</code> 字符串匹配，须写相对路径）时激活；此时 <code>efx_run_dbg.py</code> 用 <code>DbgWizard.gen_debug_v_from_profile</code> 从综合生成的 mark_debug profile 自动生成 debug core RTL</li>
+</ol>
+<p>正确的最小 XML 配置（mark_debug 流程）：</p>
+<pre><code class="language-xml">&lt;efx:debugger&gt;
+    &lt;efx:param name=&quot;profile&quot; value=&quot;outflow/debug_profile.mark_debug.json&quot; value_type=&quot;e_string&quot;/&gt;
+    &lt;efx:param name=&quot;auto_instantiation&quot; value=&quot;on&quot; value_type=&quot;e_bool&quot;/&gt;
+    &lt;efx:param name=&quot;work_dir&quot; value=&quot;work_dbg&quot; value_type=&quot;e_string&quot;/&gt;
+&lt;/efx:debugger&gt;
+</code></pre>
+<p><strong>验证日期:</strong> 2026-08-16（ws-e1-sys：profile 误指不存在路径 → 编译静默跳过 debug、work_dbg/ 不生成；改指 outflow 路径后修复）</p>
+<p><strong>首次编译的坑（2026-08-16 debug_flow_test 实测）：</strong> profile 文件尚不存在时就以 <code>auto=on + profile=outflow/debug_profile.mark_debug.json</code> 启动 compile，<strong>整个编译以 exit 1 崩溃</strong>（不是静默跳过）——<code>An exception occurred: No such file: outflow\&lt;design&gt;.elab.vdb</code>。机制：
+- <code>efx_run.py:1249-1251</code>：map 步骤仅在 flow 启动时 <code>args.debug_profile</code> 已设置（即 profile 文件当时已存在）才追加 <code>--opt write-premap-module=&lt;design&gt;.elab.vdb</code> 写出 elab 库
+- <code>efx_run_dbg.py:291-292</code>：mark_debug（pre-map）profile 必须读 <code>outflow/&lt;design&gt;.elab.vdb</code> 做 VDB 合并
+- 而同一轮 map 又会因 <code>enable-mark-debug</code> 把 mark_debug profile 生成出来并触发 debug 步骤 → 步骤找不到 elab.vdb 崩溃</p>
+<p><strong>正确的两次编译顺序（必须遵守）：</strong> build #1 用 <code>auto=off</code>（此时 <code>enable-mark-debug</code> 收集信号生成 profile JSON，无 debug 步骤）→ build #2 才 <code>auto=on</code>（flow 启动时 profile 已存在 → map 写 elab.vdb → efx_run_dbg 合并成功）。工具侧（SDK adapter preview 校验 + SDK saveBuildOptions）已按此收紧：auto=on 前置要求 profile 文件存在。</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\scripts\efx_run.py:129-145</code>（check_and_set_auto_dbg_mark_dbg）、<code>efx_run.py:1650-1702</code>（run_debugger_auto_instantation）、<code>efx_run.py:1249-1251</code>（write-premap-module 条件）、<code>efx_run_dbg.py:291-292</code>（elab.vdb 依赖）</p>
+<hr />
+<h2 id="9-命令行脚本">9. 命令行脚本</h2>
+<p><strong>efx_run_dbg.py —— Debugger 自动实例化流程：</strong>
+- <code>compile_dbg_core()</code> — 编译调试核心
+- <code>merge_vdb()</code> — 合并 VDB 文件
+- <code>insert_jtag()</code> — 插入 JTAG user tap</p>
+<p><strong>使用方式：</strong></p>
+<pre><code>efx_run.bat --flow compile  # 自动在编译中包含 debug 核心
+</code></pre>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\scripts\efx_run_dbg.py</code></p>
+<hr />
+<h2 id="10-debugger-选项">10. Debugger 选项</h2>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Allow .bit/.hex for all configuration modes</td>
+<td>允许在 JTAG 模式下使用 .hex 文件烧录（Trion 遗留支持）</td>
+</tr>
+<tr>
+<td>Always launch new waveform viewer window</td>
+<td>每次启动 debug session 时打开新波形窗口</td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-options.html</code></p>
+<hr />
+<h2 id="11-并发调试-concurrent-debugging">11. 并发调试 (Concurrent Debugging)</h2>
+<ul>
+<li>可以打开多个 debug 窗口，同时连接到不同的 JTAG USER TAP 接口</li>
+<li>需要使用 Hardware Server 连接</li>
+<li>通过 Tools → Open Debugger 或多次点击 Debugger 图标打开多个窗口</li>
+</ul>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-concurrent.html</code></p>
+<hr />
+<h2 id="12-debug-core-自动生成的-rtl-结构">12. Debug Core 自动生成的 RTL 结构</h2>
+<p>以 <code>helloworld-dbg_GOLDEN\dbg_manual_top.v</code> 为例：</p>
+<pre><code class="language-verilog">module dbg_manual_edb_top (
+    // JTAG boundary scan 端口
+    input  bscan_CAPTURE, bscan_DRCK, bscan_RESET, bscan_RUNTEST,
+    input  bscan_SEL, bscan_SHIFT, bscan_TCK, bscan_TDI, bscan_TMS,
+    input  bscan_UPDATE, output bscan_TDO,
+    // VIO 时钟和探针
+    input  vio0_clk, input [28:0] vio0_counter,
+    input [3:0] vio0_raddr, input [5:0] vio0_led,
+    output vio0_vio_reverse, output vio0_vio_mux_sel,
+    output [3:0] vio0_vio_maddr,
+    // LA 时钟和探针
+    input  la0_clk, input [28:0] la0_counter,
+    input [3:0] la0_raddr, input [5:0] la0_led
+);
+    // Debug Hub（JTAG 总线转换器）
+    // edb_vio_top 实例化
+    // edb_la_top 实例化
+endmodule
+</code></pre>
+<p><strong>结构层次：</strong></p>
+<pre><code>debug_top.v
+├── Debug Hub (JTAG → 内部总线)
+├── VIO Core (edb_vio_top)
+└── LA Core (edb_la_top)
+</code></pre>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\examples\helloworld-dbg_GOLDEN\dbg_manual_top.v</code></p>
+<hr />
+<h2 id="13-资源使用">13. 资源使用</h2>
+<p>在 Dashboard Results 面板的 Debugger 表中可查看估计的资源使用：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auto Instantiation</td>
+<td>是否开启自动实例化</td>
+</tr>
+<tr>
+<td>Target Netlist</td>
+<td>elaborated 或 post-map</td>
+</tr>
+<tr>
+<td>Flipflops Used</td>
+<td>使用的触发器数量</td>
+</tr>
+<tr>
+<td>Adders Used</td>
+<td>使用的加法器数量</td>
+</tr>
+<tr>
+<td>LUTs Used</td>
+<td>使用的查找表数量</td>
+</tr>
+<tr>
+<td>Memory Blocks Used</td>
+<td>使用的存储块数量</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意：</strong> 资源使用为估计值，仅作参考。</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-resources.html</code></p>
+<hr />
+<h2 id="14-禁用-debug-core">14. 禁用 Debug Core</h2>
+<p>通过 GUI 操作：
+1. 打开 Project Editor
+2. 点击 Debugger tab
+3. 关闭 Debugger Auto Instantiation 选项
+4. 点击 OK
+5. 重新编译</p>
+<p>注意：禁用不会删除磁盘上的 debug profile，可以随时重新启用。</p>
+<p><strong>来源:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-disable.html</code></p>
+<hr />
+<h2 id="15-相关文件索引">15. 相关文件索引</h2>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\</code></td>
+<td>Debugger 安装目录</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\bin\</code></td>
+<td>Debugger 可执行文件</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\doc\topics\</code></td>
+<td>Debugger 文档</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg\</code></td>
+<td>自动调试流程示例</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg_GOLDEN\</code></td>
+<td>手动调试流程示例</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\scripts\efx_run_dbg.py</code></td>
+<td>CLI 调试核心自动实例化脚本</td>
+</tr>
+</tbody>
+</table></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

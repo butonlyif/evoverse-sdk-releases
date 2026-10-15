@@ -1,0 +1,3456 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RK3588 Adapter Design Document</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../rk3588-adapter.html">← Back to RK3588 Adapter</a>
+<span>Version: v2.0.1</span>
+<code>rk3588/adapter-design.md</code>
+<a href="../../../rk3588/adapter-design.md">Markdown source</a></p>
+<h1>RK3588 Adapter Design Document</h1></header>
+<main class="article"><h1 id="rk3588-adapter-design-document">RK3588 Adapter Design Document</h1>
+<blockquote>
+<p><strong>Version</strong>: v2.0.1
+<strong>Updated</strong>: 2026-08-01
+<strong>Status</strong>: In design — includes the detailed FPGA-RK3588 Bridge design; the §8 directory structure is aligned with the Workbench plug-in architecture
+<strong>Audience</strong>: the EvoVerse SDK development team
+<strong>Merge note</strong>: This document originally lived in a standalone <code>RK3588/</code> repository and was merged into the SDK main repository at <code>docs/rk3588/</code> on 2026-08-01. The authoritative code implementation is <code>products/rk3588-adapter/</code>.
+<strong>Related documents</strong>: SDK-ARCHITECTURE-VISION.md, <a href="environment-survey.html">RK3588 Development Environment Survey Report</a>, <a href="dev-env/README.html">development environment scripts</a></p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#ch1">Architecture Positioning</a></li>
+<li><a href="#ch2">VendorAdapter Interface Implementation</a></li>
+<li><a href="#ch3">Build Flow Design</a></li>
+<li><a href="#ch4">Device Tree Generation Design</a></li>
+<li><a href="#ch5">Flashing Flow Design</a></li>
+<li><a href="#ch6">Debug Support</a></li>
+<li><a href="#ch7">Implementation Priorities</a></li>
+<li><a href="#ch8">Directory Structure</a></li>
+<li><a href="#9-adapter-contract-hardening">Adapter Contract Hardening</a></li>
+</ol>
+<hr />
+<p><a id="ch1"></a></p>
+<h2 id="1-architecture-positioning">1. Architecture Positioning</h2>
+<h3 id="1-1-position-in-the-sdk-four-layer-architecture">1.1 Position in the SDK Four-Layer Architecture</h3>
+<p>The RK3588 Adapter sits in <strong>Layer 2: Vendor Adapter</strong>, the adaptation layer between the SDK and the Rockchip toolchain:</p>
+<pre><code class="language-mermaid">block-beta
+    columns 1
+    block:L4
+        L4Title[&quot;&lt;b&gt;Layer 4: AI Intelligence&lt;/b&gt; (vendor-neutral)&lt;br/&gt;timing diagnosis / code generation / build strategy / result analysis&quot;]
+    end
+    space
+    block:L3
+        L3Title[&quot;&lt;b&gt;Layer 3: System Orchestration&lt;/b&gt; (vendor-neutral)&lt;br/&gt;project model / material composition / Jacket / file dependency tracking&quot;]
+    end
+    space
+    block:L2
+        L2Title[&quot;&lt;b&gt;Layer 2: Vendor Adapter&lt;/b&gt; (vendor-specific, pluggable)&quot;]
+        columns 2
+        block:Efinix
+            ETitle[&quot;&lt;b&gt;Efinix Adapter&lt;/b&gt;&lt;br/&gt;(FPGA)&quot;]
+        end
+        block:RK3588
+            RKTitle[&quot;&lt;b&gt;RK3588 Adapter&lt;/b&gt; ← design target of this document&lt;br/&gt;(SoC)&quot;]
+        end
+    end
+    space
+    block:L1
+        L1Title[&quot;&lt;b&gt;Layer 1: Vendor Tools&lt;/b&gt; (never touched, only invoked)&lt;br/&gt;Efinity / arm-gcc / U-Boot / TF-A / Buildroot / rkdeveloptool&quot;]
+    end
+</code></pre>
+<h3 id="1-2-relationship-with-the-efinix-adapter">1.2 Relationship with the Efinix Adapter</h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Efinix Adapter (FPGA)</th>
+<th>RK3588 Adapter (SoC)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hardware description</strong></td>
+<td>Verilog / SystemVerilog + SDC</td>
+<td>Device Tree + Kernel Config</td>
+</tr>
+<tr>
+<td><strong>Build targets</strong></td>
+<td>FPGA bitstream (.bit)</td>
+<td>Bootloader + Kernel + Rootfs</td>
+</tr>
+<tr>
+<td><strong>Toolchain</strong></td>
+<td>Efinity (efx_map/efx_pnr)</td>
+<td>ARM cross-compilation + Buildroot</td>
+</tr>
+<tr>
+<td><strong>Debug interfaces</strong></td>
+<td>JTAG (Efinix Debugger)</td>
+<td>JTAG (DAP) + serial + ADB</td>
+</tr>
+<tr>
+<td><strong>Software runtime</strong></td>
+<td>Bare-metal / FreeRTOS on RISC-V</td>
+<td>Linux on AArch64</td>
+</tr>
+<tr>
+<td><strong>Flashing method</strong></td>
+<td>FTDI Programmer</td>
+<td>eMMC/SD + rkdeveloptool</td>
+</tr>
+<tr>
+<td><strong>Output artifacts</strong></td>
+<td><code>.bit</code> configuration file</td>
+<td><code>update.img</code> firmware package</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key data flows</strong>:</p>
+<pre><code class="language-mermaid">flowchart TD
+    SDK[&quot;SDK Project Model&quot;]
+    SDK --&gt; RK[&quot;&lt;b&gt;RK3588 Adapter&lt;/b&gt;&quot;]
+    RK --&gt; UBoot[&quot;generateProject → configs / patches / build plan&quot;]
+    RK --&gt; TFA[&quot;build → boot-chain artifacts&quot;]
+    RK --&gt; Kernel[&quot;build → Linux Kernel + DTB&quot;]
+    RK --&gt; Rootfs[&quot;build → Rootfs&quot;]
+    RK --&gt; UpdateImg[&quot;package → deployable firmware package&quot;]
+    RK --&gt; Report[&quot;Build Report&lt;br/&gt;(vendor-neutral model)&quot;]
+</code></pre>
+<h3 id="1-3-soc-side-implementation-of-the-bridge-spec">1.3 SoC-Side Implementation of the Bridge Spec</h3>
+<p>When the RK3588 acts as the SoC in a system-level design together with an Efinix FPGA, the Bridge Spec defines the cross-chip interfaces. The FPGA and the RK3588 interconnect over the following four physical interfaces:</p>
+<pre><code class="language-mermaid">block-beta
+    columns 3
+    block:FPGA:1
+        columns 1
+        block:FPGATitle
+            T1[&quot;&lt;b&gt;FPGA Subsystem&lt;/b&gt;&lt;br/&gt;(Efinix Adapter)&quot;]
+        end
+        space
+        F1[&quot;AXI Master\nMSI/MSI-X&quot;]
+        space
+        F2[&quot;Ethernet MAC\nFPGA PHY (internal)&quot;]
+        space
+        F3[&quot;Video Out (CSI-TX)\nVideo In (DSI-RX)&quot;]
+        space
+        F4[&quot;GPIO Controller\nReset/IRQ/Status&quot;]
+    end
+    block:Bridge:1
+        columns 1
+        space
+        BTitle[&quot;&lt;b&gt;Bridge Spec&lt;/b&gt;&quot;]
+        space
+        B1[&quot;PCIe Gen3 x4&lt;br/&gt;◄────────►&quot;]
+        space
+        B2[&quot;GE (RGMII)&lt;br/&gt;◄────────►&quot;]
+        space
+        B3[&quot;MIPI CSI (4-lane)&lt;br/&gt;◄────────►&quot;]
+        space
+        B4[&quot;GPIO&lt;br/&gt;◄────────►&quot;]
+        space
+    end
+    block:SOC:1
+        columns 1
+        block:SOCTitle
+            T2[&quot;&lt;b&gt;SoC Subsystem&lt;/b&gt;&lt;br/&gt;(RK3588 Adapter)&quot;]
+        end
+        space
+        S1[&quot;PCIe RC (Root)\nMSI/MSI-X interrupts\nDMA Controller&quot;]
+        space
+        S2[&quot;GMAC Controller\nMDIO Bus&quot;]
+        space
+        S3[&quot;VICAP\nVOP (DSI 4-lane)&quot;]
+        space
+        S4[&quot;Any free GPIO bank\npinctrl subsystem&quot;]
+    end
+</code></pre>
+<h4 id="1-3-1-bridge-physical-interface-overview">1.3.1 Bridge Physical Interface Overview</h4>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Purpose</th>
+<th>RK3588 resources</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PCIe Gen3 x4</strong></td>
+<td>High-speed data channel</td>
+<td>PCIe3x4 PHY, MSI/MSI-X interrupts</td>
+<td>BAR space is decided by the FPGA; the RK3588 acts as Root Complex</td>
+</tr>
+<tr>
+<td><strong>GE Ethernet (RGMII)</strong></td>
+<td>Network / control plane</td>
+<td>GMAC controller, MDIO</td>
+<td>The PHY may be implemented inside the FPGA and requires MDIO configuration</td>
+</tr>
+<tr>
+<td><strong>MIPI CSI / DSI</strong></td>
+<td>Video streams</td>
+<td>VICAP / VOP</td>
+<td>CSI 4-lane input, DSI 4-lane output</td>
+</tr>
+<tr>
+<td><strong>GPIO</strong></td>
+<td>Low-speed control signals</td>
+<td>Any free GPIO bank</td>
+<td>FPGA reset, interrupts, mode selection, status indication</td>
+</tr>
+</tbody>
+</table>
+<h4 id="1-3-2-pcie-interface-details">1.3.2 PCIe Interface Details</h4>
+<p>The RK3588 has a built-in PCIe Gen3 x4 controller, usually acting as <strong>Root Complex (RC)</strong>, with the FPGA as <strong>Endpoint (EP)</strong>:</p>
+<ul>
+<li><strong>Lane configuration</strong>: PCIe Gen3 x4, theoretical bandwidth ~4 GB/s (~1 GB/s per lane)</li>
+<li><strong>BAR space</strong>: the FPGA EP exposes BAR0~BAR5, with a typical allocation:</li>
+<li>BAR0: 32-bit non-prefetchable memory for control registers (e.g., 1 MB)</li>
+<li>BAR2: 64-bit prefetchable memory for DMA buffers (e.g., 256 MB)</li>
+<li><strong>Interrupts</strong>: use MSI/MSI-X, so no extra GPIO interrupt line is needed</li>
+<li>MSI: the FPGA can be allocated up to 32 MSI vectors</li>
+<li>MSI-X: supports a per-vector independent address, suitable for multi-queue scenarios</li>
+<li><strong>Address mapping</strong>: FPGA registers are mapped into RK3588 memory space through the PCIe BARs</li>
+<li><strong>Kernel driver</strong>: use the standard <code>pci_driver</code> framework and match by PCI vendor/device/subsystem ID; a PCIe EP is an enumerable device and does not use DT <code>compatible</code> as its usual binding mechanism</li>
+</ul>
+<p><strong>PCIe node reference in the Device Tree</strong>:</p>
+<pre><code>&amp;pcie3x4 {
+    status = &quot;okay&quot;;
+    // FPGA Endpoint configuration
+};
+</code></pre>
+<h4 id="1-3-3-ge-ethernet-rgmii-details">1.3.3 GE Ethernet (RGMII) Details</h4>
+<p>Use an RK3588 GMAC controller, connected over RGMII to an Ethernet PHY implemented inside the FPGA:</p>
+<ul>
+<li><strong>Interface</strong>: RGMII (Reduced Gigabit Media Independent Interface)</li>
+<li>TXC/TX_CTL/TXD[3:0]: transmit path</li>
+<li>RXC/RX_CTL/RXD[3:0]: receive path</li>
+<li>MDC/MDIO: PHY management interface, used to configure the FPGA-internal PHY registers</li>
+<li><strong>PHY address</strong>: the FPGA-internal PHY gets an address over MDIO (usually 0~31)</li>
+<li><strong>Clocking scheme</strong>:</li>
+<li>The RK3588 provides the TXC clock (125 MHz DDR)</li>
+<li>RXC is recovered by the FPGA PHY and fed back to the RK3588</li>
+<li><strong>MAC address</strong>:</li>
+<li>Recommended: read a unique MAC from the RK3588 OTP/eFuse</li>
+<li>Without OTP programming, pin it in the Device Tree via <code>local-mac-address</code></li>
+<li><strong>Kernel driver</strong>: use the standard <code>stmmac</code> (Synopsys GMAC) driver, which discovers and configures the PHY over MDIO</li>
+</ul>
+<p><strong>GMAC node configuration in the Device Tree</strong>:</p>
+<pre><code>&amp;gmac0 {
+    phy-mode = &quot;rgmii-rxid&quot;;
+    // FPGA-internal PHY, MDIO address is usually 0
+    fixed-link {
+        speed = &lt;1000&gt;;
+        full-duplex;
+    };
+};
+</code></pre>
+<h4 id="1-3-4-mipi-interface-details">1.3.4 MIPI Interface Details</h4>
+<p>The RK3588 provides multiple MIPI interfaces for FPGA video-stream transport:</p>
+<p><strong>MIPI CSI (Camera Serial Interface)</strong> — FPGA → RK3588 video input:
+- <strong>Purpose</strong>: the FPGA acts as the video source and sends the processed image stream to the RK3588 over CSI
+- <strong>Controller</strong>: RK3588 VICAP (Video Input Capture)
+- <strong>Lane configuration</strong>: 4-lane, up to 2.5 Gbps per lane
+- <strong>Data formats</strong>: RAW8/RAW10/RAW12, YUV422, RGB888, etc.
+- <strong>Virtual channels</strong>: supports 4 virtual channels that can be multiplexed
+- <strong>Driver framework</strong>: V4L2 (<code>video4linux2</code>), accessed from user space via <code>/dev/videoX</code></p>
+<p><strong>MIPI DSI (Display Serial Interface)</strong> — RK3588 → FPGA display output:
+- <strong>Purpose</strong>: the RK3588 sends display content to the FPGA over DSI for further processing or forwarding
+- <strong>Controller</strong>: RK3588 VOP (Video Output Processor) with its internal DSI controller
+- <strong>Lane configuration</strong>: 4-lane, up to 2.5 Gbps per lane
+- <strong>Resolution</strong>: up to 4K@60Hz (depending on what the FPGA can receive)
+- <strong>Driver framework</strong>: DRM (Direct Rendering Manager), accessed via <code>/dev/dri/cardX</code></p>
+<p><strong>MIPI node configuration in the Device Tree</strong>:</p>
+<pre><code>&amp;csi2_dphy0_hw {
+    status = &quot;okay&quot;;
+};
+
+&amp;csi2_dphy0 {
+    status = &quot;okay&quot;;
+    ports {
+        port@0 {
+            // Connects to the FPGA CSI-TX
+        };
+    };
+};
+
+&amp;dsi0 {
+    status = &quot;okay&quot;;
+    // FPGA acts as the DSI panel
+};
+</code></pre>
+<h4 id="1-3-5-gpio-interface-details">1.3.5 GPIO Interface Details</h4>
+<p>The low-speed control signals between the FPGA and the RK3588 are implemented over GPIO:</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Direction</th>
+<th>Purpose</th>
+<th>Recommended GPIO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FPGA_RESET</code></td>
+<td>RK→FPGA</td>
+<td>FPGA reset control (active-low)</td>
+<td>Any GPIO, open-drain output</td>
+</tr>
+<tr>
+<td><code>FPGA_IRQ</code></td>
+<td>FPGA→RK</td>
+<td>Interrupt request from the FPGA to the RK3588</td>
+<td>An IRQ-capable GPIO</td>
+</tr>
+<tr>
+<td><code>FPGA_DONE</code></td>
+<td>FPGA→RK</td>
+<td>FPGA configuration-done indication</td>
+<td>Any GPIO input</td>
+</tr>
+<tr>
+<td><code>FPGA_INIT</code></td>
+<td>FPGA→RK</td>
+<td>FPGA initialization status</td>
+<td>Any GPIO input</td>
+</tr>
+<tr>
+<td><code>FPGA_MODE[1:0]</code></td>
+<td>RK→FPGA</td>
+<td>FPGA boot mode selection</td>
+<td>Any GPIO output</td>
+</tr>
+<tr>
+<td><code>FPGA_STATUS</code></td>
+<td>FPGA→RK</td>
+<td>FPGA run status indication</td>
+<td>Any GPIO input</td>
+</tr>
+<tr>
+<td><code>SYS_PWR_EN</code></td>
+<td>RK→FPGA</td>
+<td>System power enable</td>
+<td>Any GPIO output</td>
+</tr>
+</tbody>
+</table>
+<p><strong>GPIO usage notes</strong>:
+- Confirm the GPIO pins are not taken by system peripherals (UART, I2C, SPI, etc.)
+- Interrupt pins must use a GPIO controller that supports <code>interrupt-parent</code>
+- Open-drain output pins (<code>FPGA_RESET</code>) need an external pull-up resistor
+- High-speed signals should not go through GPIO; use dedicated interfaces (PCIe/MIPI)</p>
+<p><strong>pinctrl configuration for GPIO in the Device Tree</strong>:</p>
+<pre><code>&amp;pinctrl {
+    fpga-bridge {
+        fpga_bridge_pins: fpga-bridge-pins {
+            rockchip,pins =
+                &lt;0 RK_PA0 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;,   // FPGA_RESET
+                &lt;0 RK_PA1 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;,     // FPGA_IRQ
+                &lt;0 RK_PA2 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;   // FPGA_DONE
+        };
+    };
+};
+</code></pre>
+<hr />
+<p><a id="ch2"></a></p>
+<h2 id="2-vendoradapter-interface-implementation">2. VendorAdapter Interface Implementation</h2>
+<h3 id="2-1-interface-definition">2.1 Interface Definition</h3>
+<pre><code class="language-typescript">// vendorAdapter.ts
+
+export interface VendorAdapter {
+  // ── L3 → L2: generate vendor project files from the project model ──
+  generateProject(project: ProjectModel): VendorFiles;
+
+  // ── L2 → L1: run the build flow ──
+  build(files: VendorFiles, flow: BuildFlow): BuildResult;
+
+  // ── L1 → L3: parse build output into the vendor-neutral model ──
+  parseReport(rawOutput: string[]): BuildReport;
+
+  // ── L4 ← L2: fetch data for AI analysis ──
+  getTimingData(): TimingData;
+  getResourceData(): ResourceData;
+  getCriticalPaths(): CriticalPath[];
+}
+</code></pre>
+<h3 id="2-2-rk3588-specific-interface-extensions">2.2 RK3588-Specific Interface Extensions</h3>
+<pre><code class="language-typescript">// rk3588Adapter.ts
+
+export interface RK3588Adapter extends VendorAdapter {
+  // ── Firmware flashing ──
+  flash(firmware: FirmwareBinary): FlashResult;
+
+  // ── Debug data retrieval ──
+  getDebugData(): RK3588DebugData;
+
+  // ── Device Tree operations ──
+  generateDeviceTree(project: ProjectModel, bridgeSpec?: BridgeSpec): DeviceTreeFiles;
+
+  // ── Firmware packaging ──
+  packageFirmware(buildResult: BuildResult): FirmwareBinary;
+}
+
+// ── RK3588-specific type definitions ──
+
+export interface RK3588DebugData {
+  serialLogs: SerialLog[];
+  kernelPanic?: KernelPanicInfo;
+  adbStatus: ADBConnectionStatus;
+  dmesgOutput: string[];
+}
+
+export interface DeviceTreeFiles {
+  baseDtb: string;           // Base DTB file path
+  overlayDts: string;        // Project-specific overlay
+  compiledDtb: string;       // Merged DTB
+}
+
+export interface FlashResult {
+  success: boolean;
+  partitions: FlashPartition[];
+  error?: string;
+}
+
+export interface FlashPartition {
+  name: string;
+  offset: number;
+  size: number;
+  path: string;
+  checksum: string;
+}
+</code></pre>
+<h3 id="2-3-generateproject-implementation">2.3 generateProject Implementation</h3>
+<pre><code class="language-typescript">// rk3588Adapter.ts
+
+async generateProject(project: ProjectModel): Promise&lt;VendorFiles&gt; {
+  const files: VendorFiles = {
+    sourceFiles: [],
+    configFiles: [],
+    buildScripts: [],
+    outputDirs: [],
+  };
+
+  // 1. Generate the U-Boot configuration
+  const ubootConfig = await this.generateUBootConfig(project);
+  files.configFiles.push(ubootConfig);
+
+  // 2. Generate the Kernel configuration
+  const kernelConfig = await this.generateKernelConfig(project);
+  files.configFiles.push(kernelConfig);
+
+  // 3. Generate the Buildroot configuration
+  const buildrootConfig = await this.generateBuildrootConfig(project);
+  files.configFiles.push(buildrootConfig);
+
+  // 4. Generate the Device Tree
+  const dtFiles = await this.generateDeviceTree(project);
+  files.configFiles.push(...dtFiles);
+
+  // 5. Generate the build script
+  const buildScript = this.generateBuildScript(project);
+  files.buildScripts.push(buildScript);
+
+  // 6. Generate the firmware packaging script
+  const packageScript = this.generatePackageScript(project);
+  files.buildScripts.push(packageScript);
+
+  return files;
+}
+
+async generateUBootConfig(project: ProjectModel): Promise&lt;ConfigFile&gt; {
+  const config = {
+    // Rockchip-specific configuration
+    CONFIG_ROCKCHIP: true,
+    CONFIG_ROCKCHIP_RK3588: true,
+    CONFIG_TARGET_EVB_RK3588: true,
+
+    // Storage configuration
+    CONFIG_MMC: true,
+    CONFIG_SF: false,
+    CONFIG_NVME: false,
+
+    // Boot configuration
+    CONFIG_BOOTDELAY: 1,
+    CONFIG_BOOTCMD: 'mmc read 0x0 0x600000 0x40 0x200; bootm 0x600000',
+  };
+
+  return {
+    path: 'u-boot/configs/evb_rk3588_defconfig',
+    content: this.configToDefconfig(config),
+  };
+}
+
+async generateKernelConfig(project: ProjectModel): Promise&lt;ConfigFile&gt; {
+  const config = {
+    // Architecture configuration
+    CONFIG_ARM64: true,
+    CONFIG_ARCH_ROCKCHIP: true,
+
+    // Driver configuration (derived from project.hardware)
+    ...this.deriveKernelDriverConfig(project),
+
+    // Common configuration
+    CONFIG_MODULES: true,
+    CONFIG_DEVTMPFS: true,
+    CONFIG_CGROUPS: true,
+    CONFIG_BLK_DEV_SD: true,        // SD card support
+    CONFIG_MMC: true,
+    CONFIG_DWMMC_ROCKCHIP: true,    // RK SD/MMC controller
+
+    // Network configuration
+    CONFIG_NET_ETHERNET: true,
+    CONFIG_GBE: true,               // Gigabit Ethernet
+  };
+
+  return {
+    path: 'kernel/.config',
+    content: this.configToKconfig(config),
+  };
+}
+
+async generateBuildrootConfig(project: ProjectModel): Promise&lt;ConfigFile&gt; {
+  const config = {
+    BR2_arm64: true,
+    BR2_TOOLCHAIN_EXTERNAL_ROCKCHIP: true,
+
+    // System configuration
+    BR2_SYSTEM_DHCP: 'eth0',
+    BR2_TARGET_GENERIC_GETTY_PORT: 'ttyS2',  // Serial port
+    BR2_TARGET_GENERIC_GETTY_BAUDRATE: '1500000',
+
+    // Board packages
+    BR2_PACKAGE_RKWIFIBT: project.hasWifi ? true : false,
+    BR2_PACKAGE_ Rockchip: true,
+  };
+
+  return {
+    path: 'buildroot/configs/rockchip_rk3588_defconfig',
+    content: this.configToBuildrootDefconfig(config),
+  };
+}
+</code></pre>
+<h3 id="2-4-parsereport-implementation">2.4 parseReport Implementation</h3>
+<pre><code class="language-typescript">// rk3588Adapter.ts
+
+parseReport(rawOutput: string[]): BuildReport {
+  const report: BuildReport = {
+    success: true,
+    stages: [],
+    errors: [],
+    warnings: [],
+    artifacts: [],
+    timing: {},
+  };
+
+  for (const line of rawOutput) {
+    // U-Boot build stage
+    if (this.isUBootStage(line)) {
+      report.stages.push(this.parseUBootStage(line));
+    }
+
+    // Kernel build stage
+    if (this.isKernelStage(line)) {
+      report.stages.push(this.parseKernelStage(line));
+    }
+
+    // Buildroot build stage
+    if (this.isBuildrootStage(line)) {
+      report.stages.push(this.parseBuildrootStage(line));
+    }
+
+    // Error parsing
+    if (this.isError(line)) {
+      report.errors.push(this.parseError(line));
+      report.success = false;
+    }
+
+    // Warning parsing
+    if (this.isWarning(line)) {
+      report.warnings.push(this.parseWarning(line));
+    }
+
+    // Artifact paths
+    if (this.isArtifact(line)) {
+      report.artifacts.push(this.parseArtifact(line));
+    }
+  }
+
+  return report;
+}
+
+// ── Buildroot-specific parsing ──
+
+parseBuildrootStage(line: string): BuildStage {
+  // Buildroot output format: &quot;&gt;&gt;&gt; toolchain 1.0 Building...&quot;
+  const match = line.match(/&gt;&gt;&gt;\s+(\S+)\s+Building/);
+  if (match) {
+    return {
+      name: match[1],
+      status: 'building',
+      startTime: this.parseTimestamp(line),
+    };
+  }
+
+  // Success marker: &quot;&gt;&gt;&gt; toolchain 1.0 Done&quot;
+  const doneMatch = line.match(/&gt;&gt;&gt;\s+(\S+)\s+Done/);
+  if (doneMatch) {
+    return {
+      name: doneMatch[1],
+      status: 'success',
+      duration: this.parseDuration(line),
+    };
+  }
+
+  // Progress: &quot;[  25%]&quot; or &quot;[100%]&quot;
+  const progressMatch = line.match(/\[(\d+)%\]$/);
+  if (progressMatch) {
+    return {
+      name: 'progress',
+      status: 'building',
+      progress: parseInt(progressMatch[1]),
+    };
+  }
+
+  return { name: 'unknown', status: 'unknown' };
+}
+
+// ── Error parsing (Buildroot format) ──
+
+parseBuildrootError(line: string): BuildError {
+  const patterns = [
+    // Makefile error
+    {
+      pattern: /make\[(\d+)\]: \*\*\* (.*)/,
+      parse: (m: RegExpMatchArray): BuildError =&gt; ({
+        level: 'error',
+        message: m[2],
+        location: { file: 'Makefile', line: 0 },
+        suggestion: 'Check for dependency or configuration errors',
+      }),
+    },
+    // Configuration error
+    {
+      pattern: /Configuration file .* is not valid/,
+      parse: (): BuildError =&gt; ({
+        level: 'error',
+        message: 'Invalid Buildroot configuration file',
+        suggestion: 'Run make clean &amp;&amp; make defconfig to reset the configuration',
+      }),
+    },
+    // Missing dependency
+    {
+      pattern: / Missing: (.*)/,
+      parse: (m: RegExpMatchArray): BuildError =&gt; ({
+        level: 'error',
+        message: `Missing dependency: ${m[1]}`,
+        suggestion: 'Install the missing development tools',
+      }),
+    },
+    // Compilation error
+    {
+      pattern: /error: (.*)/,
+      parse: (m: RegExpMatchArray): BuildError =&gt; ({
+        level: 'error',
+        message: m[1],
+        suggestion: 'Check the source code or the cross-compilation toolchain',
+      }),
+    },
+  ];
+
+  for (const { pattern, parse } of patterns) {
+    const match = line.match(pattern);
+    if (match) {
+      return parse(match);
+    }
+  }
+
+  return { level: 'error', message: line };
+}
+</code></pre>
+<hr />
+<p><a id="ch3"></a></p>
+<h2 id="3-build-flow-design">3. Build Flow Design</h2>
+<h3 id="3-1-overall-build-flow">3.1 Overall Build Flow</h3>
+<pre><code class="language-mermaid">flowchart LR
+    UBoot[&quot;&lt;b&gt;U-Boot&lt;/b&gt;&lt;br/&gt;v2024.x&quot;] --&gt; TFA[&quot;&lt;b&gt;TF-A&lt;/b&gt;&lt;br/&gt;(ATF)&quot;]
+    TFA --&gt; Kernel[&quot;&lt;b&gt;Kernel&lt;/b&gt;&lt;br/&gt;v6.x&quot;]
+    Kernel --&gt; Rootfs[&quot;&lt;b&gt;Buildroot&lt;/b&gt;&lt;br/&gt;Rootfs&quot;]
+
+    UBoot --&gt; idbloader[&quot;idbloader.img&quot;]
+    TFA --&gt; tee[&quot;tee.img&quot;]
+    Kernel --&gt; boot[&quot;boot.img&quot;]
+    Rootfs --&gt; squashfs[&quot;rootfs.squashfs&quot;]
+
+    idbloader --&gt; merge[/&quot;merge&quot;/]
+    tee --&gt; merge
+    boot --&gt; merge
+    squashfs --&gt; merge
+
+    merge --&gt; firmware[&quot;&lt;b&gt;firmwarepack&lt;/b&gt;&lt;br/&gt;(update.img)&quot;]
+</code></pre>
+<h3 id="3-2-u-boot-build-flow">3.2 U-Boot Build Flow</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function buildUBoot(config: UBootConfig): Promise&lt;BuildStage&gt; {
+  const startTime = Date.now();
+
+  // 1. Prepare the source
+  await this.prepareUBootSource(config);
+
+  // 2. Configure
+  const configureResult = await this.runCommand(`
+    cd ${config.sourceDir}/u-boot
+    make CROSS_COMPILE=aarch64-linux-gnu- ${config.defconfig}
+  `);
+
+  if (!configureResult.success) {
+    throw new BuildError('U-Boot configuration failed', configureResult.stderr);
+  }
+
+  // 3. Build
+  const buildResult = await this.runCommand(`
+    cd ${config.sourceDir}/u-boot
+    make CROSS_COMPILE=aarch64-linux-gnu- -j${config.jobs}
+  `, {
+    env: {
+      ...process.env,
+      // Rockchip-specific environment variables
+      RK_IDBLOADER: '1',          // Generate idbloader.img
+      RK_CHIP: 'RK3588',
+    },
+    timeout: config.timeout || 600000, // 10 minutes
+  });
+
+  if (!buildResult.success) {
+    throw new BuildError('U-Boot build failed', buildResult.stderr);
+  }
+
+  // 4. Generate idbloader.img
+  const idbloaderPath = await this.runCommand(`
+    cd ${config.sourceDir}/u-boot
+    ./tools/mkimage -n rk3588 -T rksd -d ./u-boot-tpl.bin:./u-boot-spl.bin idbloader.img
+  `);
+
+  return {
+    name: 'u-boot',
+    status: 'success',
+    duration: Date.now() - startTime,
+    artifacts: {
+      'idbloader.img': `${config.sourceDir}/u-boot/idbloader.img`,
+      'u-boot.bin': `${config.sourceDir}/u-boot/u-boot.bin`,
+    },
+  };
+}
+</code></pre>
+<p><strong>Shell script version</strong>:</p>
+<pre><code class="language-bash">#!/bin/bash
+# build_uboot.sh
+
+set -e
+
+SOURCE_DIR=${1:-./bsp}
+JOBS=${2:-$(nproc)}
+CROSS_COMPILE=aarch64-linux-gnu-
+
+cd ${SOURCE_DIR}/u-boot
+
+# Configure
+make ${CROSS_COMPILE} evb_rk3588_defconfig
+
+# Build
+make ${CROSS_COMPILE} -j${JOBS}
+
+# Generate idbloader.img
+./tools/mkimage -n rk3588 -T rksd \
+    -d ./u-boot-tpl.bin:./u-boot-spl.bin \
+    idbloader.img
+
+echo &quot;U-Boot build complete: idbloader.img&quot;
+</code></pre>
+<h3 id="3-3-linux-kernel-build-flow">3.3 Linux Kernel Build Flow</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function buildKernel(config: KernelConfig): Promise&lt;BuildStage&gt; {
+  const startTime = Date.now();
+
+  // 1. Prepare the source
+  await this.prepareKernelSource(config);
+
+  // 2. Apply the Device Tree
+  await this.applyDeviceTree(config);
+
+  // 3. Configure
+  await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.defconfig}
+  `);
+
+  // 4. Build the kernel
+  const buildResult = await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.arch} CROSS_COMPILE=${config.crossCompile} -j${config.jobs}
+  `, { timeout: config.timeout || 1800000 }); // 30 minutes
+
+  if (!buildResult.success) {
+    throw new BuildError('Kernel build failed', buildResult.stderr);
+  }
+
+  // 5. Build the device trees
+  await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.arch} CROSS_COMPILE=${config.crossCompile} dtbs
+  `);
+
+  // 6. Build the modules
+  await this.runCommand(`
+    cd ${config.sourceDir}/kernel
+    make ${config.arch} CROSS_COMPILE=${config.crossCompile} modules -j${config.jobs}
+  `);
+
+  // 7. Package boot.img
+  const bootImg = await this.createBootImage(config);
+
+  return {
+    name: 'kernel',
+    status: 'success',
+    duration: Date.now() - startTime,
+    artifacts: {
+      'Image': `${config.sourceDir}/kernel/arch/${config.arch}/boot/Image`,
+      'boot.img': bootImg,
+      'dtbs': `${config.sourceDir}/kernel/arch/${config.arch}/boot/dts/rockchip/rk3588*.dtb`,
+    },
+  };
+}
+
+// Create boot.img (contains kernel + dtb + ramdisk)
+async function createBootImage(config: KernelConfig): Promise&lt;string&gt; {
+  const bootDir = `${config.outputDir}/boot`;
+  await fs.mkdir(bootDir, { recursive: true });
+
+  // Copy the kernel and device tree
+  await fs.copyFile(
+    `${config.sourceDir}/kernel/arch/${config.arch}/boot/Image`,
+    `${bootDir}/kernel`
+  );
+
+  await fs.copyFile(
+    `${config.sourceDir}/kernel/arch/${config.arch}/boot/dts/rockchip/${config.dtb}`,
+    `${bootDir}/rk3588.dtb`
+  );
+
+  // Generate boot.scr
+  const bootScript = `
+setenv bootargs &quot;root=/dev/mmcblk0p4 rootwait earlyprintk console=ttyS2,1500000&quot;
+load mmc 0:4 0x600000 /boot/kernel
+load mmc 0:4 0x400000 /boot/rk3588.dtb
+booti 0x600000 - 0x400000
+`;
+
+  await fs.writeFile(`${bootDir}/boot.scr`, bootScript);
+  await this.runCommand(`cd ${bootDir} &amp;&amp; ./mkimage -C none -A arm64 -T script -d boot.scr boot.img`);
+
+  return `${bootDir}/boot.img`;
+}
+</code></pre>
+<h3 id="3-4-buildroot-rootfs-build-flow">3.4 Buildroot Rootfs Build Flow</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function buildRootfs(config: RootfsConfig): Promise&lt;BuildStage&gt; {
+  const startTime = Date.now();
+
+  // 1. Configure Buildroot
+  await this.runCommand(`
+    cd ${config.sourceDir}/buildroot
+    make ${config.defconfig}
+  `);
+
+  // 2. Customize the configuration (if needed)
+  if (config.customPackages) {
+    await this.applyCustomPackages(config);
+  }
+
+  // 3. Build
+  const buildResult = await this.runCommand(`
+    cd ${config.sourceDir}/buildroot
+    make -j${config.jobs}
+  `, { timeout: config.timeout || 3600000 }); // 60 minutes
+
+  if (!buildResult.success) {
+    throw new BuildError('Rootfs build failed', buildResult.stderr);
+  }
+
+  // 4. Output artifacts
+  const rootfsPath = `${config.outputDir}/rootfs.squashfs`;
+
+  await fs.copyFile(
+    `${config.sourceDir}/buildroot/output/images/rootfs.squashfs`,
+    rootfsPath
+  );
+
+  return {
+    name: 'rootfs',
+    status: 'success',
+    duration: Date.now() - startTime,
+    artifacts: {
+      'rootfs.squashfs': rootfsPath,
+      'rootfs.ext4': `${config.sourceDir}/buildroot/output/images/rootfs.ext4`,
+      'trivialfs.cpio.gz': `${config.sourceDir}/buildroot/output/images/trivialfs.cpio.gz`,
+    },
+  };
+}
+</code></pre>
+<h3 id="3-5-firmware-packaging-flow">3.5 Firmware Packaging Flow</h3>
+<pre><code class="language-typescript">// rk3588Build.ts
+
+export async function packageFirmware(config: PackageConfig): Promise&lt;string&gt; {
+  const outputDir = config.outputDir;
+  const packageDir = `${outputDir}/package`;
+
+  // 1. Create the directory structure
+  await fs.mkdir(packageDir, { recursive: true });
+  await fs.mkdir(`${packageDir}/Loader`, { recursive: true });
+  await fs.mkdir(`${packageDir}/update`, { recursive: true });
+
+  // 2. Copy the firmware files
+  await fs.copyFile(config.idbloader, `${packageDir}/Loader/idbloader.img`);
+  await fs.copyFile(config.uboot, `${packageDir}/Loader/uboot.img`);
+  await fs.copyFile(config.trust, `${packageDir}/Loader/trust.img`);
+  await fs.copyFile(config.boot, `${packageDir}/update/boot.img`);
+  await fs.copyFile(config.rootfs, `${packageDir}/update/rootfs.squashfs`);
+
+  // 3. Generate parameter.txt
+  const parameter = this.generateParameter(config);
+  await fs.writeFile(`${packageDir}/update/parameter.txt`, parameter);
+
+  // 4. Generate the package-file
+  const packageFile = this.generatePackageFile(config);
+  await fs.writeFile(`${packageDir}/package-file`, packageFile);
+
+  // 5. Call rk_image_tool to pack
+  const firmwarePath = `${outputDir}/update.img`;
+  await this.runCommand(`
+    cd ${packageDir}
+    ${config.rkImageTool} pack
+  `);
+
+  return firmwarePath;
+}
+
+// Generate parameter.txt (partition table)
+function generateParameter(config: PackageConfig): string {
+  return `CMDLINE: mtdparts=rk29xxnand:0x00002000@0x00004000(uboot),\\
+0x00002000@0x00006000(misc),\\
+0x00020000@0x00008000(boot),\\
+0x00040000@0x00028000(rootfs),\\
+0x00002000@0x00068000(backup),\\
+0x00040000@0x0006A000(userdata)
+
+FIRMWARE_VER: ${config.version}
+MAGIC: 0x4F524B50
+`;
+}
+</code></pre>
+<hr />
+<p><a id="ch4"></a></p>
+<h2 id="4-device-tree-generation-design">4. Device Tree Generation Design</h2>
+<h3 id="4-1-device-tree-architecture">4.1 Device Tree Architecture</h3>
+<pre><code class="language-mermaid">graph TD
+    DT[&quot;&lt;b&gt;Device Tree (RK3588)&lt;/b&gt;&quot;]
+
+    DT --&gt; Base[&quot;&lt;b&gt;Base DTS&lt;/b&gt;&lt;br/&gt;rockchip/rk3588-evb*.dtsi&quot;]
+    Base --&gt; B1[&quot;CPU configuration&lt;br/&gt;(Cortex-A76/A55)&quot;]
+    Base --&gt; B2[&quot;GIC configuration&quot;]
+    Base --&gt; B3[&quot;Clock configuration&lt;br/&gt;PMU / CRU / PLL&quot;]
+    Base --&gt; B4[&quot;Common peripherals&lt;br/&gt;MMC / GPIO / I2C / SPI / UART&quot;]
+
+    DT --&gt; Board[&quot;&lt;b&gt;Board DTS&lt;/b&gt;&lt;br/&gt;board/rk3588-xxx.dts&quot;]
+    Board --&gt; Bd1[&quot;Board-level resources&quot;]
+    Board --&gt; Bd2[&quot;PMIC configuration&quot;]
+    Board --&gt; Bd3[&quot;DDR initialization parameters&quot;]
+
+    DT --&gt; Overlay[&quot;&lt;b&gt;Project Overlay&lt;/b&gt;&lt;br/&gt;project/*.dtsh&quot;]
+    Overlay --&gt; O1[&quot;Bridge Spec mapping&quot;]
+    Overlay --&gt; O2[&quot;FPGA register space&quot;]
+    Overlay --&gt; O3[&quot;Customer-specific peripherals&quot;]
+</code></pre>
+<h3 id="4-2-device-tree-generator-implementation">4.2 Device Tree Generator Implementation</h3>
+<pre><code class="language-typescript">// deviceTreeGenerator.ts
+
+export interface DTBGenerator {
+  generateBaseDTS(project: ProjectModel): string;
+  generateBoardDTS(project: ProjectModel): string;
+  generateOverlay(bridgeSpec: BridgeSpec): string;
+  compileDTS(dtsPath: string): string;
+  mergeOverlays(baseDtb: string, overlays: string[]): string;
+}
+
+export function generateDeviceTree(
+  project: ProjectModel,
+  bridgeSpec?: BridgeSpec
+): DeviceTreeFiles {
+  const generator = new RK3588DTBGenerator();
+
+  // 1. Generate the base DTS
+  const baseDts = generator.generateBaseDTS(project);
+
+  // 2. Generate the board DTS
+  const boardDts = generator.generateBoardDTS(project);
+
+  // 3. Generate the Bridge Spec overlay (if an FPGA interconnect exists)
+  let overlayDts = '';
+  if (bridgeSpec) {
+    overlayDts = generator.generateOverlay(bridgeSpec);
+  }
+
+  // 4. Compile to DTB
+  const baseDtb = generator.compileDTS(baseDts);
+  const boardDtb = generator.compileDTS(boardDts);
+
+  // 5. Merge overlays
+  const mergedDtb = overlayDts
+    ? generator.mergeOverlays(boardDtb, [overlayDts])
+    : boardDtb;
+
+  return {
+    baseDts,
+    boardDts,
+    overlayDts,
+    baseDtb,
+    boardDtb,
+    mergedDtb,
+  };
+}
+
+class RK3588DTBGenerator implements DTBGenerator {
+  generateBaseDTS(project: ProjectModel): string {
+    return `
+// Auto-generated by EvoVerse SDK
+// DO NOT EDIT MANUALLY
+
+/dts-v1/;
+
+/ {
+  compatible = &quot;rockchip,rk3588&quot;;
+  #address-cells = &lt;0x2&gt;;
+  #size-cells = &lt;0x2&gt;;
+
+  // ── CPU configuration ──
+  cpus {
+    #address-cells = &lt;0x1&gt;;
+    #size-cells = &lt;0x0&gt;;
+
+    // Cortex-A76 x4 (high performance)
+    cpu0: cpu@0 {
+      device_type = &quot;cpu&quot;;
+      compatible = &quot;arm,cortex-a76&quot;;
+      reg = &lt;0x0&gt;;
+      enable-method = &quot;psci&quot;;
+      #cooling-cells = &lt;0x2&gt;;
+      ...
+    };
+
+    // Cortex-A55 x4 (high efficiency)
+    cpu4: cpu@100 {
+      device_type = &quot;cpu&quot;;
+      compatible = &quot;arm,cortex-a55&quot;;
+      reg = &lt;0x100&gt;;
+      enable-method = &quot;psci&quot;;
+      #cooling-cells = &lt;0x2&gt;;
+      ...
+    };
+  };
+
+  // ── Clocks ──
+  clock: clock-controller {
+    compatible = &quot;rockchip,rk3588-cru&quot;;
+    reg = &lt;0x0 0xfdd00000 0x0 0x50000&gt;;
+    #clock-cells = &lt;0x2&gt;;
+    #reset-cells = &lt;0x2&gt;;
+  };
+
+  // ── GIC ──
+  gic: interrupt-controller@fee00000 {
+    compatible = &quot;arm,gic-v3&quot;;
+    reg = &lt;0x0 0xfee00000 0 0x10000&gt;,
+          &lt;0x0 0xfef00000 0 0x100000&gt;;
+    interrupt-controller;
+    #interrupt-cells = &lt;0x3&gt;;
+  };
+};
+`;
+  }
+
+  generateBoardDTS(project: ProjectModel): string {
+    const dts = [`// Board: ${project.name}`, ''];
+
+    // Base includes
+    dts.push('#include &quot;rk3588-base.dtsi&quot;');
+    dts.push('');
+
+    // Board-level compatible
+    dts.push('/ {');
+    dts.push('  compatible = &quot;rockchip,rk3588-${project.boardId}&quot;;');
+    dts.push('  model = &quot;${project.name}&quot;;');
+    dts.push('');
+
+    // Memory configuration
+    dts.push('  memory {');
+    dts.push(`    reg = &lt;0x0 ${project.memory.size}&gt;;`);
+    dts.push('  };');
+    dts.push('');
+
+    // PMIC
+    dts.push('  vdd_cpu_big: vdd-cpu-big {');
+    dts.push('    regulator-name = &quot;vdd_cpu_big&quot;;');
+    dts.push('    regulator-always-on;');
+    dts.push('    ...');
+    dts.push('  };');
+    dts.push('}');
+    dts.push('');
+
+    // MMC configuration
+    dts.push('&amp;sdmmc {');
+    dts.push('  status = &quot;okay&quot;;');
+    dts.push('  cap-mmc-highspeed;');
+    dts.push('  cap-sd-highspeed;');
+    dts.push('};');
+    dts.push('');
+
+    // GMAC configuration
+    dts.push('&amp;gmac0 {');
+    dts.push('  phy-mode = &quot;rgmii-rxid&quot;;');
+    dts.push('  clock_in_out = &quot;output&quot;;');
+    dts.push('  snps,reset-gpio = &lt;&amp;gpio0 RK_PB5 GPIO_ACTIVE_LOW&gt;;');
+    dts.push('  snps,reset-active-low;');
+    dts.push('  snps,reset-delays-us = &lt;0 20000 100000&gt;;');
+    dts.push('};');
+
+    return dts.join('\n');
+  }
+
+  generateOverlay(bridgeSpec: BridgeSpec): string {
+    const dts = [
+      '// Bridge Spec Overlay - Auto-generated',
+      '// FPGA ↔ SoC Interface Definition',
+      '',
+      '/ {',
+      '  fragment@fpga-bridge {',
+      '    target = &lt;&amp;amba&gt;;',
+      '    __overlay__ {',
+      '',
+    ];
+
+    // Address mapping
+    for (const addrMap of bridgeSpec.addressMaps) {
+      dts.push('      // Address mapping');
+      dts.push(`      fpga@${addrMap.fpgaBase.toString(16)} {`);
+      dts.push('        compatible = &quot;rockchip,fpga-bridge&quot;;');
+      dts.push(`        reg = &lt;0x0 ${addrMap.fpgaBase.toString(16)} ${addrMap.size}&gt;;`);
+      dts.push('        #address-cells = &lt;0x1&gt;;');
+      dts.push('        #size-cells = &lt;0x1&gt;;');
+      dts.push('');
+      dts.push('        // FPGA internal registers');
+      for (const reg of addrMap.registers) {
+        dts.push(`        reg@${reg.offset.toString(16)} {`);
+        dts.push(`          reg = &lt;${reg.offset} ${reg.size}&gt;;`);
+        dts.push(`          // ${reg.name}: ${reg.description}`);
+        dts.push('        };');
+      }
+      dts.push('      };');
+      dts.push('    };');
+    }
+
+    // Interrupt routing
+    if (bridgeSpec.interrupts.length &gt; 0) {
+      dts.push('');
+      dts.push('    __overlay__ {');
+      dts.push('      // Interrupt routing');
+      for (const irq of bridgeSpec.interrupts) {
+        dts.push(`      fpga-irq@${irq.gicNumber} {`);
+        dts.push(`        compatible = &quot;rockchip,fpga-irq&quot;;`);
+        dts.push(`        interrupts = &lt;GIC_SPI ${irq.gicNumber} IRQ_TYPE_LEVEL_HIGH&gt;;`);
+        dts.push(`        // Source: ${irq.source}`);
+        dts.push('      };');
+      }
+      dts.push('    };');
+    }
+
+    dts.push('  };');
+    dts.push('};');
+
+    return dts.join('\n');
+  }
+
+  compileDTS(dtsPath: string): string {
+    const dtbPath = dtsPath.replace('.dts', '.dtb');
+    this.runCommand(`dtc -I dts -O dtb -o ${dtbPath} ${dtsPath}`);
+    return dtbPath;
+  }
+
+  mergeOverlays(baseDtb: string, overlays: string[]): string {
+    let current = baseDtb;
+    for (const overlay of overlays) {
+      const overlayDtb = overlay.replace('.dtsh', '.dtbo');
+      this.runCommand(`dtc -I dts -O dtb -o ${overlayDtb} ${overlay}`);
+      current = this.runCommand(
+        `fdtapply ${current} ${overlayDtb}`
+      );
+    }
+    return current;
+  }
+}
+</code></pre>
+<h3 id="4-3-detailed-bridge-interface-device-tree-overlay-examples">4.3 Detailed Bridge Interface Device Tree Overlay Examples</h3>
+<p>This section provides complete Device Tree fragment code examples for each physical interface of the FPGA-RK3588 Bridge.</p>
+<h4 id="4-3-1-pcie-device-tree-fragment">4.3.1 PCIe Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: PCIe Gen3 x4 - FPGA Endpoint
+// RK3588 acts as Root Complex
+
+&amp;pcie3x4 {
+    status = &quot;okay&quot;;
+    reset-gpios = &lt;&amp;gpio0 RK_PB0 GPIO_ACTIVE_LOW&gt;;
+    num-lanes = &lt;4&gt;;
+    max-link-speed = &lt;3&gt;;  // Gen3
+
+    pinctrl-names = &quot;default&quot;;
+    pinctrl-0 = &lt;&amp;pcie3x4_pins&gt;;
+
+    // The FPGA Endpoint does not need to be declared in the DT;
+    // it is discovered automatically by PCIe enumeration
+};
+
+// Optional: fixed PCIe clock output
+&amp;pcie30phy {
+    status = &quot;okay&quot;;
+};
+
+// If a reference clock must be provided to the FPGA,
+// reference the PCIe PHY clock from the FPGA node
+</code></pre>
+<h4 id="4-3-2-ge-ethernet-rgmii-device-tree-fragment">4.3.2 GE Ethernet (RGMII) Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: GMAC0 - RGMII connection to the FPGA-internal PHY
+
+&amp;gmac0 {
+    status = &quot;okay&quot;;
+    phy-mode = &quot;rgmii-rxid&quot;;
+    clock_in_out = &quot;output&quot;;
+
+    // Fixed MAC address (when no OTP unique MAC is required)
+    local-mac-address = [00 11 22 33 44 55];
+
+    snps,reset-gpio = &lt;&amp;gpio0 RK_PB5 GPIO_ACTIVE_LOW&gt;;
+    snps,reset-active-low;
+    snps,reset-delays-us = &lt;0 20000 100000&gt;;
+
+    // TX delay configuration (RGMII timing)
+    tx_delay = &lt;0x30&gt;;
+    rx_delay = &lt;0x10&gt;;
+
+    // FPGA-internal PHY - use fixed-link
+    fixed-link {
+        speed = &lt;1000&gt;;
+        full-duplex;
+        pause;
+        asym-pause;
+    };
+};
+
+// MDIO bus - used to configure the FPGA-internal PHY registers
+&amp;mdio0 {
+    status = &quot;okay&quot;;
+
+    // FPGA-internal PHY @ MDIO address 0
+    fpga_phy: ethernet-phy@0 {
+        compatible = &quot;ethernet-phy-ieee802.3-c22&quot;;
+        reg = &lt;0x0&gt;;
+
+        // Clock configuration
+        clocks = &lt;&amp;cru CLK_GMAC0&gt;;
+
+        // Reset
+        reset-gpios = &lt;&amp;gpio0 RK_PB6 GPIO_ACTIVE_LOW&gt;;
+        reset-assert-us = &lt;20000&gt;;
+        reset-deassert-us = &lt;100000&gt;;
+    };
+};
+</code></pre>
+<h4 id="4-3-3-mipi-csi-device-tree-fragment">4.3.3 MIPI CSI Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: MIPI CSI 4-lane - FPGA video input to the RK3588
+
+// 1. CSI DPHY configuration
+&amp;csi2_dphy0_hw {
+    status = &quot;okay&quot;;
+};
+
+&amp;csi2_dphy0 {
+    status = &quot;okay&quot;;
+
+    ports {
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;0&gt;;
+
+        // CSI input port - connects to the FPGA
+        port@0 {
+            reg = &lt;0&gt;;
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+
+            csi2_dphy0_in: endpoint@0 {
+                reg = &lt;0&gt;;
+                remote-endpoint = &lt;&amp;fpga_csi_tx_out&gt;;
+                data-lanes = &lt;1 2 3 4&gt;;
+                clock-lanes = &lt;0&gt;;
+                link-frequencies = /bits/ 64 &lt;500000000&gt;;
+            };
+        };
+
+        // CSI output port - connects to VICAP
+        port@1 {
+            reg = &lt;1&gt;;
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+
+            csi2_dphy0_out: endpoint@0 {
+                reg = &lt;0&gt;;
+                remote-endpoint = &lt;&amp;mipi_csi2_input&gt;;
+            };
+        };
+    };
+};
+
+// 2. VICAP (video capture) configuration
+&amp;vicap {
+    status = &quot;okay&quot;;
+    num-channels = &lt;1&gt;;
+};
+
+&amp;rkcif_mipi_lvds {
+    status = &quot;okay&quot;;
+
+    port {
+        mipi_csi2_input: endpoint {
+            remote-endpoint = &lt;&amp;csi2_dphy0_out&gt;;
+        };
+    };
+};
+
+// 3. FPGA as the CSI transmitter (SoC external device description)
+/ {
+    fpga-csi-tx {
+        compatible = &quot;awe,fpga-csi-tx&quot;;
+        status = &quot;okay&quot;;
+
+        port {
+            fpga_csi_tx_out: endpoint {
+                remote-endpoint = &lt;&amp;csi2_dphy0_in&gt;;
+            };
+        };
+    };
+};
+</code></pre>
+<h4 id="4-3-4-mipi-dsi-device-tree-fragment">4.3.4 MIPI DSI Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: MIPI DSI 4-lane - RK3588 display output to the FPGA
+
+&amp;dsi0 {
+    status = &quot;okay&quot;;
+    rockchip,lane-rate = &lt;1000&gt;;  // Mbps per lane
+
+    // DSI panel configuration (FPGA as virtual panel)
+    dsi0_panel: panel@0 {
+        compatible = &quot;awe,fpga-dsi-panel&quot;;
+        reg = &lt;0&gt;;
+        status = &quot;okay&quot;;
+
+        // Reset and enable controlled by GPIO or inside the FPGA
+        enable-gpios = &lt;&amp;gpio0 RK_PC0 GPIO_ACTIVE_HIGH&gt;;
+
+        // Display timings
+        display-timings {
+            native-mode = &lt;&amp;fpga_display_timing&gt;;
+
+            fpga_display_timing: timing@0 {
+                clock-frequency = &lt;74250000&gt;;  // 74.25 MHz (1080p60)
+                hactive = &lt;1920&gt;;
+                vactive = &lt;1080&gt;;
+                hfront-porch = &lt;88&gt;;
+                hback-porch = &lt;148&gt;;
+                hsync-len = &lt;44&gt;;
+                vfront-porch = &lt;4&gt;;
+                vback-porch = &lt;36&gt;;
+                vsync-len = &lt;5&gt;;
+            };
+        };
+
+        // DSI ports
+        ports {
+            #address-cells = &lt;1&gt;;
+            #size-cells = &lt;0&gt;;
+
+            port@0 {
+                reg = &lt;0&gt;;
+                panel_in_dsi: endpoint {
+                    remote-endpoint = &lt;&amp;dsi0_out_panel&gt;;
+                };
+            };
+        };
+    };
+
+    // DSI output port
+    ports {
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;0&gt;;
+
+        port@1 {
+            reg = &lt;1&gt;;
+            dsi0_out_panel: endpoint {
+                remote-endpoint = &lt;&amp;panel_in_dsi&gt;;
+            };
+        };
+    };
+};
+
+// VOP (display controller) binding
+&amp;vop {
+    status = &quot;okay&quot;;
+};
+
+&amp;dsi0_in_vp2 {
+    status = &quot;okay&quot;;
+};
+
+&amp;dsi0_in_vp3 {
+    status = &quot;okay&quot;;
+};
+
+&amp;route_dsi0 {
+    status = &quot;okay&quot;;
+    connect = &lt;&amp;vp2_out_dsi0&gt;;
+};
+</code></pre>
+<h4 id="4-3-5-gpio-device-tree-fragment">4.3.5 GPIO Device Tree Fragment</h4>
+<pre><code class="language-dts">// Fragment: FPGA-RK3588 GPIO control signals
+
+// 1. pinctrl definitions
+&amp;pinctrl {
+    fpga-bridge {
+        // FPGA reset (open-drain output, active-low)
+        fpga_reset_pin: fpga-reset-pin {
+            rockchip,pins =
+                &lt;0 RK_PA0 RK_FUNC_GPIO &amp;pcfg_output_low_pull_none&gt;;
+        };
+
+        // FPGA interrupt request (input, pull-up, IRQ-capable)
+        fpga_irq_pin: fpga-irq-pin {
+            rockchip,pins =
+                &lt;0 RK_PA1 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;;
+        };
+
+        // FPGA configuration done (input)
+        fpga_done_pin: fpga-done-pin {
+            rockchip,pins =
+                &lt;0 RK_PA2 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+
+        // FPGA initialization status (input)
+        fpga_init_pin: fpga-init-pin {
+            rockchip,pins =
+                &lt;0 RK_PA3 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;;
+        };
+
+        // FPGA mode selection (output)
+        fpga_mode_pins: fpga-mode-pins {
+            rockchip,pins =
+                &lt;0 RK_PA4 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;,
+                &lt;0 RK_PA5 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+
+        // FPGA status indication (input)
+        fpga_status_pin: fpga-status-pin {
+            rockchip,pins =
+                &lt;0 RK_PA6 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+
+        // System power enable (output)
+        sys_pwr_en_pin: sys-pwr-en-pin {
+            rockchip,pins =
+                &lt;0 RK_PA7 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+        };
+    };
+};
+
+// 2. FPGA Bridge GPIO device node
+/ {
+    fpga-gpio-bridge {
+        compatible = &quot;awe,fpga-gpio-bridge&quot;;
+        status = &quot;okay&quot;;
+
+        pinctrl-names = &quot;default&quot;;
+        pinctrl-0 = &lt;&amp;fpga_reset_pin&gt;, &lt;&amp;fpga_irq_pin&gt;,
+                    &lt;&amp;fpga_done_pin&gt;, &lt;&amp;fpga_init_pin&gt;,
+                    &lt;&amp;fpga_mode_pins&gt;, &lt;&amp;fpga_status_pin&gt;,
+                    &lt;&amp;sys_pwr_en_pin&gt;;
+
+        // FPGA reset
+        fpga-reset-gpios = &lt;&amp;gpio0 RK_PA0 GPIO_ACTIVE_LOW&gt;;
+        reset-assert-ms = &lt;100&gt;;
+        reset-deassert-ms = &lt;10&gt;;
+
+        // FPGA interrupt
+        fpga-irq-gpios = &lt;&amp;gpio0 RK_PA1 GPIO_ACTIVE_HIGH&gt;;
+        interrupt-parent = &lt;&amp;gpio0&gt;;
+        interrupts = &lt;RK_PA1 IRQ_TYPE_EDGE_RISING&gt;;
+
+        // FPGA status
+        fpga-done-gpios = &lt;&amp;gpio0 RK_PA2 GPIO_ACTIVE_HIGH&gt;;
+        fpga-init-gpios = &lt;&amp;gpio0 RK_PA3 GPIO_ACTIVE_HIGH&gt;;
+        fpga-status-gpios = &lt;&amp;gpio0 RK_PA6 GPIO_ACTIVE_HIGH&gt;;
+
+        // Mode selection
+        fpga-mode-gpios = &lt;&amp;gpio0 RK_PA4 GPIO_ACTIVE_HIGH&gt;,
+                          &lt;&amp;gpio0 RK_PA5 GPIO_ACTIVE_HIGH&gt;;
+
+        // Power enable
+        sys-pwr-en-gpios = &lt;&amp;gpio0 RK_PA7 GPIO_ACTIVE_HIGH&gt;;
+    };
+};
+</code></pre>
+<h4 id="4-3-6-complete-bridge-overlay-integration-example">4.3.6 Complete Bridge Overlay Integration Example</h4>
+<pre><code class="language-dts">// bridge-overlay.dts - Complete FPGA-RK3588 Bridge integration
+// This overlay contains the configuration of all bridge interfaces
+
+/dts-v1/;
+/plugin/;
+
+#include &lt;dt-bindings/gpio/gpio.h&gt;
+#include &lt;dt-bindings/interrupt-controller/arm-gic.h&gt;
+#include &lt;dt-bindings/clock/rk3588-cru.h&gt;
+#include &lt;dt-bindings/pinctrl/rockchip.h&gt;
+
+/ {
+    compatible = &quot;rockchip,rk3588&quot;;
+
+    // ── Fragment 1: PCIe (FPGA Endpoint) ──
+    fragment@1 {
+        target = &lt;&amp;pcie3x4&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+            reset-gpios = &lt;&amp;gpio0 RK_PB0 GPIO_ACTIVE_LOW&gt;;
+            num-lanes = &lt;4&gt;;
+            max-link-speed = &lt;3&gt;;
+        };
+    };
+
+    // ── Fragment 2: GMAC (FPGA PHY) ──
+    fragment@2 {
+        target = &lt;&amp;gmac0&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+            phy-mode = &quot;rgmii-rxid&quot;;
+            local-mac-address = [00 11 22 33 44 55];
+            snps,reset-gpio = &lt;&amp;gpio0 RK_PB5 GPIO_ACTIVE_LOW&gt;;
+            snps,reset-active-low;
+            snps,reset-delays-us = &lt;0 20000 100000&gt;;
+            fixed-link {
+                speed = &lt;1000&gt;;
+                full-duplex;
+            };
+        };
+    };
+
+    // ── Fragment 3: MIPI CSI (FPGA → RK3588) ──
+    fragment@3 {
+        target = &lt;&amp;csi2_dphy0&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+            ports {
+                port@0 {
+                    reg = &lt;0&gt;;
+                    endpoint {
+                        data-lanes = &lt;1 2 3 4&gt;;
+                        link-frequencies = /bits/ 64 &lt;500000000&gt;;
+                    };
+                };
+            };
+        };
+    };
+
+    // ── Fragment 4: MIPI DSI (RK3588 → FPGA) ──
+    fragment@4 {
+        target = &lt;&amp;dsi0&gt;;
+        __overlay__ {
+            status = &quot;okay&quot;;
+        };
+    };
+
+    // ── Fragment 5: GPIO Bridge ──
+    fragment@5 {
+        target = &lt;&amp;pinctrl&gt;;
+        __overlay__ {
+            fpga-bridge-gpio {
+                fpga_bridge_gpio: fpga-bridge-gpio {
+                    rockchip,pins =
+                        &lt;0 RK_PA0 RK_FUNC_GPIO &amp;pcfg_output_low&gt;,
+                        &lt;0 RK_PA1 RK_FUNC_GPIO &amp;pcfg_pull_up&gt;,
+                        &lt;0 RK_PA2 RK_FUNC_GPIO &amp;pcfg_pull_none&gt;;
+                };
+            };
+        };
+    };
+};
+</code></pre>
+<h3 id="4-4-gpio-clock-interrupt-resource-allocation">4.4 GPIO/Clock/Interrupt Resource Allocation</h3>
+<pre><code class="language-typescript">// resourceAllocator.ts
+
+export interface ResourceAllocation {
+  gpio: GPIOAllocation[];
+  clocks: ClockAllocation[];
+  interrupts: InterruptAllocation[];
+}
+
+export class RK3588ResourceAllocator {
+  // Predefined architectural resources
+  private static readonly ARCH_RESERVED = {
+    // GPIO bank reservations
+    gpio0: { used: ['PA0-PA7'], reserved: ['PB0-PB7'] },
+    gpio1: { used: ['PA0-PA7'], reserved: [] },
+    gpio2: { used: [], reserved: ['PC0-PC7'] },  // Used for camera
+
+    // Interrupt reservations (GIC SPI)
+    reservedIrqs: [32, 33, 34, 35],  // System interrupts
+
+    // Clock reservations
+    reservedClks: ['pll_npu', 'clk_npu'],
+  };
+
+  allocateGPIOA(project: ProjectModel): GPIOAllocation[] {
+    const allocations: GPIOAllocation[] = [];
+
+    for (const pin of project.hardware.gpioPins) {
+      // Check for conflicts with architectural reservations
+      const isReserved = RK3588ResourceAllocator.ARCH_RESERVED.gpio0.reserved
+        .some(r =&gt; r === pin.pin);
+
+      if (isReserved) {
+        throw new Error(`GPIO pin ${pin.pin} is reserved by architecture`);
+      }
+
+      allocations.push({
+        pin: pin.pin,
+        function: pin.function,
+        direction: pin.direction,
+        pull: pin.pull || 'none',
+      });
+    }
+
+    return allocations;
+  }
+
+  allocateInterrupts(project: ProjectModel): InterruptAllocation[] {
+    const allocations: InterruptAllocation[] = [];
+
+    // IRQ numbers start here (at 64, reserving the first 64)
+    let nextIrq = 64;
+
+    for (const irq of project.hardware.interrupts) {
+      allocations.push({
+        source: irq.source,
+        gicNumber: nextIrq,
+        type: irq.type,  // 'level' | 'edge'
+        polarity: irq.polarity || 'high',  // 'high' | 'rising' etc.
+      });
+      nextIrq++;
+    }
+
+    return allocations;
+  }
+
+  allocateClocks(project: ProjectModel): ClockAllocation[] {
+    const allocations: ClockAllocation[] = [];
+
+    // Fixed clock allocations
+    const fixedClocks = [
+      { name: 'clk_uart2', freq: 24000000, source: 'xin24m' },
+      { name: 'clk_gmac0', freq: 125000000, source: 'gmac_clkin' },
+      { name: 'clk_sdmmc', freq: 200000000, source: 'cpll' },
+    ];
+
+    for (const clk of fixedClocks) {
+      allocations.push(clk);
+    }
+
+    // Dynamic clock allocations
+    for (const dynamicClk of project.hardware.clocks) {
+      allocations.push({
+        name: dynamicClk.name,
+        freq: dynamicClk.frequency,
+        source: dynamicClk.source,
+      });
+    }
+
+    return allocations;
+  }
+}
+</code></pre>
+<hr />
+<p><a id="ch5"></a></p>
+<h2 id="5-flashing-flow-design">5. Flashing Flow Design</h2>
+<h3 id="5-1-flashing-flow-overview">5.1 Flashing Flow Overview</h3>
+<pre><code class="language-mermaid">flowchart TD
+    Maskrom[&quot;&lt;b&gt;Maskrom Detection&lt;/b&gt;&lt;br/&gt;device enters Maskrom mode&lt;br/&gt;(hold the MASKROM button at power-on, or short the pins)&quot;]
+    Maskrom --&gt; Loader[&quot;&lt;b&gt;LOADER Download&lt;/b&gt;&lt;br/&gt;download the MiniLoader&lt;br/&gt;(rk3588_loader_v*.bin)&lt;br/&gt;rkdeveloptool dnl&quot;]
+    Loader --&gt; Parameter[&quot;&lt;b&gt;Parameter Write&lt;/b&gt;&lt;br/&gt;write the partition table&lt;br/&gt;(parameter.txt)&lt;br/&gt;rkdeveloptool down&quot;]
+    Parameter --&gt; Firmware[&quot;&lt;b&gt;Firmware Download&lt;/b&gt;&lt;br/&gt;write the firmware&lt;br/&gt;(idbloader/trust/uboot/boot/rootfs)&lt;br/&gt;rkdeveloptool up&quot;]
+    Firmware --&gt; Verify[&quot;&lt;b&gt;Verify &amp; Reboot&lt;/b&gt;&lt;br/&gt;verify checksums&lt;br/&gt;reboot the device&quot;]
+</code></pre>
+<h3 id="5-2-flash-implementation">5.2 Flash Implementation</h3>
+<pre><code class="language-typescript">// rk3588Flash.ts
+
+export interface FlashConfig {
+  device: '/dev/ttyUSB0' | string;  // Serial device
+  loaderPath: string;               // MiniLoader path
+  firmwarePath: string;             // update.img path
+  partitions: PartitionConfig[];
+}
+
+export interface PartitionConfig {
+  name: string;
+  offset: number;
+  size: number;
+  file?: string;
+}
+
+export class RK3588Flash {
+  private rkTool: string;
+  private device: string;
+
+  constructor(config: { rkToolPath: string; device?: string }) {
+    this.rkTool = config.rkToolPath;
+    this.device = config.device || '/dev/ttyUSB0';
+  }
+
+  async flash(firmware: FirmwareBinary): Promise&lt;FlashResult&gt; {
+    const result: FlashResult = {
+      success: false,
+      partitions: [],
+      error: undefined,
+    };
+
+    try {
+      // 1. Detect Maskrom mode
+      await this.detectMaskrom();
+
+      // 2. Download the MiniLoader
+      await this.downloadLoader();
+
+      // 3. Write the partition table
+      await this.writeParameter(firmware.parameter);
+
+      // 4. Download the firmware
+      for (const partition of firmware.partitions) {
+        await this.downloadPartition(partition);
+        result.partitions.push({
+          name: partition.name,
+          offset: partition.offset,
+          size: partition.size,
+          path: partition.file,
+          checksum: await this.calculateChecksum(partition.file),
+        });
+      }
+
+      // 5. Verify and reboot
+      await this.verifyAndReboot();
+
+      result.success = true;
+    } catch (error) {
+      result.success = false;
+      result.error = error.message;
+    }
+
+    return result;
+  }
+
+  // ── Maskrom mode detection ──
+
+  async detectMaskrom(): Promise&lt;void&gt; {
+    const result = await this.runCommand(`
+      ${this.rkTool} list
+    `);
+
+    if (!result.stdout.includes('Maskrom')) {
+      throw new Error(
+        'The device is not in Maskrom mode. Please:\n' +
+        '1. Power off\n' +
+        '2. Hold the MASKROM button\n' +
+        '3. Power on\n' +
+        '4. Release the button'
+      );
+    }
+  }
+
+  // ── LOADER download ──
+
+  async downloadLoader(): Promise&lt;void&gt; {
+    console.log('Downloading MiniLoader...');
+
+    const result = await this.runCommand(`
+      ${this.rkTool} dnl ${this.loaderPath}
+    `, { timeout: 60000 });
+
+    if (!result.success) {
+      throw new Error(`Loader download failed: ${result.stderr}`);
+    }
+
+    // Wait for the device to enter loader mode
+    await this.waitForLoaderMode();
+  }
+
+  // ── Partition table write ──
+
+  async writeParameter(parameter: string): Promise&lt;void&gt; {
+    console.log('Writing parameter...');
+
+    const result = await this.runCommand(`
+      cd ${this.firmwareDir}
+      ${this.rkTool} down ${parameter}
+    `);
+
+    if (!result.success) {
+      throw new Error(`Parameter write failed: ${result.stderr}`);
+    }
+  }
+
+  // ── Partition write ──
+
+  async downloadPartition(partition: PartitionInfo): Promise&lt;void&gt; {
+    console.log(`Downloading ${partition.name}...`);
+
+    const result = await this.runCommand(`
+      ${this.rkTool} up ${partition.name} ${partition.file}
+    `, { timeout: partition.size / 1024 / 10 }); // ~10MB/s
+
+    if (!result.success) {
+      throw new Error(`Partition ${partition.name} write failed: ${result.stderr}`);
+    }
+  }
+
+  // ── Verify and reboot ──
+
+  async verifyAndReboot(): Promise&lt;void&gt; {
+    console.log('Verifying and rebooting...');
+
+    const result = await this.runCommand(`
+      ${this.rkTool} verif
+    `);
+
+    if (!result.success) {
+      throw new Error(`Verification failed: ${result.stderr}`);
+    }
+
+    // Reboot the device
+    await this.runCommand(`${this.rkTool} reboot`);
+  }
+
+  // ── Utility functions ──
+
+  private async waitForLoaderMode(timeout = 30000): Promise&lt;void&gt; {
+    const start = Date.now();
+    while (Date.now() - start &lt; timeout) {
+      const result = await this.runCommand(`${this.rkTool} list`);
+      if (result.stdout.includes('Loader')) {
+        return;
+      }
+      await this.sleep(500);
+    }
+    throw new Error('Timed out waiting for Loader mode');
+  }
+
+  private async calculateChecksum(file: string): Promise&lt;string&gt; {
+    const result = await this.runCommand(`md5sum ${file}`);
+    return result.stdout.split(' ')[0];
+  }
+}
+</code></pre>
+<h3 id="5-3-partition-configuration">5.3 Partition Configuration</h3>
+<pre><code class="language-typescript">// partitionConfig.ts
+
+// RK3588 default partition layout (based on 8GB eMMC)
+export const RK3588_DEFAULT_PARTITIONS: PartitionConfig[] = [
+  {
+    name: 'uboot',
+    offset: '0x00002000',     // 64KB
+    size: '0x00002000',       // 64KB
+    file: 'idbloader.img',
+  },
+  {
+    name: 'trust',
+    offset: '0x00004000',     // 128KB
+    size: '0x00004000',       // 256KB
+    file: 'trust.img',
+  },
+  {
+    name: 'boot',
+    offset: '0x00008000',     // 256KB
+    size: '0x00200000',       // 32MB
+    file: 'boot.img',
+  },
+  {
+    name: 'rootfs',
+    offset: '0x00208000',     // 32.5MB
+    size: '0x08000000',       // 256MB
+    file: 'rootfs.squashfs',
+  },
+  {
+    name: 'userdata',
+    offset: '0x08208000',     // 288.5MB
+    size: '0x00000000',       // Remaining space
+    file: undefined,          // Left empty, used by the system
+  },
+];
+
+// parameter.txt format
+export function generateParameterTxt(
+  partitions: PartitionConfig[],
+  version: string
+): string {
+  const lines = [
+    `FIRMWARE_VER: ${version}`,
+    `MAGIC: 0x4F524B50`,
+    `CMDLINE: mtdparts=rk29xxnand:`,
+  ];
+
+  const mtdParts = partitions.map(p =&gt; {
+    const sizeHex = p.size.startsWith('0x')
+      ? parseInt(p.size).toString(16)
+      : p.size;
+    return `${p.name}@0x${parseInt(p.offset).toString(16)}(${p.name})`;
+  });
+
+  lines.push('    ' + mtdParts.join(',\\');
+  lines.push('');
+
+  return lines.join('\n');
+}
+</code></pre>
+<hr />
+<p><a id="ch6"></a></p>
+<h2 id="6-debug-support">6. Debug Support</h2>
+<h3 id="6-1-debug-architecture">6.1 Debug Architecture</h3>
+<pre><code class="language-mermaid">flowchart TD
+    Serial[&quot;&lt;b&gt;Serial Console&lt;/b&gt;&quot;]
+    ADB[&quot;&lt;b&gt;ADB Access&lt;/b&gt;&quot;]
+    Panic[&quot;&lt;b&gt;Kernel Panic&lt;/b&gt;&quot;]
+
+    Serial --&gt; Aggregator[&quot;&lt;b&gt;DebugData Aggregator&lt;/b&gt;&lt;br/&gt;- serialLogs[]&lt;br/&gt;- kernelPanic&lt;br/&gt;- dmesgOutput&lt;br/&gt;- adbStatus&quot;]
+    ADB --&gt; Aggregator
+    Panic --&gt; Aggregator
+
+    Aggregator --&gt; AI[&quot;&lt;b&gt;AI Analysis&lt;/b&gt; (L4 Intelligence)&lt;br/&gt;- TimingDiagnoser&lt;br/&gt;- BuildStrategyAdvisor&lt;br/&gt;- CopilotContext&quot;]
+</code></pre>
+<h3 id="6-2-serial-log-capture">6.2 Serial Log Capture</h3>
+<pre><code class="language-typescript">// serialDebug.ts
+
+export interface SerialConfig {
+  port: string;           // '/dev/ttyUSB0' or 'COM3'
+  baudRate: number;       // 1500000 (RK3588 default)
+  dataBits: 8;
+  stopBits: 1;
+  parity: 'none';
+}
+
+export class SerialDebugger {
+  private port: SerialPort;
+  private reader: ReadableStreamDefaultReader;
+  private logBuffer: SerialLog[] = [];
+
+  async connect(config: SerialConfig): Promise&lt;void&gt; {
+    this.port = new SerialPort({
+      path: config.port,
+      baudRate: config.baudRate,
+      dataBits: config.dataBits,
+      stopBits: config.stopBits,
+      parity: config.parity,
+    });
+
+    this.reader = this.port.read(ttyBuffer).getReader();
+  }
+
+  async readLogs(duration = 5000): Promise&lt;SerialLog[]&gt; {
+    const logs: SerialLog[] = [];
+    const startTime = Date.now();
+
+    while (Date.now() - startTime &lt; duration) {
+      const { value, done } = await this.reader.read();
+
+      if (done) break;
+
+      const line = new TextDecoder().decode(value);
+      logs.push({
+        timestamp: Date.now(),
+        content: line,
+        level: this.parseLogLevel(line),
+      });
+
+      this.logBuffer.push(logs[logs.length - 1]);
+    }
+
+    return logs;
+  }
+
+  parseLogLevel(line: string): 'info' | 'warn' | 'error' | 'debug' {
+    if (line.includes('[    0.000000]') || line.includes('Starting kernel')) {
+      return 'info';
+    }
+    if (line.includes('WARNING') || line.includes('warn')) {
+      return 'warn';
+    }
+    if (line.includes('ERROR') || line.includes('BUG') || line.includes('Panic')) {
+      return 'error';
+    }
+    return 'debug';
+  }
+
+  // Keep listening and stream logs in real time
+  async *streamLogs(): AsyncGenerator&lt;SerialLog&gt; {
+    while (true) {
+      const { value, done } = await this.reader.read();
+      if (done) break;
+
+      const line = new TextDecoder().decode(value);
+      const log: SerialLog = {
+        timestamp: Date.now(),
+        content: line,
+        level: this.parseLogLevel(line),
+      };
+
+      this.logBuffer.push(log);
+      yield log;
+    }
+  }
+}
+</code></pre>
+<h3 id="6-3-adb-connection-management">6.3 ADB Connection Management</h3>
+<pre><code class="language-typescript">// adbDebug.ts
+
+export interface ADBDevice {
+  serial: string;
+  state: 'device' | 'offline' | 'unauthorized';
+  product: string;
+  model: string;
+  device: string;
+}
+
+export class ADBManager {
+  private adbPath: string;
+
+  constructor(adbPath = 'adb') {
+    this.adbPath = adbPath;
+  }
+
+  async getDevices(): Promise&lt;ADBDevice[]&gt; {
+    const result = await this.runCommand(`${this.adbPath} devices -l`);
+    const devices: ADBDevice[] = [];
+
+    for (const line of result.stdout.split('\n').slice(1)) {
+      if (!line.trim()) continue;
+
+      const parts = line.split(/\s+/);
+      devices.push({
+        serial: parts[0],
+        state: parts[1] as ADBDevice['state'],
+        product: this.extractValue(parts, 'product'),
+        model: this.extractValue(parts, 'model'),
+        device: this.extractValue(parts, 'device'),
+      });
+    }
+
+    return devices;
+  }
+
+  async shell(command: string): Promise&lt;string&gt; {
+    const result = await this.runCommand(`${this.adbPath} shell &quot;${command}&quot;`);
+    return result.stdout;
+  }
+
+  async pull(remotePath: string, localPath: string): Promise&lt;void&gt; {
+    await this.runCommand(`${this.adbPath} pull ${remotePath} ${localPath}`);
+  }
+
+  async push(localPath: string, remotePath: string): Promise&lt;void&gt; {
+    await this.runCommand(`${this.adbPath} push ${localPath} ${remotePath}`);
+  }
+
+  async getDmesg(): Promise&lt;string[]&gt; {
+    const output = await this.shell('dmesg');
+    return output.split('\n').filter(line =&gt; line.trim());
+  }
+
+  async getKernelPanic(): Promise&lt;KernelPanicInfo | null&gt; {
+    const dmesg = await this.getDmesg();
+
+    // Look for kernel panic information
+    const panicLines: string[] = [];
+    let inPanic = false;
+
+    for (const line of dmesg) {
+      if (line.includes('Kernel panic')) {
+        inPanic = true;
+      }
+      if (inPanic) {
+        panicLines.push(line);
+        if (line.includes('---[ end trace')) {
+          break;
+        }
+      }
+    }
+
+    if (panicLines.length === 0) {
+      return null;
+    }
+
+    return {
+      fullLog: panicLines.join('\n'),
+      timestamp: this.extractTimestamp(panicLines[0]),
+      reason: this.extractPanicReason(panicLines),
+      callTrace: this.extractCallTrace(panicLines),
+    };
+  }
+
+  private extractPanicReason(lines: string[]): string {
+    for (const line of lines) {
+      if (line.includes('not syncing')) {
+        const match = line.match(/not syncing: (.+)$/);
+        return match ? match[1] : 'Unknown';
+      }
+    }
+    return 'Unknown';
+  }
+
+  private extractCallTrace(lines: string[]): string[] {
+    const trace: string[] = [];
+    let inTrace = false;
+
+    for (const line of lines) {
+      if (line.includes('Call trace:') || line.includes('Stack:')) {
+        inTrace = true;
+        continue;
+      }
+      if (inTrace &amp;&amp; line.match(/^\s*0x[0-9a-f]+/)) {
+        trace.push(line.trim());
+      }
+      if (inTrace &amp;&amp; line.match(/^\s*--- end trace/)) {
+        break;
+      }
+    }
+
+    return trace;
+  }
+}
+</code></pre>
+<h3 id="6-4-kernel-panic-log-parsing">6.4 Kernel Panic Log Parsing</h3>
+<pre><code class="language-typescript">// kernelPanicAnalyzer.ts
+
+export interface KernelPanicAnalyzer {
+  analyze(panicInfo: KernelPanicInfo): PanicAnalysis;
+  suggestFixes(analysis: PanicAnalysis): FixSuggestion[];
+}
+
+export interface PanicAnalysis {
+  type: PanicType;
+  severity: 'critical' | 'high' | 'medium';
+  rootCause: string;
+  affectedComponent: string;
+  stackTrace: AnalyzedStackTrace[];
+}
+
+export interface FixSuggestion {
+  description: string;
+  command?: string;
+  configChange?: ConfigChange;
+  confidence: number;  // 0-1
+}
+
+export class RK3588PanicAnalyzer implements KernelPanicAnalyzer {
+  // Panic type recognition patterns
+  private readonly PANIC_PATTERNS = [
+    {
+      type: 'oom' as PanicType,
+      pattern: /Out of memory.*LPJ/,
+      severity: 'critical',
+      rootCause: 'Out of memory',
+      suggestedFixes: [
+        { description: 'Increase the zram size', command: 'echo 50% &gt; /sys/block/zram0/disksize' },
+        { description: 'Reduce init services', confidence: 0.8 },
+        { description: 'Increase DDR capacity or enable swap', confidence: 0.6 },
+      ],
+    },
+    {
+      type: 'null_pointer' as PanicType,
+      pattern: /BUG: unable to handle kernel NULL pointer dereference/,
+      severity: 'critical',
+      rootCause: 'NULL pointer dereference',
+      suggestedFixes: [
+        { description: 'Check the driver load order', confidence: 0.7 },
+        { description: 'Update the kernel or driver version', confidence: 0.5 },
+      ],
+    },
+    {
+      type: 'watchdog' as PanicType,
+      pattern: /watchdog.*timer didn't stop/,
+      severity: 'high',
+      rootCause: 'Watchdog timeout, system hang',
+      suggestedFixes: [
+        { description: 'Increase the watchdog timeout', configChange: { kernel: 'CONFIG_WATCHDOG_TIMEOUT=30' } },
+        { description: 'Check the system load', confidence: 0.6 },
+      ],
+    },
+    {
+      type: 'fs' as PanicType,
+      pattern: /VFS: Unable to mount root fs/,
+      severity: 'critical',
+      rootCause: 'Root filesystem mount failed',
+      suggestedFixes: [
+        { description: 'Check the rootfs path in boot.img', confidence: 0.9 },
+        { description: 'Verify the rootfs image integrity', command: 'sha256sum rootfs.squashfs' },
+        { description: 'Check the kernel cmdline root parameter', confidence: 0.8 },
+      ],
+    },
+  ];
+
+  analyze(panicInfo: KernelPanicInfo): PanicAnalysis {
+    for (const pattern of this.PANIC_PATTERNS) {
+      if (pattern.pattern.test(panicInfo.fullLog)) {
+        return {
+          type: pattern.type,
+          severity: pattern.severity,
+          rootCause: pattern.rootCause,
+          affectedComponent: this.extractAffectedComponent(panicInfo),
+          stackTrace: this.analyzeStackTrace(panicInfo.callTrace),
+        };
+      }
+    }
+
+    return {
+      type: 'unknown',
+      severity: 'high',
+      rootCause: 'Unknown cause',
+      affectedComponent: 'unknown',
+      stackTrace: [],
+    };
+  }
+
+  suggestFixes(analysis: PanicAnalysis): FixSuggestion[] {
+    for (const pattern of this.PANIC_PATTERNS) {
+      if (pattern.type === analysis.type) {
+        return pattern.suggestedFixes;
+      }
+    }
+    return [];
+  }
+
+  private analyzeStackTrace(callTrace: string[]): AnalyzedStackTrace[] {
+    return callTrace.map(addr =&gt; ({
+      address: addr,
+      // Can be further resolved to symbols with addr2line
+      symbol: this.resolveSymbol(addr),
+    }));
+  }
+
+  private resolveSymbol(addr: string): string {
+    // Call arm-none-eabi-addr2line or aarch64-linux-gnu-addr2line
+    // return runCommand(`aarch64-linux-gnu-addr2line -e vmlinux ${addr}`);
+    return addr;
+  }
+}
+</code></pre>
+<hr />
+<p><a id="ch7"></a></p>
+<h2 id="7-implementation-priorities">7. Implementation Priorities</h2>
+<h3 id="7-0-mvp-boundaries-and-phase-gates">7.0 MVP Boundaries and Phase Gates</h3>
+<p>The first MVP is fixed to "one specific board revision + one specific BSP manifest + the Linux/Buildroot single path". Android, Yocto, arbitrary board DTS synthesis, automatic MIPI topology, and fully automated production flashing are all out of the MVP. Each phase can only proceed after the previous phase has produced machine-verifiable evidence:</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Required evidence</th>
+<th>Current implementation status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G0 Profile</td>
+<td>BSP commit, board revision, toolchain digest, loader, and partition layout all locked</td>
+<td>✅ Validator, JSON Schema, and hash checks implemented; target-board profile to be filled in</td>
+</tr>
+<tr>
+<td>G1 Build</td>
+<td>clean build succeeds; artifact hashes, config diffs, logs, and manifest are traceable</td>
+<td>✅ Orchestration and evidence generation implemented, fake-BSP passes; target-BSP clean build pending</td>
+</tr>
+<tr>
+<td>G2 Boot</td>
+<td>full boot over serial; kernel, DT, and rootfs identities match the manifest</td>
+<td>⏳ Not part of Phase 1, requires the target board</td>
+</tr>
+<tr>
+<td>G3 Bridge</td>
+<td>PCIe/GMAC/GPIO each pass enumeration, loopback/throughput, interrupt, and error-injection tests</td>
+<td>⏳ Not part of Phase 1, requires the target board and an FPGA</td>
+</tr>
+<tr>
+<td>G4 Release</td>
+<td>repeatable flashing, read-back/boot verification, failure-recovery flow, and compatibility matrix pass</td>
+<td>⏳ Not part of Phase 1, depends on Phase 3/HIL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-1-phase-1-basic-build-flow-p1">7.1 Phase 1: Basic Build Flow (P1)</h3>
+<p><strong>Goal</strong>: implement standalone build capability for U-Boot, Kernel, and Rootfs</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Depends on</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RK3588Adapter skeleton</td>
+<td>VendorAdapter interface definition</td>
+<td>✅ Implemented</td>
+</tr>
+<tr>
+<td>U-Boot build flow</td>
+<td>BSP profile</td>
+<td>✅ Implemented, pending target-BSP verification</td>
+</tr>
+<tr>
+<td>Kernel build flow</td>
+<td>BSP profile</td>
+<td>✅ Implemented, pending target-BSP verification</td>
+</tr>
+<tr>
+<td>Buildroot build flow</td>
+<td>BSP profile</td>
+<td>✅ Implemented, pending target-BSP verification</td>
+</tr>
+<tr>
+<td>Build report parsing</td>
+<td>the individual build flows</td>
+<td>✅ Implemented (errors/warnings/exit codes/artifact verification)</td>
+</tr>
+<tr>
+<td>Firmware packaging</td>
+<td>vendor packaging command from the BSP profile</td>
+<td>✅ Implemented, pending target-BSP verification</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MVP implementation location</strong>: <code>src/adapters/rk3588/</code>; the CLI is <code>src/cli/evoverse.ts</code>; the profile schema and templates live in <code>catalog/soc/rk3588/profiles/</code>. As of 2026-07-14, fake-BSP integration tests cover G0 preflight, four-stage orchestration, report generation, artifact SHA-256s, path escape, shell rejection, and missing-artifact failure; "implemented" means the software flow is complete, not that any specific RK3588 board has passed G1/G2 verification.</p>
+<p><strong>Deliverables</strong>:</p>
+<pre><code class="language-bash">evoverse rk3588 build --stage uboot
+evoverse rk3588 build --stage kernel
+evoverse rk3588 build --stage rootfs
+evoverse rk3588 build --stage all
+evoverse rk3588 package --output update.img
+</code></pre>
+<h3 id="7-2-phase-2-device-tree-generation-p2">7.2 Phase 2: Device Tree Generation (P2)</h3>
+<p><strong>Goal</strong>: automatically generate a Device Tree that matches the hardware configuration</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Depends on</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DTBGenerator base implementation</td>
+<td>Phase 1</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>Board DTS generation</td>
+<td>board-level manifest</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>Bridge Spec Overlay generation</td>
+<td>Bridge Spec definition</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>GPIO/Clock/IRQ resource allocation</td>
+<td>project hardware configuration</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>DTB compilation and validation</td>
+<td>DTBGenerator</td>
+<td>To do</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deliverables</strong>:</p>
+<pre><code class="language-bash">evoverse rk3588 gen-dts --board &lt;board-id&gt; --output rk3588-custom.dts
+evoverse rk3588 gen-dts --bridge-spec bridge.yaml --output bridge-overlay.dtsh
+</code></pre>
+<h3 id="7-3-phase-3-flashing-integration-p3">7.3 Phase 3: Flashing Integration (P3)</h3>
+<p><strong>Goal</strong>: integrate rkdeveloptool for firmware flashing</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Depends on</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flash interface definition</td>
+<td>VendorAdapter interface</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>Maskrom detection</td>
+<td>rkdeveloptool available</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>LOADER download</td>
+<td>Maskrom detection</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>Partition write</td>
+<td>LOADER download</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>Firmware verification</td>
+<td>partition write</td>
+<td>To do</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deliverables</strong>:</p>
+<pre><code class="language-bash">evoverse rk3588 flash --firmware update.img --device-id &lt;rockusb-stable-id&gt;
+evoverse rk3588 flash --verify
+</code></pre>
+<h3 id="7-4-phase-4-debug-support-p4">7.4 Phase 4: Debug Support (P4)</h3>
+<p><strong>Goal</strong>: provide full debug capability</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Depends on</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Serial log capture</td>
+<td>Serial configuration</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>ADB connection management</td>
+<td>ADB available</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>Kernel panic parsing</td>
+<td>serial logs</td>
+<td>To do</td>
+</tr>
+<tr>
+<td>AI diagnosis integration</td>
+<td>BuildReport model</td>
+<td>To do</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deliverables</strong>:</p>
+<pre><code class="language-bash">evoverse rk3588 debug --serial /dev/ttyUSB0
+evoverse rk3588 debug --adb
+evoverse rk3588 diagnose --logs dmesg.txt
+</code></pre>
+<h3 id="7-5-priority-matrix">7.5 Priority Matrix</h3>
+<pre><code class="language-mermaid">quadrantChart
+    title Priority Matrix
+    x-axis &quot;Importance low&quot; --&gt; &quot;Importance high&quot;
+    y-axis &quot;Efficiency low&quot; --&gt; &quot;Efficiency high&quot;
+    quadrant-1 &quot;High value, medium effort&quot;
+    quadrant-2 &quot;Foundational capability&quot;
+    quadrant-3 &quot;Low priority&quot;
+    quadrant-4 &quot;Low value&quot;
+    &quot;P1.3 Kernel&quot;: [0.8, 0.8]
+    &quot;P2.3 Bridge Spec Overlay&quot;: [0.9, 0.7]
+    &quot;P1.2 U-Boot&quot;: [0.4, 0.3]
+    &quot;P1.4 Rootfs&quot;: [0.3, 0.2]
+    &quot;P3.1 Flash&quot;: [0.6, 0.3]
+    &quot;P4.2 ADB&quot;: [0.5, 0.25]
+</code></pre>
+<p><strong>Recommended execution order</strong>:
+1. Phase 1.3 Kernel build (highest value, most verification)
+2. Phase 1.1-1.4 the complete build flow
+3. Phase 2.1-2.2 Device Tree generation
+4. Phase 3 flashing integration
+5. Phase 2.3 Bridge Spec Overlay
+6. Phase 4 debug support</p>
+<hr />
+<p><a id="ch8"></a></p>
+<h2 id="8-directory-structure">8. Directory Structure</h2>
+<h3 id="8-1-rk3588-adapter-directory-structure">8.1 RK3588 Adapter Directory Structure</h3>
+<blockquote>
+<p><strong>Architecture evolution note</strong>: The RK3588 Adapter is no longer a subdirectory under the SDK's <code>src/adapters/</code>; it is a <strong>standalone VS Code Extension (VSIX)</strong> that plugs in through the SDK's Workbench plug-in contract. This matches how <code>products/efinity-adapter/</code> and <code>products/video-sim/</code> are organized. The adapter is declaratively decoupled from the SDK main extension through <code>extensionDependencies</code> plus the <code>evoverseAdapter</code> manifest in <code>package.json</code>, and can be compiled, versioned, and released independently. The Workbench public contract lives in <code>sdk/extension/src/workbench/contracts.ts</code>; the <code>src/workbench/contracts.d.ts</code> inside this plug-in is its type mirror (kept in sync, excluded from emit).</p>
+</blockquote>
+<pre><code>evoversesdk/
+└── products/
+    └── rk3588-adapter/                       # Standalone VSIX root
+        └── extension/
+            ├── package.json                  # evoverseAdapter manifest: id / workbenchApi / supportedChips / capabilities
+            ├── tsconfig.json
+            ├── .vscodeignore
+            │
+            ├── catalog/                      # SoC-level material (ships with the adapter)
+            │   └── soc/rk3588/profiles/
+            │       ├── bsp-profile.schema.json   # BSP profile JSON Schema (maps to §9.1 BspProfile)
+            │       └── profile.example.json
+            │
+            ├── media/                        # Workbench webview front-end assets
+            │   ├── workspace.html            # Workbench UI (how the §1~§7 capabilities surface in the UI)
+            │   ├── workspace.css
+            │   └── workspace.js
+            │
+            ├── src/
+            │   ├── extension.ts              # VS Code extension activate() entry: registers contributions, loads the manifest
+            │   ├── rk3588Contribution.ts     # WorkspaceContribution implementation (Workbench contract: getScope/handleCommand/getExplorer/subscribe)
+            │   │
+            │   ├── runtime/                  # Adapter runtime (implementation of the VendorAdapter contract)
+            │   │   ├── vendorAdapter.ts      # VendorAdapter contract declaration inside this plug-in
+            │   │   └── rk3588/
+            │   │       ├── rk3588Adapter.ts  # RK3588Adapter main class (preflight/build/package)
+            │   │       ├── runner.ts         # Four-stage build orchestration (uboot→kernel→rootfs→package)
+            │   │       ├── profile.ts        # BSP profile loading and validation
+            │   │       ├── reportParser.ts   # build report → vendor-neutral BuildReport
+            │   │       ├── hash.ts           # artifact SHA-256
+            │   │       ├── paths.ts          # path safety (escape prevention)
+            │   │       ├── types.ts          # RK3588-specific types
+            │   │       └── build/            # stage-by-stage build (maps to §3)
+            │   │           ├── stageBuild.ts     # generic stage executor
+            │   │           ├── ubootBuild.ts     # U-Boot (maps to §3.2)
+            │   │           ├── kernelBuild.ts    # Kernel + DTB (maps to §3.3)
+            │   │           ├── rootfsBuild.ts    # Buildroot Rootfs (maps to §3.4)
+            │   │           └── firmwarePack.ts   # update.img packaging (maps to §3.5)
+            │   │
+            │   ├── workbench/                # Workbench integration layer (talks to the SDK host)
+            │   │   ├── contracts.d.ts        # SDK Workbench public contract mirror (kept in sync with sdk/extension/src/workbench/contracts.ts)
+            │   │   ├── gateway.ts            # WorkbenchCommand gateway → routes to runtime
+            │   │   ├── explorer.ts           # Workbench explorer nodes
+            │   │   ├── projectContext.ts     # project context loading
+            │   │   ├── runCoordinator.ts     # run lifecycle and cancellation
+            │   │   └── snapshot.ts           # WorkspaceScopeSnapshot generation
+            │   │
+            │   └── webview/
+            │       └── reducer.ts            # front-end state machine (WorkbenchEvent → UI state)
+            │
+            ├── test-fixtures/                # contract test fixtures
+            │   ├── fakeTool.js               # fake BSP tool (succeeds immediately)
+            │   └── slowTool.js               # fake timeout/cancellation
+            │
+            └── rk3588-*-test.js             # four integration test suites: runtime / gateway / project / workbench
+</code></pre>
+<p><strong>Differences from the original design (old §8.1 deprecated)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Old design (src/adapters/ subdirectory)</th>
+<th>Current implementation (products/rk3588-adapter standalone VSIX)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/adapters/rk3588/{flash,deviceTree,debug,config}/</code></td>
+<td>The flash/deviceTree/debug modules are <strong>not yet implemented</strong> (see §7 Phase 2~4); when implemented in the corresponding phase, they land in sibling directories under <code>src/runtime/rk3588/build/</code> instead of a separate config/</td>
+</tr>
+<tr>
+<td><code>catalog/boards/rk3588-evb/</code> (board manifest)</td>
+<td>Board manifests belong to the standalone <code>evoverse-catalog</code> repository (customers install it into <code>${EVOVERSE_HOME}/catalog</code> via Sync Catalog); this plug-in only carries the SoC-level <code>catalog/soc/rk3588/profiles/</code></td>
+</tr>
+<tr>
+<td><code>cli/commands/rk3588.ts</code> (standalone CLI bin)</td>
+<td>The old standalone CLI is deprecated; RK3588 operations go through VS Code commands + the Workbench contract. If a headless CLI is needed, add an <code>evoverse rk3588</code> subcommand to the SDK main CLI <code>sdk/cli/evoverse</code> that calls this plug-in's runtime</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-2-sdk-project-model-extensions">8.2 SDK Project Model Extensions</h3>
+<pre><code class="language-typescript">// types/projectModel.ts
+
+export interface ProjectModel {
+  // Existing fields...
+
+  // RK3588 extensions (new)
+  soc?: SoCConfig;
+  bridgeSpec?: BridgeSpec;
+}
+
+export interface SoCConfig {
+  chip: 'rk3588';
+  board: string;
+
+  // Software configuration
+  uboot: {
+    version: string;
+    defconfig: string;
+    customConfig?: Record&lt;string, string&gt;;
+  };
+
+  kernel: {
+    version: string;
+    defconfig: string;
+    dtb: string;
+    modules: string[];
+    customConfig?: Record&lt;string, boolean | string&gt;;
+  };
+
+  rootfs: {
+    buildrootConfig: string;
+    packages: string[];
+    overlay?: string;
+  };
+
+  // Hardware configuration
+  hardware: {
+    memory: {
+      size: number;         // in bytes
+      type: 'DDR4' | 'LPDDR4' | 'LPDDR5';
+    };
+    storage: {
+      type: 'eMMC' | 'SD' | 'NVM E';
+      size: number;
+    };
+    connectivity: {
+      ethernet: '1G' | '2.5G' | '5G';
+      wifi?: boolean;
+      bluetooth?: boolean;
+    };
+  };
+}
+
+export interface BridgeSpec {
+  // ── Bridge physical interface configuration ──
+  pcie?: PCIeConfig;
+  ethernet?: EthernetConfig;
+  mipi?: MIPIConfig;
+  gpio: GPIOConfig[];
+
+  // ── Common fields (existing address maps, interrupts, etc. retained) ──
+  addressMaps?: AddressMap[];
+  interrupts?: InterruptMapping[];
+  clocks?: ClockMapping[];
+  resets?: ResetMapping[];
+  dmaChannels?: DMAMapping[];
+}
+
+// ── PCIe configuration ──
+
+export interface PCIeConfig {
+  /** Link configuration */
+  generation: 'gen2' | 'gen3';
+  lanes: 1 | 2 | 4;
+
+  /** RK3588 role (usually RC) */
+  role: 'rc' | 'ep';
+
+  /** BAR space allocation */
+  bars: PCIeBAR[];
+
+  /** Interrupt mode */
+  interruptMode: 'msi' | 'msi-x';
+  /** Number of MSI vectors */
+  msiVectors?: number;
+
+  /** pcie node reference in the Device Tree */
+  dtNode: string;   // e.g. &quot;pcie3x4&quot;
+}
+
+export interface PCIeBAR {
+  index: 0 | 1 | 2 | 3 | 4 | 5;
+  /** Address width: 32-bit or 64-bit */
+  addressWidth: 32 | 64;
+  /** Prefetchable or not */
+  prefetchable: boolean;
+  /** BAR size in bytes, must be a power of 2 */
+  size: number;
+  /** Purpose description */
+  description: string;
+}
+
+// ── Ethernet configuration ──
+
+export interface EthernetConfig {
+  /** GMAC controller instance */
+  gmacInstance: 'gmac0' | 'gmac1';
+
+  /** RGMII mode */
+  phyMode: 'rgmii' | 'rgmii-rxid' | 'rgmii-txid' | 'rgmii-id';
+
+  /** MDIO address of the FPGA-internal PHY */
+  phyAddress: number;   // 0~31
+
+  /** Link speed */
+  speed: 10 | 100 | 1000;
+
+  /** Whether to use fixed-link (when the FPGA-internal PHY has no standard MDIO registers) */
+  useFixedLink?: boolean;
+
+  /** MAC address (optional; if empty, read from OTP) */
+  macAddress?: string;  // format &quot;xx:xx:xx:xx:xx:xx&quot;
+
+  /** gmac node reference in the Device Tree */
+  dtNode: string;       // e.g. &quot;gmac0&quot;
+}
+
+// ── MIPI configuration ──
+
+export interface MIPIConfig {
+  /** CSI input configuration (FPGA → RK3588) */
+  csi?: MIPICSIConfig;
+
+  /** DSI output configuration (RK3588 → FPGA) */
+  dsi?: MIPIDSIConfig;
+}
+
+export interface MIPICSIConfig {
+  /** CSI controller instance */
+  controller: string;   // e.g. &quot;csi2_dphy0&quot;
+
+  /** Number of lanes */
+  lanes: 1 | 2 | 4;
+
+  /** Maximum rate per lane (bps) */
+  maxBitrate: number;   // e.g. 2500000000 (2.5 Gbps)
+
+  /** Data format */
+  dataFormat: 'raw8' | 'raw10' | 'raw12' | 'yuv422-8bit' | 'yuv422-10bit' | 'rgb888';
+
+  /** Virtual channel (0~3) */
+  virtualChannel?: number;
+
+  /** csi node reference in the Device Tree */
+  dtNode: string;
+}
+
+export interface MIPIDSIConfig {
+  /** DSI controller instance */
+  controller: string;   // e.g. &quot;dsi0&quot;
+
+  /** Number of lanes */
+  lanes: 1 | 2 | 4;
+
+  /** Maximum rate per lane (bps) */
+  maxBitrate: number;   // e.g. 2500000000 (2.5 Gbps)
+
+  /** Display timings */
+  displayTiming: {
+    hactive: number;
+    vactive: number;
+    hfrontPorch: number;
+    hbackPorch: number;
+    hsyncLen: number;
+    vfrontPorch: number;
+    vbackPorch: number;
+    vsyncLen: number;
+    pixelClock: number;               // Hz
+  };
+
+  /** dsi node reference in the Device Tree */
+  dtNode: string;
+}
+
+// ── GPIO configuration ──
+
+export interface GPIOConfig {
+  /** Signal name */
+  name: string;          // e.g. &quot;FPGA_RESET&quot;, &quot;FPGA_IRQ&quot;, &quot;FPGA_DONE&quot;
+
+  /** Signal direction */
+  direction: 'input' | 'output';
+
+  /** GPIO pin description (RK3588 GPIO bank + pin) */
+  gpioBank: number;      // 0~4; the actually usable pins depend on the package, board schematic, and pinctrl
+  gpioPin: string;       // e.g. &quot;PA0&quot;, &quot;PB3&quot;
+  /** Full GPIO label, e.g. &lt;&amp;gpio0 RK_PA0 GPIO_ACTIVE_LOW&gt; */
+  gpioLabel?: string;
+
+  /** Purpose description */
+  purpose: string;
+
+  /** Bias configuration */
+  bias?: 'pull-up' | 'pull-down' | 'none';
+
+  /** Drive strength */
+  driveStrength?: number; // mA
+
+  /** Whether the pin supports interrupts (only meaningful for input direction) */
+  interruptCapable?: boolean;
+  /** Interrupt trigger type */
+  interruptType?: 'rising' | 'falling' | 'both' | 'level-high' | 'level-low';
+}
+
+// ── Retained common interface types ──
+
+export interface AddressMap {
+  name: string;
+  fpgaBase: number;
+  socBase: number;
+  size: number;
+  registers: Register[];
+}
+
+export interface Register {
+  offset: number;
+  size: number;
+  name: string;
+  description: string;
+}
+
+export interface InterruptMapping {
+  source: string;        // FPGA interrupt source name
+  gicNumber: number;     // GIC IRQ number
+  type: 'level' | 'edge';
+}
+
+export interface ClockMapping {
+  fpgaClock: string;     // FPGA clock output name
+  rk3588Clock: string;   // RK3588 clock consumer
+  frequency: number;
+}
+
+export interface ResetMapping {
+  fpgaReset: string;
+  rk3588Reset: string;
+  holdTime: number;      // milliseconds
+}
+</code></pre>
+<hr />
+<h2 id="9-adapter-contract-hardening">9. Adapter Contract Hardening</h2>
+<h3 id="9-1-profile-driven-not-rk3588-hard-coding">9.1 Profile-Driven, Not RK3588 Hard-Coding</h3>
+<p><code>RK3588Adapter</code> must consume an immutable <code>BspProfile</code>: board/carrier revision, BSP manifest, build entry points, component commits, container digest, toolchain, defconfig, base DTS, loaders, partition layout, artifact rules, and verified capabilities. The adapter never guesses defconfigs, DT labels, GPIOs, or flash offsets; when something is missing, it fails during preflight.</p>
+<pre><code class="language-typescript">interface BspProfile {
+  schemaVersion: '1';
+  id: string;
+  boardRevision: string;
+  bsp: { manifest: string; commit: string; family: 'rockchip-linux' | 'vendor-fork' };
+  environment: { containerDigest: string; toolchainTriple: string; toolchainSha256: string };
+  commands: { configure: CommandSpec; build: Record&lt;BuildStageName, CommandSpec&gt; };
+  boot: { loaderSha256: string; partitionLayoutSha256: string };
+  deviceTree: { baseDtb: string; permittedOverlays: string[] };
+  capabilities: Record&lt;string, 'verified' | 'experimental' | 'unsupported'&gt;;
+}
+</code></pre>
+<p>Commands must be executed as argument arrays, never by splicing user input through a shell; set the cwd, an environment-variable allowlist, timeouts, and cancellation signals, and store stdout/stderr verbatim. Build output goes into a dedicated directory; modifying files in the SDK source tree that the user did not declare is forbidden.</p>
+<h3 id="9-2-upgrade-the-interface-from-synchronous-pseudocode-to-an-async-cancellable-contract">9.2 Upgrade the Interface from Synchronous Pseudocode to an Async, Cancellable Contract</h3>
+<p>Split the generic <code>VendorAdapter</code>'s <code>build()</code> into <code>preflight/plan/execute/collect</code>, and make <code>program()</code> and <code>debug()</code> optional capabilities, instead of forcing SoC adapters to return fake data for FPGA timing interfaces.</p>
+<pre><code class="language-typescript">interface AdapterCapabilities { build: true; package: boolean; flash: boolean; debug: boolean; timing: boolean }
+interface VendorAdapterV2 {
+  readonly id: string;
+  readonly capabilities: AdapterCapabilities;
+  preflight(ctx: OperationContext): Promise&lt;Diagnostic[]&gt;;
+  plan(project: ProjectModel, ctx: OperationContext): Promise&lt;BuildPlan&gt;;
+  execute(plan: BuildPlan, ctx: OperationContext): AsyncIterable&lt;BuildEvent&gt;;
+  collect(runId: string, ctx: OperationContext): Promise&lt;BuildReport&gt;;
+  flash?(request: FlashRequest, ctx: OperationContext): AsyncIterable&lt;FlashEvent&gt;;
+}
+</code></pre>
+<p><code>OperationContext</code> contains at least the workspace, an AbortSignal, a log scrubber, an execution policy, and approval tokens. <code>BuildReport</code> records the stage DAG, command digests, exit codes, durations, peak resources, diagnostics, artifact SHA-256s, config/source identity, and log locations; <code>success</code> must be derived from all required stages succeeding and artifact verification passing — not from the last process exit code alone.</p>
+<h3 id="9-3-safety-boundaries-of-device-tree-generation">9.3 Safety Boundaries of Device Tree Generation</h3>
+<p>By default, the adapter does not generate a board DTS from scratch; instead: select the profile's verified base DTS → generate a minimal overlay/controlled patch → compile with <code>dtc</code> → schema/semantic validation → merged verification against the base DT → output a diff. The PCIe RC's DT covers the controller, PHY, clocks/resets, and the board-level PERST#; the FPGA Endpoint is enumerated from the PCI bus and drivers bind by PCI ID. All node labels, clock IDs, reset IDs, GPIOs, and <code>ranges</code> in the examples are board/BSP-specific placeholders and must not be shipped without verification against the target BSP.</p>
+<p>The Bridge Spec must simultaneously produce: the FPGA register header file, the Linux UAPI/driver description, the device tree patch (applicable items only), the protocol version, and an ABI hash. Address, width, alignment, endianness, cache coherency, DMA mask/IOMMU, IRQ semantics, reset timing, and error recovery are all mandatory or explicitly <code>not-applicable</code>; maintaining multiple hand-written register tables in parallel is forbidden.</p>
+<h3 id="9-4-transaction-and-permission-model-for-flash">9.4 Transaction and Permission Model for Flash</h3>
+<p>Flash is a high-risk, standalone capability. The flow is <code>discover → identify → snapshot layout → validate images → dry-run plan → explicit approval → write → verify → reboot/health-check</code>. Requests must carry a stable device identifier, the expected SoC/mode, the profile ID, and image hashes; multiple devices or an identity mismatch means rejection. Using a serial device path as rkdeveloptool's device selector is forbidden, as are default erases and hard-coded LBAs. Whole-disk images, bootloaders, GPT, and user-data partitions carry different risk levels.</p>
+<h3 id="9-5-bridge-verification-matrix">9.5 Bridge Verification Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Static checks</th>
+<th>Boot checks</th>
+<th>Functional/stress checks</th>
+<th>Failure recovery</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCIe</td>
+<td>lane/PHY/REFCLK/PERST schematic; DT RC configuration</td>
+<td><code>lspci -nnvv</code>, link width/speed, AER</td>
+<td>BAR bounds, MSI/MSI-X, bidirectional DMA, IOMMU, long-run throughput</td>
+<td>link retrain, FLR/warm reset, DMA timeout</td>
+</tr>
+<tr>
+<td>RGMII</td>
+<td>voltage, clock direction, delay ownership, MDIO/fixed-link either-or</td>
+<td>stmmac/PHY logs, negotiation result</td>
+<td>iperf3 both directions, packet loss, varying packet sizes</td>
+<td>link flap, PHY reset</td>
+</tr>
+<tr>
+<td>MIPI CSI/DSI</td>
+<td>lane mapping/polarity, clocks, endpoint graph</td>
+<td>media graph/DRM connector</td>
+<td>multiple formats, resolutions, frame rates, CRC/frame drops</td>
+<td>stream restart, source loss</td>
+</tr>
+<tr>
+<td>GPIO</td>
+<td>pinmux, levels, pull-ups/downs, occupancy conflicts</td>
+<td>gpioinfo/IRQ registration</td>
+<td>polarity, glitches, IRQ storm</td>
+<td>stuck level, reset timing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-6-design-assumptions-explicitly-corrected">9.6 Design Assumptions Explicitly Corrected</h3>
+<ul>
+<li>The RGMII delay must be borne by exactly one place or an explicit combination of MAC, PCB, or PHY; <code>phy-mode</code> must match the hardware. <code>fixed-link</code> and "configure the internal PHY over MDIO" are two different models and must not both be described as the default.</li>
+<li>The MAC address source is a board-level policy (OTP/NVMEM, bootloader injection, production configuration); do not blindly assume that the RK3588 OTP already holds a usable unique address.</li>
+<li>Combo PHY, PCIe/SATA/USB3 multiplexing, MIPI DPHY sharing, and GPIO availability all depend on the package, schematic, and BSP; the appendix's "no conflict" can only be a candidate pending verification, not a design commitment.</li>
+<li>Artifacts such as <code>update.img</code>, <code>trust.img</code>, <code>uboot.img</code>, and FIT/Android boot images are decided by the BSP packaging scheme; the adapter describes the artifact graph through a profile and does not fix any particular naming.</li>
+</ul>
+<h3 id="9-7-testing-strategy">9.7 Testing Strategy</h3>
+<p>Unit tests cover the profile schema, command escaping, log parsing, DT/Bridge generation, and diagnostic deduplication; contract tests use a fake toolchain to verify event sequences, cancellation, timeouts, and failure propagation; integration tests run clean/incremental builds against a locked BSP; HIL tests manage boards with exclusive locks, capture serial output, and verify cold boot, flash recovery, and Bridge stress. The minimal key of the release compatibility matrix is <code>adapter + profile + BSP commit + board revision + boot media</code>.</p>
+<h2 id="appendix">Appendix</h2>
+<h3 id="a-rk3588-pin-multiplexing-checklist">A. RK3588 Pin Multiplexing Checklist</h3>
+<p>The following lists the main RK3588 pin groups occupied by the four Bridge physical interfaces and their potential conflict risks:</p>
+<h4 id="a-1-pcie-gen3-x4-pin-usage">A.1 PCIe Gen3 x4 Pin Usage</h4>
+<table>
+<thead>
+<tr>
+<th>Pin group</th>
+<th>Pins</th>
+<th>Function</th>
+<th>Conflict risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PCIE30X4_TX[3:0]</code></td>
+<td>TX0_P/N ~ TX3_P/N</td>
+<td>PCIe transmit</td>
+<td>Dedicated, no multiplexing</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_RX[3:0]</code></td>
+<td>RX0_P/N ~ RX3_P/N</td>
+<td>PCIe receive</td>
+<td>Dedicated, no multiplexing</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_REFCLK</code></td>
+<td>REFCLK_P/N</td>
+<td>PCIe reference clock</td>
+<td>PHY shared with PCIe30X2</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_PERSTn</code></td>
+<td>PERSTn</td>
+<td>PCIe reset</td>
+<td>Can be multiplexed as GPIO</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_WAKEn</code></td>
+<td>WAKEn</td>
+<td>PCIe wake</td>
+<td>Can be multiplexed as GPIO</td>
+</tr>
+<tr>
+<td><code>PCIE30X4_CLKREQn</code></td>
+<td>CLKREQn</td>
+<td>Clock request</td>
+<td>Can be multiplexed as GPIO</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conflict checks</strong>:
+- ⚠️ PCIe30x4 and PCIe30x2 share the same PHY and cannot be used simultaneously
+- ⚠️ PCIe30x4 shares some pins with SATA; check if SATA is used</p>
+<h4 id="a-2-ge-ethernet-rgmii-pin-usage">A.2 GE Ethernet (RGMII) Pin Usage</h4>
+<table>
+<thead>
+<tr>
+<th>Pin group</th>
+<th>Pins</th>
+<th>Function</th>
+<th>Conflict risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GMAC0_TXCLK</code></td>
+<td>TXCLK</td>
+<td>Transmit clock (125MHz)</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>GMAC0_TXD[3:0]</code></td>
+<td>TXD0~TXD3</td>
+<td>Transmit data</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>GMAC0_TXCTL</code></td>
+<td>TXCTL</td>
+<td>Transmit control</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>GMAC0_RXCLK</code></td>
+<td>RXCLK</td>
+<td>Receive clock</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>GMAC0_RXD[3:0]</code></td>
+<td>RXD0~RXD3</td>
+<td>Receive data</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>GMAC0_RXCTL</code></td>
+<td>RXCTL</td>
+<td>Receive control</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>GMAC0_MDC</code></td>
+<td>MDC</td>
+<td>MDIO clock</td>
+<td>Independent of GMAC1</td>
+</tr>
+<tr>
+<td><code>GMAC0_MDIO</code></td>
+<td>MDIO</td>
+<td>MDIO data</td>
+<td>Independent of GMAC1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conflict checks</strong>:
+- ⚠️ RGMII occupies about 14 dedicated pins and does not conflict with ordinary GPIO
+- ⚠️ GMAC0 and GMAC1 pins are independent and can be used simultaneously
+- ✅ RGMII signals are high-speed; the PCB layout needs length matching and impedance control</p>
+<h4 id="a-3-mipi-csi-dsi-pin-usage">A.3 MIPI CSI/DSI Pin Usage</h4>
+<p><strong>MIPI CSI (input)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Pin group</th>
+<th>Pins</th>
+<th>Function</th>
+<th>Conflict risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CSI_DPHY0_CLK</code></td>
+<td>CLK_P/N</td>
+<td>CSI clock</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>CSI_DPHY0_D[3:0]</code></td>
+<td>D0_P/N ~ D3_P/N</td>
+<td>CSI data</td>
+<td>Dedicated</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conflict checks</strong>:
+- ⚠️ CSI DPHY0 and CSI DPHY1 are independent and can be used simultaneously (each has its own DPHY)
+- ⚠️ CSI uses a DPHY and cannot share the same DPHY with DSI</p>
+<p><strong>MIPI DSI (output)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Pin group</th>
+<th>Pins</th>
+<th>Function</th>
+<th>Conflict risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DSI_DPHY0_CLK</code></td>
+<td>CLK_P/N</td>
+<td>DSI clock</td>
+<td>Dedicated</td>
+</tr>
+<tr>
+<td><code>DSI_DPHY0_D[3:0]</code></td>
+<td>D0_P/N ~ D3_P/N</td>
+<td>DSI data</td>
+<td>Dedicated</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conflict checks</strong>:
+- ⚠️ DSI0 and DSI1 are independent and can be used simultaneously (each has its own DPHY)
+- ⚠️ DSI DPHY0 may share IO resources with LVDS; check the specific package</p>
+<h4 id="a-4-gpio-pin-usage-bridge-related">A.4 GPIO Pin Usage (Bridge-related)</h4>
+<table>
+<thead>
+<tr>
+<th>GPIO bank</th>
+<th>Total pins</th>
+<th>Reservation status</th>
+<th>Availability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPIO0</td>
+<td>32 (PA0~PD7)</td>
+<td>PMU-related, partially taken by the system</td>
+<td>⚠️ Use with care; PA0~PA7 are usually available</td>
+</tr>
+<tr>
+<td>GPIO1</td>
+<td>32 (PA0~PD7)</td>
+<td>Partially taken by UART2/I2C</td>
+<td>✅ Mostly available</td>
+</tr>
+<tr>
+<td>GPIO2</td>
+<td>32 (PA0~PD7)</td>
+<td>Possibly taken by camera/SPI</td>
+<td>✅ Check the actual circuit</td>
+</tr>
+<tr>
+<td>GPIO3</td>
+<td>32 (PA0~PD7)</td>
+<td>Partially taken by SDMMC/I2S</td>
+<td>✅ Available, verify first</td>
+</tr>
+<tr>
+<td>GPIO4</td>
+<td>32 (PA0~PD7)</td>
+<td>Partially taken by GMAC1/PCIe</td>
+<td>⚠️ Restricted if GMAC1 is used</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommended GPIO allocation strategy</strong>:
+1. Prefer free pins in GPIO1 or GPIO3
+2. Avoid GPIOs already taken by kernel drivers (e.g. <code>sdmmc_det</code>, <code>wifi_reg_on</code>)
+3. Use GPIO0 for the interrupt signal (<code>FPGA_IRQ</code>) (it supports independent IRQ functionality)
+4. Check the <code>pinctrl</code> configuration in the current board BSP Device Tree to confirm free pins</p>
+<h4 id="a-5-combined-conflict-check-matrix">A.5 Combined Conflict Check Matrix</h4>
+<table>
+<thead>
+<tr>
+<th>Interface combination</th>
+<th>Conflict likelihood</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCIe x4 + GMAC0</td>
+<td>⚠️ pending board-level verification</td>
+<td>Cross-check package, schematic, power domains, clocks, and pinctrl</td>
+</tr>
+<tr>
+<td>PCIe x4 + MIPI CSI</td>
+<td>⚠️ pending board-level verification</td>
+<td>Cross-check Combo PHY/DPHY resources and the actual routing</td>
+</tr>
+<tr>
+<td>PCIe x4 + MIPI DSI</td>
+<td>⚠️ pending board-level verification</td>
+<td>Cross-check Combo PHY/DPHY resources and the actual routing</td>
+</tr>
+<tr>
+<td>GMAC0 + MIPI CSI</td>
+<td>⚠️ pending board-level verification</td>
+<td>Cross-check multiplexing, power domains, and board-level connections</td>
+</tr>
+<tr>
+<td>GMAC0 + MIPI DSI</td>
+<td>⚠️ pending board-level verification</td>
+<td>Cross-check multiplexing, power domains, and board-level connections</td>
+</tr>
+<tr>
+<td>MIPI CSI + MIPI DSI</td>
+<td>⚠️ pending board-level verification</td>
+<td>Do not infer DPHY independence from controller names alone</td>
+</tr>
+<tr>
+<td>PCIe30x4 + other HSIO</td>
+<td>⚠️ high risk</td>
+<td>Defer to the target package's TRM, schematic, and BSP PHY configuration</td>
+</tr>
+<tr>
+<td>GMAC0 + GMAC1</td>
+<td>⚠️ pending board-level verification</td>
+<td>The existence of controllers does not mean both are routed out and powered on the target board</td>
+</tr>
+<tr>
+<td>All four interfaces simultaneously</td>
+<td>⚠️ unproven</td>
+<td>Requires a completed resource allocation table, SI/PI review, and per-interface HIL verification</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b-key-file-references">B. Key File References</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rockchip-sdk</code></td>
+<td>Official Rockchip BSP</td>
+<td>github.com/rockchip-linux</td>
+</tr>
+<tr>
+<td><code>rk3588 datasheet</code></td>
+<td>Chip datasheet</td>
+<td>Rockchip official</td>
+</tr>
+<tr>
+<td><code>rk3588 TRM</code></td>
+<td>Technical Reference Manual</td>
+<td>Rockchip official</td>
+</tr>
+<tr>
+<td><code>rkdeveloptool</code></td>
+<td>Flashing tool source</td>
+<td>github.com/rockchip-linux/rkdeveloptool</td>
+</tr>
+<tr>
+<td>Linux PCI documentation</td>
+<td>PCI driver matching and lifecycle</td>
+<td>docs.kernel.org/PCI/pci.html</td>
+</tr>
+<tr>
+<td>Linux Devicetree documentation</td>
+<td>DT usage model and device creation</td>
+<td>kernel.org/doc/html/latest/devicetree/usage-model.html</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-toolchain-inventory">C. Toolchain Inventory</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Path / how to obtain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aarch64-linux-gnu-gcc</code></td>
+<td>ARM64 cross-compilation</td>
+<td>Buildroot integrated</td>
+</tr>
+<tr>
+<td><code>dtc</code></td>
+<td>Device Tree compilation</td>
+<td>kernel/scripts/dtc</td>
+</tr>
+<tr>
+<td><code>mkimage</code></td>
+<td>Firmware packaging</td>
+<td>u-boot/tools/mkimage</td>
+</tr>
+<tr>
+<td><code>rkdeveloptool</code></td>
+<td>Flashing tool</td>
+<td>built from the rkdeveloptool source</td>
+</tr>
+<tr>
+<td><code>adb</code></td>
+<td>Android Debug Bridge</td>
+<td>system package or Buildroot</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d-build-artifact-reference">D. Build Artifact Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Purpose</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idbloader.img</code></td>
+<td>MiniLoader</td>
+<td>u-boot/</td>
+</tr>
+<tr>
+<td><code>trust.img</code></td>
+<td>TF-A</td>
+<td>u-boot/</td>
+</tr>
+<tr>
+<td><code>uboot.img</code></td>
+<td>U-Boot</td>
+<td>u-boot/</td>
+</tr>
+<tr>
+<td><code>boot.img</code></td>
+<td>Kernel + DTB + Ramdisk</td>
+<td>output/</td>
+</tr>
+<tr>
+<td><code>rootfs.squashfs</code></td>
+<td>Root filesystem</td>
+<td>buildroot/output/images/</td>
+</tr>
+<tr>
+<td><code>update.img</code></td>
+<td>Complete firmware package</td>
+<td>output/</td>
+</tr>
+</tbody>
+</table>
+<h3 id="e-document-update-history">E. Document Update History</h3>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-13</td>
+<td>v1.2.0</td>
+<td>Bridge detailed design</td>
+</tr>
+<tr>
+<td>2026-07-14</td>
+<td>v2.0.0</td>
+<td>Introduced the BSP profile, async contract, DT/flashing safety boundaries, Bridge verification matrix, and phase gates; corrected assumptions such as PCI enumeration</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>Next steps</strong>:
+1. Create <code>.trae/roles/memory/tasks/rk3588-bsp-research.md</code> to survey the RK3588 BSP structure
+2. Implement the Phase 1 basic build flow under <code>src/adapters/rk3588/</code>
+3. Create the RK3588 board manifest (<code>.trae/catalog/soc/rk3588/evoverse.md</code>)</p>
+</blockquote></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

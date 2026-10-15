@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Design Assurance Rules and Evidence</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
+<span>Decision boundaries for deterministic RTL rules, protocol contracts and simulation evidence.</span>
+<code>design-assurance/README.md</code>
+<a href="../../../design-assurance/README.md">Markdown source</a></p>
+<h1>Design Assurance Rules and Evidence</h1></header>
+<main class="article"><h1 id="evoverse-design-assurance">EvoVerse Design Assurance</h1>
+<p>A zero-dependency, vendor-neutral Design Assurance engine: it runs deterministic rules and protocol-contract checks over RTL projects and produces reproducible JSON reports through a single evidence/exception mechanism.</p>
+<ul>
+<li>Code: <code>sdk/design-assurance/</code> (pure Python 3 standard library, no third-party dependencies)</li>
+<li>Contract: the JSON Schemas under <code>sdk/design-assurance/schema/</code> are the language-neutral public contract</li>
+<li>Tests: <code>python -m unittest discover -s sdk/design-assurance/tests -v</code></li>
+</ul>
+<h2 id="status-semantics-three-states-not-two">Status semantics: three states, not two</h2>
+<table>
+<thead>
+<tr>
+<th>status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pass</code></td>
+<td>Every enabled rule passes or is covered by a valid exception</td>
+</tr>
+<tr>
+<td><code>fail</code></td>
+<td>At least one structurally falsifiable violation exists</td>
+</tr>
+<tr>
+<td><code>incomplete</code></td>
+<td>Behavioral properties (unverified) without evidence exist</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Missing evidence is unverified, not pass.</strong> Temporal properties (such as handshake payload stability) cannot be proven by structural scanning; property-run evidence must be submitted. Without evidence, the report status is <code>incomplete</code>—it never passes silently.</p>
+<h2 id="rule-packs">Rule packs</h2>
+<table>
+<thead>
+<tr>
+<th>Rule pack</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rtl-baseline@1</code></td>
+<td>18 deterministic RTL baseline rules: 9 structural (latch, combinational loop, combinational blocking assignment, width truncation, derived clock, case completeness, reset polarity, default_nettype, multiple drivers) + 9 domain (synchronous reset release, reset to a known value, CDC synchronization property, CDC minimum stages, no bit-by-bit CDC bus synchronization, FSM default recovery, handshake payload stability, FIFO overflow protection, FIFO underflow protection)</td>
+</tr>
+<tr>
+<td><code>amba.axis@1</code></td>
+<td>AXI4-Stream contract: 6 static rules (binding validation, signal presence, signal direction, TDATA/TKEEP widths, sideband widths) + 5 behavioral rules (valid-stable, payload-stable, handshake = deadlock detection requiring at least one completed beat, reset-valid, beat-fields), plus directly bindable SVA assertion/cover assets</td>
+</tr>
+<tr>
+<td><code>custom@1</code></td>
+<td>User-defined regex rules (added via the rule manager, stored in <code>assurance-rules.json</code>)—declarative lint: full-text <code>re.finditer</code> over each source file; every match is reported as a violation (with line number). No built-in rules</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rule-management-rule-manager">Rule management (Rule Manager)</h2>
+<p>All rule switches are centralized in one global configuration file: <code>&lt;EVOVERSE_HOME&gt;/assurance-rules.json</code> (contract in <code>sdk/design-assurance/schema/rule-config.schema.json</code>). It applies to <strong>every</strong> assurance check (the CLI / MCP / the rule-management UI all read the same file).</p>
+<pre><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;enabled&quot;: true,
+  &quot;packs&quot;: { &quot;rtl-baseline@1&quot;: true, &quot;amba.axis@1&quot;: false },
+  &quot;disabledRules&quot;: [&quot;rtl.comb.blocking&quot;],
+  &quot;customRules&quot;: [
+    {
+      &quot;id&quot;: &quot;myteam.no-tabs&quot;,
+      &quot;description&quot;: &quot;tabs are not allowed in RTL sources&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;pattern&quot;: &quot;\t&quot;
+    }
+  ]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td>Master switch. <code>false</code> skips every rule—<strong>fail-closed</strong>: the report emits an <code>engine.no-rule-packs</code> unverified entry and status <code>incomplete</code>; it never impersonates pass</td>
+</tr>
+<tr>
+<td><code>packs</code></td>
+<td>Per-rule-pack switch; absent means enabled</td>
+</tr>
+<tr>
+<td><code>disabledRules</code></td>
+<td>Per-rule disabling (finer-grained than disabling a whole pack)</td>
+</tr>
+<tr>
+<td><code>customRules</code></td>
+<td>User-defined regex rules, registered as the <code>custom@1</code> pack and toggled by <code>packs["custom@1"]</code></td>
+</tr>
+</tbody>
+</table>
+<p>Custom-rule constraints: <code>id</code> must match <code>^[a-z][a-z0-9.-]*$</code> and must not collide with an entry in <code>disabledRules</code>; <code>severity</code> ∈ {<code>error</code>,<code>warning</code>,<code>info</code>}; <code>pattern</code> must be a compilable Python regex. Invalid configurations are rejected by the engine (CLI exit 64)—never silently downgraded.</p>
+<h3 id="ui-welcome-assure-rule-manager">UI: Welcome → Assure → Rule Manager</h3>
+<p>The <code>evoverse.assuranceRules</code> command (the Assure card on the Welcome page) opens the rule-management panel:</p>
+<ul>
+<li>Master switch + per-pack switches + per-rule switches (with severity badges and rule descriptions)</li>
+<li>Adding custom rules (id / severity / description / pattern, with client-side pre-validation) and deleting them</li>
+<li>Save writes <code>assurance-rules.json</code> and reads it back through engine validation—errors the engine rejects (such as an invalid regex) are echoed with the engine's own error message; Reset restores the all-enabled default in one click</li>
+<li>The configuration file path is shown in the panel header</li>
+</ul>
+<h3 id="relationship-to-request-level-disabledrules">Relationship to request-level disabledRules</h3>
+<p>The request JSON's <code>disabledRules</code> (see <code>request.schema.json</code>) is a per-run, temporary disable; the global configuration is merged into the request at the CLI/MCP entry point via <code>apply_rule_config</code> (global disables ∪ request disables). Inside the engine, the two are treated identically.</p>
+<h2 id="requests-assurance-request">Requests (Assurance Request)</h2>
+<p>A request is a JSON document; the contract is <code>sdk/design-assurance/schema/request.schema.json</code>. Copyable template:</p>
+<pre><code class="language-json">{
+  &quot;projectRoot&quot;: &quot;.&quot;,
+  &quot;sources&quot;: [&quot;rtl/axis_source.sv&quot;],
+  &quot;rulePacks&quot;: [&quot;amba.axis@1&quot;],
+  &quot;interfaces&quot;: [
+    {
+      &quot;id&quot;: &quot;m_axis&quot;,
+      &quot;protocol&quot;: &quot;amba.axis&quot;,
+      &quot;role&quot;: &quot;master&quot;,
+      &quot;module&quot;: &quot;axis_source&quot;,
+      &quot;clock&quot;: &quot;clk_i&quot;,
+      &quot;reset&quot;: &quot;rst_n_i&quot;,
+      &quot;resetPolarity&quot;: &quot;active-low&quot;,
+      &quot;signals&quot;: {
+        &quot;tvalid&quot;: &quot;m_axis_tvalid_o&quot;,
+        &quot;tready&quot;: &quot;m_axis_tready_i&quot;,
+        &quot;tdata&quot;: &quot;m_axis_tdata_o&quot;,
+        &quot;tlast&quot;: &quot;m_axis_tlast_o&quot;,
+        &quot;tkeep&quot;: &quot;m_axis_tkeep_o&quot;
+      },
+      &quot;widths&quot;: { &quot;tdata&quot;: 32, &quot;tkeep&quot;: 4 }
+    }
+  ],
+  &quot;evidence&quot;: [
+    {
+      &quot;id&quot;: &quot;sim-pass-1&quot;,
+      &quot;kind&quot;: &quot;property-run&quot;,
+      &quot;status&quot;: &quot;pass&quot;,
+      &quot;executor&quot;: &quot;evoverse-sim&quot;,
+      &quot;executorVersion&quot;: &quot;1.0.0&quot;,
+      &quot;artifact&quot;: &quot;sim/m_axis.log&quot;,
+      &quot;propertyId&quot;: &quot;evoverse_axis_m_axis_payload_stable&quot;
+    }
+  ],
+  &quot;exceptions&quot;: [
+    {
+      &quot;ruleId&quot;: &quot;rtl.cdc.min-stages&quot;,
+      &quot;scope&quot;: { &quot;module&quot;: &quot;slow_sync&quot; },
+      &quot;reason&quot;: &quot;single-flop is acceptable for this debounce path&quot;,
+      &quot;expiresOn&quot;: &quot;2026-12-31&quot;
+    }
+  ]
+}
+</code></pre>
+<p>Key points:</p>
+<ul>
+<li><code>sources</code> must be relative paths inside <code>projectRoot</code>; escaping the root is forbidden</li>
+<li><code>interfaces</code> binds protocol signals to module port names explicitly—the engine never guesses from port names</li>
+<li>Property naming: <code>evoverse_axis_&lt;interface id sanitized&gt;_&lt;suffix&gt;</code> (for example <code>evoverse_axis_m_axis_valid_stable</code>)</li>
+</ul>
+<h3 id="exception-expiry-forms">Exception expiry forms</h3>
+<p>Every exception must provide exactly one expiry form, preventing exceptions from becoming permanent waivers:</p>
+<ul>
+<li><code>expiresOn</code>: an ISO date (YYYY-MM-DD); it lapses automatically once expired</li>
+<li><code>untilRulePack</code>: for example <code>"rtl-baseline@2"</code>; it lapses automatically when the rule pack is upgraded</li>
+</ul>
+<p>An exception must carry an exact scope (exactly one of <code>file</code> / <code>module</code> / <code>interface</code>; wildcards forbidden) and a reason.</p>
+<h3 id="evidence">Evidence</h3>
+<ul>
+<li><code>status</code>: <code>pass</code> | <code>fail</code> | <code>error</code></li>
+<li><code>kind</code> must be a lowercase <code>*-run</code> form such as <code>property-run</code> / <code>lint-run</code>; only <code>property-run</code> can close a behavioral property</li>
+<li>A <code>pass</code> evidence clears the corresponding unverified behavioral rule; a <code>fail</code> evidence escalates the behavioral rule to a violation, referencing <code>executor</code> / <code>artifact</code> / <code>counterexample</code></li>
+<li>No evidence at all → <code>unverified</code>, report <code>incomplete</code></li>
+<li>Scoping: a <code>propertyId</code> that is a rule id (such as <code>rtl.handshake.payload-stable</code>) applies only when the whole project has exactly one candidate module; in multi-module projects, qualify per module with <code>propertyId=&lt;rule id&gt;@&lt;module name&gt;</code>—one piece of evidence cannot close several modules at once</li>
+<li>If <code>interfaces</code> is declared but the corresponding protocol pack (such as <code>amba.axis@1</code>) is not enabled, the report emits an <code>engine.uncovered-interface</code> unverified entry (fail-closed); it never passes silently</li>
+</ul>
+<h2 id="cli">CLI</h2>
+<pre><code>evoverse assurance check &lt;project&gt;
+    [--request FILE] [--config FILE] [--format text|json]
+    [--include-testbench] [--include-glob PATTERN] [--exclude-glob PATTERN]
+evoverse assurance rules [--config FILE] [--format text|json]
+</code></pre>
+<ul>
+<li>When <code>--request</code> is omitted, <code>check</code> looks for <code>&lt;project&gt;/.evoverse/assurance.json</code> and then falls back to auto-discovering <code>.v/.sv/.vh/.svh</code> sources + <code>rtl-baseline@1</code></li>
+<li><code>--config</code> defaults to <code>&lt;EVOVERSE_HOME&gt;/assurance-rules.json</code> (read only if present; absence means all rules enabled)</li>
+<li><code>rules</code> prints the rule catalog (all packs + each rule's switch state/severity/description; custom rules additionally include pattern)—the data source for the rule-management UI; <code>--format text</code> is the human-readable form</li>
+<li>JSON goes to stdout only; diagnostics go to stderr only</li>
+</ul>
+<h3 id="skipping-testbenches-during-auto-discovery-default">Skipping testbenches during auto-discovery (default)</h3>
+<p><code>rtl-baseline@1</code> analyzes only the synthesizable subset; testbenches (<code>initial</code>/<code>$task</code>/<code>#delay</code>/<code>@event</code>) are out of scope. Auto-discovery skips testbench-style files per a default list:</p>
+<table>
+<thead>
+<tr>
+<th>Skipped form</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subtrees</td>
+<td><code>sim/</code>, <code>testbench/</code>, <code>tb/</code></td>
+</tr>
+<tr>
+<td>Base names</td>
+<td><code>tb_*.*</code>, <code>*_tb.*</code>, <code>sim_*</code>, <code>test_*</code></td>
+</tr>
+</tbody>
+</table>
+<p>Skipping happens only at the <strong>source-collection layer</strong>; the engine itself can still analyze those files. <code>--include-testbench</code> re-enables them; <code>--include-glob PATTERN</code> keeps only matching files (implicitly disabling the default testbench skip); <code>--exclude-glob PATTERN</code> stacks additional exclusions on top of the default list. The scanner skips whole <code>initial ... end</code> blocks as testbench material (recorded as info, never counted as unverified).</p>
+<h3 id="exit-code-contract">Exit-code contract</h3>
+<table>
+<thead>
+<tr>
+<th>Exit code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>pass</code> (or normal output from the <code>rules</code> subcommand)</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>fail</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>incomplete</code></td>
+</tr>
+<tr>
+<td>64</td>
+<td>invalid request / usage (malformed request, missing project directory, no source files, <strong>invalid rule configuration</strong>)</td>
+</tr>
+<tr>
+<td>70</td>
+<td>engine failure (an internal engine exception; it never crashes silently)</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<pre><code class="language-bash"># Check a project (reads the global rule switches)
+sdk/cli/evoverse assurance check my-project --request my-project/assurance.json --format json
+
+# View the rule catalog and switch states
+sdk/cli/evoverse assurance rules --format text
+
+# Check with a specific configuration file (leaves the global config untouched)
+sdk/cli/evoverse assurance check my-project --config team-rules.json
+</code></pre>
+<h2 id="mcp">MCP</h2>
+<p>The MCP tool <code>assurance_check</code> is a thin adapter over the CLI (it duplicates no engine logic):</p>
+<ul>
+<li>Inputs: <code>project</code> (required), <code>request</code> (optional), <code>include_testbench</code> (optional, default false), <code>include_glob</code> (optional, array of fnmatch patterns), <code>exclude_glob</code> (optional, array of fnmatch patterns); the format is fixed to JSON</li>
+<li>Exit codes 1 (fail) and 2 (incomplete) still return the full JSON report; only 64/70 map to an MCP error</li>
+<li>The testbench skip rules are identical to the CLI's <code>--include-testbench</code> / <code>--include-glob</code> / <code>--exclude-glob</code></li>
+<li>The legacy tool <code>check_rtl_code_style</code> keeps its original fields (<code>violations</code> / <code>fileCount</code> / <code>totalLines</code> / severity <code>summary</code>), adapting to the shared engine internally via <code>legacy_style_report</code>; unverified is never exposed as a violation</li>
+</ul>
+<h2 id="reports">Reports</h2>
+<p>Reports are deterministic: the same request yields the same digest. Top-level fields: <code>status</code> / <code>engineVersion</code> / <code>rulePacks</code> / <code>timestamp</code> / <code>digest</code> / <code>projectRoot</code> / <code>sourceCount</code> / <code>summary</code> (errors/warnings/infos/unverified) / <code>violations</code> / <code>unverified</code> / <code>exceptions</code> / <code>evidence</code>. The contract is <code>schema/report.schema.json</code>.</p>
+<h2 id="architectural-position">Architectural position</h2>
+<p>Design Assurance is the executable home (single source of truth) of the design-principle rules: rules, evidence, and exceptions are all defined and adjudicated here; the Adapter and Catalog responsibilities are unchanged. See <code>sdk/docs/SDK-ARCHITECTURE-VISION.md</code> for details.</p>
+<p>The legacy "code check" command in the editor and the MCP <code>check_rtl_code_style</code> are compatibility entry points only and no longer own rule implementations. Before vibe-coding generation, the rule-pack/config/interface digests are bound and the candidate RTL runs static Assurance first; the executable behavioral properties from <code>incomplete</code> enter the Test IR, and once Icarus, Questa, or Video Sim has produced qualified property evidence, this engine adjudicates them again. Functional simulation and Assurance must both be PASS before a parent module unlocks.</p>
+<h2 id="video-ip-compliance">Video IP compliance</h2>
+<p>Video IP does not depend on the template-based generation entry. Once the frozen specification declares the <code>evoverse.video@1</code> contract, Design Assurance independently validates the register interface, the port-group ordering, and the TJ180 BRAM line-buffer budget; with resource inputs missing, the report is <code>incomplete</code>—a pass is never inferred.</p>
+<p>Dynamic properties (payload stability, AXIS handshake liveness) are permitted to be unverified in the test layer—by design they must be closed with simulation evidence (property-run).</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RK3588 Development Environment Survey</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../rk3588-adapter.html">← Back to RK3588 Adapter</a>
+<span>Version: v2.0.0</span>
+<code>rk3588/environment-survey.md</code>
+<a href="../../../rk3588/environment-survey.md">Markdown source</a></p>
+<h1>RK3588 Development Environment Survey</h1></header>
+<main class="article"><h1 id="rk3588-development-environment-survey-report">RK3588 Development Environment Survey Report</h1>
+<blockquote>
+<p><strong>Version</strong>: v2.0.0
+<strong>Survey date</strong>: 2026-07-13
+<strong>Last reviewed</strong>: 2026-07-14
+<strong>Audience</strong>: RK3588 developers / the EvoVerse SDK integration team
+<strong>Goal</strong>: Establish a reproducible, auditable RK3588 BSP development baseline and provide input constraints for the EvoVerse Adapter
+<strong>Finding policy</strong>: The executable build commands for RK3588 follow "the BSP release note, manifest, and board-level configuration delivered by the board vendor"; the commands in this report are templates, not a fixed interface guaranteed to work across BSPs</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-rk3588-overview">RK3588 Overview</a></li>
+<li><a href="#2-development-environment-stack">Development Environment Stack</a></li>
+<li><a href="#3-development-environment-setup-steps">Development Environment Setup Steps</a></li>
+<li><a href="#4-common-development-scenarios">Common Development Scenarios</a></li>
+<li><a href="#5-sdk-integration-notes">SDK Integration Notes</a></li>
+<li><a href="#6-references">References</a></li>
+<li><a href="#7-macos-special-notes">macOS Special Notes</a></li>
+<li><a href="#8-in-depth-findings-and-engineering-baseline">In-Depth Findings and Engineering Baseline</a></li>
+</ol>
+<hr />
+<p><a id="1"></a></p>
+<h2 id="1-rk3588-overview">1. RK3588 Overview</h2>
+<h3 id="1-1-chip-positioning">1.1 Chip Positioning</h3>
+<p>The Rockchip RK3588 is a high-performance ARM SoC from Rockchip Electronics, positioned for <strong>high-end IoT, smart cockpits, edge computing, and AIoT</strong>. It combines a heterogeneous 4× Cortex-A76 + 4× Cortex-A55 CPU architecture with an 8nm process; actual frequencies, media capabilities, and available interfaces remain subject to the silicon variant, package, board design, and BSP.</p>
+<h3 id="1-2-key-features">1.2 Key Features</h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Specification</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CPU</strong></td>
+<td>4x Cortex-A76 + 4x Cortex-A55</td>
+<td>ARM big.LITTLE architecture; big cores up to 2.4GHz</td>
+</tr>
+<tr>
+<td><strong>GPU</strong></td>
+<td>Mali-G610 MP4</td>
+<td>OpenGL ES 1.1/2.0/3.2, Vulkan 1.2 support</td>
+</tr>
+<tr>
+<td><strong>NPU</strong></td>
+<td>6TOPS</td>
+<td>INT4/INT8/INT16/FP16 support; strong compute</td>
+</tr>
+<tr>
+<td><strong>VPU</strong></td>
+<td>8K@30fps codec</td>
+<td>H.265/H.264/VP9/AV1 support</td>
+</tr>
+<tr>
+<td><strong>ISP</strong></td>
+<td>Up to 48MP</td>
+<td>Dual ISP channels</td>
+</tr>
+<tr>
+<td><strong>Memory</strong></td>
+<td>LPDDR4/LPDDR4X/LPDDR5</td>
+<td>Up to 32GB</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td>eMMC 5.1, UFS 2.1, PCIe 3.0, SATA 3.0</td>
+<td>Multiple storage interfaces</td>
+</tr>
+<tr>
+<td><strong>Interfaces</strong></td>
+<td>USB 3.0, USB 2.0, PCIe, HDMI 2.1, MIPI-CSI/DSI</td>
+<td>Rich peripheral interfaces</td>
+</tr>
+<tr>
+<td><strong>Process</strong></td>
+<td>8nm FinFET</td>
+<td>Low power, high performance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-application-scenarios">1.3 Application Scenarios</h3>
+<ul>
+<li><strong>Smart cockpit</strong>: IVI, digital instrument clusters, HUD</li>
+<li><strong>Edge computing</strong>: AI inference, machine vision</li>
+<li><strong>Smart home</strong>: smart speakers, smart displays</li>
+<li><strong>Industrial control</strong>: industrial tablets, machine vision</li>
+<li><strong>ARM development boards</strong>: evaluation boards for developers (e.g., Rockchip EVB, third-party boards)</li>
+</ul>
+<hr />
+<p><a id="2"></a></p>
+<h2 id="2-development-environment-stack">2. Development Environment Stack</h2>
+<h3 id="2-1-cross-compilation-toolchain">2.1 Cross-Compilation Toolchain</h3>
+<p>The RK3588 uses the <strong>ARM64 (AArch64)</strong> architecture and requires a cross-compilation toolchain:</p>
+<table>
+<thead>
+<tr>
+<th>Toolchain</th>
+<th>Notes</th>
+<th>How to obtain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GCC AArch64</strong></td>
+<td>The mainstream choice, GCC 10+</td>
+<td><code>apt install gcc-aarch64-linux-gnu</code></td>
+</tr>
+<tr>
+<td><strong>Linaro GCC</strong></td>
+<td>Long-term-support release, stable and reliable</td>
+<td><a href="https://developer.arm.com/downloads/-/gnu-a">developer.arm.com</a></td>
+</tr>
+<tr>
+<td><strong>Rockchip bundled toolchain</strong></td>
+<td>Ships with the official BSP</td>
+<td>Bundled inside the SDK</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Typical toolchain prefix</strong>: <code>aarch64-linux-gnu-</code></p>
+<h3 id="2-2-sdk-types">2.2 SDK Types</h3>
+<p>Rockchip offers several SDK options:</p>
+<table>
+<thead>
+<tr>
+<th>SDK type</th>
+<th>Use case</th>
+<th>Build system</th>
+<th>Characteristics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rockchip Linux SDK</strong></td>
+<td>Linux development</td>
+<td>Buildroot / Yocto</td>
+<td>Complete BSP including U-Boot, Kernel, Rootfs</td>
+</tr>
+<tr>
+<td><strong>Rockchip Android SDK</strong></td>
+<td>Android development</td>
+<td>AOSP</td>
+<td>Complete Android system</td>
+</tr>
+<tr>
+<td><strong>Debian/Ubuntu Rootfs</strong></td>
+<td>Rapid validation</td>
+<td>Prebuilt images</td>
+<td>Ready to flash and use</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-2-1-linux-sdk-directory-layout">2.2.1 Linux SDK Directory Layout</h4>
+<pre><code>rockchip-linux-sdk/
+├── app/                     # Applications
+├── buildroot/               # Buildroot build system
+├── build.sh -&gt; device/rockchip/common/scripts/build.sh  # Build script
+├── device/                  # Build configuration
+│   └── rockchip/
+│       └── rk3588/          # RK3588 board-level configuration
+├── docs/                    # Development documentation
+├── external/               # Third-party components
+├── kernel -&gt; kernel-6.1/    # Linux kernel
+├── kernel-6.1/              # Kernel sources
+├── prebuilt_rootfs/         # Prebuilt root filesystem
+├── prebuilts/               # Cross-compilation toolchain
+├── rkbin/                   # Rockchip binary firmware
+├── tools/                   # Flashing tools
+└── u-boot/                  # U-Boot Bootloader
+</code></pre>
+<h3 id="2-3-build-systems">2.3 Build Systems</h3>
+<table>
+<thead>
+<tr>
+<th>Build system</th>
+<th>Purpose</th>
+<th>Complexity</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Buildroot</strong></td>
+<td>Produces a lean Rootfs</td>
+<td>Medium</td>
+<td>Embedded products, customization needs</td>
+</tr>
+<tr>
+<td><strong>Yocto/Poky</strong></td>
+<td>Produces a full-distribution Rootfs</td>
+<td>High</td>
+<td>Mass production, productization</td>
+</tr>
+<tr>
+<td><strong>AOSP</strong></td>
+<td>Android system build</td>
+<td>High</td>
+<td>Android product development</td>
+</tr>
+<tr>
+<td><strong>Manual compilation</strong></td>
+<td>Kernel/U-Boot built separately</td>
+<td>Low</td>
+<td>Quick validation, driver development</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-4-debug-tools">2.4 Debug Tools</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ADB</strong></td>
+<td>Android Debug Bridge</td>
+<td>USB / network</td>
+</tr>
+<tr>
+<td><strong>Fastboot</strong></td>
+<td>Flashing mode</td>
+<td>USB</td>
+</tr>
+<tr>
+<td><strong>Serial (UART)</strong></td>
+<td>Serial terminal, logs</td>
+<td>TTL serial (1500000 8N1)</td>
+</tr>
+<tr>
+<td><strong>GDB</strong></td>
+<td>Source-level debugging</td>
+<td>JTAG or network</td>
+</tr>
+<tr>
+<td><strong>Rockchip Flash Tool</strong></td>
+<td>Flash firmware</td>
+<td>USB (Maskrom mode)</td>
+</tr>
+<tr>
+<td><strong>rkdeveloptool</strong></td>
+<td>Command-line flashing</td>
+<td>Linux/macOS</td>
+</tr>
+<tr>
+<td><strong>JTAG/DAP</strong></td>
+<td>Hardware debugging</td>
+<td>20-pin JTAG connector</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a id="3"></a></p>
+<h2 id="3-development-environment-setup-steps">3. Development Environment Setup Steps</h2>
+<h3 id="3-1-installing-dependencies">3.1 Installing Dependencies</h3>
+<h4 id="3-1-1-linux-ubuntu-debian">3.1.1 Linux (Ubuntu/Debian)</h4>
+<pre><code class="language-bash"># 安装基础依赖
+sudo apt update
+sudo apt install -y build-essential git git-lfs wget
+
+# 安装交叉编译工具链
+sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+# 安装构建工具
+sudo apt install -y cmake ninja-build bison flex libssl-dev
+
+# 安装 Python (构建脚本依赖)
+sudo apt install -y python3 python3-pip python3-dev
+
+# 安装 RK3588 专用依赖
+sudo apt install -y \
+    device-tree-compiler \
+    libncurses-dev \
+    libusb-1.0-0-dev \
+    qemu-user-static \
+    live-build \
+    patchelf \
+    chrpath \
+    gawk \
+    texinfo \
+    diffstat \
+    binfmt-support \
+    unzip \
+    bc
+</code></pre>
+<h4 id="3-1-2-macos-the-current-user-s-environment">3.1.2 macOS (the current user's environment)</h4>
+<p>Developing for the RK3588 on macOS needs extra setup:</p>
+<pre><code class="language-bash"># 1. 安装 Homebrew
+/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;
+
+# 2. 不在宿主机安装 gcc-arm-embedded：它面向裸机 Cortex-M，不能替代 AArch64 Linux 工具链
+# AArch64 Linux BSP 编译统一放入 Linux 容器/虚拟机，并使用 BSP 自带或锁定版本的工具链
+
+# 3. 安装构建依赖
+brew install wget cmake ninja bison flex openssl
+
+# 4. 安装 Docker (推荐方式编译 SDK)
+brew install --cask docker
+</code></pre>
+<p><strong>Important macOS note</strong>: The Rockchip SDK primarily targets Linux development; macOS users are advised to compile the SDK inside Docker containers.</p>
+<h3 id="3-2-obtaining-the-sdk">3.2 Obtaining the SDK</h3>
+<h4 id="3-2-1-official-channels-nda-required">3.2.1 Official Channels (NDA Required)</h4>
+<pre><code class="language-bash"># 联系 Rockchip 或开发板厂商获取 SDK 下载链接
+# 官方文档: https://developer.rock-chips.com/
+
+# 下载后解压
+tar xvf rk3588_linux6.1_rkr4_sdk.repo.tar
+
+# 同步子模块
+.repo/repo/repo sync -l
+</code></pre>
+<h4 id="3-2-2-board-vendors">3.2.2 Board Vendors</h4>
+<table>
+<thead>
+<tr>
+<th>Vendor</th>
+<th>SDK characteristics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Firefly</strong></td>
+<td>Deep official customization, thorough documentation</td>
+</tr>
+<tr>
+<td><strong>Radxa</strong></td>
+<td>Active community; the community SDK is open source</td>
+</tr>
+<tr>
+<td><strong>Khadas</strong></td>
+<td>Multiple Yocto/Buildroot/Debian versions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-build-environment-configuration">3.3 Build Environment Configuration</h3>
+<h4 id="3-3-1-environment-variables">3.3.1 Environment Variables</h4>
+<pre><code class="language-bash"># 创建编译环境配置脚本
+cat &gt; envsetup.sh &lt;&lt; 'EOF'
+#!/bin/bash
+export ARCH=arm64
+export CROSS_COMPILE=aarch64-linux-gnu-
+export PATH=$PATH:/path/to/toolchain/aarch64-linux-gnu/bin
+export RK_KERNEL_VERSION=6.1
+EOF
+
+# 加载环境
+source envsetup.sh
+</code></pre>
+<h4 id="3-3-2-docker-build-environment-recommended-for-macos">3.3.2 Docker Build Environment (Recommended for macOS)</h4>
+<pre><code class="language-bash"># 创建 Dockerfile
+cat &gt; Dockerfile &lt;&lt; 'EOF'
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update &amp;&amp; apt-get install -y \
+    build-essential git git-lfs wget \
+    gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+    cmake ninja-build bison flex libssl-dev \
+    python3 python3-pip python3-dev \
+    device-tree-compiler \
+    libncurses-dev libusb-1.0-0-dev \
+    qemu-user-static
+
+WORKDIR /workspace
+CMD [&quot;/bin/bash&quot;]
+EOF
+
+# 构建镜像
+docker build -t rk3588-dev:latest .
+
+# 运行容器
+docker run -it --rm -v $(pwd):/workspace rk3588-dev:latest
+</code></pre>
+<h3 id="3-4-sdk-build-procedure">3.4 SDK Build Procedure</h3>
+<h4 id="3-4-1-full-linux-sdk-build">3.4.1 Full Linux SDK Build</h4>
+<pre><code class="language-bash">cd rockchip-linux-sdk
+
+# 1. 按当前 BSP release note 选择板级配置（命令名称因 BSP 而异）
+./build.sh lunch
+# 必须选择目标板卡 profile，不要只按 SoC 名称猜测 defconfig
+
+# 2. 完整编译 (包含 u-boot, kernel, rootfs)
+./build.sh
+
+# 3. 产物位置
+ls rockdev/
+# update.img - 完整固件包
+</code></pre>
+<h4 id="3-4-2-building-components-individually">3.4.2 Building Components Individually</h4>
+<pre><code class="language-bash"># 编译 U-Boot
+cd u-boot
+make distclean
+make rockchip/rk3588_defconfig
+make CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+
+# 编译 Kernel
+cd ../kernel-6.1
+make ARCH=arm64 rockchip_linux_defconfig
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+
+# 编译设备树
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- dtbs
+</code></pre>
+<h3 id="3-5-flashing-debugging">3.5 Flashing / Debugging</h3>
+<h4 id="3-5-1-flashing-tools">3.5.1 Flashing Tools</h4>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Platform</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rockchip Flash Tool</strong></td>
+<td>Windows/Linux</td>
+<td>Official flashing tool with a GUI</td>
+</tr>
+<tr>
+<td><strong>rkdeveloptool</strong></td>
+<td>Linux/macOS</td>
+<td>Command-line flashing tool</td>
+</tr>
+<tr>
+<td><strong>upgrade_tool</strong></td>
+<td>Linux</td>
+<td>Command-line flashing tool</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># 安装 rkdeveloptool
+git clone https://github.com/rockchip-linux/rkdeveloptool.git
+cd rkdeveloptool
+./autogen.sh
+./configure
+make
+sudo make install
+
+# 使用 rkdeveloptool 烧录
+rkdeveloptool ld          # 检测设备
+rkdeveloptool db rk3588_loader.bin  # 下载 Loader
+# 裸扇区写入风险高；主线 rkdeveloptool 的 wl 参数为扇区号，必须从当前 BSP 的 parameter/GPT 获取
+# rkdeveloptool wl &lt;sector&gt; &lt;image&gt;
+rkdeveloptool rd         # 重启设备
+</code></pre>
+<h4 id="3-5-2-flashing-modes">3.5.2 Flashing Modes</h4>
+<p>The RK3588 supports several flashing modes:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>How to enter</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maskrom mode</strong></td>
+<td>Hold the Maskrom button + reset</td>
+<td>Forced flashing; the chip's lowest-level mode</td>
+</tr>
+<tr>
+<td><strong>Loader mode</strong></td>
+<td>Hold Volume-Up + reset</td>
+<td>Firmware upgrade</td>
+</tr>
+<tr>
+<td><strong>Normal mode</strong></td>
+<td>Normal boot</td>
+<td>Normal boot and operation</td>
+</tr>
+</tbody>
+</table>
+<h4 id="3-5-3-serial-connection">3.5.3 Serial Connection</h4>
+<pre><code class="language-bash"># 串口参数
+# 波特率由板卡原理图/BSP 配置决定；Rockchip 调试串口常见 1500000，不能盲猜为 115200
+# 数据位: 8, 停止位: 1, 校验: 无
+
+# macOS 使用 screen
+screen /dev/tty.usbserial-* 1500000
+
+# Linux 使用 minicom 或 picocom
+minicom -D /dev/ttyUSB0 -b 1500000
+</code></pre>
+<hr />
+<p><a id="4"></a></p>
+<h2 id="4-common-development-scenarios">4. Common Development Scenarios</h2>
+<h3 id="4-1-linux-development">4.1 Linux Development</h3>
+<h4 id="4-1-1-kernel-driver-development">4.1.1 Kernel Driver Development</h4>
+<pre><code class="language-bash"># 1. 获取内核源码
+cd kernel-6.1
+make ARCH=arm64 rockchip_linux_defconfig
+make ARCH=arm64 menuconfig  # 配置内核选项
+
+# 2. 编写驱动 (示例: hello_world.c)
+cat &gt; drivers/misc/hello_rk3588.c &lt;&lt; 'EOF'
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
+
+static int __init hello_init(void) {
+    pr_info(&quot;Hello RK3588!\n&quot;);
+    return 0;
+}
+
+static void __exit hello_exit(void) {
+    pr_info(&quot;Goodbye RK3588!\n&quot;);
+}
+
+module_init(hello_init);
+module_exit(hello_exit);
+MODULE_LICENSE(&quot;GPL&quot;);
+MODULE_AUTHOR(&quot;Developer&quot;);
+MODULE_DESCRIPTION(&quot;Hello RK3588 Driver&quot;);
+EOF
+
+# 3. 编译模块
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- M=drivers/misc modules
+</code></pre>
+<h3 id="4-2-android-development">4.2 Android Development</h3>
+<pre><code class="language-bash"># 以下 manifest URL、分支和 lunch target 必须取自板卡厂商 Android BSP release note
+# 1. 安装 repo
+curl https://storage.googleapis.com/git-repo-downloads/repo &gt; ~/bin/repo
+chmod a+x ~/bin/repo
+
+# 2. 初始化已验证的板卡 BSP 仓库
+repo init -u &lt;vendor-manifest-url&gt; -b &lt;validated-branch&gt; -m &lt;validated-manifest.xml&gt;
+repo sync -c -j$(nproc)
+
+# 3. 编译 Android
+source build/envsetup.sh
+lunch &lt;validated-product&gt;-userdebug
+make -j$(nproc)
+</code></pre>
+<h3 id="4-3-npu-ai-development">4.3 NPU / AI Development</h3>
+<p>The RK3588 has a built-in NPU for AI inference:</p>
+<pre><code class="language-bash"># 1. RKNN SDK
+git clone https://github.com/airockchip/rknn-toolkit2.git
+
+# 2. 安装 RKNN 工具链
+pip install rknn-toolkit2
+
+# 3. 模型转换
+python convert.py --input model.onnx --output model.rknn
+
+# 4. 推理代码
+python inference.py --model model.rknn
+</code></pre>
+<hr />
+<p><a id="5"></a></p>
+<h2 id="5-sdk-integration-notes">5. SDK Integration Notes</h2>
+<h3 id="5-1-architecture-comparison">5.1 Architecture Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Efinix FPGA (current)</th>
+<th>RK3588 SoC (target)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hardware description</strong></td>
+<td>Verilog / SystemVerilog</td>
+<td>Device Tree + schematic</td>
+</tr>
+<tr>
+<td><strong>Build flow</strong></td>
+<td>Efinity synthesis + place-and-route</td>
+<td>ARM cross-compilation + U-Boot + TF-A</td>
+</tr>
+<tr>
+<td><strong>Debugging</strong></td>
+<td>JTAG (Efinix Debugger)</td>
+<td>JTAG (DAP) + serial + GDB</td>
+</tr>
+<tr>
+<td><strong>Software environment</strong></td>
+<td>Bare-metal / FreeRTOS</td>
+<td>Linux on AArch64</td>
+</tr>
+<tr>
+<td><strong>BSP</strong></td>
+<td>Sapphire SoC BSP</td>
+<td>Rockchip BSP + Device Tree overlay</td>
+</tr>
+<tr>
+<td><strong>Flashing</strong></td>
+<td>FTDI Programmer</td>
+<td>eMMC/SD flashing + rkdeveloptool</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-software-bill-of-materials">5.2 Software Bill of Materials</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Version</th>
+<th>Source</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U-Boot / rkbin / TF-A</td>
+<td>BSP-locked combination</td>
+<td>Board BSP manifest</td>
+<td>Do not chase newer versions independently; record commit IDs and binary hashes</td>
+</tr>
+<tr>
+<td>Kernel</td>
+<td>BSP branch (commonly 5.10/6.1) or mainline</td>
+<td>Board BSP / kernel.org</td>
+<td>BSP driver capabilities differ from mainline support coverage</td>
+</tr>
+<tr>
+<td>Rootfs builder</td>
+<td>BSP-locked version</td>
+<td>Buildroot / Yocto / Debian flows</td>
+<td>A distro name is not equivalent to a BSP</td>
+</tr>
+<tr>
+<td>AArch64 toolchain</td>
+<td>BSP-designated version</td>
+<td>BSP prebuilts / Arm GNU Toolchain</td>
+<td>Record the triple, version, and sysroot</td>
+</tr>
+<tr>
+<td>RKNN Toolkit2 / Runtime / Driver</td>
+<td>Strict compatibility matrix</td>
+<td>airockchip</td>
+<td>Model format, user-space runtime, and kernel driver must be validated as a set</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a id="6"></a></p>
+<h2 id="6-references">6. References</h2>
+<h3 id="6-1-official-documentation">6.1 Official Documentation</h3>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Link</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rockchip developer portal</td>
+<td>https://developer.rock-chips.com/</td>
+<td>Official developer site</td>
+</tr>
+<tr>
+<td>RK3588 Wiki</td>
+<td>https://wiki.rk3588.cn/</td>
+<td>Community wiki</td>
+</tr>
+<tr>
+<td>Rockchip Linux SDK (GitHub)</td>
+<td>https://github.com/rockchip-linux</td>
+<td>Official open-source repositories</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-reference-boards">6.2 Reference Boards</h3>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>Vendor</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RK3588 EVB</td>
+<td>Rockchip</td>
+<td>Official evaluation board</td>
+</tr>
+<tr>
+<td>Rock 5 Model B</td>
+<td>Radxa</td>
+<td>Popular community board</td>
+</tr>
+<tr>
+<td>Core-3588JD4</td>
+<td>Firefly</td>
+<td>Industrial-grade board</td>
+</tr>
+<tr>
+<td>Edge2</td>
+<td>Khadas</td>
+<td>High-performance board</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-3-toolchain-downloads">6.3 Toolchain Downloads</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Download link</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linaro GCC</td>
+<td>https://developer.arm.com/downloads/-/gnu-a</td>
+<td>Official Arm toolchain</td>
+</tr>
+<tr>
+<td>RKNN Toolkit2</td>
+<td>https://github.com/airockchip/rknn-toolkit2</td>
+<td>The currently maintained NPU model conversion/evaluation tool; the old <code>rockchip-linux</code> repositories are no longer maintained</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-4-primary-sources-used-in-this-review">6.4 Primary Sources Used in This Review</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Used to check</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/rockchip-linux/rkdeveloptool">rockchip-linux/rkdeveloptool</a></td>
+<td>RockUSB write semantics</td>
+<td>The <code>wl</code> example uses a sector address in units of sectors; do not treat the example offset as a generic partition</td>
+</tr>
+<tr>
+<td><a href="https://github.com/airockchip/rknn-toolkit2">airockchip/rknn-toolkit2</a></td>
+<td>RKNN maintenance entry point and software stack</td>
+<td>RK3588 is a supported platform; Toolkit2, Lite2, Runtime, and the kernel driver are distinct components</td>
+</tr>
+<tr>
+<td><a href="https://docs.kernel.org/PCI/pci.html">Linux PCI driver documentation</a></td>
+<td>PCIe Endpoint driver model</td>
+<td>Enumeratable PCI devices are usually matched to drivers by PCI ID tables</td>
+</tr>
+<tr>
+<td><a href="https://www.kernel.org/doc/html/latest/devicetree/usage-model.html">Linux Devicetree usage model</a></td>
+<td>DT responsibilities</td>
+<td>DT describes board-level hardware that is not self-discoverable; it does not replace PCI bus enumeration</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>The links point to continuously updated entry points; a production baseline must still record the actually used tag/commit and file hashes in <code>build-manifest.json</code>.</p>
+</blockquote>
+<hr />
+<p><a id="7"></a></p>
+<h2 id="7-macos-special-notes">7. macOS Special Notes</h2>
+<h3 id="7-1-environment-limitations">7.1 Environment Limitations</h3>
+<p>macOS developers should note these limitations:</p>
+<ol>
+<li><strong>Cross-compilation toolchain</strong>: Homebrew's ARM toolchains may be incomplete; prefer Docker or a Linux VM</li>
+<li><strong>USB drivers</strong>: Install the Silicon Labs VCP driver to recognize serial ports</li>
+<li><strong>Flashing tools</strong>: Rockchip Flash Tool ships only for Windows/Linux; use rkdeveloptool on macOS</li>
+<li><strong>Build speed</strong>: The macOS file system is unfriendly to builds over many small files</li>
+</ol>
+<h3 id="7-2-recommended-workflow-macos">7.2 Recommended Workflow (macOS)</h3>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                    macOS Host                           │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │              Docker Container                    │   │
+│  │  ┌─────────────────────────────────────────────┐│   │
+│  │  │        Ubuntu 22.04 + RK3588 SDK           ││   │
+│  │  │                                             ││   │
+│  │  │  - Cross-compilation toolchain              ││   │
+│  │  │  - Buildroot / Yocto                        ││   │
+│  │  │  - rkdeveloptool                            ││   │
+│  │  └─────────────────────────────────────────────┘│   │
+│  └─────────────────────────────────────────────────┘   │
+│                          │                              │
+│           (code sync via VS Code Remote / NFS)          │
+│                          │                              │
+└──────────────────────────┼──────────────────────────────┘
+                           │
+                           ▼
+                ┌─────────────────────┐
+                │   RK3588 Board      │
+                │  (USB flash/debug)  │
+                └─────────────────────┘
+</code></pre>
+<h3 id="7-3-serial-connection-macos">7.3 Serial Connection (macOS)</h3>
+<pre><code class="language-bash"># 1. 安装 USB 驱动
+# Silicon Labs: https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers
+
+# 2. 检查串口设备
+ls /dev/tty.*
+
+# 3. 使用 screen 连接
+screen /dev/tty.usbserial-* 1500000
+</code></pre>
+<hr />
+<h2 id="appendix-a-quick-reference-commands">Appendix A: Quick-Reference Commands</h2>
+<pre><code class="language-bash"># 环境检查
+aarch64-linux-gnu-gcc -v
+python3 --version
+git --version
+
+# SDK 编译
+cd rockchip-linux-sdk
+./build.sh lunch    # 选择配置
+./build.sh          # 完整编译
+
+# 烧录
+rkdeveloptool ld
+rkdeveloptool db rk3588_loader.bin
+# 仅在从当前 BSP 分区表确认扇区后执行：
+rkdeveloptool wl &lt;sector&gt; &lt;image&gt;
+rkdeveloptool rd
+
+# ADB 连接
+adb devices
+adb shell
+</code></pre>
+<hr />
+<h2 id="appendix-b-faq">Appendix B: FAQ</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build error "unrecognized opcode <code>arch64</code>"</td>
+<td>Confirm CROSS_COMPILE is set correctly</td>
+</tr>
+<tr>
+<td>rkdeveloptool cannot find the device</td>
+<td>Enter Maskrom mode and check the USB connection</td>
+</tr>
+<tr>
+<td>Kernel build hangs</td>
+<td>Check that memory is sufficient (16GB+ recommended) and add swap</td>
+</tr>
+<tr>
+<td>NPU inference fails</td>
+<td>Confirm the RKNN model matches the RKNN SDK version</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-in-depth-findings-and-engineering-baseline">8. In-Depth Findings and Engineering Baseline</h2>
+<h3 id="8-1-the-most-important-findings">8.1 The Most Important Findings</h3>
+<ol>
+<li><strong>The RK3588 is not a self-contained "generic target" you can build in isolation.</strong> The real build target is <code>SoC + package/memory topology + PMIC + storage + carrier + BSP release</code>. Boards that are all "RK3588" — EVB, Rock 5, Firefly, and so on — can differ in DDR initialization, U-Boot defconfig, DTS, partition table, and flashing loader.</li>
+<li><strong>A BSP is a version closure, not a parts list.</strong> <code>U-Boot + rkbin/DDR blob + TF-A/OP-TEE + Kernel + DT + Rootfs + packaging tools</code> must be locked as the vendor-validated combination. Bumping just the kernel or U-Boot to "a newer version" is not a reproducible recipe.</li>
+<li><strong>Separate development from deployment.</strong> Compile inside a pinned Linux container/VM; serial, ADB/SSH, and flashing may run on the host. The Linux VM behind macOS Docker Desktop does not pass Maskrom USB through by default — flash from a native Linux/Windows workstation or a verified USB-forwarding setup.</li>
+<li><strong>Do board bring-up before automation.</strong> The Adapter's first supported target must be one specific board and one specific BSP version; bootable firmware cannot be derived straight from a SoC datasheet.</li>
+</ol>
+<h3 id="8-2-recommended-reproducible-environment-contract">8.2 Recommended Reproducible-Environment Contract</h3>
+<p>Every build must produce a <code>build-manifest.json</code> recording at least:</p>
+<pre><code class="language-json">{
+  &quot;boardProfile&quot;: &quot;vendor-board-revision&quot;,
+  &quot;bspManifestCommit&quot;: &quot;&lt;sha&gt;&quot;,
+  &quot;components&quot;: {&quot;uboot&quot;: &quot;&lt;sha&gt;&quot;, &quot;kernel&quot;: &quot;&lt;sha&gt;&quot;, &quot;rkbin&quot;: &quot;&lt;sha&gt;&quot;},
+  &quot;toolchain&quot;: {&quot;triple&quot;: &quot;aarch64-linux-gnu&quot;, &quot;version&quot;: &quot;&lt;exact&gt;&quot;, &quot;sha256&quot;: &quot;&lt;sha256&gt;&quot;},
+  &quot;containerImage&quot;: &quot;&lt;registry/image@sha256:digest&gt;&quot;,
+  &quot;configHashes&quot;: {&quot;uboot&quot;: &quot;&lt;sha256&gt;&quot;, &quot;kernel&quot;: &quot;&lt;sha256&gt;&quot;, &quot;rootfs&quot;: &quot;&lt;sha256&gt;&quot;},
+  &quot;sourceDateEpoch&quot;: 0
+}
+</code></pre>
+<p>Recommended host baseline: Linux x86_64, at least 250 GB of reserved disk (more for Android builds), at least 16 GB RAM (32 GB recommended for large parallel builds), with Git LFS and <code>repo</code> available. Follow the BSP release note for exact sizes. Container images must be pinned by digest; mount sources, the download cache, and output directories as separate volumes so artifacts survive container removal.</p>
+<h3 id="8-3-three-corrected-workflows">8.3 Three Corrected Workflows</h3>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Input</th>
+<th>Output</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full BSP build</td>
+<td>Vendor manifest, board profile, pinned container</td>
+<td>Flashable images and manifest</td>
+<td>Release/CI; most trustworthy</td>
+</tr>
+<tr>
+<td>Kernel/DT incremental</td>
+<td><code>.config</code>, DTS, Module.symvers from the same BSP</td>
+<td>Image, DTB, modules</td>
+<td>Driver development; ABI consistency is mandatory</td>
+</tr>
+<tr>
+<td>Application/NPU</td>
+<td>sysroot, cross toolchain, RKNN compatibility matrix</td>
+<td>ELFs/packages, <code>.rknn</code>, validation reports</td>
+<td>Leaves the boot chain untouched; fastest iteration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-4-flashing-safety-gates">8.4 Flashing Safety Gates</h3>
+<ul>
+<li>Before any write, record the USB VID/PID, chip information, device mode, board profile, and target storage medium; refuse auto-selection when multiple devices are attached.</li>
+<li>Loaders must come from the current board/BSP; reusing one just because it is "RK3588" is forbidden — mismatched DDR parameters can cause download failures or instability.</li>
+<li>Never treat the example <code>0x4000</code> as a generic partition address. Offset units, GPT/parameter layout, and image types must be stated explicitly by the profile.</li>
+<li>By default, read and save the GPT/parameter first; erasing, writing the bootloader, and writing whole-disk images are high-risk operations that require explicit confirmation.</li>
+<li>After writing, at least verify the image hash/readback, key serial boot stages, kernel version, DT model/compatible, and rootfs version.</li>
+</ul>
+<h3 id="8-5-acceptance-checklist">8.5 Acceptance Checklist</h3>
+<p>The environment survey counts as complete only when all of this evidence exists: two consecutive successful builds from the same clean checkout; traceable artifacts and configurations; passing cold boot, warm reboot, and power-loss boot; a full BootROM→loader→U-Boot→Kernel→userspace log retained on serial; PCIe, GMAC, MIPI, and GPIO each verified against the board schematic and runtime probing; and NPU records covering Toolkit2, model format, runtime, and driver versions, with accuracy/performance regression on fixed inputs.</p>
+<h3 id="8-6-source-trustworthiness-and-open-items">8.6 Source Trustworthiness and Open Items</h3>
+<p>Priority order: board BSP release note/manifest and schematic &gt; Rockchip chip documentation and official repositories &gt; Linux kernel documentation &gt; community board material. Public material cannot replace controlled datasheets/TRMs, board schematics, or the actual BSP.</p>
+<p>Until the first target board is chosen, the following remain "to be confirmed": exact PCIe/Combo PHY muxing, MIPI DPHY routing, GPIO availability, debug UART baud rate, partition layout, loader files, DT node labels, kernel branch, and RKNN compatibility combinations. The EvoVerse Adapter must take these as profile inputs, never hard-code them.</p>
+<hr />
+<p><strong>Document Update History</strong></p>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-13</td>
+<td>v1.0.0</td>
+<td>Initial version covering the RK3588 development environment survey</td>
+</tr>
+<tr>
+<td>2026-07-14</td>
+<td>v2.0.0</td>
+<td>Corrected toolchain/flashing risks; added the BSP version closure, reproducible-environment contract, safety gates, and acceptance criteria</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Document path</strong>: <code>RK3588-开发环境调研报告.md</code></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

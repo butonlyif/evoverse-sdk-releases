@@ -1,0 +1,1495 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Hard IP: Interfaces and JTAG Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The LVDS/MIPI/JTAG hard-IP attribute tables, bank-voltage coexistence rules and ISF templates.</span>
+<code>efinity/hard-ip-interfaces-jtag.md</code>
+<a href="../../../efinity/hard-ip-interfaces-jtag.md">Markdown source</a></p>
+<h1>Efinity Hard IP: Interfaces and JTAG Reference</h1></header>
+<main class="article"><h1 id="efinity-hard-ip-lvds-mipi-jtag-interface-reference">Efinity Hard IP — LVDS / MIPI / JTAG Interface Reference</h1>
+<blockquote>
+<p><strong>Applicable version</strong>: Efinity 2026.1
+<strong>Investigation date</strong>: 2026-09-25
+<strong>Investigation method</strong>: read the <code>2026.1\pt\bin\api_service\</code> Python source code and the official project samples in <code>2026.1\examples\</code>, extracting every property name / legal value / default / builder behavior item by item; each property is annotated with its source file and line.
+<strong>Core evidence sources</strong> (the prefixes below all omit <code>C:\Efinity\2026.1\</code>):
+- <code>pt\bin\api_service\property\jtag_prop.py</code> — the JTAG property authority
+- <code>pt\bin\api_service\property\lvds_prop.py</code> — the LVDS (legacy / Adv / V3) property authority
+- <code>pt\bin\api_service\property\mipi_prop.py</code> — the pixel-level MIPI TX/RX property authority
+- <code>pt\bin\api_service\property\mipi_dphy_prop.py</code> — the MIPI DPHY lane-level TX/RX property authority
+- <code>pt\bin\api_service\property\mipi_hard_dphy_prop.py</code> + <code>mipi_hard_dphy_prop_id.py</code> — the hard DPHY property authority
+- <code>pt\bin\api_service\exim\isf_exporter.py</code> — the ISF builders (command generation mechanism)
+- <code>pt\bin\api_service\common\object_db.py</code> — the block_type string registry
+- <code>pt\bin\common_device\iobank\iobank_rule.py</code> — bank voltage / LVDS bank rules
+- <code>pt\bin\api_service\api_options\*.py</code> — static legal values
+- <code>examples\helloworld-dbg_MULTI_USERS\Ti375C529_kit.isf</code> — <strong>the official JTAG ISF sample</strong> (the helloworld-unified series contains no JTAG instance)</p>
+</blockquote>
+<hr />
+<h2 id="1-overview-and-positioning">1. Overview and positioning</h2>
+<p>This volume covers the three interface-type hard IP families; together with <em>Efinity Hard IP Reference — PLL and OSC</em> (<code>hard-ip-pll-osc.md</code>) and <em>Efinity Hard IP Reference — DDR</em> (<code>hard-ip-ddr.md</code>) it forms the hard IP series:</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>create_block 2nd argument (block_type string)</th>
+<th>Internal ObjectType</th>
+<th>Property class (<code>property\</code>)</th>
+<th>ISF builder (isf_exporter.py)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JTAG</td>
+<td><code>"JTAG"</code></td>
+<td><code>jtag</code></td>
+<td><code>JTAGProp</code> (jtag_prop.py:25)</td>
+<td><code>JTAGISFBuilder</code> (:1551)</td>
+</tr>
+<tr>
+<td>LVDS</td>
+<td><code>"LVDS_TX"</code> / <code>"LVDS_RX"</code> / <code>"LVDS_BIDIR"</code></td>
+<td><code>lvds_tx</code> / <code>lvds_rx</code> / <code>lvds_bidir</code></td>
+<td><code>LVDSTxProp</code> (:861) / <code>LVDSRxProp</code> (:301) / <code>LVDSTxAdvProp</code> (:1074) / <code>LVDSRxAdvProp</code> (:468) / <code>EfxLvdsV3*Prop</code> (:1643/:1656/:1669)</td>
+<td><code>LVDSTxISFBuilder</code> (:2167) / <code>LVDSRxISFBuilder</code> (:2272) / <code>LVDSTxAdvISFBuilder</code> (:2381) / <code>LVDSRxAdvISFBuilder</code> (:2403) / <code>LVDSBidirAdvISFBuilder</code> (:2422) / <code>EfxLVDS*V3ISFBuilder</code> (:2488-2510)</td>
+</tr>
+<tr>
+<td>MIPI pixel-level</td>
+<td><code>"MIPI_TX"</code> / <code>"MIPI_RX"</code></td>
+<td><code>mipi_tx</code> / <code>mipi_rx</code></td>
+<td><code>MIPITxProp</code> (mipi_prop.py:551) / <code>MIPIRxProp</code> (:209)</td>
+<td><code>MIPITxISFBuilder</code> (:1570) / <code>MIPIRxISFBuilder</code> (:1640)</td>
+</tr>
+<tr>
+<td>MIPI DPHY lane-level</td>
+<td><code>"MIPI_TX_LANE"</code> / <code>"MIPI_RX_LANE"</code></td>
+<td><code>mipi_dphy_tx</code> / <code>mipi_dphy_rx</code></td>
+<td><code>MIPIDPhyTxProp</code> (mipi_dphy_prop.py:470) / <code>MIPIDPhyRxProp</code> (:198)</td>
+<td><code>MIPIDPhyTxISFBuilder</code> (:1716) / <code>MIPIDPhyRxISFBuilder</code> (:1812)</td>
+</tr>
+<tr>
+<td>MIPI hard DPHY</td>
+<td><code>"MIPI_DPHY_TX"</code> / <code>"MIPI_DPHY_RX"</code></td>
+<td><code>mipi_hard_dphy_tx</code> / <code>mipi_hard_dphy_rx</code></td>
+<td><code>MIPIHardDPHYTxProp</code> (mipi_hard_dphy_prop.py:122) / <code>MIPIHardDPHYRxProp</code> (:324)</td>
+<td><code>MIPIHardDPHYTxISFBuilder</code> (:1912) / <code>MIPIHardDPHYRxISFBuilder</code> (:1932)</td>
+</tr>
+</tbody>
+</table>
+<p>(ObjectType→string mapping evidence: object_db.py otype2str_map — jtag :116, mipi_tx/rx :119-120, mipi_dphy_tx/rx :121-122, lvds_tx/rx/bidir :123-125, mipi_hard_dphy_tx/rx :126-127.)</p>
+<p><strong>Key findings</strong>:</p>
+<ol>
+<li>None of the three families has a dedicated public creation method (same as PLL and DDR) — the public surface is only the generic trio <code>create_block</code> + <code>set_property</code> + <code>assign_resource</code>.</li>
+<li>JTAG is the only interface hard IP <strong>with an official ISF sample</strong> (<code>helloworld-dbg_MULTI_USERS</code>); LVDS and MIPI have no sample anywhere in <code>examples\*.isf</code> → the LVDS/MIPI ISF templates in this volume are constructed from the property tables and <strong>must pass the <code>cli/import_gpio.bat --dry-run</code> self-check before use</strong> (same treatment as in <em>Efinity Hard IP Reference — DDR</em>).</li>
+<li>All three families are subject to the §9 bank-voltage rules: an LVDS bank is forced to 3.3 V, MIPI DPHY requires a 1.2 V bank, and the two cannot coexist in one bank.</li>
+</ol>
+<h3 id="1-1-the-block_type-naming-inversion-trap-important">1.1 The block_type naming-inversion trap (important)</h3>
+<p>The two MIPI DPHY-related strings in <code>object_db.py</code> point in <strong>opposite naming directions</strong> and are extremely easy to get wrong:</p>
+<table>
+<thead>
+<tr>
+<th>What you want</th>
+<th>Correct block_type string</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lane-level <strong>soft</strong> DPHY (discrete lanes, replaces pixel-level MIPI)</td>
+<td><code>"MIPI_TX_LANE"</code> / <code>"MIPI_RX_LANE"</code></td>
+<td>object_db.py:121-122 (internal names <code>mipi_dphy_tx/rx</code> → <code>MIPI_TX_LANE</code>/<code>MIPI_RX_LANE</code>)</td>
+</tr>
+<tr>
+<td>The <strong>hard</strong> DPHY whole-block IP (complete PHY including PLL/SSC)</td>
+<td><code>"MIPI_DPHY_TX"</code> / <code>"MIPI_DPHY_RX"</code></td>
+<td>object_db.py:126-127 (internal names <code>mipi_hard_dphy_tx/rx</code> → <code>MIPI_DPHY_TX</code>/<code>MIPI_DPHY_RX</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Mnemonic: <strong>a string containing <code>LANE</code> is the lane-level soft DPHY; only a string containing <code>DPHY</code> is the hard DPHY</strong>. If you get it wrong, PT parses against the other property set, and the symptoms are rejected properties or behavior that does not match.</p>
+<h3 id="1-2-isf-support-whitelist">1.2 ISF support whitelist</h3>
+<p><code>supp_block</code> in <code>isf_exporter.py</code> lists the block types that can enter an ISF (:149-173):</p>
+<ul>
+<li>Basic: <code>GPIO</code>, <code>PLL</code>, <code>IOBANK</code>, <code>JTAG</code> (:149)</li>
+<li>Pixel-level MIPI: <code>MIPI_TX</code>, <code>MIPI_RX</code> (:156-157)</li>
+<li>Hard DPHY: <code>MIPI_DPHY_TX</code>, <code>MIPI_DPHY_RX</code> (:160-161)</li>
+<li>Lane-level DPHY + LVDS: <code>MIPI_RX_LANE</code>, <code>MIPI_TX_LANE</code>, <code>LVDS_RX</code>, <code>LVDS_TX</code>, <code>LVDS_BIDIR</code> (:164-168)</li>
+</ul>
+<hr />
+<h2 id="2-the-creation-trio">2. The creation trio</h2>
+<p>The ISF configuration of every interface hard IP consists of three commands (<code>BlockISFBuilder</code> CommandType, isf_exporter.py:1252-1258; string mapping cmd2str_map :1260-1264):</p>
+<pre><code class="language-python"># 1) Create the instance — one-time bootstrap (allowed only while peri.xml does not exist)
+design.create_block(&quot;&lt;实例名&gt;&quot;, &quot;&lt;BLOCK_TYPE&gt;&quot;, [create 额外参数])
+
+# 2) Set properties — idempotent, replayable
+design.set_property(&quot;&lt;实例名&gt;&quot;, &quot;&lt;PROP_NAME&gt;&quot;, &quot;&lt;值&gt;&quot;, &quot;&lt;BLOCK_TYPE&gt;&quot;)
+
+# 3) Assign hardware resources — idempotent, replayable
+design.assign_resource(&quot;&lt;实例名&gt;&quot;, &quot;&lt;RESOURCE&gt;&quot;, &quot;&lt;BLOCK_TYPE&gt;&quot;)
+</code></pre>
+<p><strong>Key points</strong>:</p>
+<ul>
+<li>The 4th argument of <code>set_property</code> must be the exact block_type string (generic implementation isf_exporter.py:1379-1425).</li>
+<li>The builder emits <code>assign_resource</code> only when the instance's <code>device</code> (RESOURCE) is non-empty (<code>build_resasg_command</code>, isf_exporter.py:1427-1449) — for JTAG, RESOURCE is <code>JTAG_USER1</code>/<code>JTAG_USER2</code>.</li>
+<li><strong>Replay-safety contract</strong> (<em>Efinity ISF Syntax Reference</em> and hard constraint §15): <code>create_*</code> is a one-time bootstrap; the resident ISF referenced by the project allows only idempotent commands such as <code>set_property</code> / <code>assign_resource</code> / <code>set_iobank_voltage</code>. Comment out the <code>create_*</code> lines immediately after the bootstrap compile generates <code>&lt;design&gt;.peri.xml</code>. See <em>Efinity File Formats — peri.xml</em> for details.</li>
+<li>LVDS create commands carry extra keyword arguments (emitted by the builder per generation): legacy TX emits <code>tx_mode="&lt;api_mode&gt;"</code> (<code>gen_extra_create_parameter</code>, isf_exporter.py:2225-2235), legacy RX emits <code>rx_conn_type="&lt;api_mode&gt;"</code> (:2334-2344); lane-level DPHY TX emits <code>mode="CLOCK_LANE"</code> or <code>mode="DATA_LANE"</code> by mode (MIPIDPhyTxISFBuilder :1764-1767).</li>
+</ul>
+<hr />
+<h2 id="3-jtag-hard-ip">3. JTAG hard IP</h2>
+<p>JTAG provides boundary scan / a user debug channel after FPGA configuration. It is <strong>the only hard IP of the three interface families with an official ISF sample</strong>; the property tables and template in this section can be copied verbatim.</p>
+<h3 id="3-1-complete-property-table">3.1 Complete property table</h3>
+<p>Every entry in <code>jtag_prop_map</code> of jtag_prop.py (:67-79) has <strong>no default value</strong> (<code>PropData(..., None)</code>) — all properties must be set explicitly. As for legal values, <code>get_valid_option</code> returns an empty set (:230-233), i.e. <strong>the ISF layer performs no static enum validation on values</strong>; the values are dictated by how PT uses them internally (pin-name conventions below).</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Default</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NAME</code></td>
+<td>string</td>
+<td>Instance-name string</td>
+<td>—</td>
+<td>Instance name; the reader maps it directly to <code>inst.name</code> (jtag_prop.py:84)</td>
+<td>jtag_prop.py:67-79, :84</td>
+</tr>
+<tr>
+<td><code>RESOURCE</code></td>
+<td>string</td>
+<td><code>JTAG_USER1</code> / <code>JTAG_USER2</code> (verified in the official sample); the reader maps it to <code>inst.get_device()</code> (:85)</td>
+<td>—</td>
+<td>User JTAG resource number; must match the 2nd argument of <code>assign_resource</code></td>
+<td>jtag_prop.py:67-79, :85; Ti375C529_kit.isf:185-186</td>
+</tr>
+<tr>
+<td><code>CAPTURE</code></td>
+<td>string</td>
+<td>Pin name (convention: <code>&lt;实例名&gt;_CAPTURE</code>)</td>
+<td>—</td>
+<td>RTL port name for the CAPTURE output pin</td>
+<td>jtag_prop.py:39-51, :130-143</td>
+</tr>
+<tr>
+<td><code>DRCK</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_DRCK</code>)</td>
+<td>—</td>
+<td>DRCK (Drck clock) pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>RESET</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_RESET</code>)</td>
+<td>—</td>
+<td>RESET pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>RUNTEST</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_RUNTEST</code>)</td>
+<td>—</td>
+<td>RUNTEST pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>SEL</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_SEL</code>)</td>
+<td>—</td>
+<td>SEL pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>SHIFT</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_SHIFT</code>)</td>
+<td>—</td>
+<td>SHIFT pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>TCK</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_TCK</code>)</td>
+<td>—</td>
+<td>Test clock pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>TDI</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_TDI</code>)</td>
+<td>—</td>
+<td>Test data input pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>TMS</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_TMS</code>)</td>
+<td>—</td>
+<td>Test mode select pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>UPDATE</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_UPDATE</code>)</td>
+<td>—</td>
+<td>UPDATE pin</td>
+<td>same as above</td>
+</tr>
+<tr>
+<td><code>TDO</code></td>
+<td>string</td>
+<td>Pin name (<code>&lt;实例名&gt;_TDO</code>)</td>
+<td>—</td>
+<td>Test data output pin</td>
+<td>same as above</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The property ID enum is <code>JTAGPropId</code> (jtag_prop.py:26-37); the PropId→ISF string map <code>__propid2str_map</code> (:39-51) and its reverse <code>__str2propid_map</code> (:53-65).</li>
+<li>Pin properties read/write through <code>__set_pin_name</code> / <code>__get_pin_name</code> (:130-143) land on instance ports — <strong>the pin property value is the RTL top-level port name</strong>, and auto-instantiation generates the port accordingly.</li>
+<li>writer (:102-119) + reader (:81-100) form the ISF import/export loop.</li>
+</ul>
+<h3 id="3-2-official-isf-transcript-complete-runnable-template">3.2 Official ISF transcript (complete, runnable template)</h3>
+<p>Excerpted from <code>examples\helloworld-dbg_MULTI_USERS\Ti375C529_kit.isf</code> (:103-104, :148-173, :185-186), a two-instance configuration:</p>
+<pre><code class="language-tcl"># ========== ① bootstrap section (one-time; comment out after the bootstrap compile generates peri.xml) ==========
+design.create_block(&quot;jtag_inst1&quot;,&quot;JTAG&quot;)        # Ti375C529_kit.isf:103
+design.create_block(&quot;jtag_inst2&quot;,&quot;JTAG&quot;)        # Ti375C529_kit.isf:104
+
+# ========== ② replay-safe section (idempotent, resident ISF) ==========
+# --- Instance 1: RESOURCE = JTAG_USER1 ---
+design.set_property(&quot;jtag_inst1&quot;,&quot;NAME&quot;,&quot;jtag_inst1&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;RESOURCE&quot;,&quot;JTAG_USER1&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;CAPTURE&quot;,&quot;jtag_inst1_CAPTURE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;DRCK&quot;,&quot;jtag_inst1_DRCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;RESET&quot;,&quot;jtag_inst1_RESET&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;RUNTEST&quot;,&quot;jtag_inst1_RUNTEST&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;SEL&quot;,&quot;jtag_inst1_SEL&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;SHIFT&quot;,&quot;jtag_inst1_SHIFT&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TCK&quot;,&quot;jtag_inst1_TCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TDI&quot;,&quot;jtag_inst1_TDI&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TMS&quot;,&quot;jtag_inst1_TMS&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;UPDATE&quot;,&quot;jtag_inst1_UPDATE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst1&quot;,&quot;TDO&quot;,&quot;jtag_inst1_TDO&quot;,&quot;JTAG&quot;)
+# --- Instance 2: RESOURCE = JTAG_USER2 (same property structure, values switch to inst2) ---
+design.set_property(&quot;jtag_inst2&quot;,&quot;NAME&quot;,&quot;jtag_inst2&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;RESOURCE&quot;,&quot;JTAG_USER2&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;CAPTURE&quot;,&quot;jtag_inst2_CAPTURE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;DRCK&quot;,&quot;jtag_inst2_DRCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;RESET&quot;,&quot;jtag_inst2_RESET&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;RUNTEST&quot;,&quot;jtag_inst2_RUNTEST&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;SEL&quot;,&quot;jtag_inst2_SEL&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;SHIFT&quot;,&quot;jtag_inst2_SHIFT&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TCK&quot;,&quot;jtag_inst2_TCK&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TDI&quot;,&quot;jtag_inst2_TDI&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TMS&quot;,&quot;jtag_inst2_TMS&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;UPDATE&quot;,&quot;jtag_inst2_UPDATE&quot;,&quot;JTAG&quot;)
+design.set_property(&quot;jtag_inst2&quot;,&quot;TDO&quot;,&quot;jtag_inst2_TDO&quot;,&quot;JTAG&quot;)
+
+# ========== ③ Resource assignment (idempotent, resident ISF) ==========
+design.assign_resource(&quot;jtag_inst1&quot;,&quot;JTAG_USER1&quot;,&quot;JTAG&quot;)   # Ti375C529_kit.isf:185
+design.assign_resource(&quot;jtag_inst2&quot;,&quot;JTAG_USER2&quot;,&quot;JTAG&quot;)   # Ti375C529_kit.isf:186
+</code></pre>
+<p><strong>Multi-instance rule</strong>: one project can host multiple JTAG user channels; each instance occupies an independent <code>JTAG_USERn</code> resource, and the <code>RESOURCE</code> property value must match the 2nd argument of <code>assign_resource</code>.</p>
+<hr />
+<h2 id="4-lvds-hard-ip">4. LVDS hard IP</h2>
+<h3 id="4-1-generation-mechanism">4.1 Generation mechanism</h3>
+<p>LVDS comes in three generations selected by <code>design.lvds_type</code>; the builder dispatches on it (isf_exporter.py:340-405; property classes dispatch per generation map, lvds_prop.py RX :355-360, TX :910-915):</p>
+<table>
+<thead>
+<tr>
+<th>Generation</th>
+<th>TX property class</th>
+<th>RX property class</th>
+<th>TX builder</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>legacy (<code>lvds</code>)</td>
+<td><code>LVDSTxProp</code> (:861)</td>
+<td><code>LVDSRxProp</code> (:301)</td>
+<td><code>LVDSTxISFBuilder</code> (:2167)</td>
+<td>Basic LVDS on older devices</td>
+</tr>
+<tr>
+<td>Adv (<code>adv_lvds</code>)</td>
+<td><code>LVDSTxAdvProp</code> (:1074)</td>
+<td><code>LVDSRxAdvProp</code> (:468)</td>
+<td><code>LVDSTxAdvISFBuilder</code> (:2381, db reads <code>design.lvds_type</code> :2390)</td>
+<td>The workhorse generation with the fullest property set</td>
+</tr>
+<tr>
+<td>V3 (<code>efx_lvds_v3</code>)</td>
+<td><code>EfxLvdsV3TxProp</code> (:1643)</td>
+<td><code>EfxLvdsV3RxProp</code> (:1656)</td>
+<td><code>EfxLVDSTxV3ISFBuilder</code> (:2488, only swaps in <code>IntEfxLVDSV3API</code>)</td>
+<td>Newer-generation devices</td>
+</tr>
+</tbody>
+</table>
+<p><code>LVDSBidirAdvProp</code> (lvds_prop.py:1369) is not an independent property set but an <strong>RX+TX combiner</strong>: <code>build_lvds_prop</code> assembles RX/TX properties for <code>adv_lvds</code> (:1411-1416) or <code>efx_lvds_v3</code> (:1417-1422); <code>is_rx_prop</code> routes by whether the property name contains <code>RX</code>/<code>TX</code> (:1438-1451). Bidir ISF is emitted by <code>LVDSBidirAdvISFBuilder</code> (:2422) / <code>EfxLVDSBidirV3ISFBuilder</code> (:2504).</p>
+<h3 id="4-2-lvds_tx-property-table">4.2 LVDS_TX property table</h3>
+<p><strong>Adv generation (13 properties, <code>LVDSTxAdvProp.PropId</code> lvds_prop.py:1083-1096; skip_isf_property_list is empty at :1103 — all can enter the ISF)</strong>. Defaults: LVDS properties define no <code>PropData</code> default in the prop file; defaults follow the device-database instance (no <code>PropData(</code> hit anywhere in the file).</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values (api_options\lvds_tx_adv_api_options.py:3-10)</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TX_MODE</code></td>
+<td><code>DATA</code> / <code>CLKOUT</code></td>
+<td>Operating mode: data or clock output (value mapping :1223-1234; create extra parameter <code>tx_mode</code>)</td>
+<td>lvds_prop.py:1083-1096; isf_exporter.py:2225-2235</td>
+</tr>
+<tr>
+<td><code>TX_EN_SER</code></td>
+<td>Enables serialization (<code>1</code>/<code>0</code>)</td>
+<td>Serializer enable</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_SER</code></td>
+<td><code>tx_serial_width</code> Range(1,10)</td>
+<td>Serialization ratio</td>
+<td>lvds_prop.py:1083-1096; api_options :7</td>
+</tr>
+<tr>
+<td><code>TX_HALF_RATE</code></td>
+<td>half-rate enable</td>
+<td>Half-rate mode</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_DELAY</code></td>
+<td>Range(0,63)</td>
+<td>Delay tap count</td>
+<td>lvds_prop.py:1083-1096; api_options :3</td>
+</tr>
+<tr>
+<td><code>TX_PRE_EMP</code></td>
+<td><code>LOW</code> / <code>MEDIUM_LOW</code> / <code>MEDIUM_HIGH</code> / <code>HIGH</code></td>
+<td>Pre-emphasis (value mapping :1291-1305)</td>
+<td>lvds_prop.py:1083-1096; api_options :8</td>
+</tr>
+<tr>
+<td><code>TX_VOD</code></td>
+<td><code>LARGE</code> / <code>TYPICAL</code> / <code>SMALL</code></td>
+<td>Output drive amplitude (value mapping :1323-1335)</td>
+<td>lvds_prop.py:1083-1096; api_options :9</td>
+</tr>
+<tr>
+<td><code>TX_DIFF_TYPE</code></td>
+<td><code>LVDS</code> / <code>SUBLVDS</code> / <code>CUSTOM</code> / <code>SLVS</code></td>
+<td>Differential standard (value mapping :1307-1321)</td>
+<td>lvds_prop.py:1083-1096; api_options :4</td>
+</tr>
+<tr>
+<td><code>TX_OUT_PIN</code></td>
+<td>Pin name</td>
+<td>Port for the data output P/N</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_OE_PIN</code></td>
+<td>Pin name</td>
+<td>Output-enable port</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_RST_PIN</code></td>
+<td>Pin name</td>
+<td>Reset port</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_FASTCLK_PIN</code></td>
+<td>Pin name</td>
+<td>Fast-clock port</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+<tr>
+<td><code>TX_SLOWCLK_PIN</code></td>
+<td>Pin name</td>
+<td>Slow-clock port</td>
+<td>lvds_prop.py:1083-1096</td>
+</tr>
+</tbody>
+</table>
+<p><strong>legacy generation (<code>LVDSTxProp.PropId</code> lvds_prop.py:870-882; legal values api_options\lvds_tx_api_options.py:3-9)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TX_MODE</code></td>
+<td><code>DATA</code> / <code>CLKOUT</code></td>
+<td>Operating mode (value mapping :1223-1234)</td>
+<td>lvds_prop.py:870-882</td>
+</tr>
+<tr>
+<td><code>TX_EN_SER</code> / <code>TX_SER</code></td>
+<td>Serialization width <code>'2'</code>..<code>'8'</code></td>
+<td>Serializer enable / ratio</td>
+<td>lvds_prop.py:870-882; api_options :6</td>
+</tr>
+<tr>
+<td><code>TX_OUTPUT_LOAD</code></td>
+<td><code>3</code> / <code>5</code> / <code>7</code> / <code>10</code> (pF)</td>
+<td>Output load</td>
+<td>lvds_prop.py:870-882; api_options :4</td>
+</tr>
+<tr>
+<td><code>TX_SLOWCLK_DIV</code></td>
+<td><code>1</code> / <code>2</code></td>
+<td>Slow-clock division (value mapping div2 :1236-1244)</td>
+<td>lvds_prop.py:870-882; api_options :7</td>
+</tr>
+<tr>
+<td><code>TX_REDUCED_SWING</code></td>
+<td>Reduced-swing enable</td>
+<td>Lowers the swing</td>
+<td>lvds_prop.py:870-882</td>
+</tr>
+<tr>
+<td><code>TX_FASTCLK_PIN</code> / <code>TX_SLOWCLK_PIN</code> / <code>TX_OUT_PIN</code> / <code>TX_OE_PIN</code></td>
+<td>Pin name</td>
+<td>Clock / output / OE ports</td>
+<td>lvds_prop.py:870-882</td>
+</tr>
+<tr>
+<td><code>TX_RST_PIN</code></td>
+<td>—</td>
+<td><strong>Deprecated</strong> ("Not supported", :896-899) — do not write it into the ISF</td>
+<td>lvds_prop.py:896-899</td>
+</tr>
+<tr>
+<td><code>DIV2_CLKOUT</code></td>
+<td>—</td>
+<td><strong>Skipped by the ISF</strong> (:888) — never enters the ISF file</td>
+<td>lvds_prop.py:888</td>
+</tr>
+</tbody>
+</table>
+<p>Trion special case: with TX in <code>CLKOUT</code> mode and serialization disabled, PT automatically converts to <code>DATA</code> mode (PT-2701, lvds_prop.py:1040-1066).</p>
+<h3 id="4-3-lvds_rx-property-table">4.3 LVDS_RX property table</h3>
+<p><strong>Adv generation (28 properties, <code>LVDSRxAdvProp.PropId</code> lvds_prop.py:477-505)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values (api_options\lvds_rx_adv_api_options.py:3-10)</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RX_CONN_TYPE</code></td>
+<td><code>NORMAL</code> / <code>GCLK</code> / <code>RCLK</code> / <code>PLL_CLKIN</code> / <code>PLL_EXTFB</code></td>
+<td>Connection type (value mapping :786-802; create extra parameter <code>rx_conn_type</code>)</td>
+<td>lvds_prop.py:477-505; isf_exporter.py:2334-2344</td>
+</tr>
+<tr>
+<td><code>RX_TERM</code></td>
+<td><code>ON</code> / <code>OFF</code> / <code>DYNAMIC</code></td>
+<td>Termination (value mapping :804-816; DYNAMIC goes through <code>RX_TERM_PIN</code>)</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DESER</code></td>
+<td>Serialization ratio</td>
+<td>Deserialization ratio (the builder skips <code>RX_DESER == "1"</code>, i.e. emits nothing when deserialization is disabled, :2374-2375)</td>
+<td>lvds_prop.py:477-505; isf_exporter.py:2374-2375</td>
+</tr>
+<tr>
+<td><code>RX_EN_DESER</code></td>
+<td>Deserializer enable</td>
+<td>Enables the deserializer</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_HALF_RATE</code></td>
+<td>half-rate enable</td>
+<td>Half rate</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DELAY</code></td>
+<td>Range(0,63)</td>
+<td>Delay tap count</td>
+<td>lvds_prop.py:477-505; api_options :5</td>
+</tr>
+<tr>
+<td><code>RX_DELAY_MODE</code></td>
+<td><code>STATIC</code> / <code>DYNAMIC</code> / <code>DPA</code></td>
+<td>Delay mode (value mapping :771-784)</td>
+<td>lvds_prop.py:477-505; api_options :6</td>
+</tr>
+<tr>
+<td><code>RX_FIFO</code></td>
+<td>FIFO enable</td>
+<td>Internal FIFO</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_VOC_DRIVER</code></td>
+<td>VOC driver enable</td>
+<td>VOC driver</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_SLVS</code></td>
+<td>SLVS enable</td>
+<td>SLVS mode</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>DIFF_TYPE</code></td>
+<td><code>SLVS</code> / <code>LVDS</code></td>
+<td>Differential standard (value mapping :818-826) — <strong>skipped by the ISF</strong> (skip_isf_property_list, :512)</td>
+<td>lvds_prop.py:477-505, :512; api_options :3</td>
+</tr>
+<tr>
+<td><code>GBUF</code></td>
+<td>GBUF option</td>
+<td>Global buffer (:504)</td>
+<td>lvds_prop.py:504</td>
+</tr>
+<tr>
+<td><code>RX_IN_PIN</code></td>
+<td>Pin name</td>
+<td>Data input P/N port</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_ENA_PIN</code> / <code>RX_RST_PIN</code></td>
+<td>Pin name</td>
+<td>Enable / reset ports</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_LOCK_PIN</code></td>
+<td>Pin name</td>
+<td>Lock indication port</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_TERM_PIN</code></td>
+<td>Pin name</td>
+<td>Dynamic termination control port</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DLY_ENA_PIN</code> / <code>RX_DLY_INC_PIN</code> / <code>RX_DLY_RST_PIN</code></td>
+<td>Pin name</td>
+<td>Dynamic DLY control ports</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_DLYCLK_PIN</code></td>
+<td>Pin name</td>
+<td>DLY clock port (:505)</td>
+<td>lvds_prop.py:505</td>
+</tr>
+<tr>
+<td><code>RX_DBG_PIN</code></td>
+<td>Pin name</td>
+<td>Debug port</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_FIFOCLK_PIN</code> / <code>RX_FIFO_EMPTY_PIN</code> / <code>RX_FIFO_RD_PIN</code></td>
+<td>Pin name</td>
+<td>FIFO clock / empty / read ports</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_FASTCLK_PIN</code> / <code>RX_SLOWCLK_PIN</code></td>
+<td>Pin name</td>
+<td>Fast / slow clock ports</td>
+<td>lvds_prop.py:477-505</td>
+</tr>
+<tr>
+<td><code>RX_FIFOCLK_INVERT_EN</code></td>
+<td>Inversion enable</td>
+<td><strong>Excluded by <code>get_supported_props_list</code></strong> (:526) — not supported in the current version</td>
+<td>lvds_prop.py:526</td>
+</tr>
+</tbody>
+</table>
+<p><strong>legacy generation (<code>LVDSRxProp.PropId</code> lvds_prop.py:310-320; legal values api_options\lvds_rx_api_options.py:3-8)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RX_CONN_TYPE</code></td>
+<td><code>NORMAL</code> / <code>PLL_CLKIN</code></td>
+<td>Connection type (value mapping :709-725)</td>
+<td>lvds_prop.py:310-320</td>
+</tr>
+<tr>
+<td><code>RX_TERM</code></td>
+<td><code>ON</code> / <code>OFF</code></td>
+<td>Termination (value mapping :727-737)</td>
+<td>lvds_prop.py:310-320</td>
+</tr>
+<tr>
+<td><code>RX_EN_DELAY</code> / <code>RX_DELAY</code></td>
+<td>Range(0,63)</td>
+<td>Delay enable / tap count</td>
+<td>lvds_prop.py:310-320; api_options :4</td>
+</tr>
+<tr>
+<td><code>RX_EN_DESER</code> / <code>RX_DESER</code></td>
+<td><code>'2'</code>..<code>'8'</code></td>
+<td>Deserializer enable / ratio (serialization width mapping :48-51)</td>
+<td>lvds_prop.py:310-320; api_options :5</td>
+</tr>
+<tr>
+<td><code>RX_IN_PIN</code> / <code>RX_FASTCLK_PIN</code> / <code>RX_SLOWCLK_PIN</code></td>
+<td>Pin name</td>
+<td>Input / clock ports</td>
+<td>lvds_prop.py:310-320</td>
+</tr>
+<tr>
+<td><code>RX_RST_PIN</code></td>
+<td>—</td>
+<td><strong>Deprecated</strong> ("Not supported", :332-335) — do not write it into the ISF</td>
+<td>lvds_prop.py:332-335</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-lvds-constraint-rules-verified-via-check_properties">4.4 LVDS constraint rules (verified via check_properties)</h3>
+<ol>
+<li><strong>Non-NORMAL connection types require deserialization off</strong>: when <code>RX_CONN_TYPE</code> is <code>GCLK</code>/<code>RCLK</code>/<code>PLL_CLKIN</code>/<code>PLL_EXTFB</code>, <code>RX_EN_DESER</code> must be disabled, otherwise PT rejects it (lvds_prop.py:447-462, :636-649).</li>
+<li><strong>DYNAMIC termination needs a pin</strong>: <code>RX_TERM=DYNAMIC</code> requires <code>RX_TERM_PIN</code>.</li>
+<li>See §9 for the TX/RX paired constraint: the bank containing LVDS is forced to <code>3.3 V LVTTL / LVCMOS</code>.</li>
+</ol>
+<hr />
+<h2 id="5-mipi-hard-ip">5. MIPI hard IP</h2>
+<h3 id="5-1-the-three-forms-tell-them-apart-before-use">5.1 The three forms (tell them apart before use)</h3>
+<table>
+<thead>
+<tr>
+<th>Form</th>
+<th>block_type</th>
+<th>Granularity</th>
+<th>Use</th>
+<th>Property authority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pixel-level</td>
+<td><code>MIPI_TX</code> / <code>MIPI_RX</code></td>
+<td>Full chain (pixel interface + DPHY integrated)</td>
+<td>The traditional soft-IP form for camera RX / display TX</td>
+<td>mipi_prop.py</td>
+</tr>
+<tr>
+<td>Lane-level soft DPHY</td>
+<td><code>MIPI_TX_LANE</code> / <code>MIPI_RX_LANE</code></td>
+<td>Single lane</td>
+<td>Build-your-own DPHY links (naming-inversion trap in §1.1)</td>
+<td>mipi_dphy_prop.py</td>
+</tr>
+<tr>
+<td>Hard DPHY</td>
+<td><code>MIPI_DPHY_TX</code> / <code>MIPI_DPHY_RX</code></td>
+<td>Whole-block hard PHY (incl. PLL/SSC)</td>
+<td>High-performance hard-macro DPHY</td>
+<td>mipi_hard_dphy_prop.py + mipi_hard_dphy_prop_id.py</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-pixel-level-mipi_rx-property-table-mipi_prop-py-218-252">5.2 Pixel-level MIPI_RX property table (mipi_prop.py:218-252)</h3>
+<p>Defaults: the prop file has no <code>PropData</code> default entries; defaults follow the device-database instance. Legal values: api_options\mipi_rx_api_options.py:3-12.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STATUS_EN</code></td>
+<td>Status-report enable</td>
+<td><strong>The gate for RX pin properties</strong> — when 0, the builder skips CLEAR_PIN/ERROR_PIN/ULPS_CLK_PIN/ULPS_PIN (isf_exporter.py:1700, :1709-1710)</td>
+<td>mipi_prop.py:232; isf_exporter.py:1697-1710</td>
+</tr>
+<tr>
+<td><code>CAL_CLK_FREQ</code></td>
+<td>Range(80,120) (MHz)</td>
+<td>Calibration clock frequency</td>
+<td>mipi_prop.py:219; api_options :3</td>
+</tr>
+<tr>
+<td><code>CAL_CLK_INVERTED_EN</code> / <code>PIXEL_CLK_INVERTED_EN</code></td>
+<td>Inversion enable</td>
+<td>Clock inversion</td>
+<td>mipi_prop.py:220-221</td>
+</tr>
+<tr>
+<td><code>TCLK_SETTLE</code> / <code>THS_SETTLE</code></td>
+<td><code>[40..2590] step10</code> (ns-scale enum)</td>
+<td>LP-HS transition settle time (PT built-in calculator :519-548/:807-844; the tool can compute it)</td>
+<td>mipi_prop.py:233-234; api_options :11-12</td>
+</tr>
+<tr>
+<td><code>RXD0_LANE</code> .. <code>RXD4_LANE</code></td>
+<td><code>data0</code>/<code>data1</code>/<code>data2</code>/<code>data3</code>/<code>clk</code>/<code>unused</code></td>
+<td>Lane logical mapping (PhyLane.str2loglane_map :505-517)</td>
+<td>mipi_prop.py:222-231</td>
+</tr>
+<tr>
+<td><code>RXD0_PN_SWAP</code> .. <code>RXD4_PN_SWAP</code></td>
+<td>P/N swap enable</td>
+<td>Differential-pair polarity swap</td>
+<td>mipi_prop.py:222-231</td>
+</tr>
+<tr>
+<td><code>VC_ENA_PIN</code> / <code>VC_PIN</code></td>
+<td>Pin name / virtual channel number</td>
+<td>Virtual Channel enable and select</td>
+<td>mipi_prop.py:250-251</td>
+</tr>
+<tr>
+<td><code>DATA_TYPE_PIN</code> / <code>VALID_PIN</code> / <code>DATA_PIN</code> / <code>CNT_PIN</code></td>
+<td>Pin name</td>
+<td>Data type / valid / data / count output ports</td>
+<td>mipi_prop.py:238, :246, :249</td>
+</tr>
+<tr>
+<td><code>HSYNC_PIN</code> / <code>VSYNC_PIN</code></td>
+<td>Pin name</td>
+<td>Horizontal / vertical sync ports</td>
+<td>mipi_prop.py:241, :252</td>
+</tr>
+<tr>
+<td><code>PIXEL_CLK_PIN</code></td>
+<td>Pin name</td>
+<td>Pixel clock port</td>
+<td>mipi_prop.py:243</td>
+</tr>
+<tr>
+<td><code>RSTN_PIN</code> / <code>DPHY_RSTN_PIN</code></td>
+<td>Pin name</td>
+<td>Logic reset / DPHY reset ports</td>
+<td>mipi_prop.py:239, :244</td>
+</tr>
+<tr>
+<td><code>CAL_CLK_PIN</code></td>
+<td>Pin name</td>
+<td>Calibration clock port</td>
+<td>mipi_prop.py:235</td>
+</tr>
+<tr>
+<td><code>LANES_PIN</code></td>
+<td>Pin name</td>
+<td>Active-lane-count output port</td>
+<td>mipi_prop.py:242</td>
+</tr>
+<tr>
+<td><code>CLEAR_PIN</code> / <code>ERROR_PIN</code> / <code>ULPS_PIN</code> / <code>ULPS_CLK_PIN</code></td>
+<td>Pin name</td>
+<td>Status-class ports — <strong>enter the ISF only when STATUS_EN=1</strong></td>
+<td>mipi_prop.py:236, :240, :247-248; isf_exporter.py:1709-1710</td>
+</tr>
+<tr>
+<td><code>TYPE_PIN</code></td>
+<td>—</td>
+<td><strong>Deprecated</strong> (→ <code>DATA_TYPE_PIN</code>, :331) — use the new name</td>
+<td>mipi_prop.py:245, :331</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-3-pixel-level-mipi_tx-property-table-mipi_prop-py-560-599">5.3 Pixel-level MIPI_TX property table (mipi_prop.py:560-599)</h3>
+<p>The builder emits <code>PHY_FREQ</code>/<code>ESC_CLK_FREQ</code> before the other properties (<code>set_front</code>, isf_exporter.py:1626). Legal values: api_options\mipi_tx_api_options.py:3-19.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PHY_FREQ</code></td>
+<td>OptionValidator 80.0→1500.0 MHz (1.25/2.5/5 steps, ~340 values)</td>
+<td>DPHY line rate (<strong>emitted first by the builder</strong>)</td>
+<td>mipi_prop.py:564; api_options :4; isf_exporter.py:1626</td>
+</tr>
+<tr>
+<td><code>ESC_CLK_FREQ</code></td>
+<td>Range(11,20) (MHz)</td>
+<td>Escape clock frequency (<strong>emitted first by the builder</strong>)</td>
+<td>mipi_prop.py:562; api_options :3; isf_exporter.py:1626</td>
+</tr>
+<tr>
+<td><code>REFCLK_FREQ</code></td>
+<td><code>6.0/12.0/19.2/25.0/26.0/27.0/38.4/52.0</code> (MHz)</td>
+<td>Reference clock frequency</td>
+<td>mipi_prop.py:566; api_options :5</td>
+</tr>
+<tr>
+<td><code>REFCLK_INST</code> / <code>REFCLK_RES</code></td>
+<td>PLL instance name / resource</td>
+<td>Reference-clock source binding (empty option at the STR layer :680-684; can be left unset)</td>
+<td>mipi_prop.py:567-568, :680-684</td>
+</tr>
+<tr>
+<td><code>CONT_PHY_CLK_EN</code></td>
+<td>PHY continuous enable</td>
+<td>Continuous clock mode</td>
+<td>mipi_prop.py:561</td>
+</tr>
+<tr>
+<td><code>ESC_CLK_INVERTED_EN</code> / <code>PIXEL_CLK_INVERTED_EN</code></td>
+<td>Inversion enable</td>
+<td>Clock inversion</td>
+<td>mipi_prop.py:563, :565</td>
+</tr>
+<tr>
+<td><code>TCLK_POST</code></td>
+<td><code>[113,121,129,137,145,169,209,249]</code></td>
+<td>CLK post timing</td>
+<td>mipi_prop.py:569; api_options :6</td>
+</tr>
+<tr>
+<td><code>TCLK_PRE</code></td>
+<td><code>[250,300,400,550]</code></td>
+<td>CLK pre timing</td>
+<td>mipi_prop.py:570; api_options :7</td>
+</tr>
+<tr>
+<td><code>TCLK_PREPARE</code></td>
+<td><code>[48,56,64,72]</code></td>
+<td>CLK prepare</td>
+<td>mipi_prop.py:571; api_options :8</td>
+</tr>
+<tr>
+<td><code>TCLK_TRAIL</code></td>
+<td><code>[16..112] step8</code></td>
+<td>CLK trail</td>
+<td>mipi_prop.py:572; api_options :9</td>
+</tr>
+<tr>
+<td><code>TCLK_ZERO</code></td>
+<td><code>[304,312,320,328,336,360,400,440]</code></td>
+<td>CLK zero</td>
+<td>mipi_prop.py:573; api_options :10</td>
+</tr>
+<tr>
+<td><code>THS_PREPARE</code></td>
+<td><code>[58,66,74,90]</code></td>
+<td>HS prepare</td>
+<td>mipi_prop.py:574; api_options :11</td>
+</tr>
+<tr>
+<td><code>THS_TRAIL</code></td>
+<td><code>[10..186] step8</code> + <code>970</code></td>
+<td>HS trail</td>
+<td>mipi_prop.py:575; api_options :12</td>
+</tr>
+<tr>
+<td><code>THS_ZERO</code></td>
+<td><code>[142,150,190,230]</code></td>
+<td>HS zero</td>
+<td>mipi_prop.py:576; api_options :13</td>
+</tr>
+<tr>
+<td><code>TXD0_LANE</code> .. <code>TXD4_LANE</code></td>
+<td><code>data0</code>/<code>data1</code>/<code>data2</code>/<code>data3</code>/<code>clk</code>/<code>unused</code></td>
+<td>Lane logical mapping (:793-805)</td>
+<td>mipi_prop.py:577-581</td>
+</tr>
+<tr>
+<td><code>HRES_PIN</code> / <code>FRAME_MODE_PIN</code></td>
+<td>Pin name</td>
+<td>Horizontal resolution / frame mode ports</td>
+<td>mipi_prop.py:585-586</td>
+</tr>
+<tr>
+<td><code>DATA_PIN</code> / <code>VALID_PIN</code> / <code>TYPE_PIN(DATA_TYPE_PIN)</code> / <code>VC_PIN</code> / <code>HSYNC_PIN</code> / <code>VSYNC_PIN</code> / <code>PIXEL_CLK_PIN</code> / <code>LANES_PIN</code></td>
+<td>Pin name</td>
+<td>Video timing and data ports</td>
+<td>mipi_prop.py:582, :587-589, :592, :597-599</td>
+</tr>
+<tr>
+<td><code>ESC_CLK_PIN</code> / <code>RSTN_PIN</code> / <code>DPHY_RSTN_PIN</code></td>
+<td>Pin name</td>
+<td>Escape clock / reset ports</td>
+<td>mipi_prop.py:583-584, :590</td>
+</tr>
+<tr>
+<td><code>ULPS_CLK_ENTER_PIN</code> / <code>ULPS_CLK_EXIT_PIN</code> / <code>ULPS_ENTER_PIN</code> / <code>ULPS_EXIT_PIN</code></td>
+<td>Pin name</td>
+<td>ULPS enter/exit handshake ports</td>
+<td>mipi_prop.py:593-596</td>
+</tr>
+<tr>
+<td><code>TYPE_PIN</code></td>
+<td>—</td>
+<td><strong>Deprecated</strong> (:712) — use <code>DATA_TYPE_PIN</code>; the TX writer additionally strips read-only properties (:728-735)</td>
+<td>mipi_prop.py:591, :712, :728-735</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-4-lane-level-soft-dphy-property-table-mipi_dphy_prop-py">5.4 Lane-level soft DPHY property table (mipi_dphy_prop.py)</h3>
+<p><strong>RX v1 (<code>MIPIDPhyRxProp.PropId</code> :206-229; legal values api_options\mipi_dphy_rx_api_options.py:3-8)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MODE</code></td>
+<td><code>DATA_LANE</code> / <code>CLOCK_LANE</code> (API aliases <code>DATA</code>/<code>CLOCK</code>; value mapping :403-416)</td>
+<td>Lane role</td>
+<td>mipi_dphy_prop.py:206-229, :403-416</td>
+</tr>
+<tr>
+<td><code>CONN_TYPE</code></td>
+<td><code>GCLK</code> / <code>RCLK</code> (value mapping :430-440)</td>
+<td>Output clock connection type</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>DELAY_MODE</code></td>
+<td><code>STATIC</code> / <code>DYNAMIC</code> (value mapping :418-428)</td>
+<td>Delay mode</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>DELAY</code></td>
+<td>Range(0,63)</td>
+<td>Delay tap count</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>FIFO</code></td>
+<td>FIFO enable</td>
+<td>Internal FIFO</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>REVERSIBLE</code></td>
+<td>Lane-reversible enable</td>
+<td>Lane polarity configurable</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>HS_IN_PIN</code> / <code>HS_TERM_PIN</code> / <code>HS_ENA_PIN</code></td>
+<td>Pin name</td>
+<td>HS input / termination / enable ports</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>LP_P_IN_PIN</code> / <code>LP_P_OE_PIN</code> / <code>LP_P_OUT_PIN</code> / <code>LP_N_IN_PIN</code> / <code>LP_N_OE_PIN</code> / <code>LP_N_OUT_PIN</code></td>
+<td>Pin name</td>
+<td>LP differential input / output / OE ports</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>CLKOUT_PIN</code> / <code>RST_PIN</code></td>
+<td>Pin name</td>
+<td>Clock output / reset ports</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>DLY_ENA_PIN</code> / <code>DLY_INC_PIN</code> / <code>DLY_RST_PIN</code></td>
+<td>Pin name</td>
+<td>Dynamic delay control ports</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>FIFO_RD_PIN</code> / <code>FIFO_EMPTY_PIN</code></td>
+<td>Pin name</td>
+<td>FIFO read / empty ports</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+<tr>
+<td><code>GBUF</code></td>
+<td>GBUF option</td>
+<td>Global buffer</td>
+<td>mipi_dphy_prop.py:206-229</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RX v2 additions (<code>EfxMIPIDPhyRxV2Prop</code> :344-372; legal values api_options\mipi_dphy_rx_v2_api_options.py:3-11)</strong>: <code>CLK_SOURCE</code> (<code>CLK0</code>/<code>CLK1</code>, :352), <code>SERIAL_WIDTH</code> (<code>8</code>/<code>16</code>, :353), <code>RECEIVER_POWER</code> (<code>VCCAUX</code>/<code>VCCIO</code>, :354), <code>DLYCLK_PIN</code> (:372).</p>
+<p><strong>TX v1 (<code>MIPIDPhyTxProp.PropId</code> :478-494; legal values api_options\mipi_dphy_tx_api_options.py:3-6)</strong>: <code>MODE</code> (same four values as RX; the builder emits the create parameter <code>mode="CLOCK_LANE"</code>/<code>"DATA_LANE"</code> by mode, isf_exporter.py:1764-1767), <code>DELAY</code> (Range(0,63)), <code>REVERSIBLE</code>, <code>FASTCLK_PIN</code>/<code>SLOWCLK_PIN</code>, <code>HS_OE_PIN</code>/<code>HS_OUT_PIN</code>, the six LP pins (<code>LP_N_IN/OE/OUT</code>, <code>LP_P_IN/OE/OUT</code>), <code>RST_PIN</code>; <code>FASTCLK_INVERT_EN</code>/<code>SLOWCLK_INVERT_EN</code> are <strong>skipped by the ISF</strong> (:508-513). <strong>TX v2 adds</strong> <code>SERIAL_WIDTH</code> (<code>8</code>/<code>16</code>, :586; legal values mipi_dphy_tx_v2_api_options.py:7).</p>
+<h3 id="5-5-hard-dphy-property-table-mipi_hard_dphy_prop-py-mipi_hard_dphy_prop_id-py">5.5 Hard DPHY property table (mipi_hard_dphy_prop.py + mipi_hard_dphy_prop_id.py)</h3>
+<p>Hard DPHY properties fall into two classes: <strong>parameters</strong> (mapped to PHY parameters through <code>get_api_id_str2_param_name_map</code>) and <strong>pins</strong> (auto-instantiation port names). The API property strings are the uppercase PropId names.</p>
+<p><strong>TX parameters (MIPIHardDPHYTxProp, mipi_hard_dphy_prop.py:122; mapping table :264-308; legal values api_options\mipi_hard_dphy_prop_id_tx_api_options.py:3-31)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REF_CLK_FREQUENCY</code></td>
+<td><code>12.0/19.2/25.0/26.0/27.0/38.4/52.0</code> (MHz)</td>
+<td>Reference clock frequency</td>
+<td>prop.py:264-308; api_options :22</td>
+</tr>
+<tr>
+<td><code>PHY_BANDWIDTH</code></td>
+<td>Range(0,10000) (Mbps)</td>
+<td>PHY line rate</td>
+<td>prop.py:264-308; api_options :17</td>
+</tr>
+<tr>
+<td><code>REF_CLK_SELECT</code> / <code>REF_CLK_NAME</code></td>
+<td><code>core</code>/<code>pll</code>/<code>gpio</code> / PLL instance name</td>
+<td>Reference clock source and instance</td>
+<td>prop.py:264-308; api_options :23-24</td>
+</tr>
+<tr>
+<td><code>ENABLE_TURNAROUND</code></td>
+<td>Enable</td>
+<td>Turnaround enable</td>
+<td>prop.py:264-308</td>
+</tr>
+<tr>
+<td><code>ENABLE_SSC</code> / <code>PLL_SSC_PERIOD</code> / <code>PLL_SSC_AMP</code> / <code>PLL_SSC_AMP_INIT</code></td>
+<td>Enable / Range(30,33) / Range(2500,4999) / Range(2501,5000)</td>
+<td>Spread-spectrum clocking (SSC) configuration</td>
+<td>prop.py:264-308; api_options :18-21</td>
+</tr>
+<tr>
+<td><code>ENABLE_ADV_TIMING</code></td>
+<td>Enable</td>
+<td>Advanced timing parameter enable</td>
+<td>prop.py:264-308</td>
+</tr>
+<tr>
+<td><code>PLL_PRE_DIV</code> / <code>PLL_FBK_INT</code> / <code>PLL_FBK_FRA</code> / <code>CYCLE_SEL</code></td>
+<td>Range(0,3) / Range(0,511) / Range(0,16777215) / Range(0,7)</td>
+<td>Internal PLL divider / feedback configuration</td>
+<td>prop.py:264-308; api_options :25-30</td>
+</tr>
+<tr>
+<td><code>DATA_WIDTH</code></td>
+<td><code>8</code> / <code>16</code></td>
+<td>Internal data width</td>
+<td>prop.py:264-308; api_options :14</td>
+</tr>
+<tr>
+<td><code>NUM_DATA_LANES</code></td>
+<td><code>1</code> / <code>2</code> / <code>4</code></td>
+<td>Number of data lanes</td>
+<td>prop.py:264-308; api_options :16</td>
+</tr>
+<tr>
+<td><code>PHY_LANE_0</code> .. <code>PHY_LANE_4</code></td>
+<td><code>unused</code>/<code>clk</code>/<code>data0</code>/<code>data1</code>/<code>data2</code>/<code>data3</code></td>
+<td>Lane physical mapping (plus <code>PHY_LANE_n_PN_SWAP</code> polarity swap)</td>
+<td>prop.py:264-308; api_options :19</td>
+</tr>
+<tr>
+<td><code>DLANE_HS_PRE_TIME</code> / <code>DLANE_HS_ZERO_TIME</code> / <code>DLANE_HS_TRAIL_TIME</code></td>
+<td>Range(0,255)</td>
+<td>Data lane HS timing</td>
+<td>prop.py:264-308; api_options :26-27</td>
+</tr>
+<tr>
+<td><code>CLANE_HS_PRE_TIME</code> / <code>CLANE_HS_ZERO_TIME</code> / <code>CLANE_HS_TRAIL_TIME</code> / <code>CLANE_CLK_PRE_TIME</code> / <code>CLANE_CLK_POST_TIME</code></td>
+<td>Range(0,255)</td>
+<td>Clock lane timing</td>
+<td>prop.py:264-308; api_options :25-28</td>
+</tr>
+<tr>
+<td><code>RX_CLK_ESC_CONN_TYPE</code> / <code>WORD_CLKOUT_HS_CONN_TYPE</code></td>
+<td><code>normal</code>/<code>rclk</code> / <code>rclk</code>/<code>gclk</code></td>
+<td>Escape / word clock connection types</td>
+<td>prop.py:264-308; api_options :12-13</td>
+</tr>
+<tr>
+<td><code>BUF_RX_CLK_ESC_NAME</code> / <code>BUF_WORD_CLKOUT_HS_NAME</code></td>
+<td>Buffer name</td>
+<td>Escape / word clock buffer instances</td>
+<td>prop.py:264-308</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RX parameters (MIPIHardDPHYRxProp, :324; mapping table :472-501; legal values api_options\mipi_hard_dphy_prop_id_rx_api_options.py:3-18)</strong>: <code>CFG_CLK_FREQ</code> (Range(0,255)), <code>DATA_RATE</code> (Range(80,2500) Mbps), <code>DATA_WIDTH</code> (<code>8</code>/<code>16</code>), <code>ENABLE_TURNAROUND</code>, <code>NUM_DATA_LANES</code> (<code>1</code>/<code>2</code>/<code>4</code>), <code>PHY_LANE_0..4</code> (+<code>PN_SWAP</code>), <code>PRE_TIME_CLK</code>/<code>PRE_TIME_LANE01</code>/<code>PRE_TIME_LANE23</code> (Range(0,255)), <code>REF_CLK_NAME</code>, <code>RX_CLK_ESC_CONN_TYPE</code>/<code>WORD_CLKOUT_HS_CONN_TYPE</code>, <code>BUF_RX_CLK_ESC_NAME</code>/<code>BUF_WORD_CLKOUT_HS_NAME</code> (prop.py:472-501; api_options :3-18).</p>
+<p><strong>TX pin class (MIPIHardDPHYTxPropId, mipi_hard_dphy_prop_id.py:5-120)</strong>: <code>RESET_N_PIN</code>, <code>PLL_UNLOCK_PIN</code>, <code>DEBUG_CLK_PIN</code>, <code>DIRECTION_PIN</code>, the <code>ERR_*</code> series, the <code>STOPSTATE_*</code> series, the <code>TEST_*</code> series, <code>TX_DATA_HS_LAN0-3_PIN</code>, etc. <strong>RX pin class (MIPIHardDPHYRxPropId, :129-248)</strong>: <code>RST0_N_PIN</code>/<code>RST1_N_PIN</code>, <code>LP_CLK1_PIN</code>, <code>ERR_SOT_HS_LAN0-3_PIN</code>, <code>ERR_SOT_SYNC_HS_LAN0-3_PIN</code>, and other dual-channel pins. For the complete pin list, read the two PropId files directly (pin names ultimately become the top-level ports generated by auto-instantiation).</p>
+<hr />
+<h2 id="6-dedicated-apis-internal-layer">6. Dedicated APIs (internal layer)</h2>
+<p><strong>There is no dedicated method on the public surface</strong> — scripts/ISF use only the §2 trio. The dedicated APIs live inside PT and are hooked up by the ISF builders (used during automatic import/export), invisible to users writing ISF:</p>
+<table>
+<thead>
+<tr>
+<th>Builder (isf_exporter.py)</th>
+<th>Hook-up point</th>
+<th>Internal API / Prop construction</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>JTAGISFBuilder</code></td>
+<td><code>block_reg=jtag_reg</code>, <code>db_block_type=BlockType.jtag</code>, <code>api=ObjectType.jtag</code></td>
+<td><code>IntJTAGAPI.build_jtag_api</code> + <code>JTAGProp.build_jtag_prop</code></td>
+<td>:1551-1567</td>
+</tr>
+<tr>
+<td><code>MIPITxISFBuilder</code> / <code>MIPIRxISFBuilder</code></td>
+<td><code>db_block_type=BlockType.mipi</code></td>
+<td>Internal MIPI API + <code>MIPITxProp</code>/<code>MIPIRxProp</code></td>
+<td>:1570-1637, :1640-1713</td>
+</tr>
+<tr>
+<td><code>MIPIDPhyTxISFBuilder</code> / <code>MIPIDPhyRxISFBuilder</code></td>
+<td><code>db=design.mipi_dphy_type</code> (generation-aware)</td>
+<td>Internal DPHY API + <code>MIPIDPhy*Prop</code></td>
+<td>:1716-1811, :1812-1911</td>
+</tr>
+<tr>
+<td><code>MIPIHardDPHYTxISFBuilder</code> / <code>MIPIHardDPHYRxISFBuilder</code></td>
+<td><code>db=BlockType.mipi_hard_dphy</code></td>
+<td>Internal hard DPHY API + <code>MIPIHardDPHY*Prop</code></td>
+<td>:1912-1930, :1932-1950</td>
+</tr>
+<tr>
+<td><code>LVDS*ISFBuilder</code> (full legacy/Adv/V3 line)</td>
+<td>legacy <code>db=BlockType.lvds</code>; Adv <code>db=design.lvds_type</code>; V3 only swaps in <code>IntEfxLVDSV3API</code></td>
+<td>Internal LVDS API + <code>LVDS*Prop</code></td>
+<td>:2167-2510</td>
+</tr>
+</tbody>
+</table>
+<p>All builders inherit <code>BlockISFBuilder</code> (:1247); command generation uniformly goes through the three CommandTypes <code>create_inst</code> / <code>set_prop</code> / <code>assign_resource</code> (:1252-1264). For programmatic access from the user side, use the DesignAPI generic methods (see <em>Efinity DesignAPI Method Reference</em>, <code>designapi-reference.md</code>).</p>
+<hr />
+<h2 id="7-complete-isf-configuration-examples">7. Complete ISF configuration examples</h2>
+<blockquote>
+<p><strong>JTAG</strong> (§3.2) is an official transcript and runs as-is. <strong>LVDS / MIPI have no ISF sample anywhere in the official examples</strong> (this volume's investigation conclusion); the templates below are constructed from the property tables — <strong>self-check after every modification</strong>:</p>
+<p><code>cli\import_gpio.bat --peri &lt;project&gt;.peri.xml --input &lt;file&gt;.isf --dry-run</code></p>
+<p>Only exit code 0 counts as valid (see <em>Efinity ISF Syntax Reference</em> (<code>isf-syntax-reference.md</code>) and hard constraints §1/§15).</p>
+</blockquote>
+<h3 id="7-1-lvds-example-constructed-adv-generation-tx-rx-pair">7.1 LVDS example (constructed, Adv-generation TX + RX pair)</h3>
+<pre><code class="language-tcl"># ========== ① bootstrap (one-time; comment out after the bootstrap compile) ==========
+design.create_block(&quot;lvds_tx_inst&quot;, &quot;LVDS_TX&quot;, tx_mode=&quot;DATA&quot;)      # TX create carries tx_mode (isf_exporter.py:2225-2235)
+design.create_block(&quot;lvds_rx_inst&quot;, &quot;LVDS_RX&quot;, rx_conn_type=&quot;NORMAL&quot;) # RX create carries rx_conn_type (:2334-2344)
+
+# ========== ② TX replay-safe section (idempotent) ==========
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_MODE&quot;, &quot;DATA&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_EN_SER&quot;, &quot;1&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_SER&quot;, &quot;4&quot;, &quot;LVDS_TX&quot;)          # serialization ratio 1:4
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_DIFF_TYPE&quot;, &quot;LVDS&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_VOD&quot;, &quot;TYPICAL&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_PRE_EMP&quot;, &quot;MEDIUM_LOW&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_OUT_PIN&quot;, &quot;lvds_tx_out&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_FASTCLK_PIN&quot;, &quot;lvds_tx_fclk&quot;, &quot;LVDS_TX&quot;)
+design.set_property(&quot;lvds_tx_inst&quot;, &quot;TX_SLOWCLK_PIN&quot;, &quot;lvds_tx_sclk&quot;, &quot;LVDS_TX&quot;)
+
+# ========== ③ RX replay-safe section (idempotent) ==========
+# Note: only NORMAL allows deserialization (§4.4 rule 1)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_CONN_TYPE&quot;, &quot;NORMAL&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_EN_DESER&quot;, &quot;1&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_DESER&quot;, &quot;4&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_TERM&quot;, &quot;ON&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_DELAY_MODE&quot;, &quot;STATIC&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_DELAY&quot;, &quot;0&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_IN_PIN&quot;, &quot;lvds_rx_in&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_FASTCLK_PIN&quot;, &quot;lvds_rx_fclk&quot;, &quot;LVDS_RX&quot;)
+design.set_property(&quot;lvds_rx_inst&quot;, &quot;RX_SLOWCLK_PIN&quot;, &quot;lvds_rx_sclk&quot;, &quot;LVDS_RX&quot;)
+</code></pre>
+<h3 id="7-2-mipi-example-constructed-pixel-level-rx">7.2 MIPI example (constructed, pixel-level RX)</h3>
+<pre><code class="language-tcl"># ========== ① bootstrap (one-time) ==========
+design.create_block(&quot;cam_mipi_rx&quot;, &quot;MIPI_RX&quot;)
+
+# ========== ② replay-safe section (idempotent) ==========
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;STATUS_EN&quot;, &quot;1&quot;, &quot;MIPI_RX&quot;)   # must precede the status-pin properties (builder skip logic, isf_exporter.py:1709-1710)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;CAL_CLK_FREQ&quot;, &quot;100&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RXD0_LANE&quot;, &quot;clk&quot;, &quot;MIPI_RX&quot;)     # lane0 = clock
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RXD1_LANE&quot;, &quot;data0&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RXD2_LANE&quot;, &quot;data1&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;PIXEL_CLK_PIN&quot;, &quot;cam_px_clk&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;DATA_PIN&quot;, &quot;cam_px_data&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;VALID_PIN&quot;, &quot;cam_px_valid&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;RSTN_PIN&quot;, &quot;cam_rst_n&quot;, &quot;MIPI_RX&quot;)
+design.set_property(&quot;cam_mipi_rx&quot;, &quot;ERROR_PIN&quot;, &quot;cam_mipi_err&quot;, &quot;MIPI_RX&quot;)  # effective only with STATUS_EN=1
+</code></pre>
+<h3 id="7-3-hard-dphy-example-constructed-tx">7.3 Hard DPHY example (constructed, TX)</h3>
+<pre><code class="language-tcl"># ========== ① bootstrap (one-time) ==========
+design.create_block(&quot;hd_dphy_tx&quot;, &quot;MIPI_DPHY_TX&quot;)   # Note: hard DPHY uses &quot;MIPI_DPHY_TX&quot;, not &quot;MIPI_TX_LANE&quot;
+
+# ========== ② replay-safe section (idempotent) ==========
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;REF_CLK_FREQUENCY&quot;, &quot;52.0&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_BANDWIDTH&quot;, &quot;800&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;NUM_DATA_LANES&quot;, &quot;2&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;DATA_WIDTH&quot;, &quot;16&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_0&quot;, &quot;clk&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_1&quot;, &quot;data0&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_2&quot;, &quot;data1&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_3&quot;, &quot;unused&quot;, &quot;MIPI_DPHY_TX&quot;)
+design.set_property(&quot;hd_dphy_tx&quot;, &quot;PHY_LANE_4&quot;, &quot;unused&quot;, &quot;MIPI_DPHY_TX&quot;)
+</code></pre>
+<hr />
+<h2 id="8-common-errors-and-troubleshooting">8. Common errors and troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Root cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Second compile fails with <code>GPIO/PLL/JTAG ... exists</code></td>
+<td><code>create_*</code> left in the resident ISF and replayed</td>
+<td>Comment out the <code>create_*</code> lines immediately after the bootstrap compile generates peri.xml (hard constraint §15)</td>
+</tr>
+<tr>
+<td>All MIPI lane properties unrecognized</td>
+<td>block_type written backwards: the hard DPHY written as <code>MIPI_TX_LANE</code> (or vice versa)</td>
+<td>Check §1.1: <code>LANE</code> = soft lane-level; <code>DPHY</code> = hard DPHY (object_db.py:121-127)</td>
+</tr>
+<tr>
+<td><code>set_property</code> 4th argument reports an unknown block</td>
+<td>String case/spelling error</td>
+<td>Only the exact strings from the §1 master table are allowed (supp_block whitelist, isf_exporter.py:149-173)</td>
+</tr>
+<tr>
+<td>LVDS RX <code>GCLK/RCLK/PLL_CLKIN/PLL_EXTFB</code> + deserialization rejected</td>
+<td>Deserialization is forbidden on non-NORMAL connection types</td>
+<td>Turn off <code>RX_EN_DESER</code> (lvds_prop.py:447-462, :636-649)</td>
+</tr>
+<tr>
+<td>MIPI RX ERROR/ULPS/CLEAR pins missing from the generated ports</td>
+<td><code>STATUS_EN</code> is 0, so the builder skips the status pins</td>
+<td>Set <code>STATUS_EN=1</code> first (isf_exporter.py:1700, :1709-1710)</td>
+</tr>
+<tr>
+<td>The <code>assign_resource</code> line is not exported</td>
+<td>The instance's <code>device</code> (RESOURCE) is empty</td>
+<td>The builder emits it only when non-empty (isf_exporter.py:1427-1449); set RESOURCE</td>
+</tr>
+<tr>
+<td><code>TYPE_PIN</code> in the ISF rejected/ignored</td>
+<td>MIPI RX/TX <code>TYPE_PIN</code> is deprecated</td>
+<td>Use <code>DATA_TYPE_PIN</code> (mipi_prop.py:331, :712)</td>
+</tr>
+<tr>
+<td>Legacy <code>RX_RST_PIN</code>/<code>TX_RST_PIN</code> in the ISF has no effect</td>
+<td>The LVDS legacy reset pin is deprecated (reintroduced in the Adv generation)</td>
+<td>Remove the line for legacy; use it normally on Adv (lvds_prop.py:332-335, :896-899)</td>
+</tr>
+<tr>
+<td><code>PHY_FREQ</code>/<code>ESC_CLK_FREQ</code> etc. values rejected as illegal</td>
+<td>Not in the static legal-value set</td>
+<td>Check the §5.3 legal values (api_options validators OptionValidator/RangeValidator)</td>
+</tr>
+<tr>
+<td>Hand-computed <code>TCLK_*</code>/<code>THS_*</code> values not in the enum</td>
+<td>The value set is a discrete enum</td>
+<td>Use the legal values listed in §5.3, or let the PT built-in calculator generate them (mipi_prop.py:519-548, :807-844)</td>
+</tr>
+<tr>
+<td>LVDS bank reports a voltage error</td>
+<td>See the §9 dedicated section</td>
+<td>See §9</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-bank-voltage-coexistence-rules-the-key-lvds-mipi-constraint">9. Bank-voltage coexistence rules (the key LVDS / MIPI constraint)</h2>
+<p><strong>Rule engine</strong>: <code>IOBankChecker</code> in <code>pt\bin\common_device\iobank\iobank_rule.py</code> hooks two rules at Design Check time (<code>_build_rules</code> :108-113):</p>
+<ol>
+<li><strong><code>io_bank_rule_voltage_assignment</code></strong> (<code>IOBankStandard</code>, :126-151): per bank, verifies that each IO's voltage standard is in the bank's device-database support table — <code>checker.reg.is_io_standard_valid(device_db, bank, standard)</code> (:148-149); on failure it reports "I/O Voltage ... is not supported for the bank" (:150-151). <strong>Which voltages a bank supports is defined by the device db</strong>; the rule only performs the mechanical check.</li>
+<li><strong><code>io_bank_rule_lvds</code></strong> (<code>IOBankLVDS</code>, :155-195): if any LVDS instance exists in a bank, the bank's IO standard <strong>must</strong> equal <code>LVDS_IO_STANDARD = "3.3 V LVTTL / LVCMOS"</code> (:36); otherwise it reports "I/O Voltage has to be set to ... when LVDS is used" (:193-194). The set of LVDS banks is maintained by <code>set_lvds_bank_map</code> (:61-106).</li>
+</ol>
+<p><strong>Coexistence conclusions derived from this (practical constraints, consistent with the existing hard constraints)</strong>:</p>
+<ul>
+<li><strong>A MIPI DPHY bank must be 1.2 V</strong> — the exact value is defined by the device-db support table (iobank_rule.py only performs the mechanical check; the :48 comment notes that MIPI DPHY follows the same voltage rule).</li>
+<li><strong>An LVDS bank is forced to 3.3 V</strong> (rule 2 above, hard-coded in source at :36).</li>
+<li>A bank cannot simultaneously satisfy "1.2 V only" and "must be 3.3 V" → <strong>MIPI and LVDS cannot coexist in one bank</strong>. The first symptom of a violation is usually an <code>io_bank_rule_voltage_assignment</code> error.</li>
+<li>Declare bank voltages in the ISF with <code>design.set_iobank_voltage("&lt;bank&gt;", "&lt;voltage&gt;")</code> (idempotent, replay-safe); every IO in the same bank must use an IO standard compatible with that voltage.</li>
+</ul>
+<p><strong>Debug procedure</strong>: on an <code>io_bank_rule_voltage_assignment</code> error, follow four steps — check the bank's voltage declaration → list the IO standards of every instance in the bank → compare against the device-db support table → split MIPI and LVDS into different banks.</p>
+<hr />
+<h2 id="10-cross-references">10. Cross-references</h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Efinity Hard IP Reference — PLL and OSC</em> (<code>hard-ip-pll-osc.md</code>)</td>
+<td>Volume 1 of the hard IP series: PLL/OSC creation and properties</td>
+</tr>
+<tr>
+<td><em>Efinity Hard IP Reference — DDR</em> (<code>hard-ip-ddr.md</code>)</td>
+<td>Volume 2 of the hard IP series: the DDR controller (its "no official sample → construct from property tables + dry-run" methodology matches §7 of this volume)</td>
+</tr>
+<tr>
+<td><em>Efinity DesignAPI Method Reference</em> (<code>designapi-reference.md</code>)</td>
+<td>Full method signatures and semantics of the generic <code>create_block</code>/<code>set_property</code>/<code>assign_resource</code></td>
+</tr>
+<tr>
+<td><em>Efinity ISF Syntax Reference</em> (<code>isf-syntax-reference.md</code>)</td>
+<td>The ISF execution model (exec), the replay-safe command set, and the dry-run self-check flow</td>
+</tr>
+<tr>
+<td><em>Efinity File Formats — peri.xml</em> (<code>file-formats-peri-xml.md</code>)</td>
+<td>The <code>efxpt:design_db</code> structure of <code>&lt;design&gt;.peri.xml</code> — the final destination of the three ISF commands</td>
+</tr>
+<tr>
+<td><em>Efinity Toolchain Reference</em> (<code>toolchain-reference.md</code>)</td>
+<td>Command-line parameters of <code>efx_run --flow compile</code>, <code>import_gpio.bat --dry-run</code>, and friends</td>
+</tr>
+<tr>
+<td>Workspace hard constraints <code>rules-efinity-hard.md</code> §3/§15</td>
+<td>The rule text for bank voltage and the interface baseline contract</td>
+</tr>
+</tbody>
+</table></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

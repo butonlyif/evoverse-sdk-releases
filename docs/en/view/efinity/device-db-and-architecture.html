@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Device Database and Architecture Data</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The JTAG IDCODE master table, arch-data format rules, flash loaders and the security flow.</span>
+<code>efinity/device-db-and-architecture.md</code>
+<a href="../../../efinity/device-db-and-architecture.md">Markdown source</a></p>
+<h1>Efinity Device Database and Architecture Data</h1></header>
+<main class="article"><h1 id="efinity-device-database-and-architecture-data-reference">Efinity Device Database and Architecture Data Reference</h1>
+<blockquote>
+<p><strong>Applies to</strong>: Efinity 2026.1 (installation directory surveyed hands-on: <code>C:\Efinity\2026.1\</code>)
+<strong>Survey date</strong>: 2026-09-25
+<strong>Survey method</strong>: read-only evidence collection on the Efinity 2026.1 installation directory; every claim is annotated with the absolute evidence path (with line numbers where needed).
+<strong>Companion volumes</strong>: tool command-line usage in <em>Efinity Toolchain Reference</em>, file formats and SDC/report artifacts in <em>Efinity File Formats: SDC and Report Artifacts</em>, helper scripts in <em>Efinity Helper Tools and Scripts Reference</em>, programming operations in <em>Efinity Programming and Flashing Guide</em>.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+<li><a href="#1-device-families-and-jtag-idcode-tables">1. Device families and JTAG IDCODE tables</a></li>
+<li><a href="#2-arch-architecture-data-map-read-only-do-not-edit">2. arch architecture data map (read-only, do not edit)</a></li>
+<li><a href="#3-flash-loader-bitstream-and-idcode-mapping">3. Flash loader bitstream and IDCODE mapping</a></li>
+<li><a href="#4-bitstream-security-system-aes-256-gcm--rsa-4096--otp">4. Bitstream security system (AES-256-GCM / RSA-4096 / OTP)</a></li>
+<li><a href="#5-lpfxsd-erratum-the-real-peri_device_db">5. lpf.xsd erratum: the real peri_device_db</a></li>
+<li><a href="#6-errata-and-traps-summary">6. Errata and traps summary</a></li>
+</ul>
+<hr />
+<h2 id="1-device-families-and-jtag-idcode-tables">1. Device families and JTAG IDCODE tables</h2>
+<h3 id="1-1-data-source-and-structure">1.1 Data source and structure</h3>
+<p>The programmer-side device database of Efinity 2026.1 actually lives in the <strong><code>pgm\bin\</code></strong> directory (not the <code>pgm\</code> root — a common path misconception):</p>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\pgm\bin\device_db.xml</code></p>
+</blockquote>
+<p>This XML is the data source the programmer uses to identify devices on the JTAG chain. Its core structure is one entry per device, with the key fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>Device name (e.g. <code>Ti60</code>, <code>Ti180</code>, <code>Tz175</code>)</td>
+</tr>
+<tr>
+<td><code>idcode</code></td>
+<td>JTAG IDCODE (32-bit hexadecimal)</td>
+</tr>
+<tr>
+<td><code>family</code></td>
+<td>Family (Trion / Titanium / Topaz)</td>
+</tr>
+<tr>
+<td><code>sec_disp_name</code></td>
+<td>Security display name (the canonical name referenced by security scripts)</td>
+</tr>
+</tbody>
+</table>
+<p>The same physical device may have <strong>multiple entries</strong>: ES (Engineering Sample) and MP (Mass Production) have different IDCODEs; there are also internal variants such as test boards and MUT entries. <strong>Whichever IDCODE the JTAG chain identifies, that is the entry the programmer handles</strong> — an ES part must use the bitstream matching the ES entry.</p>
+<h3 id="1-2-trion-family-idcode-table">1.2 Trion family IDCODE table</h3>
+<p>Evidence: <code>C:\Efinity\2026.1\pgm\bin\device_db.xml</code> (Trion section)</p>
+<table>
+<thead>
+<tr>
+<th>Device entry</th>
+<th>IDCODE</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T20 test board</td>
+<td><code>0x00000001</code></td>
+<td>Clearly a test placeholder entry</td>
+</tr>
+<tr>
+<td>T8 / T4</td>
+<td><code>0x00000000</code></td>
+<td>In-XML comment reads "obviously invalid" — <strong>invalid IDCODE, must not be cited</strong></td>
+</tr>
+<tr>
+<td>T20 / T13 / T8</td>
+<td><code>0x00210A79</code></td>
+<td>Shared by small-capacity Trion</td>
+</tr>
+<tr>
+<td>T120 / T85 / T55</td>
+<td><code>0x00220A79</code></td>
+<td>Shared by mid-capacity Trion</td>
+</tr>
+<tr>
+<td>T35 / T20</td>
+<td><code>0x00240A79</code></td>
+<td>Coexists with the T20 entry of the group above; distinguish by device name</td>
+</tr>
+<tr>
+<td>Q10</td>
+<td><code>0x09030A79</code></td>
+<td>TrionQuantum</td>
+</tr>
+<tr>
+<td>Q50</td>
+<td><code>0x09038A79</code></td>
+<td>TrionQuantum</td>
+</tr>
+</tbody>
+</table>
+<p>Note: the small-capacity Trion segment exhibits <strong>one IDCODE shared by multiple device names</strong> (T20/T13/T8 share <code>0x00210A79</code>); IDCODE granularity reaches the capacity group, not the individual device.</p>
+<h3 id="1-3-titanium-family-idcode-table">1.3 Titanium family IDCODE table</h3>
+<p>Evidence: <code>C:\Efinity\2026.1\pgm\bin\device_db.xml</code> (Titanium section)</p>
+<table>
+<thead>
+<tr>
+<th>Device entry</th>
+<th>IDCODE</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60</td>
+<td><code>0x00360A79</code></td>
+<td><strong>ES (Engineering Sample)</strong></td>
+</tr>
+<tr>
+<td>Ti60_MP</td>
+<td><code>0x10660A79</code></td>
+<td>Mass production (MP)</td>
+</tr>
+<tr>
+<td>Ti35_MP</td>
+<td><code>0x10661A79</code></td>
+<td>MP entry only</td>
+</tr>
+<tr>
+<td>Ti60_MUT</td>
+<td><code>0x1067FA79</code></td>
+<td>MUT internal variant</td>
+</tr>
+<tr>
+<td>Ti180 (M)</td>
+<td><code>0x00680A79</code></td>
+<td>Flagship device, <strong>one of the three anchors</strong></td>
+</tr>
+<tr>
+<td>Ti180J</td>
+<td><code>0x00690A79</code></td>
+<td>Package variant</td>
+</tr>
+<tr>
+<td>Ti120J</td>
+<td><code>0x00692A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti90J</td>
+<td><code>0x00691A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti180L</td>
+<td><code>0x00684A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti120L</td>
+<td><code>0x0068CA79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti90L</td>
+<td><code>0x00688A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti375</td>
+<td><code>0x006A0A79</code></td>
+<td><strong>One of the three anchors</strong></td>
+</tr>
+<tr>
+<td>TJ375</td>
+<td><code>0x006A0EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti240</td>
+<td><code>0x006A2A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TJ240</td>
+<td><code>0x006A2EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti165</td>
+<td><code>0x006A1A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TJ165</td>
+<td><code>0x006A1EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti135ES</td>
+<td><code>0x206C0A79</code></td>
+<td>ES entry</td>
+</tr>
+<tr>
+<td>Ti135</td>
+<td><code>0x006C0A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TJ135</td>
+<td><code>0x006C0EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti85</td>
+<td><code>0x006C2A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TJ85</td>
+<td><code>0x006C2EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti125</td>
+<td><code>0x006E0A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti95</td>
+<td><code>0x006E2A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti70</td>
+<td><code>0x00640A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Ti40</td>
+<td><code>0x00642A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>QX1</td>
+<td><code>0xABCDEA79</code></td>
+<td>Quantum X, placeholder-style value</td>
+</tr>
+</tbody>
+</table>
+<p>Anchor verification (all three agreed anchors of this volume hit):</p>
+<table>
+<thead>
+<tr>
+<th>Anchor</th>
+<th>Agreed value</th>
+<th>Measured</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60</td>
+<td><code>0x00360A79</code></td>
+<td>Ti60 entry = <code>0x00360A79</code> (ES)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Ti180</td>
+<td><code>0x00680A79</code></td>
+<td>Ti180 (M) entry = <code>0x00680A79</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Ti375</td>
+<td><code>0x006A0A79</code></td>
+<td>Ti375 entry = <code>0x006A0A79</code></td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-4-topaz-family-idcode-table">1.4 Topaz family IDCODE table</h3>
+<p>Evidence: <code>C:\Efinity\2026.1\pgm\bin\device_db.xml</code> (Topaz section)</p>
+<table>
+<thead>
+<tr>
+<th>Device entry</th>
+<th>IDCODE</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tz50</td>
+<td><code>0x10668A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TP50</td>
+<td><code>0x10678A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Tz110</td>
+<td><code>0x00698A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TP110</td>
+<td><code>0x0069CA79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Tz170</td>
+<td><code>0x00699A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TP170</td>
+<td><code>0x0069DA79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Tz200</td>
+<td><code>0x006A8A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TP200</td>
+<td><code>0x006B8EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Tz325</td>
+<td><code>0x006A9A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TP325</td>
+<td><code>0x006B9EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Tz75</td>
+<td><code>0x006C8A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TP75</td>
+<td><code>0x006D8EF3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Tz100</td>
+<td><code>0x006C9A79</code></td>
+<td></td>
+</tr>
+<tr>
+<td>TP100</td>
+<td><code>0x006D9EF3</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The Topaz family uses paired <code>Tz</code> / <code>TP</code> naming, and some pairs share adjacent IDCODE ranges (e.g. Tz75/TP75 both sit in the <code>0x006C/0x006D</code> range).</p>
+<h3 id="1-5-es-vs-mp-comparison-with-the-official-documentation">1.5 ES vs MP: comparison with the official documentation</h3>
+<p>The official Titanium IDCODE document <strong>lists MP values only</strong>:</p>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\pgm\doc\topics\jtag-device-ids-ti.html</code> (lines 175-260, three-column table of FPGA / Package / JTAG Device ID, document version HLP-EFN-PGM-v2.0)</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Comparison item</th>
+<th>device_db.xml</th>
+<th>Official jtag-device-ids-ti.html</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60</td>
+<td><code>0x00360A79</code> (ES) + <code>0x10660A79</code> (MP, entry named Ti60_MP)</td>
+<td>Only <code>0x10660A79</code> (annotated "All" packages)</td>
+</tr>
+<tr>
+<td>ES variants</td>
+<td>Explicitly present (Ti60 ES, Ti135ES, etc.)</td>
+<td>ES values not listed</td>
+</tr>
+<tr>
+<td>Purpose</td>
+<td>Programmer runtime identification</td>
+<td>Manual table lookup</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conclusion</strong>: if the part on hand is an ES die (e.g. Ti60 ES), JTAG reads back <code>0x00360A79</code> and the programmer handles it per the ES entry; the <code>0x10660A79</code> found in the official documentation is the mass-production value. Both are "correct", but <strong>the bitstreams are not interchangeable</strong> — see §3.3.</p>
+<hr />
+<h2 id="2-arch-architecture-data-map-read-only-do-not-edit">2. arch architecture data map (read-only, do not edit)</h2>
+<h3 id="2-1-directory-overview">2.1 Directory overview</h3>
+<blockquote>
+<p>Evidence: hands-on survey of <code>C:\Efinity\2026.1\arch\</code> (total size 284.51 MB)</p>
+</blockquote>
+<pre><code>C:\Efinity\2026.1\arch\
+├── blk\                    # Block data per device/speed grade (.blk)
+├── boundary\               # Boundary scan data
+├── btm\                    # Block timing models (.btm)
+├── clib\                   # Cell libraries (.clib)
+├── flrpln\                 # Floorplan data (.flrpln)
+├── global_network\         # Global clock network data
+├── locmap\                 # Location mapping data
+├── oc\                     # Speed grade files (.oc)
+├── pgm\                    # Programmer-side arch data
+├── pkg\                    # Package data
+├── pt_route\               # Interface Designer routing timing models (.tmv2)
+├── arch_*.xlsx → .xdb      # Family-level arch master tables (xlsx sources + compiled xdb artifacts)
+├── device_*.xdb            # Device-level databases
+├── devicefamilies.xdb / .xsd
+├── efxdevice.xsd           # Device description schema (the device DB's own schema; do not confuse with the project XML's enf_proj.xsd)
+└── *.delaym.zst            # Delay models (Zstandard-compressed)
+</code></pre>
+<h3 id="2-2-die-codenames-and-device-mapping">2.2 Die codenames and device mapping</h3>
+<p>arch data is named by <strong>die codename + geometry</strong>, mapping to marketing device names as follows (measured anchors):</p>
+<table>
+<thead>
+<tr>
+<th>Die data name</th>
+<th>Corresponding device</th>
+<th>Evidence clue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>opx_218x322_b16_d10</code></td>
+<td><strong>Ti60</strong></td>
+<td>An <code>_es</code> variant directory exists, corresponding to the Ti60ES device</td>
+</tr>
+<tr>
+<td><code>opx_268x484_b24_d12</code></td>
+<td><strong>Ti180</strong></td>
+<td>Flagship die</td>
+</tr>
+<tr>
+<td><code>opx_333x642_b40_d20</code></td>
+<td><strong>Ti375</strong></td>
+<td>Largest Titanium die</td>
+</tr>
+<tr>
+<td><code>opx_334x484</code></td>
+<td><strong>Ti240</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Die codename families: <code>oph</code> / <code>opu</code> / <code>opx</code> / <code>opy</code> / <code>ssn</code> / <code>tz</code>. Naming pattern: <code>&lt;die&gt;_&lt;width&gt;x&lt;height&gt;_b&lt;bank count&gt;_d&lt;scale tier&gt;</code> (the b/d suffixes are visible on only some dies).</p>
+<h3 id="2-3-file-format-determination-table">2.3 File format determination table</h3>
+<p>Every extension inside the arch directory is a <strong>tool-private format</strong>; the determination is based on the DLLs that load them:</p>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Format determination</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.xdb</code></td>
+<td>libdevicedb.dll private container (not plain-text XML)</td>
+<td>loaded by <code>C:\Efinity\2026.1\bin\libdevicedb.dll</code>; opening in a text editor shows no plain-text structure</td>
+</tr>
+<tr>
+<td><code>.zst</code> / <code>.delaym.zst</code></td>
+<td>Zstandard compression</td>
+<td>installation contains <code>libzstd.dll</code></td>
+</tr>
+<tr>
+<td><code>.blk</code> / <code>.btm</code> / <code>.clib</code></td>
+<td>Block/timing/cell library data consumed by libchipper.dll + libprotobuf.dll</td>
+<td>the two DLLs coexist under <code>C:\Efinity\2026.1\bin\</code></td>
+</tr>
+<tr>
+<td><code>.oc</code></td>
+<td>Speed grade (operating condition) files</td>
+<td>named C2/C3/I4 etc. under <code>arch\oc\</code></td>
+</tr>
+<tr>
+<td><code>.flrpln</code></td>
+<td>Floorplan data</td>
+<td><code>arch\flrpln\</code></td>
+</tr>
+<tr>
+<td><code>.tmv2</code></td>
+<td>pt_route timing model v2</td>
+<td><code>arch\pt_route\</code>, used only by new Titanium dies</td>
+</tr>
+<tr>
+<td><code>.tenc</code> / <code>.pt_device</code></td>
+<td>Interface Designer-side device data</td>
+<td>accompanies the pt directory</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-4-read-only-rules-important">2.4 Read-only rules (important)</h3>
+<p><strong>The arch directory is tool-internal data: read it, never edit it.</strong> Reasons:</p>
+<ol>
+<li>Everything is a private binary/compressed format (§2.3) with no published schema; manual editing inevitably corrupts it;</li>
+<li>No build path of the SDK / adapter / scripts should <strong>write to, delete, or regenerate</strong> arch content — that falls under §7 "do not build workarounds around tool behavior";</li>
+<li>When device capabilities need to be queried, the correct entry points are the project XML (<code>enf_proj.xsd</code>, see <em>Efinity XML Project File Schema Reference</em>) and the ISF API (see <em>Efinity ISF Syntax Reference</em>), not the arch binaries.</li>
+</ol>
+<h3 id="2-5-speed-grade-landscape-and-the-i4-i4l-evidence-boundary">2.5 Speed grade landscape and the I4/I4L evidence boundary</h3>
+<blockquote>
+<p>Evidence: measured directory listings of <code>C:\Efinity\2026.1\arch\oc\</code> and <code>arch\pt_route\</code></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Data set</th>
+<th>Measured speed grades</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>opx (new Titanium dies)</td>
+<td>C2 / C3 / C3L / C4 / C4L / I2 / I3 / I3L / I4 / I4L / Q3</td>
+</tr>
+<tr>
+<td>pt_trion / oph</td>
+<td>C2 / C3 / C4 / I2 / I4 / I4L / Q4 / t28hpc+typ</td>
+</tr>
+<tr>
+<td>Ti125's tmv2</td>
+<td><strong>only</strong> C3 / C3L / C4 / C4L / I3 / I3L (no I4/I4L)</td>
+</tr>
+<tr>
+<td>C5</td>
+<td><strong>does not exist anywhere in the installation</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The evidence boundary of the "I4/I4L deprecated" claim (presented as measured)</strong>:</p>
+<ul>
+<li>Workspace rule asserts: Ti35/Ti60 timing models <code>I4</code>/<code>I4L</code> are deprecated; <code>C4</code> or <code>C5</code> must be used.</li>
+<li>Evidence inside the installation: <strong>contradictory</strong> — <code>arch\oc\</code> still contains <code>I4.oc</code> / <code>I4L.oc</code>; yet Ti125's tmv2 contains no I4/I4L; and no C5 data exists anywhere in the tree.</li>
+<li>Conclusion: <strong>"I4/I4L deprecated" cannot be directly confirmed by a single file inside the installation</strong>; only two hard measured facts can be stated: (a) the speed grade set of the new dies (Ti125 tmv2) does not include I4/I4L; (b) the old grade files remain in the oc directory (possibly just for old-project compatibility). For project selection follow the workspace rule (C4/C5); this volume does not extrapolate beyond the evidence.</li>
+</ul>
+<hr />
+<h2 id="3-flash-loader-bitstream-and-idcode-mapping">3. Flash loader bitstream and IDCODE mapping</h2>
+<blockquote>
+<p>Evidence: measured directory listing of <code>C:\Efinity\2026.1\pgm\fli\</code> (fli = flash loader images)
+Parameter details and ftdi_program.py usage are in <em>Efinity Helper Tools and Scripts Reference</em>; the programming procedure is in <em>Efinity Programming and Flashing Guide</em>. This volume only gives the IDCODE ↔ bitstream-name correspondence.</p>
+</blockquote>
+<h3 id="3-1-bitstream-naming-rule">3.1 Bitstream naming rule</h3>
+<p>Flash loader bitstream file name format: <strong><code>u&lt;IDCODE&gt;[_&lt;die&gt;].bit</code></strong>, where <code>&lt;IDCODE&gt;</code> is the 8-digit hexadecimal of the corresponding device entry in the §1 tables (no <code>0x</code> prefix).</p>
+<h3 id="3-2-three-family-bitstream-inventory-overview">3.2 Three-family bitstream inventory overview</h3>
+<table>
+<thead>
+<tr>
+<th>Family directory</th>
+<th>.bit count</th>
+<th>Naming examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pgm\fli\titanium\</code></td>
+<td>21</td>
+<td><code>u10660A79.bit</code> (Ti60 MP), <code>u00680A79.bit</code> (Ti180)</td>
+</tr>
+<tr>
+<td><code>pgm\fli\topaz\</code></td>
+<td>14</td>
+<td>named by Topaz IDCODE</td>
+</tr>
+<tr>
+<td><code>pgm\fli\trion\</code></td>
+<td>11</td>
+<td><strong>with die suffix</strong>: <code>u00210A79_t20.bit</code> (T20/T13/T8 share an IDCODE; the die suffix distinguishes them)</td>
+</tr>
+</tbody>
+</table>
+<p>Key points:</p>
+<ol>
+<li><strong>Trion bitstreams must carry the <code>_&lt;die&gt;</code> suffix</strong> — because multiple Trion devices share the same IDCODE (§1.2), the loader picks the right die via the suffix;</li>
+<li>Titanium / Topaz bitstreams are plain <code>u&lt;IDCODE&gt;.bit</code>, no suffix.</li>
+</ol>
+<h3 id="3-3-ti60es-special-case-no-flash-loader-bitstream">3.3 Ti60ES special case: no flash loader bitstream</h3>
+<blockquote>
+<p>Evidence: the listing of <code>C:\Efinity\2026.1\pgm\fli\titanium\</code> contains <strong>no</strong> <code>u00360A79.bit</code> (Ti60 ES's IDCODE); only <code>u10660A79.bit</code> (MP) exists.</p>
+</blockquote>
+<p><strong>The triple restriction on Ti60ES</strong> (compiled in this volume from various sources):</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Restriction</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>No flash loader bitstream (<code>u00360A79.bit</code> does not exist)</td>
+<td>measured in <code>pgm\fli\titanium\</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Excluded from security features (the AES/RSA signing scripts explicitly say "excluding Ti60ES devices")</td>
+<td><code>C:\Efinity\2026.1\security\bin\AddSecurityTitanium.py</code> line 31</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2.5V IO voltage standard not supported (mass-production parts only)</td>
+<td>workspace rule (<code>rules-efinity-hard.md</code> §3); no direct file evidence inside the installation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Engineering implication</strong>: an ES part can only do functional verification; it cannot be the target device of a secure mass-production programming scheme; production designs must switch to an MP part (IDCODE <code>0x10660A79</code>).</p>
+<hr />
+<h2 id="4-bitstream-security-system-aes-256-gcm-rsa-4096-otp">4. Bitstream security system (AES-256-GCM / RSA-4096 / OTP)</h2>
+<blockquote>
+<p>Evidence directory: <code>C:\Efinity\2026.1\security\bin\</code> (note: <strong>security is a top-level directory of the 2026.1 installation root</strong>, not under <code>pgm\security</code> — a path erratum, see §6)</p>
+</blockquote>
+<h3 id="4-1-the-two-entry-scripts">4.1 The two entry scripts</h3>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Responsibility</th>
+<th>Key evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AddSecurityTitanium.py</code></td>
+<td>Appends a security block to an already-generated bitstream</td>
+<td>Line 31 docstring: "Applies to: Titanium devices (excluding Ti60ES devices)"</td>
+</tr>
+<tr>
+<td><code>GenKeyFileTitanium.py</code></td>
+<td>Generates key files (AES key + RSA keypair)</td>
+<td>Line 112 <code>rsa_mode = 4096</code>; lines 132-137 the AES-256 key is a 64-character HEX (auto-generatable)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-2-bitstream-security-block-bit-fields-measured-in-addsecuritytitanium-py">4.2 Bitstream security block bit fields (measured in AddSecurityTitanium.py)</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\security\bin\AddSecurityTitanium.py</code></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Bit field</th>
+<th>Bit range</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AES_EN</code></td>
+<td>bit 398 (single bit)</td>
+<td>AES encryption enable</td>
+</tr>
+<tr>
+<td><code>AES_GCM_SIGNATURE</code></td>
+<td>bits 401-528 (128 bits)</td>
+<td>AES-256-<strong>GCM</strong> authentication tag</td>
+</tr>
+<tr>
+<td><code>AES_CBC_IV</code></td>
+<td>from bit 529 (656 or 624, mode-dependent)</td>
+<td>Initialization vector</td>
+</tr>
+</tbody>
+</table>
+<p>Other measured constants:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Evidence line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rsa_mode</code></td>
+<td><code>4096</code> (RSA-4096 signature)</td>
+<td>AddSecurityTitanium.py line 132</td>
+</tr>
+<tr>
+<td><code>sync_pattern</code></td>
+<td><code>'168A2236'</code> (bitstream sync word)</td>
+<td>AddSecurityTitanium.py line 199</td>
+</tr>
+<tr>
+<td>OPTREG slots</td>
+<td>TX60=1152 / TX180=1152 / TX375=1312 / TX135=1312 / TX125=1312 / TX70=1312</td>
+<td>AddSecurityTitanium.py OPTREG table</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-3-key-custody-and-otp-measured-in-genkeyfiletitanium-py">4.3 Key custody and OTP (measured in GenKeyFileTitanium.py)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Content</th>
+<th>Evidence line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Algorithms</td>
+<td>RSA-4096 signature + AES-256 (GCM)</td>
+<td>lines 112, 132-137</td>
+</tr>
+<tr>
+<td>Key write location</td>
+<td><strong>non-volatile OTP</strong> (one-time programmable)</td>
+<td>lines 42-44: keys are written to non-volatile OTP</td>
+</tr>
+<tr>
+<td>JTAG lock</td>
+<td>Optionally disable JTAG (the <code>JTAG disable</code> option)</td>
+<td>line 122</td>
+</tr>
+<tr>
+<td>External tool</td>
+<td>Invokes <code>_efx_security_util.exe --rsa_mode=%d --pem=...</code> to do the actual encrypt/decrypt</td>
+<td>line 195</td>
+</tr>
+<tr>
+<td>Python dependency</td>
+<td>pycryptodome</td>
+<td>the script's import section</td>
+</tr>
+</tbody>
+</table>
+<p>Flow chain: <code>GenKeyFileTitanium.py</code> generates the keys → the keys are burned into the device OTP → <code>AddSecurityTitanium.py</code> GCM-encrypts + RSA-4096-signs the bitstream with the same key → after programming, the device verifies and decrypts using the OTP key at power-up.</p>
+<h3 id="4-4-correspondence-with-the-project-xml-security-section">4.4 Correspondence with the project XML security section</h3>
+<p>The project XML (<code>enf_proj</code> namespace) contains a <code>security_info_type</code> section carrying the security configuration:</p>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\bin\enf_proj.xsd</code> line 40 (<code>security_info_type</code> reference), lines 305-311 (type definition)</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>XML security field source</th>
+<th>Corresponding security-script concept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>security_info_type</code> (enf_proj.xsd lines 305-311)</td>
+<td>the GUI-side persistence of AddSecurity/GenKey</td>
+</tr>
+</tbody>
+</table>
+<p>For how to write the project XML, see <em>Efinity XML Project File Schema Reference</em>; this volume does not repeat field-level descriptions.</p>
+<h3 id="4-5-applicability-red-lines">4.5 Applicability red lines</h3>
+<ul>
+<li>The security features are <strong>Titanium only</strong> and <strong>explicitly exclude Ti60ES</strong> (AddSecurityTitanium.py line 31);</li>
+<li>Topaz / Trion are outside these scripts' scope;</li>
+<li>The pycryptodome environment is required; <code>_efx_security_util.exe</code> is a native tool shipped with the installation — do not replace or bypass it.</li>
+</ul>
+<hr />
+<h2 id="5-lpf-xsd-erratum-the-real-peri_device_db">5. lpf.xsd erratum: the real peri_device_db</h2>
+<h3 id="5-1-the-common-misconception">5.1 The common misconception</h3>
+<p>The file name of <code>C:\Efinity\2026.1\pt\bin\schema\lpf.xsd</code> contains "lpf", so it is easily mistaken for something related to LPF constraint files, SDC constraints, or peri.xml (<code>efxpt:design_db</code>). <strong>All wrong.</strong></p>
+<h3 id="5-2-measured-facts">5.2 Measured facts</h3>
+<blockquote>
+<p>Evidence: <code>C:\Efinity\2026.1\pt\bin\schema\lpf.xsd</code></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Measured content</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Line 2</td>
+<td><code>targetNamespace="http://www.efinixinc.com/peri_device_db"</code></td>
+<td>The namespace is <strong>peri_device_db</strong> (the device database), not constraints, and not peri.xml's <code>efxpt:design_db</code></td>
+</tr>
+<tr>
+<td>Line 5</td>
+<td>Prefix <code>efxpt</code></td>
+<td>Shares the <code>efxpt</code> prefix with peri.xml, but the URI differs</td>
+</tr>
+<tr>
+<td>Line 8</td>
+<td><code>import</code>s <code>peri_util.xsd</code></td>
+<td>Depends on common types in the same schema directory</td>
+</tr>
+</tbody>
+</table>
+<p>Root element structure: <code>periphery</code> → <code>sequence</code> / <code>block_def</code> (with <code>bitsize</code>, <code>paramsize</code> attributes) / <code>instance</code>.</p>
+<h3 id="5-3-conclusion">5.3 Conclusion</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What does lpf.xsd describe?</td>
+<td>The bit-level block definitions of the <strong>peri_device_db device database</strong> (the bit-width model of bank/IO blocks), consumed internally by PT</td>
+</tr>
+<tr>
+<td>Is it related to SDC/LPF constraints?</td>
+<td><strong>No.</strong> The only constraint formats are ISF and SDC (workspace rule §1)</td>
+</tr>
+<tr>
+<td>Is it related to peri.xml?</td>
+<td>No direct relation. peri.xml's namespace is <code>http://www.efinixinc.com/peri_design_db</code> (design_db); lpf.xsd's is <code>peri_device_db</code> (device_db) — two different URIs</td>
+</tr>
+<tr>
+<td>Where do the XSDs actually live?</td>
+<td>Project-format XSDs are in <code>C:\Efinity\2026.1\bin\</code> (e.g. <code>enf_proj.xsd</code>); <strong>lpf.xsd is in <code>C:\Efinity\2026.1\pt\bin\schema\</code></strong> — two distinct schema directories; do not mix them</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-errata-and-traps-summary">6. Errata and traps summary</h2>
+<p>The table below consolidates the path/conception errata confirmed during this volume's survey, for citation by later volumes and toolchain development:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Trap / erratum</th>
+<th>Correct fact</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Assuming device_db.xml is in the <code>pgm\</code> root</td>
+<td>It is actually at <strong><code>pgm\bin\device_db.xml</code></strong></td>
+<td>This volume §1.1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Assuming security is under <code>pgm\security</code></td>
+<td>It is actually the top-level <strong><code>security\bin\</code></strong> under the installation root</td>
+<td>This volume §4</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Unclear where the official IDCODE document lives</td>
+<td>At <strong><code>pgm\doc\topics\jtag-device-ids-ti.html</code></strong> (pgm ships its own doc site)</td>
+<td>This volume §1.5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Treating the official document's MP value as "the only IDCODE"</td>
+<td>ES/MP entries coexist; Ti60 ES=<code>0x00360A79</code>, MP=<code>0x10660A79</code>, and the bitstreams are not interchangeable</td>
+<td>This volume §1.3/§1.5</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Treating T8/T4's <code>0x00000000</code> as a valid IDCODE</td>
+<td>device_db.xml carries the comment "obviously invalid"; do not use</td>
+<td>This volume §1.2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Treating Ti60ES as an ordinary Ti60</td>
+<td>Triple restriction: no fli bitstream, excluded from security features, (workspace rule) no 2.5V support</td>
+<td>This volume §3.3</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Trion flash loaders without a die suffix</td>
+<td>Trion bitstreams must be <code>u&lt;IDCODE&gt;_&lt;die&gt;.bit</code> (multiple devices share an IDCODE)</td>
+<td>This volume §3.2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Editing arch as if it were public data</td>
+<td>Private binary/compressed formats; read-only, do not edit</td>
+<td>This volume §2.4</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Citing oc-directory deletion as evidence for "I4/I4L deprecated"</td>
+<td>The oc directory still contains I4/I4L.oc; the only valid evidence is that the Ti125 tmv2 grade set lacks I4/I4L + no C5 anywhere. State the evidence boundary honestly</td>
+<td>This volume §2.5</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Taking lpf.xsd as the LPF/SDC constraint schema</td>
+<td>It is the peri_device_db (device database) schema, unrelated to constraints</td>
+<td>This volume §5</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Confusing <code>peri_design_db</code> with <code>peri_device_db</code></td>
+<td>The former is peri.xml (design_db, project runtime data); the latter is the device bit-level block definitions (device_db, static tool data)</td>
+<td>This volume §5.3</td>
+</tr>
+<tr>
+<td>12</td>
+<td>The document table listing 14 core simulation models = 15 .v files in the directory</td>
+<td>sim_models\verilog measured to contain <code>efx_ram_10k.v</code>, which the official Table 1 omits — a known doc/directory discrepancy; trust the measured files when citing</td>
+<td><em>Efinity Official Documentation Map</em> §4</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Reporting "2 PDFs" in doc/pdf from memory</td>
+<td>Measured 9 PDFs; the main navigation lists only 8 (efinity-pgm.pdf is not in the main navigation)</td>
+<td><em>Efinity Official Documentation Map</em> §1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-evidence-file-list-of-this-volume">Appendix: evidence file list of this volume</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence file (absolute path)</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\pgm\bin\device_db.xml</code></td>
+<td>Full IDCODE tables (§1)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pgm\doc\topics\jtag-device-ids-ti.html</code></td>
+<td>Official Titanium IDCODE table (§1.5)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\arch\</code> (whole directory surveyed)</td>
+<td>arch data map, die codenames, speed grades (§2)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pgm\fli\</code> (three family sub-directories)</td>
+<td>Flash loader bitstream inventory (§3)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\security\bin\AddSecurityTitanium.py</code></td>
+<td>Security bit fields, RSA mode, sync pattern, OPTREG, Ti60ES exclusion (§4)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\security\bin\GenKeyFileTitanium.py</code></td>
+<td>Key generation, OTP, JTAG disable (§4.3)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\bin\enf_proj.xsd</code></td>
+<td>Project XML security section definition (§4.4)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\lpf.xsd</code></td>
+<td>peri_device_db namespace erratum (§5)</td>
+</tr>
+</tbody>
+</table></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

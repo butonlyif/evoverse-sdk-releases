@@ -1,0 +1,1363 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity XML Schema 参考</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>工程 XML 的原生字段和结构。</span>
+<code>efinity/Efinity-XML工程文件Schema参考.md</code>
+<a href="../../../efinity/Efinity-XML工程文件Schema参考.md">Markdown 源文件</a></p>
+<h1>Efinity XML Schema 参考</h1></header>
+<main class="article"><h1 id="efinity-工程文件-xml-schema-参考-enf_proj">Efinity 工程文件 XML Schema 参考（enf_proj）</h1>
+<blockquote>
+<p><strong>适用版本</strong>：Efinity 2026.1（官方示例携带 <code>sw_version="2025.2.276"</code>，schema 为 <code>enf_proj.xsd</code> 同版本）
+<strong>更新日期</strong>：2026-09-25
+<strong>本文证据源</strong>（全部为一手实读，路径均为绝对路径）：</p>
+<table>
+<thead>
+<tr>
+<th>证据</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>权威 Schema</td>
+<td><code>c:\Efinity\2026.1\bin\enf_proj.xsd</code>（396 行）</td>
+</tr>
+<tr>
+<td>官方示例 1</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code>（109 行，unified flow）</td>
+</tr>
+<tr>
+<td>官方示例 2</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg\helloworld.xml</code>（107 行，调试流程）</td>
+</tr>
+<tr>
+<td>官方示例 3</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-ru\helloworld0\helloworld0.xml</code>（107 行，usercode）</td>
+</tr>
+<tr>
+<td>编排器</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run.py</code>（<code>parse_project_file</code> L635-990）</td>
+</tr>
+<tr>
+<td>PNR 包装</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run_pnr.py</code></td>
+</tr>
+<tr>
+<td>Unified PT</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run_pt_unified.py</code></td>
+</tr>
+<tr>
+<td>工程数据库</td>
+<td><code>c:\Efinity\2026.1\python311\Lib\site-packages\projectdb\db.py</code></td>
+</tr>
+<tr>
+<td>命名空间常量</td>
+<td><code>c:\Efinity\2026.1\scripts\efx_run_common.py</code> L10</td>
+</tr>
+<tr>
+<td>EvoVerse 生成器</td>
+<td><code>c:\work\awesomsdk\sdk\cli\evoverse</code>（<code>_build_native_project_xml</code> L1868-1954）</td>
+</tr>
+<tr>
+<td>EvoVerse IP 决策</td>
+<td><code>c:\work\awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr />
+<h2 id="1-定位-命名空间与布局规则">1. 定位、命名空间与布局规则</h2>
+<h3 id="1-1-工程文件是什么">1.1 工程文件是什么</h3>
+<p><code>&lt;工程名&gt;.xml</code> 是 Efinity 工程的<strong>唯一入口文件</strong>：GUI 打开工程、<code>efx_run --flow compile</code> 编排编译、各工具二进制（map/pnr/pgm）读取各自配置段，全部从它开始。它由 <code>enf_proj.xsd</code> 定义，targetNamespace 为：</p>
+<pre><code class="language-xml">xmlns:efx=&quot;http://www.efinixinc.com/enf_proj&quot;
+</code></pre>
+<p><strong>证据</strong>：<code>c:\Efinity\2026.1\bin\enf_proj.xsd</code> L1-L7；<code>c:\Efinity\2026.1\scripts\efx_run_common.py</code> L10（<code>EFX_PRJ_XML_NAMESPACES = {'efx': 'http://www.efinixinc.com/enf_proj'}</code>——编排脚本按此前缀解析，写错命名空间等于所有 <code>efx:</code> 元素都不存在）。</p>
+<h3 id="1-2-布局硬规则-违反即失败">1.2 布局硬规则（违反即失败）</h3>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工程 XML 放工程根目录</td>
+<td>官方示例全部如此；不要发明 <code>efinity_project/</code> 之类子目录</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code> 位于示例根目录</td>
+</tr>
+<tr>
+<td>所有相对路径以 <strong>XML 文件所在目录</strong> 为基准解析</td>
+<td>SDC、RTL、ISF、flist 全部如此</td>
+<td>本文 §1.3</td>
+</tr>
+<tr>
+<td>namespace 必须精确</td>
+<td>工具按前缀→URI 映射解析</td>
+<td><code>efx_run_common.py</code> L10</td>
+</tr>
+<tr>
+<td><code>&lt;efx:inter_file name=""&gt;</code> 空值</td>
+<td>见本文 §13 专项裁定；<strong>生成器不应写出</strong></td>
+<td>工作区硬约束 §2 + 官方示例 L15</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-相对路径解析基准">1.3 相对路径解析基准</h3>
+<p>EvoVerse 侧校验逻辑与 Efinity 工具行为一致——引用路径一律<strong>相对工程 XML 父目录</strong>解析：</p>
+<ul>
+<li>EvoVerse 工程引用校验：<code>c:\work\awesomsdk\sdk\cli\evoverse</code> L1562-1570（相对 <code>project_xml</code> 父目录 <code>os.path.exists</code> 检查）。</li>
+<li>XSD 中 <code>file_type</code> 注明 <code>name</code> "must include relative path"（<code>enf_proj.xsd</code> L123-126）。</li>
+</ul>
+<p>因此：工程 XML 在根目录时，<code>&lt;efx:sdc_file name="constraint/timing.sdc"/&gt;</code> 指向 <code>&lt;工程根&gt;/constraint/timing.sdc</code>。</p>
+<hr />
+<h2 id="2-根元素-efx-project-属性与子元素顺序">2. 根元素 <code>&lt;efx:project&gt;</code>：属性与子元素顺序</h2>
+<h3 id="2-1-子元素出现顺序-xs-sequence-严格有序">2.1 子元素出现顺序（<code>xs:sequence</code>，严格有序）</h3>
+<p>XSD 以 <code>xs:sequence</code> 定义子元素（<code>enf_proj.xsd</code> L9-43），<strong>顺序不可打乱</strong>，出现次数如下：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>元素</th>
+<th>出现次数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>device_info</code></td>
+<td>1</td>
+<td>器件与 timing model</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>design_info</code></td>
+<td>1</td>
+<td>顶层模块与源文件</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>package_info</code></td>
+<td>0..1</td>
+<td><strong>待废弃</strong>（XSD 注释 "will be deprecated"）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>interface_info</code></td>
+<td>0..1</td>
+<td>接口设计器（peri 文件）</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>constraint_info</code></td>
+<td>1</td>
+<td>SDC / inter / ISF 约束</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>isf_info</code></td>
+<td>0..1</td>
+<td>ISF 脚本（新位置，官方示例未用，见 §6.4）</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>sim_info</code></td>
+<td>0..1</td>
+<td>仿真</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>misc_info</code></td>
+<td>0..1</td>
+<td>保留段（官方示例未用）</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>ooc_info</code></td>
+<td>0..1</td>
+<td>Out-of-Context 编译</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>ip_info</code></td>
+<td>0..1</td>
+<td>IP 实例</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>synthesis</code></td>
+<td>0..1</td>
+<td>综合选项</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>place_and_route</code></td>
+<td>0..1</td>
+<td>布局布线选项</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>bitstream_generation</code></td>
+<td>0..1</td>
+<td>比特流选项</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>debugger</code></td>
+<td>0..1</td>
+<td>调试器选项</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>security</code></td>
+<td>0..1</td>
+<td>加密/签名</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>顺序敏感的实证</strong>：<code>&lt;efx:design_file&gt;</code> 必须出现在 <code>top_vhdl_arch</code> 之前——EvoVerse adapter 注释明确记录违反顺序会让 Efinity 在下次原生加载时拒绝工程 XML（<code>c:\work\awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code> L92-95）。</p>
+</blockquote>
+<h3 id="2-2-根元素属性表-enf_proj-xsd-l44-59">2.2 根元素属性表（<code>enf_proj.xsd</code> L44-59）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>默认</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>✅</td>
+<td>—</td>
+<td>工程名</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>—</td>
+<td>空</td>
+<td>描述</td>
+</tr>
+<tr>
+<td><code>sw_version</code></td>
+<td>✅</td>
+<td>—</td>
+<td>生成该工程的 Efinity 版本（官方示例为 <code>2025.2.276</code>）</td>
+</tr>
+<tr>
+<td><code>last_change</code></td>
+<td>—</td>
+<td>空</td>
+<td>最后修改者</td>
+</tr>
+<tr>
+<td><code>last_change_date</code></td>
+<td>—</td>
+<td>空</td>
+<td>保留的向后兼容属性</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td>—</td>
+<td>空</td>
+<td>工程路径</td>
+</tr>
+<tr>
+<td><code>last_run_state</code></td>
+<td>—</td>
+<td>空</td>
+<td>枚举 <code>pass</code>/<code>fail</code>/<code>crash</code>/空——GUI 状态展示，不影响编译</td>
+</tr>
+<tr>
+<td><code>last_run_flow</code></td>
+<td>—</td>
+<td>空</td>
+<td>上次运行的 flow 名</td>
+</tr>
+<tr>
+<td><code>last_run_tool</code></td>
+<td>—</td>
+<td>空</td>
+<td>上次运行的工具</td>
+</tr>
+<tr>
+<td><code>config_result_in_sync</code></td>
+<td>—</td>
+<td>空</td>
+<td>GUI 工程与配置同步标记</td>
+</tr>
+<tr>
+<td><code>design_ood</code> / <code>place_ood</code> / <code>route_ood</code></td>
+<td>—</td>
+<td>空</td>
+<td>枚举 <code>sync</code>/<code>new</code>/<code>change</code>/空——GUI 的「过期」标记</td>
+</tr>
+<tr>
+<td><code>last_run_timing</code></td>
+<td>—</td>
+<td>空</td>
+<td>枚举 <code>core_only</code>/<code>unified_timing</code>/<code>unknown</code>/空</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>这些 <code>last_run_*</code> / <code>*_ood</code> 属性是 <strong>GUI 书签</strong>：工具运行后回写。EvoVerse 生成器直接固定 <code>last_run_state="pass"</code> 等 Neutral 值即可（<code>sdk\cli\evoverse</code> L1868-1954 即如此做）。</p>
+</blockquote>
+<hr />
+<h2 id="3-efx-device_info-器件与-timing-model">3. <code>&lt;efx:device_info&gt;</code> — 器件与 Timing Model</h2>
+<p><strong>Schema</strong>（<code>enf_proj.xsd</code> L63-85）：</p>
+<table>
+<thead>
+<tr>
+<th>子元素</th>
+<th>次数</th>
+<th>默认</th>
+<th>类型</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>family</code></td>
+<td>1</td>
+<td><code>Quantum</code></td>
+<td><code>non_empty_string</code></td>
+<td>器件族：Titanium / Trion / Quantum / Topaz</td>
+</tr>
+<tr>
+<td><code>device</code></td>
+<td>1</td>
+<td><code>Q10</code></td>
+<td><code>non_empty_string</code></td>
+<td>具体型号，如 <code>Ti60F225</code>、<code>T120F576</code></td>
+</tr>
+<tr>
+<td><code>timing_model</code></td>
+<td>0..1</td>
+<td><code>op1</code></td>
+<td>字符串</td>
+<td>时序模型速度等级</td>
+</tr>
+</tbody>
+</table>
+<p><strong>工程 XML ↔ peri.xml 一致性</strong>：unified PT 阶段会校验工程 XML 的 device/timing_model 与 peri 设计数据库一致，不一致即报错（<code>c:\Efinity\2026.1\scripts\efx_run_pt_unified.py</code> L226-231）。换器件必须连同 peri.xml 一起处理，不能只改工程 XML。</p>
+<p><strong>工作区规则关联</strong>：Ti35/Ti60 的 timing model <code>I4</code>/<code>I4L</code> 已废弃，必须用 <code>C4</code> 或 <code>C5</code>（工作区硬约束 §13）。三个官方示例均使用 <code>C4</code>。</p>
+<hr />
+<h2 id="4-efx-design_info-顶层模块与源文件">4. <code>&lt;efx:design_info&gt;</code> — 顶层模块与源文件</h2>
+<h3 id="4-1-属性-enf_proj-xsd-l88-103">4.1 属性（<code>enf_proj.xsd</code> L88-103）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>默认</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>top_module</code></td>
+<td>✅</td>
+<td>—</td>
+<td>综合顶层模块名（→ map 命令行 <code>root=&lt;name&gt;</code>）</td>
+</tr>
+<tr>
+<td><code>top_vhdl_arch</code></td>
+<td>—</td>
+<td>空</td>
+<td>VHDL 顶层 architecture 名（→ <code>arch=&lt;name&gt;</code>）</td>
+</tr>
+<tr>
+<td><code>unified_flow</code></td>
+<td>—</td>
+<td><strong><code>false</code></strong></td>
+<td>是否启用 unified flow（interface designer 融合流程）</td>
+</tr>
+<tr>
+<td><code>partition_interface_allowed_off_perimeter</code></td>
+<td>—</td>
+<td><code>true</code></td>
+<td>分区接口允许离周边</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong><code>unified_flow</code> 的 XSD 默认值是 <code>false</code></strong>（<code>enf_proj.xsd</code> L101）。不写这个属性 = 标准双流程；要 unified flow 必须<strong>显式写 <code>unified_flow="true"</code></strong>。官方 <code>helloworld-unified</code> 示例显式写了；<code>helloworld-dbg</code>/<code>helloworld-ru</code> 未写（即 false）。</p>
+</blockquote>
+<h3 id="4-2-子元素顺序与两类文件元素">4.2 子元素顺序与两类文件元素</h3>
+<p><code>design_info</code> 内部同样是 <code>xs:sequence</code>：先全部 <code>design_file</code>（0..N），最后可选 <code>top_vhdl_arch</code>。<strong><code>design_file</code> 必须全部在 <code>top_vhdl_arch</code> 之前</strong>（见 §2.1 顺序敏感实证）。</p>
+<h3 id="4-3-efx-design_file-version-三态语义-核心">4.3 <code>&lt;efx:design_file&gt;</code> — version 三态语义（核心）</h3>
+<p><strong>Schema</strong>（<code>enf_proj.xsd</code> L123-136）：<code>name</code>（必填，含相对路径）、<code>version</code>（可选）、<code>library</code>（可选，VHDL 库名）。</p>
+<p><code>efx_run.py</code> 对 <code>version</code> 的处理有<strong>三种</strong>状态（<code>c:\Efinity\2026.1\scripts\efx_run.py</code> L703-715）：</p>
+<table>
+<thead>
+<tr>
+<th><code>version</code> 取值</th>
+<th>解析结果</th>
+<th>map 二进制实际收到</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>缺省</strong>（属性不写）</td>
+<td>加入 <code>extra_files</code> 列表</td>
+<td><code>-v &lt;file&gt;</code>（Verilog include 语义）</td>
+</tr>
+<tr>
+<td><strong><code>"na"</code></strong></td>
+<td>加入 <code>flist</code> 列表</td>
+<td><code>--flist &lt;file&gt;</code> → map 二进制 <code>--f</code></td>
+</tr>
+<tr>
+<td><strong>其他任何值</strong>（如 <code>"v1.2"</code>）</td>
+<td><code>extra_files</code> + <code>,t:&lt;version&gt;</code> 后缀</td>
+<td><code>-v &lt;file&gt;,t:v1.2</code>（带版本编译单元）</td>
+</tr>
+</tbody>
+</table>
+<p>证据链：<code>efx_run.py</code> L703-715（三态分派）；<code>--flist</code> 到 map 二进制的二次映射在 <code>c:\Efinity\2026.1\scripts\efx_run_map.py</code> L44、L144（<code>--flist</code> → map <code>--f</code>）。</p>
+<p><strong>实践含义</strong>：</p>
+<pre><code class="language-xml">&lt;!-- 普通 RTL 源：什么都不写 --&gt;
+&lt;efx:design_file name=&quot;rtl/top.v&quot;/&gt;
+
+&lt;!-- flist 清单：version=&quot;na&quot;，文件内容是一行行其他文件路径 --&gt;
+&lt;efx:design_file name=&quot;src/files.f&quot; version=&quot;na&quot;/&gt;
+
+&lt;!-- 带版本的编译单元（罕见） --&gt;
+&lt;efx:design_file name=&quot;rtl/legacy.v&quot; version=&quot;1995&quot;/&gt;
+</code></pre>
+<hr />
+<h2 id="5-efx-interface_info-接口设计器文件">5. <code>&lt;efx:interface_info&gt;</code> — 接口设计器文件</h2>
+<p><strong>Schema</strong>（<code>enf_proj.xsd</code> L106-113）：</p>
+<table>
+<thead>
+<tr>
+<th>子元素</th>
+<th>次数</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>peri_file</code></td>
+<td>1</td>
+<td>接口设计器数据库文件（<code>&lt;design&gt;.peri.xml</code>）</td>
+</tr>
+<tr>
+<td><code>interface_script_file</code></td>
+<td>0..N</td>
+<td>接口脚本（与 <code>constraint_info</code> 下 <code>isf_file</code> 同义，见 §6.4）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>Schema 与编排脚本的位置不一致（实践警告）</strong>：XSD 把 <code>peri_file</code> 定义在 <code>interface_info</code> 段（<code>enf_proj.xsd</code> L110-111），但 <code>efx_run.py</code> 的 <code>parse_project_file</code> 实际从 <strong><code>constraint_info</code> 段下读取 <code>peri_file</code></strong>（<code>efx_run.py</code> L983-990）。工程能工作是因为 GUI 写出的工程两个位置语义兼容、且各工具经 <code>--prj</code> 自读 XML 时走 <code>projectdb</code> 层（<code>db.py</code> L283 将 <code>inter_file</code> 映射为 <code>interface_constraint_file</code>，peri 由接口数据库体系管理）。<strong>结论：照抄官方示例的写法（peri 文件不手写、由 PT 工具产出），不要自创只在其中一个位置合法的布局。</strong></p>
+</blockquote>
+<p><code>&lt;design&gt;.peri.xml</code> 本身是 <strong>PT 工具产出的 <code>efxpt:design_db</code> 命名空间工程源文件</strong>，不是本文 <code>enf_proj</code> 体系的一部分——用户与 SDK 都不应手写（工作区硬约束 §1、§15）。</p>
+<hr />
+<h2 id="6-efx-constraint_info-与-efx-isf_info-约束文件">6. <code>&lt;efx:constraint_info&gt;</code> 与 <code>&lt;efx:isf_info&gt;</code> — 约束文件</h2>
+<h3 id="6-1-constraint_info-子元素-enf_proj-xsd-l152-183-xs-sequence-有序">6.1 constraint_info 子元素（<code>enf_proj.xsd</code> L152-183，xs:sequence 有序）</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>元素</th>
+<th>次数</th>
+<th>状态</th>
+<th>消费者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>sdc_file</code></td>
+<td>0..N</td>
+<td>有效</td>
+<td><code>efx_pnr</code>（时序约束）</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>unified_sdc_file</code></td>
+<td>0..N</td>
+<td>有效</td>
+<td>unified timing 分析（<code>efx_run_pnr.py</code> L224-241：多个 unified SDC 组成 filelist）</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>io_place_file</code></td>
+<td>0..1</td>
+<td><strong>已废弃</strong></td>
+<td>旧引脚分配（映射为 <code>user_io_assignment</code>）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>core_place_file</code></td>
+<td>0..1</td>
+<td><strong>已废弃</strong></td>
+<td>旧核布局（映射为 <code>fix_pins</code>）</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>inter_file</code></td>
+<td>0..1</td>
+<td>有效</td>
+<td>→ <code>efx_pnr</code> 的 <code>sync_file</code>（仅 name 非空时，见 §13）</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>interface_script_file</code></td>
+<td>0..N</td>
+<td>有效（旧名）</td>
+<td>加载时迁移为 <code>isf_file</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>isf_file</code></td>
+<td>0..N</td>
+<td>有效</td>
+<td>PT 的 <code>design_api.import_design()</code> 输入</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-2-efx_run-py-的-constraint-cli-映射表">6.2 <code>efx_run.py</code> 的 constraint → CLI 映射表</h3>
+<p><code>efx_run.py</code> L720-733 中的映射字典（原文）：</p>
+<pre><code class="language-python">{'sdc_file': 'sdc_file',
+ 'unified_sdc_file': 'unified_sdc_file',
+ 'io_place_file': 'user_io_assignment',
+ 'core_place_file': 'fix_pins',
+ 'inter_file': 'sync_file'}
+</code></pre>
+<p>关键细节：L726 用 <code>elem.get('name')</code> 做<strong>真值检查</strong>——<code>name</code> 为空字符串或缺失的条目被<strong>静默跳过</strong>。这直接影响 §13 的裁定。</p>
+<h3 id="6-3-sdc-的消费方式">6.3 SDC 的消费方式</h3>
+<ul>
+<li>PNR 包装器 <code>efx_run_pnr.py</code> L174 将 <code>--prj &lt;xml&gt;</code> 直传 <code>efx_pnr</code> 二进制，二进制自行从 XML 读 SDC 列表。</li>
+<li><code>use_unified_timing</code> 模式下多个 SDC 组成 filelist（<code>efx_run_pnr.py</code> L224-241）。</li>
+<li><strong>无 <code>sync_file</code> 时的兜底</strong>：Trion/Titanium/Topaz 器件下，包装器会自动寻找 <code>.interface.csv</code> 作为同步文件（<code>efx_run_pnr.py</code> L203-206）。</li>
+</ul>
+<h3 id="6-4-interface_script_file-与-isf_file-同义迁移">6.4 <code>interface_script_file</code> 与 <code>isf_file</code> 同义迁移</h3>
+<p>工程数据库加载层显式做迁移（<code>c:\Efinity\2026.1\python311\Lib\site-packages\projectdb\db.py</code>）：</p>
+<ul>
+<li>L283：<code>interface_constraint_file = inter_file</code></li>
+<li>L284：<code>interface_script_file_list = isf_file</code></li>
+<li>L731-737：加载时把 <code>interface_script_file</code> 元素迁移为 <code>isf_file</code>（源码注释原文：<em>"because of some genius define two element type for same information"</em>）。</li>
+</ul>
+<p><strong>实践</strong>：新工程一律写 <code>isf_file</code>；读旧工程时两者等价。</p>
+<h3 id="6-5-isf_file-与-unified-pt-的关系-重放机制">6.5 isf_file 与 unified PT 的关系（重放机制）</h3>
+<p>unified flow 下（<code>c:\Efinity\2026.1\scripts\efx_run_pt_unified.py</code> L233-267）：</p>
+<ol>
+<li>网表接口提取产出 <code>&lt;design&gt;.unified.isf</code>，<strong>插入 <code>peri_scripts</code> 列表首位</strong>；</li>
+<li>逐个对列表中的 ISF 执行 <code>design_api.import_design(script)</code>，任何一个失败整体失败。</li>
+</ol>
+<p>这就是工作区硬约束 §15「ISF 必须重放安全（只 <code>set_property</code>/<code>assign_pkg_pin</code> 等；<code>create_*</code> 只做一次性 bootstrap）」的工具链根源：<strong>每次 unified build 都会把工程 XML 引用的全部 ISF 重放到已持久化的 peri.xml 上</strong>。</p>
+<h3 id="6-6-空-efx-isf_file-name-的实证拒绝">6.6 空 <code>&lt;efx:isf_file name=""/&gt;</code> 的实证拒绝</h3>
+<p>EvoVerse 生成器注释记录：空的 <code>&lt;efx:isf_file name=""/&gt;</code> 条目会让 PT <strong>拒绝</strong>携带 peri.xml 的工程（<code>c:\work\awesomsdk\sdk\cli\evoverse</code> L1884-1887，注释原文 <em>"an <code>&lt;efx:isf_file name=""/&gt;</code> entry makes PT reject projects that carry a peri.xml instead of an ISF"</em>）。因此生成器在 isf 文件名为空时<strong>整行省略</strong>而非写空值。</p>
+<hr />
+<h2 id="7-efx-sim_info-efx-misc_info-efx-ooc_info">7. <code>&lt;efx:sim_info&gt;</code> / <code>&lt;efx:misc_info&gt;</code> / <code>&lt;efx:ooc_info&gt;</code></h2>
+<h3 id="7-1-sim_info-enf_proj-xsd-l199-211">7.1 sim_info（<code>enf_proj.xsd</code> L199-211）</h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>类别</th>
+<th>默认</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>top_module</code></td>
+<td><strong>属性</strong></td>
+<td><code>"sim"</code></td>
+<td>仿真顶层（⚠️ 旧版本文档误写为子元素，实为属性）</td>
+</tr>
+<tr>
+<td><code>pt_sim_top_module</code></td>
+<td><strong>属性</strong></td>
+<td><code>"ptsim"</code></td>
+<td>PT 仿真顶层</td>
+</tr>
+<tr>
+<td><code>sim_file</code></td>
+<td>子元素 0..N</td>
+<td>—</td>
+<td>仿真源文件；存在且后缀为 <code>.v/.sv/.vhd</code> 时被 <code>efx_run.py</code> 转为 <code>--tb</code>（<code>efx_run.py</code> L666-673）</td>
+</tr>
+<tr>
+<td><code>defmacro</code></td>
+<td>子元素 0..N</td>
+<td>—</td>
+<td>仿真宏定义（→ <code>verilog-macros=</code>）</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-xml">&lt;efx:sim_info top_module=&quot;tb_top&quot; pt_sim_top_module=&quot;ptsim&quot;&gt;
+    &lt;efx:sim_file name=&quot;sim/tb_top.v&quot;/&gt;
+&lt;/efx:sim_info&gt;
+</code></pre>
+<h3 id="7-2-misc_info-ooc_info">7.2 misc_info / ooc_info</h3>
+<ul>
+<li><code>misc_info</code>（L213-219）：保留段，官方三示例均未使用。</li>
+<li><code>ooc_info</code>（L221-243）：Out-of-Context 编译配置，仅分层次编译流程使用，常规工程不写。</li>
+</ul>
+<hr />
+<h2 id="8-efx-ip_info-ip-实例">8. <code>&lt;efx:ip_info&gt;</code> — IP 实例</h2>
+<h3 id="8-1-schema-定义-enf_proj-xsd-l245-263">8.1 Schema 定义（<code>enf_proj.xsd</code> L245-263）</h3>
+<p><code>ip_info</code> 下为 0..N 个 <code>ip</code> 元素（<code>ip_type</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>类别</th>
+<th>必填</th>
+<th>默认</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>instance_name</code></td>
+<td>属性</td>
+<td>✅</td>
+<td>—</td>
+<td>IP 实例名</td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>属性</td>
+<td>✅</td>
+<td>—</td>
+<td>指向 IP 的 <strong><code>settings.json</code></strong>（含路径）</td>
+</tr>
+<tr>
+<td><code>ooc</code></td>
+<td>属性</td>
+<td>—</td>
+<td><code>false</code></td>
+<td>是否 Out-of-Context 编译</td>
+</tr>
+<tr>
+<td><code>ip_src_file</code></td>
+<td>子元素 0..N</td>
+<td>—</td>
+<td>—</td>
+<td>IP 附加源文件（相对 IP 根解析）</td>
+</tr>
+<tr>
+<td><code>ip_postmap_module</code></td>
+<td>子元素 0..1</td>
+<td>—</td>
+<td>—</td>
+<td>post-map 替换模块名</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-2-完整合法示例">8.2 完整合法示例</h3>
+<pre><code class="language-xml">&lt;efx:ip_info&gt;
+    &lt;efx:ip instance_name=&quot;ddr_ctrl&quot; path=&quot;ip/ddr_ctrl/settings.json&quot; ooc=&quot;false&quot;&gt;
+        &lt;efx:ip_src_file name=&quot;ip/ddr_ctrl/synthesis/edn/ddr_ctrl_wrapper.v&quot;/&gt;
+    &lt;/efx:ip&gt;
+&lt;/efx:ip_info&gt;
+</code></pre>
+<h3 id="8-3-efx-ip-在编排层的真实行为-关键认知">8.3 <code>&lt;efx:ip&gt;</code> 在编排层的真实行为（关键认知）</h3>
+<p><code>efx_run.py</code> L676-683：每个 <code>&lt;efx:ip path="ip/&lt;m&gt;/settings.json"&gt;</code> 被转换为把 <strong><code>ip/&lt;m&gt;</code>（settings.json 的父目录）加入 source_dir → map 命令行 <code>--dir ip/&lt;m&gt;</code></strong>——即对该目录做<strong>源码全量扫描</strong>。同时 <code>--project_xml</code> 也会传给工具内核，内核自行消费 <code>ip_src_file</code>（相对 IP 根解析——若 IP 根下不存在对应文件则解析失败）。</p>
+<h3 id="8-4-evoverse-的实证决策-不写-efx-ip">8.4 EvoVerse 的实证决策：不写 <code>&lt;efx:ip&gt;</code></h3>
+<p><code>c:\work\awesomsdk\products\efinity-adapter\extension\src\capabilities\ip.ts</code> L100-106 注释（原文要点）：</p>
+<ul>
+<li><code>efx_run</code> 把每个 <code>&lt;efx:ip path="ip/&lt;m&gt;/settings.json"&gt;</code> 变成 <code>--dir ip/&lt;m&gt;</code> 源扫描；</li>
+<li>这会把<strong>已经是 <code>design_file</code> 的同一文件二次编译</strong> → <code>VERI-1206</code> duplicate module 错误；</li>
+<li><code>ip_src_file</code> 相对 IP 根解析，而 SoC netlist 在 IP 根下并不存在。</li>
+</ul>
+<p>因此 EvoVerse adapter 的 <code>publishGeneratedIp</code>（<code>ip.ts</code> L73-108）<strong>只把 IP 生成源以 <code>design_file</code> 注册，刻意不写 <code>&lt;efx:ip_info&gt;/&lt;efx:ip&gt;</code></strong>；<code>selectGeneratedSources</code>（L136-160）同时过滤掉 <code>sim/</code>、<code>testbench/</code>、<code>template/</code>、<code>devkit/</code>、<code>source_&lt;simulator&gt;/</code> 目录，避免把非综合源扫进工程。</p>
+<p><strong>结论</strong>：<code>&lt;efx:ip&gt;</code> 是「IP 集成工具链（IP 生成器管理）」的元素；手工/生成器管理源码清单的流程用 <code>design_file</code> 更可控。</p>
+<hr />
+<h2 id="9-编译选项段-synthesis-place_and_route-bitstream_generation-debugger-security">9. 编译选项段：synthesis / place_and_route / bitstream_generation / debugger / security</h2>
+<p>五段结构同构（<code>enf_proj.xsd</code> 中各 tool section 定义）：内容由 0..N 个 <code>&lt;efx:param name="..." value="..."/&gt;</code> 组成。</p>
+<h3 id="9-1-efx-param-通用结构">9.1 <code>&lt;efx:param&gt;</code> 通用结构</h3>
+<pre><code class="language-xml">&lt;efx:param name=&quot;param_name&quot; value=&quot;param_value&quot;/&gt;
+</code></pre>
+<ul>
+<li><code>name</code>/<code>value</code> 均为必填字符串；<code>value</code> 的解释权在各消费层（§10）。</li>
+<li>各段参数集合由 GUI 的选项数据库（<code>tool_options</code> 全局元素，<code>enf_proj.xsd</code> L372-394）定义，XSD 本身<strong>不校验</strong> param 名——写错参数名不会报 schema 错，只会被工具静默忽略或报选项不存在。</li>
+</ul>
+<h3 id="9-2-synthesis-efx_run-py-l738-795">9.2 synthesis（<code>efx_run.py</code> L738-795）</h3>
+<table>
+<thead>
+<tr>
+<th>param</th>
+<th>→ 命令行 / 行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>work_dir</code></td>
+<td><code>work-dir=&lt;dir&gt;</code>，并强制生效（DEVINFRA-1142：work_dir 从 XML 优先，CLI 覆盖被抑制）</td>
+</tr>
+<tr>
+<td><code>def_veri_version</code> / <code>def_vhdl_version</code></td>
+<td><code>veri_options=verilog_mode=&lt;v&gt;</code> / <code>vhdl_mode=&lt;v&gt;</code>（如 <code>verilog_2k</code>）</td>
+</tr>
+<tr>
+<td><code>include</code></td>
+<td><code>I=&lt;path&gt;</code>（可多个）</td>
+</tr>
+<tr>
+<td><code>opt_mode</code></td>
+<td><code>syn_options=mode=&lt;v&gt;</code>（如 <code>speed</code>/<code>area</code>）</td>
+</tr>
+<tr>
+<td><code>peri-syn-instantiation</code> / <code>peri-syn-inference</code></td>
+<td>仅 unified flow（<code>un_flow</code>）时下发，官方 unified 示例为 <code>1</code></td>
+</tr>
+<tr>
+<td><code>dynparam</code></td>
+<td><code>top-params=&lt;k&gt;=&lt;v&gt;</code>（下发两次，map 与 syn 各一次）</td>
+</tr>
+<tr>
+<td><code>defmacro</code></td>
+<td><code>verilog-macros=...</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>unified_flow="true"</code> 且 CLI 未显式给 <code>--un_flow</code> 时，<code>efx_run.py</code> 从该属性推导 <code>un_flow=True</code>（L738-795 内）。</p>
+</blockquote>
+<h3 id="9-3-place_and_route-efx_run-py-l797-840-efx_run_pnr-py-l168-182">9.3 place_and_route（<code>efx_run.py</code> L797-840 + <code>efx_run_pnr.py</code> L168-182）</h3>
+<p><strong>编排器只处理两类 param</strong>：</p>
+<ol>
+<li><code>work_dir</code> → PNR 工作目录；</li>
+<li>以 <code>qp_options=</code> 为前缀的 param（剔除 <code>anneal_random_seed</code>）→ 拼入 vpr 选项。</li>
+</ol>
+<p><strong>其余 pnr param 不由 <code>efx_run.py</code> 转 CLI</strong>——<code>efx_run_pnr.py</code> L168-182 解析 XML pnr param 仅用于 <code>option_exists</code> 去重校验，随后 L174 把 <code>--prj &lt;xml&gt;</code> 直传 <code>efx_pnr</code> 二进制，<strong>由二进制自行解析 <code>&lt;efx:place_and_route&gt;</code> 段</strong>。这是「双通道」模型（§11.2）的典型体现：不要指望给 XML 里加一个 pnr param 就一定能在命令行上看到它。</p>
+<p>常用 pnr param（官方示例实证）：<code>active_capture_clk_edge</code>（Titanium 必须保持默认 <code>negedge</code>）、<code>retiming</code>、<code>oscillator_clock_divider</code>、<code>beneficial_skew</code> 等。</p>
+<h3 id="9-4-bitstream_generation-efx_run-py-l842-867">9.4 bitstream_generation（<code>efx_run.py</code> L842-867）</h3>
+<table>
+<thead>
+<tr>
+<th>param</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code> / <code>width</code></td>
+<td>官方示例中既有 <code>e_option</code> 也有 <code>e_string</code> 写法（§12 对照表），均被读取</td>
+</tr>
+<tr>
+<td><code>cascade</code> / <code>cold_boot</code> / <code>randomize_iv_value</code> / <code>iv_value</code></td>
+<td>编排器<strong>忽略</strong>（二进制经 <code>--prj</code> 自读）</td>
+</tr>
+<tr>
+<td><code>jtag_usercode</code></td>
+<td>正则 <code>^0x[a-fA-F0-9]{8}$</code> 校验；不匹配则<strong>强制 0xFFFFFFFF 并回写工程 XML</strong>（副作用：XML 被工具改写）</td>
+</tr>
+<tr>
+<td><code>bitstream_compression</code> / <code>four_byte_addressing</code></td>
+<td>有效参数（dbg 示例 <code>compression=on</code>；<code>four_byte_addressing</code> 仅部分示例有）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-5-debugger-efx_run-py-l962-981">9.5 debugger（<code>efx_run.py</code> L962-981）</h3>
+<p><code>work_dir</code>、<code>auto_instantiation</code>（<code>on</code> → True，控制 build 时自动实例化 debug core）、<code>profile</code>（<code>NONE</code> → 空串）。官方 dbg 示例携带 debug core 配置。</p>
+<h3 id="9-6-security-efx_run-py-l877-960">9.6 security（<code>efx_run.py</code> L877-960）</h3>
+<p>比特流加密/签名：<code>encrypt</code> → <code>--encrypt</code>、<code>sign</code> → <code>--sign</code>、<code>keypair</code> → <code>--keypair=</code>，以及 <code>sc_*</code> 系列（secure chip）；IV 类值要求长度 24（12 字节 hex）。</p>
+<hr />
+<h2 id="10-param_value_type-深度解析-xml-值类型与消费链">10. <code>param_value_type</code> 深度解析：XML 值类型与消费链</h2>
+<h3 id="10-1-五种枚举-enf_proj-xsd-l325-333">10.1 五种枚举（<code>enf_proj.xsd</code> L325-333）</h3>
+<pre><code class="language-xml">&lt;xs:simpleType name=&quot;param_value_type&quot;&gt;
+    &lt;xs:restriction base=&quot;xs:string&quot;&gt;
+        &lt;xs:enumeration value=&quot;e_string&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_bool&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_option&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_integer&quot;/&gt;
+        &lt;xs:enumeration value=&quot;e_noarg&quot;/&gt;
+    &lt;/xs:restriction&gt;
+&lt;/xs:simpleType&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>枚举</th>
+<th>语义</th>
+<th>XML 中 <code>value</code> 的典型取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>e_string</code></td>
+<td>自由字符串</td>
+<td>任意文本（路径、名字、数值均可）</td>
+</tr>
+<tr>
+<td><code>e_bool</code></td>
+<td>布尔</td>
+<td><strong><code>on</code> / <code>off</code></strong>（不是 true/false！）</td>
+</tr>
+<tr>
+<td><code>e_option</code></td>
+<td>下拉枚举</td>
+<td>预定义选项之一（如 <code>e_option</code> 的 pgm <code>mode=active</code>）</td>
+</tr>
+<tr>
+<td><code>e_integer</code></td>
+<td>整数</td>
+<td>十进制整数字符串</td>
+</tr>
+<tr>
+<td><code>e_noarg</code></td>
+<td>「无参数」开关</td>
+<td>存储层与 e_bool 同为 <code>on</code>/<code>off</code>，语义是「该选项存在即生效，不接值」</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-2-xml-命令行映射举例">10.2 XML → 命令行映射举例</h3>
+<table>
+<thead>
+<tr>
+<th>XML</th>
+<th>消费后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;efx:param name="opt_mode" value="speed" value_type="e_option"/&gt;</code></td>
+<td><code>syn_options=mode=speed</code>（值原样进选项串）</td>
+</tr>
+<tr>
+<td><code>&lt;efx:param name="auto_instantiation" value="on" value_type="e_bool"/&gt;</code></td>
+<td>编排层判定 <code>on</code> → Python True（<code>efx_run.py</code> L962-981）</td>
+</tr>
+<tr>
+<td><code>&lt;efx:param name="retiming" value="2" value_type="e_integer"/&gt;</code></td>
+<td>经 <code>--prj</code> 由 pnr 内核读取，数值 2</td>
+</tr>
+<tr>
+<td><code>e_noarg</code> 型开关（value=<code>on</code>）</td>
+<td>内核读 XML 时视作「选项开启、无关联值」；编排层不为其生成带值参数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-3-谁真正消费-value_type-重要澄清">10.3 谁真正消费 <code>value_type</code>？（重要澄清）</h3>
+<ul>
+<li><strong>Python 编排层基本不消费</strong>：<code>efx_run.py</code> 全文仅 L803 读取一次 <code>value_type</code> 且未使用。编排层把 <code>value</code> 当纯字符串搬运。</li>
+<li><strong>GUI 渲染层消费</strong>：<code>efinity_plugin/OptionSchema.py</code> L29-49（<code>e_bool</code>/<code>e_noarg</code> → boolean 控件，<code>e_option</code> → 逗号分隔枚举下拉）、<code>efinity_plugin/ProjectMeta.py</code> L1111-1159（<code>e_bool</code>/<code>e_noarg</code> 序列化为 <code>'on'/''</code>）、<code>aoe/core/common.py</code> L43-49（EFX_VT 枚举无 noarg 的历史差异）、<code>projectdb/defines.py</code> L79-88（ParameterType 含 NOARG）。</li>
+<li><strong>工具二进制</strong>：经 <code>--prj</code> 自读 XML 时按各自 section 的参数语义解释值。</li>
+</ul>
+<p><strong>实践含义</strong>：手写工程 XML 时，<code>value_type</code> 写错通常不会让编译失败（编排层不看它），但会让 GUI 显示/编辑行为异常；布尔语义值必须是 <code>on</code>/<code>off</code> 才被可靠识别。</p>
+<hr />
+<h2 id="11-efx_run-py-解析逻辑全景-编排器视角">11. <code>efx_run.py</code> 解析逻辑全景（编排器视角）</h2>
+<h3 id="11-1-parse_project_file-各段-cli-总表-efx_run-py-l635-990">11.1 <code>parse_project_file</code> 各段 → CLI 总表（<code>efx_run.py</code> L635-990）</h3>
+<table>
+<thead>
+<tr>
+<th>XML 段</th>
+<th>行号</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>device_info</code></td>
+<td>L653-663</td>
+<td><code>family=</code>/<code>device=</code>/<code>timing_model=</code>（仅当命令行未给时）</td>
+</tr>
+<tr>
+<td><code>sim_info/sim_file</code></td>
+<td>L666-673</td>
+<td><code>--tb &lt;file&gt;</code>（后缀 .v/.sv/.vhd 才转）</td>
+</tr>
+<tr>
+<td><code>ip_info/ip</code></td>
+<td>L676-683</td>
+<td>每个 IP 的 settings.json 父目录 → <code>--dir &lt;dir&gt;</code></td>
+</tr>
+<tr>
+<td><code>design_info</code> 标量</td>
+<td>L689-701</td>
+<td><code>root=&lt;top_module&gt;</code>、<code>arch=&lt;top_vhdl_arch&gt;</code></td>
+</tr>
+<tr>
+<td><code>design_file</code></td>
+<td>L703-715</td>
+<td><code>-v</code>（缺省）/ <code>--flist</code>（<code>na</code>）/ <code>-v f,t:&lt;ver&gt;</code>（其他），见 §4.3</td>
+</tr>
+<tr>
+<td><code>constraint_info</code></td>
+<td>L720-733</td>
+<td>映射表见 §6.2；<strong>空 name 条目跳过</strong></td>
+</tr>
+<tr>
+<td><code>synthesis</code></td>
+<td>L738-795</td>
+<td>见 §9.2</td>
+</tr>
+<tr>
+<td><code>place_and_route</code></td>
+<td>L797-840</td>
+<td>仅 <code>work_dir</code> 与 <code>qp_options=</code>（§9.3）</td>
+</tr>
+<tr>
+<td><code>bitstream_generation</code></td>
+<td>L842-867</td>
+<td>见 §9.4（jtag_usercode 校验失败回写 XML）</td>
+</tr>
+<tr>
+<td><code>security</code></td>
+<td>L877-960</td>
+<td><code>--encrypt</code>/<code>--sign</code>/<code>--keypair=</code>/<code>sc_*</code></td>
+</tr>
+<tr>
+<td><code>debugger</code></td>
+<td>L962-981</td>
+<td><code>work_dir</code>/<code>auto_instantiation</code>/<code>profile</code></td>
+</tr>
+<tr>
+<td><code>peri_file</code></td>
+<td>L983-990</td>
+<td><strong>从 constraint_info 下读取</strong>（位置差异见 §5 警告）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="11-2-双通道-模型-编排器-cli-转换-全部参数传递">11.2 「双通道」模型：编排器 CLI 转换 ≠ 全部参数传递</h3>
+<p><code>efx_run.py</code> 有两条参数通道，理解这一点才能解释 §9.3 的现象：</p>
+<ol>
+<li><strong>CLI 通道</strong>：编排器解析 XML，把部分参数翻译成子工具命令行参数（§11.1 总表）。</li>
+<li><strong>XML 直读通道</strong>：以 <code>--prj &lt;工程.xml&gt;</code> 传递 XML，各工具内核<strong>自行解析自己关心的 section</strong>：</li>
+<li>综合：<code>--prj</code> 时同时传 <code>--project_xml</code>（<code>efx_run.py</code> L1200-1266）；</li>
+<li>PNR：<code>--prj &lt;xml&gt;</code> 直传（<code>efx_run.py</code> L1273-1341 → <code>efx_run_pnr.py</code> L174）；</li>
+<li>PT/unified：<code>--un_flow</code> + <code>--peri_netlist</code>，并加载工程数据库取 <code>interface_script_file_list</code> 逐个 <code>--peri_scripts</code>（<code>efx_run.py</code> L1420-1495）。</li>
+</ol>
+<p><strong>推论</strong>：XML 里写了但编排器不转的参数，依然可能通过 XML 直读通道生效——「命令行上看不到」不等于「没生效」；反之，想确认某个参数的真实效果，要以工具报告/日志为准。</p>
+<hr />
+<h2 id="12-官方三示例逐段对照表">12. 官方三示例逐段对照表</h2>
+<p>三个示例均：<code>Ti60F225</code> / Titanium / <code>C4</code>、<code>sw_version="2025.2.276"</code>、根目录布局、<strong>均含空 <code>&lt;efx:inter_file name=""/&gt;</code>（各文件 L15）</strong>、<strong>均不含 <code>interface_info</code> 与 <code>isf_info</code> 段</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>对照点</th>
+<th>helloworld-unified</th>
+<th>helloworld-dbg</th>
+<th>helloworld-ru (helloworld0)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>路径</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code></td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg\helloworld.xml</code></td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-ru\helloworld0\helloworld0.xml</code></td>
+</tr>
+<tr>
+<td>行数</td>
+<td>109</td>
+<td>107</td>
+<td>107</td>
+</tr>
+<tr>
+<td><code>unified_flow</code></td>
+<td><strong><code>"true"</code></strong></td>
+<td>未写（=false）</td>
+<td>未写（=false）</td>
+</tr>
+<tr>
+<td><code>def_veri_version</code></td>
+<td><code>verilog_2k</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>isf_file</code></td>
+<td><code>Ti60F225_kit_pins.isf</code></td>
+<td>—（无 ISF）</td>
+<td>—（无 ISF）</td>
+</tr>
+<tr>
+<td><code>peri-syn-instantiation</code> / <code>inference</code></td>
+<td><code>1</code> / <code>1</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>peri-syn</code></td>
+<td>—</td>
+<td><code>0</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>retiming</code></td>
+<td><code>1</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>active_capture_clk_edge</code></td>
+<td><code>negedge</code>（Titanium 正确值）</td>
+<td><strong><code>posedge</code>（L85，调试捕获专用）</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>oscillator_clock_divider</code></td>
+<td>—</td>
+<td>—</td>
+<td><code>DIV4</code></td>
+</tr>
+<tr>
+<td><code>jtag_usercode</code></td>
+<td>—</td>
+<td>—</td>
+<td><code>0x00000001</code></td>
+</tr>
+<tr>
+<td>pgm <code>mode</code>/<code>width</code> 的 value_type</td>
+<td><strong><code>e_option</code></strong></td>
+<td><strong><code>e_string</code>（L77-78）</strong></td>
+<td><code>e_option</code></td>
+</tr>
+<tr>
+<td><code>bitstream_compression</code></td>
+<td>—</td>
+<td><code>on</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>four_byte_addressing</code></td>
+<td>有</td>
+<td><strong>无</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>空 <code>inter_file</code></td>
+<td>L15 ✅</td>
+<td>L15 ✅</td>
+<td>L15 ✅</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>同一官方包内 <code>value_type</code> 写法不一致（pgm mode/width）、<code>active_capture_clk_edge</code> 有 negedge/posedge 两种取值，说明 <code>value_type</code> 不参与编译语义（§10.3），而 <code>active_capture_clk_edge</code> 是<strong>流程相关</strong>参数（SPI active 配置场景必须 <code>negedge</code>，工作区硬约束 §13；dbg 示例的 <code>posedge</code> 用于 LA 捕获时钟沿选择，属调试配置而非 SPI 配置场景）。</p>
+</blockquote>
+<hr />
+<h2 id="13-证据张力裁定-空-efx-inter_file-name">13. 【证据张力裁定】空 <code>&lt;efx:inter_file name=""/&gt;</code></h2>
+<h3 id="13-1-冲突">13.1 冲突</h3>
+<ul>
+<li><strong>事实 A（官方示例）</strong>：三个 2025.2.276 官方工程 XML 的 L15 均为 <code>&lt;efx:inter_file name=""/&gt;</code>，且根属性 <code>last_run_state="pass"</code>（上轮构建通过）。</li>
+<li><strong>事实 B（工作区规则）</strong>：本仓库硬约束（<code>rules-efinity-hard.md</code> §2 / AGENTS.md §2）称「空的 <code>&lt;efx:inter_file name="" /&gt;</code> 会导致 build 失败」，并要求发现即删除。</li>
+</ul>
+<h3 id="13-2-双方证据的进一步实读">13.2 双方证据的进一步实读</h3>
+<table>
+<thead>
+<tr>
+<th>证据</th>
+<th>内容</th>
+<th>指向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_run.py</code> L726</td>
+<td>对 <code>inter_file</code> 做 <code>elem.get('name')</code> 真值检查，空 name <strong>静默跳过</strong></td>
+<td>编排层对空 inter_file 无害</td>
+</tr>
+<tr>
+<td><code>efx_run_pnr.py</code> L203-206</td>
+<td>无 <code>sync_file</code> 时自动找 <code>.interface.csv</code> 兜底</td>
+<td>空/缺失 inter_file 在 PNR 侧有兜底</td>
+</tr>
+<tr>
+<td><code>sdk\cli\evoverse</code> L1884-1887</td>
+<td><strong>空 <code>&lt;efx:isf_file name=""/&gt;</code> 实证让 PT 拒绝带 peri.xml 的工程</strong>（同族「空 name 引用」失败模式）</td>
+<td>失败可能发生在 PT/内核层而非编排层</td>
+</tr>
+<tr>
+<td>官方示例 sw_version</td>
+<td><code>2025.2.276</code>（旧于工具 2026.1）</td>
+<td>存在版本差异假说空间</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-3-裁定">13.3 裁定</h3>
+<ol>
+<li><strong>两层事实并不直接矛盾</strong>：编排器（<code>efx_run.py</code>）确实跳过空 inter_file；但 build 全链还包括 PT <code>import_design</code>、<code>projectdb</code> 加载、<code>efx_pnr</code> 内核对 XML 的直读——失败可能发生在这些层，或仅发生在特定版本组合（官方示例配 2025.2 时代构建通过，不代表所有版本安全）。</li>
+<li><strong>同族失败模式已实证</strong>：空 <code>isf_file</code> 让 PT 拒绝工程是 EvoVerse 侧实测结论；「空 name 引用元素不安全」是跨元素的合理归纳。</li>
+<li><strong>安全实践（本仓库执行口径）</strong>：</li>
+<li>生成器<strong>不写</strong> <code>&lt;efx:inter_file&gt;</code>（XSD <code>minOccurs=0</code>，不写完全合法）——EvoVerse <code>_build_native_project_xml</code> 即不产出该元素；</li>
+<li>遇到 GUI 历史工程带空 inter_file 且构建通过：<strong>不必恐慌删除</strong>，但升级工具版本后必须重验；</li>
+<li><strong>绝不</strong>给空 inter_file 填非空乱值来「修复」——那会真的产生一个坏的 sync_file 引用；</li>
+<li>本仓库规则仍按工作区硬约束执行：生成路径不允许出现 <code>&lt;efx:inter_file name=""/&gt;</code>。</li>
+</ol>
+<hr />
+<h2 id="14-evoverse-侧工程-xml-生成实践">14. EvoVerse 侧工程 XML 生成实践</h2>
+<blockquote>
+<p>历史注记：任务引用的 <code>c:\work\awesomsdk\scripts\projectxml.py</code>（add_ip L78-122）已不存在，其职能迁移至下列两处。本节为现役权威。</p>
+</blockquote>
+<h3 id="14-1-sdk-生成器-sdk-cli-evoverse-的-_build_native_project_xml-l1868-1954">14.1 SDK 生成器：<code>sdk\cli\evoverse</code> 的 <code>_build_native_project_xml</code>（L1868-1954）</h3>
+<p>结构基线：照抄 <code>helloworld-unified</code>（「拷贝改」原则），关键决策：</p>
+<table>
+<thead>
+<tr>
+<th>决策</th>
+<th>实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unified_flow="true"</code> 显式写</td>
+<td>§4.1 默认 false，必须显式</td>
+</tr>
+<tr>
+<td><code>sw_version="2026.1"</code></td>
+<td>与工具链对齐</td>
+</tr>
+<tr>
+<td><strong>不写 <code>inter_file</code></strong></td>
+<td>§13 裁定</td>
+</tr>
+<tr>
+<td>isf 文件名为空时整行省略</td>
+<td>§6.6（L1884-1887 注释）</td>
+</tr>
+<tr>
+<td>板卡预设</td>
+<td><code>BOARD_PRESETS</code>（L2564-2579）：<code>ws-e1</code> = TJ180A484S/Titanium/C4；<code>T120F576_devkit</code> = Trion/C2</td>
+</tr>
+<tr>
+<td>引用校验</td>
+<td>L1562-1570：所有相对引用相对 XML 父目录检查存在性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-2-adapter-ip-注册-products-efinity-adapter-extension-src-capabilities-ip-ts">14.2 Adapter IP 注册：<code>products\efinity-adapter\extension\src\capabilities\ip.ts</code></h3>
+<table>
+<thead>
+<tr>
+<th>决策</th>
+<th>位置</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IP 源只注册 <code>design_file</code></td>
+<td><code>publishGeneratedIp</code> L73-108</td>
+<td>避免 <code>--dir</code> 扫描重复编译（VERI-1206）与 <code>ip_src_file</code> 解析失败（§8.4）</td>
+</tr>
+<tr>
+<td><code>design_file</code> 必须在 <code>top_vhdl_arch</code> 之前</td>
+<td>L92-95 注释</td>
+<td>违反顺序 → Efinity 拒载工程（§2.1）</td>
+</tr>
+<tr>
+<td>过滤非综合目录</td>
+<td><code>selectGeneratedSources</code> L136-160</td>
+<td>跳过 <code>sim/</code>、<code>testbench/</code>、<code>template/</code>、<code>devkit/</code>、<code>source_&lt;simulator&gt;/</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="15-最小可工作模板-修订版">15. 最小可工作模板（修订版）</h2>
+<p>对齐官方 <code>helloworld-unified</code> 结构、经本文校对修订：<strong>不含 <code>interface_info</code> 段</strong>（官方示例均无；peri.xml 由 PT 产出后由工具经工程数据库发现）、<strong>不含空 <code>inter_file</code>/空 <code>isf_file</code></strong>、<code>design_file</code> 全部在 <code>top_vhdl_arch</code> 之前、布尔值用 <code>on/off</code>。</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;efx:project name=&quot;my_project&quot; description=&quot;minimal unified project&quot;
+             sw_version=&quot;2026.1&quot; last_change=&quot;evoverse&quot;
+             last_run_state=&quot;pass&quot; last_run_flow=&quot;compile&quot; last_run_tool=&quot;efx_run&quot;
+             config_result_in_sync=&quot;true&quot;
+             design_ood=&quot;sync&quot; place_ood=&quot;sync&quot; route_ood=&quot;sync&quot;
+             last_run_timing=&quot;unknown&quot;
+             xmlns:efx=&quot;http://www.efinixinc.com/enf_proj&quot;&gt;
+    &lt;efx:device_info&gt;
+        &lt;efx:family name=&quot;Titanium&quot;/&gt;
+        &lt;efx:device name=&quot;Ti60F225&quot;/&gt;
+        &lt;efx:timing_model name=&quot;C4&quot;/&gt;
+    &lt;/efx:device_info&gt;
+    &lt;efx:design_info top_module=&quot;my_top&quot; unified_flow=&quot;true&quot;&gt;
+        &lt;efx:design_file name=&quot;rtl/my_top.v&quot;/&gt;
+        &lt;!-- flist 用法：version=&quot;na&quot; → --flist
+             &lt;efx:design_file name=&quot;src/files.f&quot; version=&quot;na&quot;/&gt; --&gt;
+    &lt;/efx:design_info&gt;
+    &lt;efx:constraint_info&gt;
+        &lt;efx:sdc_file name=&quot;constraint/timing.sdc&quot;/&gt;
+        &lt;efx:isf_file name=&quot;constraint/pins.isf&quot;/&gt;
+    &lt;/efx:constraint_info&gt;
+    &lt;efx:synthesis&gt;
+        &lt;efx:param name=&quot;work_dir&quot; value=&quot;work_syn&quot;/&gt;
+        &lt;efx:param name=&quot;def_veri_version&quot; value=&quot;verilog_2k&quot;/&gt;
+        &lt;efx:param name=&quot;opt_mode&quot; value=&quot;speed&quot;/&gt;
+        &lt;efx:param name=&quot;preadapt_bram&quot; value=&quot;off&quot; value_type=&quot;e_bool&quot;/&gt;
+    &lt;/efx:synthesis&gt;
+    &lt;efx:place_and_route&gt;
+        &lt;efx:param name=&quot;work_dir&quot; value=&quot;work_pnr&quot;/&gt;
+        &lt;efx:param name=&quot;active_capture_clk_edge&quot; value=&quot;negedge&quot;/&gt;
+        &lt;efx:param name=&quot;retiming&quot; value=&quot;1&quot;/&gt;
+    &lt;/efx:place_and_route&gt;
+    &lt;efx:bitstream_generation&gt;
+        &lt;efx:param name=&quot;mode&quot; value=&quot;active&quot;/&gt;
+        &lt;efx:param name=&quot;width&quot; value=&quot;1&quot;/&gt;
+        &lt;efx:param name=&quot;jtag_usercode&quot; value=&quot;0x00000000&quot;/&gt;
+    &lt;/efx:bitstream_generation&gt;
+    &lt;efx:debugger&gt;
+        &lt;efx:param name=&quot;auto_instantiation&quot; value=&quot;on&quot; value_type=&quot;e_bool&quot;/&gt;
+    &lt;/efx:debugger&gt;
+&lt;/efx:project&gt;
+</code></pre>
+<p><strong>模板要点复核</strong>（对应正文小节）：</p>
+<table>
+<thead>
+<tr>
+<th>要点</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unified_flow="true"</code> 显式</td>
+<td>§4.1（默认 false）</td>
+</tr>
+<tr>
+<td><code>timing_model</code> 用 <code>C4</code> 非 <code>I4</code></td>
+<td>§3（I4/I4L 废弃）</td>
+</tr>
+<tr>
+<td><code>design_file</code> 在任何 <code>top_vhdl_arch</code> 之前</td>
+<td>§2.1 / §14.2</td>
+</tr>
+<tr>
+<td>SDC/ISF 相对 XML 所在目录</td>
+<td>§1.3</td>
+</tr>
+<tr>
+<td>无 <code>inter_file</code>、无空 <code>isf_file</code></td>
+<td>§13 / §6.6</td>
+</tr>
+<tr>
+<td><code>jtag_usercode</code> 满足 8 位 hex 正则</td>
+<td>§9.4（否则被回写为 0xFFFFFFFF）</td>
+</tr>
+<tr>
+<td><code>active_capture_clk_edge=negedge</code></td>
+<td>§9.3 / 工作区硬约束 §13</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-自检清单-生成-修改工程-xml-前后">16. 自检清单（生成/修改工程 XML 前后）</h2>
+<ul>
+<li>[ ] 命名空间精确为 <code>http://www.efinixinc.com/enf_proj</code>（§1.1）</li>
+<li>[ ] 工程 XML 位于工程根目录；全部相对引用相对 XML 目录存在（§1.2、§1.3）</li>
+<li>[ ] 子元素顺序符合 <code>xs:sequence</code>：<code>device_info → design_info → … → constraint_info → …</code>；<code>design_file</code> 全部在 <code>top_vhdl_arch</code> 前（§2.1）</li>
+<li>[ ] <code>unified_flow="true"</code> 为显式写出（默认 false）（§4.1）</li>
+<li>[ ] <code>design_file</code> 的 <code>version</code> 三态语义使用正确：缺省=<code>-v</code>、<code>na</code>=<code>--flist</code>、其他=带 <code>,t:</code> 版本（§4.3）</li>
+<li>[ ] timing_model 非废弃值（Ti35/Ti60 用 C4/C5，非 I4/I4L）（§3）</li>
+<li>[ ] 无 <code>&lt;efx:inter_file name=""/&gt;</code>、无空 <code>&lt;efx:isf_file name=""/&gt;</code>（§13、§6.6）</li>
+<li>[ ] ISF 重放安全（只 set/assign 幂等命令；<code>create_*</code> 仅一次性 bootstrap 并注释）（§6.5）</li>
+<li>[ ] <code>peri.xml</code> 存在且为 PT 产出、纳入版本管理、任何构建路径不删除（§5）</li>
+<li>[ ] 每个时钟端口在 SDC 有对应 <code>create_clock</code>，时钟名与 RTL/PLL 输出精确匹配（§6.3 关联工作区 SDC 规则）</li>
+<li>[ ] 手工 IP 集成优先 <code>design_file</code>，<code>&lt;efx:ip&gt;</code> 仅在理解 <code>--dir</code> 扫描行为时使用（§8.3、§8.4）</li>
+<li>[ ] <code>jtag_usercode</code> 匹配 <code>^0x[a-fA-F0-9]{8}$</code>（否则被回写）（§9.4）</li>
+<li>[ ] 布尔 param 用 <code>on</code>/<code>off</code>，<code>value_type</code> 与 GUI 语义一致（§10）</li>
+</ul>
+<hr />
+<p><em>本文由 EvoVerse SDK 知识库维护；证据引用以文中绝对路径为准。若 Efinity 版本升级，请以新版 <code>enf_proj.xsd</code> 与 <code>scripts/</code> 实读复核 §6.2/§11.1 的映射表与 §13 裁定。</em></p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

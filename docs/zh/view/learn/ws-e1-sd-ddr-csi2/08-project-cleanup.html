@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>08 整理工程并交付</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
+.tutorial-article{border-top:5px solid var(--accent)}
+.tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
+.tutorial-article>h2::before{content:"STEP";font:700 10px/1 Consolas,"Courier New",monospace;letter-spacing:.08em;color:#fff;background:var(--accent);border-radius:999px;padding:5px 7px}
+.tutorial-article>blockquote{border-left-width:5px}
+.tutorial-article>ol>li{padding:6px 0}
+.tutorial-stage-navigation{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:36px;padding:14px;border:1px solid var(--faint);border-radius:10px;background:var(--soft)}
+.tutorial-stage-navigation a{display:inline-flex;align-items:center;min-height:34px;padding:6px 10px;border-radius:7px;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-weight:700;text-decoration:none}
+.tutorial-stage-navigation a:hover{border-color:var(--accent);color:var(--accent)}
+.tutorial-stage-navigation .stage-overview{margin-inline:auto}
+.trae-prompt{position:relative;margin:12px 0}
+.trae-prompt pre{overflow:visible;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding-top:50px}
+.trae-prompt-copy{position:absolute;right:10px;top:10px;z-index:1;padding:5px 10px;border:1px solid rgba(255,255,255,.3);border-radius:6px;background:rgba(255,255,255,.1);color:#fff;font:700 12px/1.2 "PingFang SC","Microsoft YaHei",sans-serif;cursor:pointer}
+.trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
+</style></head><body>
+<div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
+<span>先预览、确认，再安全整理工程。</span>
+<code>learn/ws-e1-sd-ddr-csi2/08-project-cleanup.md</code>
+<a href="../../../../learn/ws-e1-sd-ddr-csi2/08-project-cleanup.md">Markdown 源文件</a></p>
+<h1>08 整理工程并交付</h1></header>
+<main class="article tutorial-article"><h1 id="阶段-08-目录整理与交付">阶段 08 · 目录整理与交付</h1>
+<blockquote>
+<p>显示链路验证完成后，不要让临时草稿、候选文件和报告散落在工程根目录。本章让 Trae 先生成整理预览，由你逐条确认后再执行，最后用一次 <code>efx_run --flow compile</code> 复编译证明工程仍可交付。</p>
+</blockquote>
+<p>整理的目标是让下一位工程师容易找到文件，不是重写一个已经能用的工程。冻结的规格包（<code>design-package/</code>）、三轮增量晋级形成的基线（含各轮 <code>candidate.promote</code> 回执）、已交付候选与全部证据回执都是受保护文件——它们是这条 TJ180A484S 上 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路的证据链，不参与整理。</p>
+<h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">请检查当前 WS-E1 工程，先生成一份&quot;工程目录整理预览&quot;，不要移动、重命名或删除任何文件。
+按 design-package/、rtl/、sim/、constraints/、software/、reports/、scripts/ 和 IP/ 的归属列出：
+保留位置、建议移动的位置、引用它的工程文件或脚本、以及移动后需要更新的路径。
+
+只允许整理本工程自己生成的 RTL、仿真、软件、报告和辅助脚本。
+不得移动、重命名、删除或重新生成第三方 IP、Efinity 生成物、冻结规格包、材料账本、
+已晋级基线文件与 candidate.promote 回执、工程 XML、约束和已登记的源文件。
+把不确定的文件标为&quot;需要我决定&quot;，等我确认预览后再执行。
+
+我确认后，只执行我确认的条目；完成后检查工程 XML、源文件清单和脚本路径是否仍然有效，
+再用 build.native 记录一次 efx_run --flow compile 复编译结果。
+分别报告：实际整理的文件、保留不动的受保护文件、更新过的引用、复编译结果。
+不要从 sd-ddr-csi2 或其他参考工程补充文件。
+</code></pre></section>
+<h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
+<ol>
+<li>读取工程合同、材料账本、<code>candidate.deliver</code> 与 <code>candidate.promote</code> 回执和 Efinity 工程文件，建立"文件归属与引用"清单。</li>
+<li>预览阶段只产出报告（如 <code>reports/project-cleanup-preview.md</code>），不修改任何工程文件。</li>
+<li>你确认后才整理允许变动的文件，并同步修正已确认的相对路径。</li>
+<li>整理完成后用 <code>build.native</code> 记录一次原生 <code>efx_run --flow compile</code>：路径失效或编译失败会停在问题处，不会复制参考工程文件来掩盖问题。</li>
+<li>每一步都尊重工程合同：工程 XML 不手动编辑，引用修正走同步能力。</li>
+</ol>
+<h2 id="你需要确认什么">你需要确认什么</h2>
+<ul>
+<li>每一个建议移动的文件都是本工程自己生成或维护的，且清单列出了引用位置。</li>
+<li><code>IP/</code> 下第三方 IP、Efinity 生成物、<code>design-package/</code> 冻结规格包、工程 XML、约束和基线文件都在受保护列表内。</li>
+<li>"删除"只针对你明确批准的临时文件；判定不了的保持原样，列为需要决定项。</li>
+<li>整理后工程 XML 仍引用正确的 RTL、约束、IP 和软件输入，复编译报告来自本次目录状态。</li>
+</ul>
+<h2 id="自然语言触发红线">自然语言触发红线</h2>
+<p>本章只能动本工程自己生成的 RTL / 仿真 / 软件 / 报告 / 辅助脚本。下列说法会让 Agent 越过受保护列表，破坏工程契约：</p>
+<table>
+<thead>
+<tr>
+<th>不要这样说</th>
+<th>为什么危险</th>
+<th>请改写为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"把临时目录清理一下"</td>
+<td>没区分"临时文件"与"受保护文件"——冻结规格包、IP 生成物、工程 XML 都可能被当成"临时"</td>
+<td>"先在预览中标出哪些是本工程临时文件，未列出的保持原样"</td>
+</tr>
+<tr>
+<td>"这个文件已经不用了，删掉"</td>
+<td>"不用"是主观判断，Agent 容易把基线文件当临时文件</td>
+<td>"提供回执或路径证据说明它是临时的，再删"</td>
+</tr>
+<tr>
+<td>"把候选区文件归档到 reports/"</td>
+<td>候选与基线由控制面管辖：<code>candidate.deliver</code> 冻结、<code>candidate.promote</code> 晋级，回执已记录摘要，手工归档会污染 reports</td>
+<td>"候选区文件交付后保持原样，无需归档"</td>
+</tr>
+<tr>
+<td>"重命名一下工程 XML 让目录更整洁"</td>
+<td>工程 XML 是受保护文件，重命名会让 Adapter 找不到工程</td>
+<td>"不重命名、不删除工程 XML；只在确认报告中说明现状"</td>
+</tr>
+</tbody>
+</table>
+<h2 id="通过条件">通过条件</h2>
+<ul>
+<li><code>reports/project-cleanup-preview.md</code> 记录了预览、你的确认范围、实际变更和未处理项。</li>
+<li>目录能清楚区分 <code>design-package/</code>、<code>rtl/</code>、<code>sim/</code>、<code>constraints/</code>、<code>software/</code>、<code>reports/</code> 与辅助脚本，第三方 IP 与 Efinity 生成物未被误动。</li>
+<li>复编译 <code>efx_run --flow compile</code> 成功，且报告来自整理后的目录状态；失败则保留报告并回滚未确认动作，而不是声称工程仍可交付。</li>
+<li>最终交付说明能指出：物料、冻结规格、三轮晋级形成的基线、编译与硬件证据各在什么目录。</li>
+</ul>
+<p>至此，这条从空目录到板上显示的路径全部走完。回看 <a href="07-skills-and-mcp.html">阶段 07 的速查表</a>，或回到 <a href="README.html">教程总览</a> 开始下一个意图。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="07-skills-and-mcp.html">← 上一阶段：07 Skills 与 MCP</a><a class="stage-overview" href="README.html">教程总览</a></nav></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+<script>
+document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
+  button.addEventListener('click', async () => {
+    const text = button.parentElement.querySelector('code').textContent;
+    const original = button.textContent;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+      }
+      button.textContent = '已复制';
+    } catch (_) {
+      button.textContent = '复制失败';
+    }
+    window.setTimeout(() => { button.textContent = original; }, 1400);
+  });
+});
+</script>
+</body></html>

@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FPGA MTBF and Metastability</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Synchronizer reliability and MTBF analysis.</span>
+<code>efinity/fpga-mtbf-metastability.md</code>
+<a href="../../../efinity/fpga-mtbf-metastability.md">Markdown source</a></p>
+<h1>FPGA MTBF and Metastability</h1></header>
+<main class="article"><h1 id="fpga-mtbf-and-metastability">FPGA MTBF and Metastability</h1>
+<blockquote>
+<p><strong>EvoVerse SDK · Knowledge Base — Cross-Vendor Supplement</strong></p>
+<p><strong>Target audience</strong>: hardware engineers who need to understand the nature of metastability, calculate MTBF, and select CDC synchronizers; reliability / functional-safety AI collaborators</p>
+<p><strong>Last updated</strong>: 2026-07-30</p>
+<p><strong>Scope</strong>: treats UBC ELEX 7660 Lec 11 + the Intel TimeQuest MTBF report (classic academic authority) + formal.org Module 7 + the official Efinity 2026.1 CDC documentation (<code>tim-sync-metastable.html</code> + <code>tim-clk-syncronizers.html</code> + <code>efinity-synthesis.pdf §6 "async_reg"</code>) as authoritative.</p>
+<p><strong>Related documents</strong>:
+- <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md</a> — CDC patterns and synchronizer templates
+- <a href="fpga-sta-basics.html">FPGA-STA基础.md</a> — setup / hold fundamentals
+- <a href="fpga-clock-constraints-cookbook.html">FPGA-时钟约束Cookbook.md</a> — <code>set_clock_groups</code>
+- <a href="design-rules.html">design-rules.md</a> — reset design + CDC synthesis</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#1-metastability-basics">Metastability basics</a></li>
+<li><a href="#2-the-mtbf-equation">The MTBF equation</a></li>
+<li><a href="#3-the-variables-in-detail">The variables in detail</a></li>
+<li><a href="#4-the-exponential-mtbf-vs-slack-relationship">The exponential MTBF-vs-slack relationship</a></li>
+<li><a href="#5-mtbf-target-values">MTBF target values</a></li>
+<li><a href="#6-efinity-mtbf-tool-support">Efinity MTBF tool support</a></li>
+<li><a href="#7-the-efinity-2-ff-synchronizer-async_reg">The Efinity 2-FF synchronizer (async_reg)</a></li>
+<li><a href="#8-the-3-ff-synchronizer-when-it-is-needed">The 3-FF synchronizer: when it is needed</a></li>
+<li><a href="#9-worked-example-the-intel-timequest-mtbf-report">Worked example: the Intel TimeQuest MTBF report</a></li>
+<li><a href="#10-design-guidelines">Design guidelines</a></li>
+</ol>
+<hr />
+<h2 id="1-metastability-basics">1. Metastability basics</h2>
+<h3 id="1-1-trigger-conditions">1.1 Trigger conditions</h3>
+<p>When a D flip-flop's setup or hold time is violated, the output is neither 0 nor 1 — a <strong>metastable state</strong>.</p>
+<blockquote>
+<p>"A metastable state occurs when the output of flip-flop is unknown. This occurs when setup or hold times are violated."
+— Source: [B4] Max Planck Institute Lesson 11</p>
+</blockquote>
+<h3 id="1-2-physical-mechanism-ubc-b3">1.2 Physical mechanism (UBC [B3])</h3>
+<p>Inside the D flip-flop is a pair of cross-coupled inverters. Under normal conditions it stabilizes at 0 or 1. If the input changes <strong>exactly within</strong> the metastability window of the clock edge, the inverter pair may temporarily stabilize at an <strong>intermediate voltage</strong>, then <strong>decay exponentially</strong> back to 0 or 1:</p>
+<pre><code>V(t) = V_metastable + (V_final − V_metastable) · (1 − e^(−t/τ))
+</code></pre>
+<p>where <code>τ</code> = the flip-flop RC time constant.</p>
+<h3 id="1-3-metastability-propagation">1.3 Metastability propagation</h3>
+<p>The resolution time of metastability depends on the flip-flop's physical parameters + output capacitance + noise.</p>
+<blockquote>
+<p>"When a register's setup or hold time is violated — which can happen when data changes close to a clock edge from a different domain — the output of the register can become undefined for an unpredictable period of time."
+— Source: [B10] Embedded Design CDC Part 1</p>
+</blockquote>
+<p><strong>Key facts</strong>:
+- Metastability is <strong>unavoidable</strong> (it is avoidable only when the two clocks have a fixed frequency ratio and fixed phase — impractical in real engineering)
+- Metastability is <strong>unpredictable</strong> (the resolution direction — 0 or 1 — cannot be guaranteed)
+- Metastability's <strong>probability decays exponentially with time</strong> — given enough time, it almost certainly resolves</p>
+<p><strong>Therefore</strong>: the job of a synchronizer is to <strong>give metastability time to resolve</strong>, not to prevent it from occurring.</p>
+<hr />
+<h2 id="2-the-mtbf-equation">2. The MTBF equation</h2>
+<h3 id="2-1-the-classic-formula-ubc-elex-7660-b3">2.1 The classic formula (UBC ELEX 7660 [B3])</h3>
+<pre><code>MTBF = e^(T_s / C_2) / (C_1 · f_d · f_c)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>T_s</code></td>
+<td>Setup slack time (obtained from timing analysis)</td>
+</tr>
+<tr>
+<td><code>C_2</code></td>
+<td>Flip-flop time constant (RC + gain)</td>
+</tr>
+<tr>
+<td><code>C_1</code></td>
+<td>Flip-flop "window" constant (the size of the window that captures metastability)</td>
+</tr>
+<tr>
+<td><code>f_d</code></td>
+<td>Data toggle frequency (toggle rate)</td>
+</tr>
+<tr>
+<td><code>f_c</code></td>
+<td>Sampling clock frequency</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: [B3] UBC ELEX 7660 Lec 11 (excerpts were once kept in internal research notes; those temporary notes are not published with the repository)</p>
+</blockquote>
+<h3 id="2-2-key-property-of-the-formula">2.2 Key property of the formula</h3>
+<blockquote>
+<p>"Since accurate estimation of MTBF requires knowing the propagation delay between flip-flops and the constants for the specific flip-flops used, MTBF calculations are typically done by timing analysis software. For example, Intel's TimeQuest STA can recognize CDC synchronizers (described below) and generate MTBF estimates."
+— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>Efinity currently provides no MTBF reporting tool</strong> (as of 2026.1 there is no <code>report_mtbf</code> command) — you must calculate by hand or refer to cross-vendor tools (Intel TimeQuest, Xilinx Vivado).</p>
+<p>See <a href="#6-efinity-mtbf-tool-support">§6</a> for details.</p>
+<hr />
+<h2 id="3-the-variables-in-detail">3. The variables in detail</h2>
+<h3 id="3-1-t_s-setup-slack-time">3.1 <code>T_s</code> (setup slack time)</h3>
+<p><strong>Definition</strong>: read from the timing analysis report — the setup slack of the synchronizer's second-stage FF (from the source clock to the destination clock).</p>
+<p><strong>Typical values</strong>:
+- 100 MHz system, source domain 50 MHz: <code>T_s</code> ≈ 20 ns (one destination period)
+- 100 MHz system, source domain 100 MHz: <code>T_s</code> ≈ 10 ns</p>
+<h3 id="3-2-c_2-time-constant">3.2 <code>C_2</code> (time constant)</h3>
+<p><strong>Definition</strong>: the RC time constant with which the flip-flop decays from the metastable voltage to a valid logic level.</p>
+<p><strong>Typical values (Xilinx 7-series experience)</strong>:
+- <code>C_2</code> ≈ 10-50 ps (typically 20 ps)</p>
+<p><strong>Experimental measurement (UBC [B3] exercise)</strong>:</p>
+<blockquote>
+<p>"Exercise 1: A TimeQuest MTBF report says Under typical conditions, an increase of 100ps in available settling time will increase MTBF values by a factor of 10.8. What is C_2?"</p>
+</blockquote>
+<p>Solution:</p>
+<pre><code>MTBF ∝ e^(T_s / C_2)
+MTBF' / MTBF = 10.8 = e^(100ps / C_2)
+ln(10.8) = 100ps / C_2
+C_2 = 100ps / ln(10.8) = 100ps / 2.38 ≈ 42 ps
+</code></pre>
+<h3 id="3-3-c_1-window-constant">3.3 <code>C_1</code> (window constant)</h3>
+<p><strong>Definition</strong>: proportional to the flip-flop's "metastability window width" — the setup/hold edge-sensitive window.</p>
+<p><strong>Typical values (Xilinx 7-series experience)</strong>:
+- <code>C_1</code> ≈ 10⁻³ to 10⁻² (1/s)</p>
+<h3 id="3-4-f_d-data-toggle-frequency">3.4 <code>f_d</code> (data toggle frequency)</h3>
+<p><strong>Definition</strong>: how many times per second the D input changes.</p>
+<p><strong>Typical values</strong>:
+- Asynchronous control signals (e.g., interrupts): <code>f_d</code> ≈ 1 kHz – 1 MHz
+- High-speed data streams: <code>f_d</code> ≈ 100 MHz – 1 GHz</p>
+<h3 id="3-5-f_c-sampling-clock-frequency">3.5 <code>f_c</code> (sampling clock frequency)</h3>
+<p><strong>Definition</strong>: the clock frequency of the synchronizer's second-stage FF.</p>
+<hr />
+<h2 id="4-the-exponential-mtbf-vs-slack-relationship">4. The exponential MTBF-vs-slack relationship</h2>
+<h3 id="4-1-the-property-of-the-formula">4.1 The property of the formula</h3>
+<pre><code>MTBF ∝ e^(T_s / C_2)
+</code></pre>
+<p><strong>Increase slack → MTBF grows exponentially</strong>:</p>
+<blockquote>
+<p>"Since MTBF increases exponentially with slack time (T_s), the most effective way to increase the MTBF is to increase the slack time."
+— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<h3 id="4-2-order-of-magnitude-example-typical-c_2-20-ps">4.2 Order-of-magnitude example (typical C_2 = 20 ps)</h3>
+<table>
+<thead>
+<tr>
+<th>Slack <code>T_s</code></th>
+<th><code>T_s / C_2</code></th>
+<th><code>e^(T_s/C_2)</code></th>
+<th>MTBF improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100 ps</td>
+<td>5</td>
+<td>148</td>
+<td>1× (baseline)</td>
+</tr>
+<tr>
+<td>200 ps</td>
+<td>10</td>
+<td>22,026</td>
+<td><strong>148×</strong></td>
+</tr>
+<tr>
+<td>500 ps</td>
+<td>25</td>
+<td>7.2 × 10¹⁰</td>
+<td><strong>4.9 × 10⁸ ×</strong></td>
+</tr>
+<tr>
+<td>1 ns</td>
+<td>50</td>
+<td>5.2 × 10²¹</td>
+<td><strong>3.5 × 10¹⁹ ×</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conclusion</strong>: give the synchronizer one more destination period of slack (10 ns) and the MTBF reaches astronomical numbers.</p>
+<h3 id="4-3-the-other-key-optimization">4.3 The other key optimization</h3>
+<blockquote>
+<p>"The MTBF is also inversely proportional to product of the clock and data input toggle frequencies. Thus another way to increase the MTBF is to minimize the clock frequency and data toggle rates."
+— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p><strong>Reduce <code>f_d · f_c</code></strong>:
+- Choose a low-frequency clock as the synchronizer destination domain (register the data in the high-frequency domain first, then pass it through a 2-FF sync into the low-frequency domain)
+- <strong>Stretch pulses</strong> at the data source first (e.g., 1 cycle → 4 cycles) to reduce <code>f_d</code></p>
+<hr />
+<h2 id="5-mtbf-target-values">5. MTBF target values</h2>
+<h3 id="5-1-application-tiers">5.1 Application tiers</h3>
+<table>
+<thead>
+<tr>
+<th>Application</th>
+<th>Target MTBF</th>
+<th>Design requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ordinary consumer electronics</td>
+<td>≥ 10⁹ years (1 billion years)</td>
+<td>2-FF synchronizer + async_reg</td>
+</tr>
+<tr>
+<td>Industrial control</td>
+<td>≥ 10¹² years</td>
+<td>2-FF synchronizer + async_reg + ample slack</td>
+</tr>
+<tr>
+<td>Automotive AEC-Q100</td>
+<td>≥ 10¹⁵ years</td>
+<td>3-FF synchronizer + multiple redundancies</td>
+</tr>
+<tr>
+<td>Medical IEC 62304</td>
+<td>≥ 10¹⁸ years</td>
+<td>3-FF + a complete fault tree analysis</td>
+</tr>
+<tr>
+<td>Aerospace / nuclear control</td>
+<td>≥ 10²⁰ years</td>
+<td>Multiple redundancies + self-checks</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: Intel TimeQuest MTBF report (quoted by [B3] UBC) — "Typical MTBF is Greater than 1 Billion Year" is treated as the minimum consumer-grade requirement.</p>
+</blockquote>
+<h3 id="5-2-a-simple-calculation-example">5.2 A simple calculation example</h3>
+<p>Assume a 100 MHz system with a 2-FF synchronizer:
+- <code>T_s</code> = 10 ns (one destination period of slack)
+- <code>C_2</code> = 20 ps
+- <code>C_1</code> = 10⁻³ (1/s)
+- <code>f_d</code> = 1 MHz
+- <code>f_c</code> = 100 MHz</p>
+<pre><code>MTBF = e^(10ns / 20ps) / (10⁻³ · 1MHz · 100MHz)
+     = e^500 / (10⁻³ · 10¹⁴)
+     = 1.4 × 10²¹⁷ / 10¹¹
+     = 1.4 × 10²⁰⁶ seconds
+     ≈ 4.4 × 10¹⁹⁸ years
+</code></pre>
+<p>Far beyond any reasonable target — hence a 2-FF synchronizer is usually sufficient.</p>
+<hr />
+<h2 id="6-efinity-mtbf-tool-support">6. Efinity MTBF tool support</h2>
+<h3 id="6-1-status-in-efinity-2026-1">6.1 Status in Efinity 2026.1</h3>
+<p>Efinity <strong>does not provide</strong> an explicit <code>report_mtbf</code> command (as of 2026.1). MTBF verification requires:
+1. Calculating it yourself (using the formulas in §3)
+2. Using cross-vendor STA tools (Intel TimeQuest / Xilinx Vivado) for reference MTBF data
+3. Engaging third-party formal verification tools (the formal.org CDC module)</p>
+<h3 id="6-2-indirect-verification">6.2 Indirect verification</h3>
+<p>For CDC paths, the Efinity STA report <code>pt_timing.rpt</code> does report <strong>setup slack</strong> — if the synchronizer has positive slack (typically &gt; 0.5 ns), the MTBF can be estimated to far exceed consumer-grade requirements.</p>
+<p>See <a href="timing-analysis-guide.html">时序分析指南.md §3</a> for details.</p>
+<h3 id="6-3-design-stage-mtbf-estimation-script-python">6.3 Design-stage MTBF estimation script (Python)</h3>
+<pre><code class="language-python"># mtbf_calc.py — MTBF estimation tool (based on the UBC [B3] formula)
+import math
+
+def mtbf(T_s_ps, C_1, C_2_ps, f_d_Hz, f_c_Hz):
+    &quot;&quot;&quot;Calculate MTBF in years.
+
+    Args:
+        T_s_ps: Setup slack in picoseconds
+        C_1: Aperture constant (1/s) - device-specific
+        C_2_ps: Time constant in picoseconds - device-specific
+        f_d_Hz: Data toggle rate (Hz)
+        f_c_Hz: Clock frequency (Hz)
+    &quot;&quot;&quot;
+    exp_arg = T_s_ps / C_2_ps
+    mtbf_sec = math.exp(exp_arg) / (C_1 * f_d_Hz * f_c_Hz)
+    SEC_PER_YEAR = 365.25 * 24 * 3600
+    return mtbf_sec / SEC_PER_YEAR
+
+# Typical Efinity Titanium FF (estimate from C_2 ≈ 20-50 ps)
+# NOTE: Efinity does not publish FF constants — industrial typical values are used here
+T_s_ps = 10_000       # 10 ns slack
+C_1    = 1e-3         # aperture constant
+C_2_ps = 40           # 40 ps time constant
+f_d_Hz = 1e6          # 1 MHz data toggle
+f_c_Hz = 100e6        # 100 MHz clock
+
+years = mtbf(T_s_ps, C_1, C_2_ps, f_d_Hz, f_c_Hz)
+print(f&quot;Estimated MTBF: {years:.2e} years&quot;)
+# Output: ~10^200+ years (consumer-grade target easily met)
+</code></pre>
+<p><strong>Note</strong>: Efinity does not publish the <code>C_1</code> / <code>C_2</code> constants (unlike Xilinx / Intel) — the script is for <strong>order-of-magnitude estimation</strong> only; precise values require actual silicon measurements or equivalent-process data from Intel TimeQuest.</p>
+<hr />
+<h2 id="7-the-efinity-2-ff-synchronizer-async_reg">7. The Efinity 2-FF synchronizer (async_reg)</h2>
+<h3 id="7-1-the-async_reg-attribute">7.1 The <code>async_reg</code> attribute</h3>
+<p><strong>Key synthesis attribute</strong>: marks registers as CDC synchronizers — synthesis is <strong>forbidden</strong> from merging / optimizing / duplicating these registers.</p>
+<blockquote>
+<p>"To designate a register as a synchronizer, use the <code>async_reg</code> synthesis attribute. When <code>async_reg</code> is true, synthesis does not perform optimization to reduce, merge, or duplicate these registers."
+— Source: <code>C:\Efinity\2026.1\doc\topics\tim-clk-relationships.html</code> ([A3.3])</p>
+</blockquote>
+<h3 id="7-2-complete-rtl-template">7.2 Complete RTL template</h3>
+<pre><code class="language-verilog">module cdc_sync_2ff #(
+    parameter [0:0] INIT = 1'b0
+) (
+    input  wire dst_clk,
+    input  wire dst_rst_n,
+    input  wire async_in,
+    output wire sync_out
+);
+    (* async_reg = &quot;true&quot; *)
+    reg meta, settled;
+
+    always @(posedge dst_clk or negedge dst_rst_n) begin
+        if (!dst_rst_n) begin
+            meta    &lt;= INIT;
+            settled &lt;= INIT;
+        end else begin
+            meta    &lt;= async_in;
+            settled &lt;= meta;
+        end
+    end
+
+    assign sync_out = settled;
+endmodule
+</code></pre>
+<blockquote>
+<p>Source: recommended template based on [A3.4] <code>tim-clk-syncronizers.html</code></p>
+</blockquote>
+<h3 id="7-3-vhdl-equivalent">7.3 VHDL equivalent</h3>
+<pre><code class="language-vhdl">library ieee;
+use ieee.std_logic_1164.all;
+
+entity cdc_sync_2ff is
+    generic (INIT : std_logic := '0')
+    port (
+        dst_clk    : in  std_logic;
+        dst_rst_n  : in  std_logic;
+        async_in   : in  std_logic;
+        sync_out   : out std_logic
+    );
+end entity;
+
+architecture rtl of cdc_sync_2ff is
+    attribute async_reg : boolean;
+    signal meta, settled : std_logic;
+begin
+    attribute async_reg of meta, settled : signal is true;
+
+    process(dst_clk, dst_rst_n)
+    begin
+        if dst_rst_n = '0' then
+            meta    &lt;= INIT;
+            settled &lt;= INIT;
+        elsif rising_edge(dst_clk) then
+            meta    &lt;= async_in;
+            settled &lt;= meta;
+        end if;
+    end process;
+
+    sync_out &lt;= settled;
+end architecture;
+</code></pre>
+<blockquote>
+<p>Source: [A1] Efinity Timing Closure User Guide §5 "Metastable Synchronizer Circuit"</p>
+</blockquote>
+<hr />
+<h2 id="8-the-3-ff-synchronizer-when-it-is-needed">8. The 3-FF synchronizer: when it is needed</h2>
+<h3 id="8-1-academic-advice-formal-org-b9">8.1 Academic advice (formal.org [B9])</h3>
+<blockquote>
+<p>"The resolution time doubles and the MTBF improves exponentially — typically by many orders of magnitude. For most technologies and clock frequencies, two flip-flops provide MTBF measured in millions or billions of years, which is adequate for functional correctness. High-reliability designs occasionally use three flip-flops for an additional exponential improvement."
+— Source: [B9] formal.org Module 7</p>
+</blockquote>
+<h3 id="8-2-when-to-upgrade-to-3-ff">8.2 When to upgrade to 3-FF</h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ordinary consumer / industrial (target 10⁹ years)</td>
+<td>2-FF + async_reg</td>
+</tr>
+<tr>
+<td>Setup slack &lt; 200 ps</td>
+<td><strong>3-FF</strong></td>
+</tr>
+<tr>
+<td>Destination clock ≥ 500 MHz</td>
+<td><strong>3-FF</strong> (short slack time)</td>
+</tr>
+<tr>
+<td>Aerospace / medical</td>
+<td>3-FF + self-checks</td>
+</tr>
+<tr>
+<td>Known poor silicon metastability behavior</td>
+<td>3-FF</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-3-efinity-3-ff-template">8.3 Efinity 3-FF template</h3>
+<pre><code class="language-verilog">module cdc_sync_3ff #(
+    parameter [0:0] INIT = 1'b0
+) (
+    input  wire dst_clk,
+    input  wire dst_rst_n,
+    input  wire async_in,
+    output wire sync_out
+);
+    (* async_reg = &quot;true&quot; *)
+    reg stage1, stage2, stage3;
+
+    always @(posedge dst_clk or negedge dst_rst_n) begin
+        if (!dst_rst_n) begin
+            stage1 &lt;= INIT;
+            stage2 &lt;= INIT;
+            stage3 &lt;= INIT;
+        end else begin
+            stage1 &lt;= async_in;
+            stage2 &lt;= stage1;
+            stage3 &lt;= stage2;
+        end
+    end
+
+    assign sync_out = stage3;
+endmodule
+</code></pre>
+<hr />
+<h2 id="9-worked-example-the-intel-timequest-mtbf-report">9. Worked example: the Intel TimeQuest MTBF report</h2>
+<h3 id="9-1-report-sample-quoted-by-ubc-b3">9.1 Report sample (quoted by UBC [B3])</h3>
+<pre><code>Synchronizer Chain #1: Typical MTBF is Greater than 1 Billion Year
+Chain Summary Statistics
+Source Node   Typical MTBF (years)   Property
+included in   Design MTBF            Yes
+Greater than 1 Billion   Value
+</code></pre>
+<blockquote>
+<p>Source: [B3] UBC ELEX 7660 Lec 11 (TimeQuest report quotation)</p>
+</blockquote>
+<h3 id="9-2-interpretation">9.2 Interpretation</h3>
+<ul>
+<li><strong>Typical</strong> = typical silicon (typical process / voltage / temperature corner)</li>
+<li><strong>Greater than 1 Billion Year</strong> = the usual design target is met</li>
+<li><strong>Design MTBF</strong> = the combined value of the MTBF of all synchronizer chains in the design</li>
+</ul>
+<h3 id="9-3-intel-timequest-command">9.3 Intel TimeQuest command</h3>
+<pre><code class="language-tcl"># Report MTBF in TimeQuest
+report_mtbf
+# Outputs something like the &quot;Greater than 1 Billion Year&quot; above
+</code></pre>
+<h3 id="9-4-the-efinity-alternative">9.4 The Efinity alternative</h3>
+<p>Efinity does not support MTBF reports. <strong>Recommended practice</strong>:
+1. Use Efinity <code>report_timing</code> to verify the synchronizer setup slack &gt; 0 (preferably &gt; 500 ps)
+2. Use the §6.3 script to estimate the MTBF order of magnitude
+3. For critical paths (medical / aerospace), use third-party formal verification (formal.org / JasperGold)</p>
+<hr />
+<h2 id="10-design-guidelines">10. Design guidelines</h2>
+<h3 id="10-1-minimize-the-number-of-cdc-crossings">10.1 Minimize the number of CDC crossings</h3>
+<p><strong>Principle</strong>: avoid crossing domains whenever you can.</p>
+<blockquote>
+<p>"To avoid CDC problems you should minimize clock domain crossings, use only commonly-accepted synchronization methods and ensure the MTBF calculated by CAD tools are appropriate for the application."
+— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<h3 id="10-2-use-standard-patterns">10.2 Use standard patterns</h3>
+<p><strong>Principle</strong>: pick one of 2-FF / Gray code / handshake / async FIFO.</p>
+<blockquote>
+<p>"Use only commonly-accepted synchronization methods."
+— Source: [B3] UBC ELEX 7660 Lec 11</p>
+</blockquote>
+<p>See the pattern selection table in <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md §9</a>.</p>
+<h3 id="10-3-async_reg-is-mandatory">10.3 <code>async_reg</code> is mandatory</h3>
+<p><strong>Principle</strong>: every synchronizer FF must carry <code>async_reg = "true"</code>.</p>
+<blockquote>
+<p>"When <code>async_reg</code> is true, synthesis does not perform optimization to reduce, merge, or duplicate these registers."
+— Source: <code>C:\Efinity\2026.1\doc\topics\tim-clk-relationships.html</code> ([A3.3])</p>
+</blockquote>
+<p><strong>Counter-example (the synthesizer may optimize incorrectly)</strong>:</p>
+<pre><code class="language-verilog">// Wrong: two synchronizer FFs without async_reg
+reg sync_ff1, sync_ff2;
+always @(posedge dst_clk) sync_ff1 &lt;= async_in;
+always @(posedge dst_clk) sync_ff2 &lt;= sync_ff1;
+// Synthesis may: merge them into a single FF, or optimize away the second one → MTBF is lost
+</code></pre>
+<h3 id="10-4-no-combinational-logic-between-synchronizer-stages">10.4 No combinational logic between synchronizer stages</h3>
+<p><strong>Principle</strong>: there must be <strong>no</strong> combinational logic between synchronizer stages — otherwise the settling time <code>T_s</code> is insufficient.</p>
+<pre><code class="language-verilog">// Wrong: combinational logic in between
+always @(posedge dst_clk) sync_ff1 &lt;= async_in;
+always @(posedge dst_clk) sync_ff2 &lt;= sync_ff1 &amp; other_signal;  // Wrong!
+// Correct:
+always @(posedge dst_clk) sync_ff2 &lt;= sync_ff1;
+</code></pre>
+<h3 id="10-5-a-reset-synchronizer-is-mandatory">10.5 A reset synchronizer is mandatory</h3>
+<p><strong>Principle</strong>: before an asynchronous reset is released, it <strong>must</strong> pass through a 2-FF synchronizer.</p>
+<p>See the reset synchronizer template in <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md §8.2</a>.</p>
+<h3 id="10-6-beware-over-short-pulses">10.6 Beware over-short pulses</h3>
+<p><strong>Principle</strong>: a crossing pulse width <strong>must</strong> be ≥ 1 destination period (see the DAC case in <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md §7</a>).</p>
+<hr />
+<h2 id="appendix-a-key-terms">Appendix A — Key terms</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Metastability</strong></td>
+<td>The transient state in which a D flip-flop output is neither 0 nor 1</td>
+</tr>
+<tr>
+<td><strong>MTBF</strong></td>
+<td>Mean Time Between Failures (the interval between metastability failures)</td>
+</tr>
+<tr>
+<td><strong>Synchronizer</strong></td>
+<td>A multi-stage FF chain that gives metastability time to decay</td>
+</tr>
+<tr>
+<td><strong>Settling time T_s</strong></td>
+<td>The time available for metastability to decay to a valid state within the synchronizer</td>
+</tr>
+<tr>
+<td><strong>AEC-Q100</strong></td>
+<td>Automotive electronics reliability standard</td>
+</tr>
+<tr>
+<td><strong>IEC 62304</strong></td>
+<td>Medical device software lifecycle standard</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-b-cross-vendor-source-index">Appendix B — Cross-vendor source index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Source</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[B3]</td>
+<td>UBC ELEX 7660 Lec 11 (Clock Domain Crossing + MTBF equation)</td>
+<td>University lecture notes</td>
+</tr>
+<tr>
+<td>[B4]</td>
+<td>Max Planck Institute — Lesson 11 (Metastability basics)</td>
+<td>University lecture notes</td>
+</tr>
+<tr>
+<td>[B9]</td>
+<td>Formal.org Module 7 — Clock Domain Crossing</td>
+<td>Formal verification</td>
+</tr>
+<tr>
+<td>[B10]</td>
+<td>Embedded Design — Clock Domain Crossing in FPGAs</td>
+<td>Engineering practice</td>
+</tr>
+<tr>
+<td>[A1]</td>
+<td>Efinity Timing Closure User Guide §5 "Metastable Synchronizer Circuit" (UG-EFN-TIMING-v7.1)</td>
+<td>Official PDF</td>
+</tr>
+<tr>
+<td>[A2]</td>
+<td>Efinity Synthesis User Guide §6 "async_reg attribute" (UG-EFN-SYNTH-v3.5)</td>
+<td>Official PDF</td>
+</tr>
+<tr>
+<td>[A3.3]</td>
+<td>Efinity topics — <code>tim-clk-relationships.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.4]</td>
+<td>Efinity topics — <code>tim-clk-syncronizers.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.5]</td>
+<td>Efinity topics — <code>tim-sync-metastable.html</code></td>
+<td>Official HTML</td>
+</tr>
+</tbody>
+</table>
+<p>The research source index was originally recorded in internal research notes §E; those temporary notes are not published with the repository.</p>
+<hr />
+<p><strong>End of FPGA MTBF and Metastability</strong></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

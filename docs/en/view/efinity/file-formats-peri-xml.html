@@ -1,0 +1,1844 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity File Formats: peri.xml</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The peri_design_db namespace, the full domain-attribute table and the two-phase bootstrap/replay contract.</span>
+<code>efinity/file-formats-peri-xml.md</code>
+<a href="../../../efinity/file-formats-peri-xml.md">Markdown source</a></p>
+<h1>Efinity File Formats: peri.xml</h1></header>
+<main class="article"><h1 id="efinity-file-format-reference-project-peri-xml-the-pt-design-library">Efinity File Format Reference — <code>&lt;project&gt;.peri.xml</code> (the PT design library)</h1>
+<blockquote>
+<p><strong>Applies to</strong>: Efinity 2026.1 (<code>C:\Efinity\2026.1</code>)
+<strong>Investigation date</strong>: 2026-09-25
+<strong>Evidence method</strong>: every conclusion comes from a first-hand read of real files in the Efinity 2026.1 installation directory (XSD schemas, Python sources, official examples, the official HTML glossary); evidence paths are annotated item by item in the body. <strong>Contains no speculation and no external-source content.</strong></p>
+<p><strong>Warning</strong>: this volume describes the <strong>internal design-library file format</strong> of the Efinity PT (Periphery Tool / Interface Designer). It is a <strong>project source file</strong> produced exclusively by the PT tool — <strong>never hand-write it</strong>. Hand-writing carries neither schema guarantees nor replay-semantics guarantees (see §1.4).</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#0-document-positioning-and-sibling-volume-division-of-labor">§0 Document positioning and sibling-volume division of labor</a></li>
+<li><a href="#1-position-and-lifecycle-a-project-source-file-not-a-generated-artifact">§1 Position and lifecycle: a project source file, not a generated artifact</a></li>
+<li><a href="#2-namespace-and-root-element">§2 Namespace and root element</a></li>
+<li><a href="#3-schema-structure-map">§3 Schema structure map</a></li>
+<li><a href="#4-complete-table-of-core-domain-attributes">§4 Complete table of core domain attributes</a></li>
+<li><a href="#5-designwriterxml-write-out-logic">§5 DesignWriterXml write-out logic</a></li>
+<li><a href="#6-instance-anatomy-the-perixml-of-helloworld-unified">§6 Instance anatomy: the .peri.xml of helloworld-unified</a></li>
+<li><a href="#7-confusable-format-erratum-lpfxsd-is-misnamed">§7 Confusable-format erratum: lpf.xsd is misnamed</a></li>
+<li><a href="#8-engineering-rules-and-sibling-volume-cross-references">§8 Engineering rules and sibling-volume cross-references</a></li>
+</ul>
+<hr />
+<h2 id="0-document-positioning-and-sibling-volume-division-of-labor">0. Document positioning and sibling-volume division of labor</h2>
+<p>This volume of the EvoVerse SDK knowledge base's "Efinity file formats" series focuses on <strong><code>&lt;project&gt;.peri.xml</code> (the PT design library, namespace <code>efxpt:design_db</code>)</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Volume</th>
+<th>File</th>
+<th>Focus</th>
+<th>Relationship to this volume</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project file volume</td>
+<td><code>docs-en/efinity/xml-project-schema.md</code></td>
+<td><code>&lt;project&gt;.xml</code> (<code>enf_proj</code> namespace): device_info / design_info / inter_file references</td>
+<td>Covers <strong>who references</strong> peri.xml</td>
+</tr>
+<tr>
+<td>ISF volume</td>
+<td><code>docs/efinity/Efinity-ISF语法参考.md</code></td>
+<td>ISF syntax, the bootstrap/replay contract, the unified flow</td>
+<td>Covers peri.xml's <strong>writers</strong> (ISF commands replay onto the peri.xml)</td>
+</tr>
+<tr>
+<td>DesignAPI volume</td>
+<td><code>docs/efinity/Efinity-DesignAPI方法参考.md</code></td>
+<td>The DesignAPI / IntDesignAPI / DesignService / DesignWriterXml call chain</td>
+<td>Covers peri.xml's <strong>programmatic read/write interface</strong> (this volume's §5 only summarizes)</td>
+</tr>
+<tr>
+<td>SDC and reports volume</td>
+<td><code>docs-en/efinity/file-formats-sdc-and-reports.md</code></td>
+<td>SDC constraints, compile report artifacts</td>
+<td>Covers files on the <strong>pnr/synthesis side</strong>; unrelated to peri.xml</td>
+</tr>
+<tr>
+<td>PLL and OSC volume</td>
+<td><code>docs/efinity/Efinity硬IP-PLL与OSC参考.md</code></td>
+<td>PLL/OSC hard-IP configuration semantics</td>
+<td>Covers the <strong>parameter meanings</strong> of the <code>pll_info</code>/<code>osc_info</code> domains in peri.xml</td>
+</tr>
+<tr>
+<td><strong>This volume</strong></td>
+<td><code>docs-en/efinity/file-formats-peri-xml.md</code></td>
+<td>The peri.xml format itself: namespace, schema structure, the full domain-attribute tables, write-out logic, instance anatomy</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading guide</strong>: for "what peri.xml is, whether you may hand-edit it, and why it must survive a build" → read §1; to validate or parse a peri.xml → read §2/§3/§4; to understand how the tool writes it out → read §5; to see what a real one looks like → read §6.</p>
+<hr />
+<h2 id="1-position-and-lifecycle-a-project-source-file-not-a-generated-artifact">1. Position and lifecycle: a project source file, not a generated artifact</h2>
+<h3 id="1-1-official-definition-glossary-verbatim">1.1 Official definition (glossary verbatim)</h3>
+<p>The official glossary defines <code>&lt;project&gt;.peri.xml</code> as follows (evidence: <code>C:\Efinity\2026.1\doc\topics\gloss-peri.xml.html</code> L168-197):</p>
+<ul>
+<li>Title (L168): <code>&lt;project&gt;.peri.xml</code></li>
+<li>Filesystem location (L177-178): <code>&lt;project&gt;</code> (i.e. in the project root, sharing the project XML's name)</li>
+<li><strong>Created by</strong> (L181-183): <em>"Interface Designer when you create an interface"</em></li>
+<li><strong>Design source? Yes</strong> (L185-186) — the <strong>only</strong> PT-related artifact the vendor marks as a design source (the SDC-and-reports volume §5 compared: report artifacts are all "Design source? No")</li>
+<li>Content (L190-193, quoted verbatim):</li>
+</ul>
+<blockquote>
+<p><em>"The Interface Designer creates this file when you create a new interface for your project. This file contains all of the settings that you specified in the Interface Designer for I/O banks, GPIO, LVDS, PLLs, MIPI, DDR, etc. </em><em>You should not edit this file directly!</em><em>"</em></p>
+</blockquote>
+<p><strong>Two key official conclusions</strong>:
+1. <code>Design source? Yes</code> → peri.xml is a <strong>project source file</strong>, on par with <code>.v</code>, <code>.sdc</code>, and <code>.isf</code>: it must survive a build and must be placed under version control.
+2. <code>You should not edit this file directly!</code> → the vendor explicitly forbids direct editing. All modifications must go through the Interface Designer (GUI) or ISF/DesignAPI (scripts).</p>
+<h3 id="1-2-the-triple-identity">1.2 The triple identity</h3>
+<p>peri.xml is three things at once; understanding any one of them must not drop the other two:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Identity</th>
+<th>Meaning</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td><strong>Project source file</strong></td>
+<td>Holds every periphery setting you specify in the Interface Designer (IO banks, GPIO, PLL, MIPI, DDR, ...); together with the project XML it constitutes the project</td>
+<td>gloss-peri.xml.html L185-193</td>
+</tr>
+<tr>
+<td>②</td>
+<td><strong>Exclusive product of the PT tool</strong></td>
+<td>Producible only by the PT tool / Interface Designer (the XSD schema is <code>efxpt:design_db</code>; the internal structure is complex and evolves across versions)</td>
+<td>§2, §3</td>
+</tr>
+<tr>
+<td>③</td>
+<td><strong>The replay target of every unified build</strong></td>
+<td>Every unified compile loads the persisted peri.xml and replays the ISFs referenced by the project XML onto it; hence ISFs must be replay-safe</td>
+<td>efx_run_pt_unified.py L180-184, L252; ISF volume §3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-lifecycle-and-position-in-the-unified-flow">1.3 Lifecycle and position in the unified flow</h3>
+<p>Key peri.xml-related lines in <code>efx_run_pt_unified.py</code> (evidence: <code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Code/comment (excerpt)</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L99</td>
+<td><code>new_design_file = proj_path / f"{proj_db.project_name}.peri.xml"</code></td>
+<td>Creates the peri.xml in the project root when <code>--create</code> sets up a new project</td>
+</tr>
+<tr>
+<td>L180-184</td>
+<td>the peri_file parameter defaults to <code>&lt;design&gt;.peri.xml</code></td>
+<td>Every run <strong>loads the existing</strong> peri.xml</td>
+</tr>
+<tr>
+<td>L224-230</td>
+<td>triple consistency check of device family / name / timing model</td>
+<td>The peri.xml's <code>@device_def</code> must match the project XML's device information; a mismatch is an immediate ERROR</td>
+</tr>
+<tr>
+<td>L243-248</td>
+<td>peri_netlist → <code>{design}.unified.isf</code>, plus <code>peri_scripts.insert(0, ...)</code></td>
+<td>The auto-generated unified ISF is inserted at the <strong>head</strong> of the script queue and runs first</td>
+</tr>
+<tr>
+<td>L252</td>
+<td><code>for script in peri_scripts:</code></td>
+<td><strong>The replay loop</strong>: replays every ISF referenced by the project XML, in order, onto the loaded peri.xml</td>
+</tr>
+<tr>
+<td>L269-272</td>
+<td>commented-out merged peri.xml debug artifact</td>
+<td>The post-replay merged result is not persisted by default; the peri.xml itself evolves in memory</td>
+</tr>
+<tr>
+<td>L318-320</td>
+<td>exports <code>{design}.peri.rtl.v</code> / <code>{design}.peri.pt.v</code></td>
+<td>Simulation-netlist artifacts (derived from peri.xml; generated)</td>
+</tr>
+<tr>
+<td>L328-331</td>
+<td><code>peri.pbn</code> / <code>.qdelay</code> / <code>.csi</code> / <code>.cdo</code></td>
+<td>Timing-netlist and configuration artifacts (generated)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The unified nine-step flow at a glance</strong> (detailed step table in the ISF volume §7.1; only peri.xml-related links are annotated here):</p>
+<pre><code>Project XML (.xml)
+   │ references
+   ▼
+ISF constraints (*.isf) ──replay──▶ &lt;design&gt;.peri.xml (persisted design library, evolving in memory)
+                              │
+                              ├──▶ {design}.unified.isf / {design}.auto_asg.isf (generated)
+                              ├──▶ {design}.peri.rtl.v / .peri.pt.v (simulation netlists, generated)
+                              └──▶ peri.pbn / .qdelay / .csi / .cdo (timing netlists, generated)
+</code></pre>
+<p><strong>Corollary</strong>: every <code>.v</code> / <code>.pbn</code> / <code>.isf</code> derived from peri.xml is a <strong>generated artifact</strong> — deletable and regenerable; only the peri.xml itself is a <strong>source file</strong> — deleting it means losing the entire periphery design.</p>
+<h3 id="1-4-the-bootstrap-replay-two-phase-contract-division-of-labor-with-isfs">1.4 The bootstrap / replay two-phase contract (division of labor with ISFs)</h3>
+<p>The existence of peri.xml directly dictates how ISFs may be written (the full contract is in the ISF volume §3 and hard rule rules-efinity-hard.md §15; the essentials are restated here from the peri.xml perspective):</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Condition</th>
+<th>Commands allowed in the ISF</th>
+<th>Effect on peri.xml</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>bootstrap</strong></td>
+<td>peri.xml does not exist yet (new project/new baseline)</td>
+<td>create-style commands such as <code>create_*_gpio</code> / <code>create_block</code> / <code>create_pll_input_clock_gpio</code>, plus set/assign style</td>
+<td>Creates instances and sets properties, persisting the first peri.xml</td>
+</tr>
+<tr>
+<td><strong>replay</strong></td>
+<td>peri.xml already exists (every subsequent build)</td>
+<td><strong>Only</strong> idempotent commands: <code>set_property</code> / <code>assign_pkg_pin</code> / <code>assign_resource</code> / <code>set_device_property</code> / <code>set_iobank_voltage</code></td>
+<td>Re-sets properties on existing instances; <code>create_*</code> fails with <code>GPIO/PLL ... exists</code> because the instance already exists → the second compile fails</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The ISF command set has <strong>no</strong> delete/clear — the PT native API raises on nonexistent instances, so there is no idempotent deletion that could be written into an ISF (do not try to invent one).</li>
+<li>Hence the standard bootstrap ritual: temporarily enable create_<em> → compile once to generate the peri.xml → </em><em>comment out create_</em> immediately** → the replay compile must PASS again in full (two consecutive PASSes count as acceptance).</li>
+</ul>
+<h3 id="1-5-quick-reference-source-file-vs-generated-artifact">1.5 Quick reference: source file vs generated artifact</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Source/artifact</th>
+<th>Hand-editable?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;project&gt;.peri.xml</code></td>
+<td><strong>Source file</strong> (Design source? Yes)</td>
+<td>❌ the vendor forbids direct editing; only via ISF/DesignAPI</td>
+<td>gloss-peri.xml.html L185-193</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.xml</code></td>
+<td>Source file</td>
+<td>✅ (bound by the <code>enf_proj</code> schema)</td>
+<td>the project-XML volume</td>
+</tr>
+<tr>
+<td><code>*.isf</code></td>
+<td>Source file</td>
+<td>✅ (Python API source; must pass the <code>--dry-run</code> self-check)</td>
+<td>the ISF volume</td>
+</tr>
+<tr>
+<td><code>*.sdc</code></td>
+<td>Source file</td>
+<td>✅</td>
+<td>the SDC volume</td>
+</tr>
+<tr>
+<td><code>{design}.unified.isf</code> / <code>{design}.auto_asg.isf</code></td>
+<td>Generated artifact</td>
+<td>❌</td>
+<td>ISF volume §7</td>
+</tr>
+<tr>
+<td><code>{design}.peri.rtl.v</code> / <code>.peri.pt.v</code></td>
+<td>Generated artifact</td>
+<td>❌</td>
+<td>efx_run_pt_unified.py L318-320</td>
+</tr>
+<tr>
+<td><code>peri.pbn</code> / <code>.qdelay</code> / <code>.csi</code> / <code>.cdo</code></td>
+<td>Generated artifact</td>
+<td>❌</td>
+<td>efx_run_pt_unified.py L328-331</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-namespace-and-root-element">2. Namespace and root element</h2>
+<h3 id="2-1-the-three-way-namespace-split">2.1 The three-way namespace split</h3>
+<p>The XML world of Efinity PT is built from three targetNamespaces with clearly separated prefix conventions and responsibilities (evidence: the <code>targetNamespace</code> declarations at the head of each XSD, <code>C:\Efinity\2026.1\pt\bin\schema\</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Namespace URI</th>
+<th>Conventional prefix</th>
+<th>Responsibility</th>
+<th>Representative files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http://www.efinixinc.com/peri_design_db</code></td>
+<td><code>efxpt</code></td>
+<td><strong>Design library</strong>: the periphery instances in your project (GPIO/PLL/iobank...)</td>
+<td><code>peri_design_db.xsd</code> + 24 design-class sub-schemas</td>
+</tr>
+<tr>
+<td><code>http://www.efinixinc.com/peri_device_db</code></td>
+<td>(device library)</td>
+<td><strong>Device library</strong>: factory data for the chip (die/package/timing model/bit-level block definitions)</td>
+<td><code>peri_device_db.xsd</code>, <code>lpf.xsd</code>, <code>die_definition.xsd</code>, 9 files in total</td>
+</tr>
+<tr>
+<td><code>http://www.efinixinc.com/peri_tool</code></td>
+<td>(tool types)</td>
+<td>Common simple types (non-empty strings, coordinate strings, etc.)</td>
+<td><code>peri_util.xsd</code></td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ peri.xml and the project XML (<code>enf_proj</code> namespace <code>http://www.efinixinc.com/enf_proj</code>) are <strong>completely different things</strong> — the project XML is written by the user/SDK, the peri.xml by PT; the two cooperate indirectly through the project XML's <code>&lt;efx:inter_file name="*.isf"&gt;</code> references.</p>
+<h3 id="2-2-root-element-and-its-six-attributes">2.2 Root element and its six attributes</h3>
+<p>The root element of a peri.xml is <code>design_db</code> (evidence: <code>C:\Efinity\2026.1\pt\bin\schema\peri_design_db.xsd</code> L36 <code>&lt;xs:element name="design_db" type="design_db_type"/&gt;</code>).</p>
+<p>Root attribute definitions (peri_design_db.xsd L175-222):</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Type</th>
+<th>Meaning</th>
+<th>Observed value in helloworld</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>Design name = project name (matches the <code>{design}</code> of <code>{design}.peri.xml</code>)</td>
+<td><code>helloworld</code></td>
+</tr>
+<tr>
+<td><code>@device_def</code></td>
+<td>✅</td>
+<td>string</td>
+<td>Device definition name (must match the project XML's device; triple-checked at load, see §1.3)</td>
+<td><code>Ti60F225</code></td>
+</tr>
+<tr>
+<td><code>@version</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Tool version that produced the file</td>
+<td><code>2025.2.276</code></td>
+</tr>
+<tr>
+<td><code>@db_version</code></td>
+<td>❌</td>
+<td>string</td>
+<td><strong>Design-library schema version number, an 8-digit form such as <code>20252006</code></strong> (not a dotted version)</td>
+<td><code>20252006</code></td>
+</tr>
+<tr>
+<td><code>@last_change_date</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Last-modified time (a human-readable timestamp PT writes out)</td>
+<td><code>Wed Oct 29 10:27:16 2025</code></td>
+</tr>
+<tr>
+<td><code>@location</code></td>
+<td>❌</td>
+<td>string</td>
+<td>File path (a location record written by PT)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>@db_version semantics</strong>: an 8-digit integer such as <code>20252006</code>; it is the generation marker of PT's internal design_db format, and PT uses it to decide whether an old file needs migration. <strong>Never change it by hand</strong> — the value is tightly bound to the tool version.</p>
+<h3 id="2-3-a-minimal-fragment-structure-illustration-not-a-hand-writing-template">2.3 A minimal fragment (structure illustration, not a hand-writing template)</h3>
+<p>The fragment below is excerpted from the official example (<code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.peri.xml</code> L1-4 + L105-108, showing the root element, an iobank, and empty containers) — <strong>for understanding the format only</strong>:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;efxpt:design_db name=&quot;helloworld&quot; device_def=&quot;Ti60F225&quot; version=&quot;2025.2.276&quot;
+    db_version=&quot;20252006&quot; last_change_date=&quot;Wed Oct 29 10:27:16 2025&quot;
+    xmlns:efxpt=&quot;http://www.efinixinc.com/peri_design_db&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+  &lt;efxpt:iobank name=&quot;1A&quot; iostd=&quot;1.8 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot;/&gt;
+  &lt;!-- ... the other 11 iobanks, see §6.2 ... --&gt;
+  &lt;efxpt:osc_info/&gt;
+  &lt;efxpt:lvds_info/&gt;
+  &lt;efxpt:jtag_info/&gt;
+  &lt;efxpt:mipi_dphy_info/&gt;
+&lt;/efxpt:design_db&gt;
+</code></pre>
+<p>Key points:
+- All elements hang under the <code>efxpt:</code> prefix (declared on the root element as <code>xmlns:efxpt="http://www.efinixinc.com/peri_design_db"</code>).
+- Unused domains are still written out as <strong>empty containers</strong> (e.g. <code>&lt;efxpt:osc_info/&gt;</code>) — this is DesignWriterXml's fixed behavior and does not mean content is missing (see §5).</p>
+<hr />
+<h2 id="3-schema-structure-map">3. Schema structure map</h2>
+<h3 id="3-1-the-aggregation-mechanism">3.1 The aggregation mechanism</h3>
+<p>All type definitions of a peri.xml are aggregated by <code>peri_design_db.xsd</code> (evidence: <code>C:\Efinity\2026.1\pt\bin\schema\peri_design_db.xsd</code>, 256 lines in total):</p>
+<ul>
+<li>L3-4: <code>targetNamespace="http://www.efinixinc.com/peri_design_db"</code>, the <code>xmlns:efxpt</code> prefix declaration;</li>
+<li><strong>24 <code>&lt;xs:include&gt;</code></strong> + <strong>1 <code>&lt;xs:import&gt;</code></strong> (the import pulls in <code>peri_util.xsd</code> from the <code>peri_tool</code> namespace);</li>
+<li>Erratum: <code>ext_flash_design.xsd</code> is <strong>included twice, at L8 and L26</strong> — the same file aggregated twice. XSD processors tolerate this (it is idempotent); it is a minor blemish in the official schema itself, and a custom validator should simply deduplicate.</li>
+</ul>
+<h3 id="3-2-complete-list-of-design-class-sub-schemas-peri_design_db-namespace">3.2 Complete list of design-class sub-schemas (peri_design_db namespace)</h3>
+<p>The table lists the 24 sub-schemas directly included by peri_design_db.xsd (each confirmed by reading), in include order:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Sub-schema</th>
+<th>Domain aggregated into the root element</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>ext_flash_design.xsd</code></td>
+<td><code>device_info/ext_flash_ctrl_info</code></td>
+<td>External flash control configuration (<strong>included twice, L8+L26</strong>)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>gpio_design.xsd</code></td>
+<td><code>gpio_info</code></td>
+<td>GPIO / complex GPIO / buses (690 lines, the largest)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>pll_design.xsd</code></td>
+<td><code>pll_info</code></td>
+<td>PLLs with their output clocks and advanced properties (405 lines)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>osc_design.xsd</code></td>
+<td><code>osc_info</code></td>
+<td>Internal oscillator</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>iobank_design.xsd</code></td>
+<td><code>device_info/iobank_info</code></td>
+<td>IO bank voltage standards</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>lvds_design.xsd</code></td>
+<td><code>lvds_info</code></td>
+<td>LVDS transceivers</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>mipi_design.xsd</code></td>
+<td><code>mipi_info</code></td>
+<td>MIPI CSI/DSI hosts and slaves</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>ctrl_design.xsd</code></td>
+<td><code>device_info/ctrl_info</code></td>
+<td>Configuration controller (CONFIG_CTRL)</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>jtag_design.xsd</code></td>
+<td><code>jtag_info</code></td>
+<td>JTAG</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>ddr_design.xsd</code></td>
+<td><code>ddr_info</code></td>
+<td>DDR memory controller</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>h264_design.xsd</code></td>
+<td><code>h264_info</code></td>
+<td>H.264 codec hard IP</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>mipi_dphy_design.xsd</code></td>
+<td><code>mipi_dphy_info</code></td>
+<td>MIPI D-PHY</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>seu_design.xsd</code></td>
+<td><code>device_info/seu_info</code></td>
+<td>SEU detection (CONFIG_SEU)</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>clkmux_design.xsd</code></td>
+<td><code>device_info/clkmux_info</code></td>
+<td>Clock multiplexers (CLKMUX_B/L/R/T)</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>spi_flash_design.xsd</code></td>
+<td><code>spi_flash_info</code></td>
+<td>SPI flash</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>hyper_ram_design.xsd</code></td>
+<td><code>hyper_ram_info</code></td>
+<td>HyperRAM</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>pll_ssc_design.xsd</code></td>
+<td><code>pll_ssc_info</code></td>
+<td>PLL spread-spectrum clocking (SSC)</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>quad_pcie_design.xsd</code></td>
+<td><code>quad_pcie_info</code></td>
+<td>PCIe quad lane</td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>lane_10g_design.xsd</code></td>
+<td><code>lane_10g_info</code></td>
+<td>10G lane</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>lane_1g_design.xsd</code></td>
+<td><code>lane_1g_info</code></td>
+<td>1G lane</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>raw_serdes_design.xsd</code></td>
+<td><code>raw_serdes_info</code></td>
+<td>Raw SerDes</td>
+</tr>
+<tr>
+<td>22</td>
+<td><code>soc_design.xsd</code></td>
+<td><code>soc_info</code></td>
+<td>SoC (e.g. Sapphire)</td>
+</tr>
+<tr>
+<td>23</td>
+<td><code>common_quad_lane_design.xsd</code></td>
+<td><code>quad_lane_info</code></td>
+<td>Common quad lane</td>
+</tr>
+<tr>
+<td>24</td>
+<td><code>cm_design.xsd</code></td>
+<td><code>cm_info</code></td>
+<td>CM (clock manager)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indirect dependency</strong>: <code>common_design.xsd</code> (101 lines) is not directly included by peri_design_db.xsd, but is included by almost every design-class sub-schema above — it defines the common types <code>gen_pin_type</code> / <code>gen_pin_info_type</code> / <code>gen_param_type</code> / <code>base_instance</code> / <code>hex_value</code> (see §4.8).</p>
+<p><strong>Orphan schemas in the same namespace but never aggregated (3; awareness is enough — they do not participate in peri.xml)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Orphan</th>
+<th>Status</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clock_design.xsd</code></td>
+<td>A suspected legacy orphan: the <code>util.xsd</code> it includes <strong>does not exist</strong> in the schema directory</td>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\</code> directory listing + the head of clock_design.xsd</td>
+</tr>
+<tr>
+<td><code>package_settings.xsd</code></td>
+<td>In the peri_design_db namespace but never aggregated</td>
+<td>grep of targetNamespace over the directory</td>
+</tr>
+<tr>
+<td><code>design_issue.xsd</code></td>
+<td>Same as above (issue-report class, not design data)</td>
+<td>same as above</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-root-element-structure-design_db_type">3.3 Root element structure (design_db_type)</h3>
+<p>The top-level sequence of <code>design_db_type</code> holds <strong>21 elements, all with <code>minOccurs=0</code></strong> (peri_design_db.xsd L40-174), so any domain may be absent — PT merely fills in an empty container when writing:</p>
+<pre><code class="language-text">design_db
+├── device_info          (device_info_type, embeds 5 child elements, see below)
+├── gpio_info            ├── pll_info
+├── osc_info             ├── lvds_info
+├── mipi_info            ├── jtag_info
+├── ddr_info             ├── h264_info
+├── mipi_dphy_info       ├── spi_flash_info
+├── hyper_ram_info       ├── pll_ssc_info
+├── quad_lane_info       ├── quad_pcie_info
+├── lane_10g_info        ├── lane_1g_info
+├── raw_serdes_info      ├── soc_info
+├── cm_info              └── partial_design
+</code></pre>
+<p><code>device_info_type</code> (peri_design_db.xsd L230-253) embeds 5 child elements:</p>
+<table>
+<thead>
+<tr>
+<th>Child element</th>
+<th>Occurrence</th>
+<th>Content</th>
+<th>Owning sub-schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iobank_info</code></td>
+<td>0..*</td>
+<td>IO bank list</td>
+<td>iobank_design.xsd</td>
+</tr>
+<tr>
+<td><code>ctrl_info</code></td>
+<td>0..1</td>
+<td>Configuration controller</td>
+<td>ctrl_design.xsd</td>
+</tr>
+<tr>
+<td><code>seu_info</code></td>
+<td>0..1</td>
+<td>SEU detection</td>
+<td>seu_design.xsd</td>
+</tr>
+<tr>
+<td><code>clkmux_info</code></td>
+<td>0..1</td>
+<td>Clock-mux group</td>
+<td>clkmux_design.xsd</td>
+</tr>
+<tr>
+<td><code>ext_flash_ctrl_info</code></td>
+<td>0..1</td>
+<td>External flash control</td>
+<td>ext_flash_design.xsd</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-complete-table-of-core-domain-attributes">4. Complete table of core domain attributes</h2>
+<blockquote>
+<p>This section lists XML attributes domain by domain: <strong>attribute name / type / meaning / example value</strong>. Types are taken from the XSD declarations; "meanings" follow the embedded <code>&lt;xs:documentation&gt;</code> verbatim (or a faithful translation). All source files live under <code>C:\Efinity\2026.1\pt\bin\schema\</code>.</p>
+</blockquote>
+<h3 id="4-1-the-iobank-domain-iobank_design-xsd-75-lines">4.1 The iobank domain (iobank_design.xsd, 75 lines)</h3>
+<p><code>iobank_config_type</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Type</th>
+<th>Meaning</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>IO bank name ("IO Bank name as per device")</td>
+<td><code>TL</code></td>
+</tr>
+<tr>
+<td><code>@iostd</code></td>
+<td>✅</td>
+<td>string</td>
+<td><strong>The IO standard set for this bank</strong>. XSD verbatim (L36-39): <em>"IO Standard set for this IOBank. This is not just the voltage since the decision to display voltage was rather late in the game."</em> — <strong>@iostd is the full IO standard (voltage + level family), not just the voltage</strong></td>
+<td><code>"1.8 V LVCMOS"</code> / <code>"3.3 V LVCMOS"</code></td>
+</tr>
+<tr>
+<td><code>@is_dyn_voltage</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Dynamic-voltage enable (introduced in PT-1225)</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@mode_sel_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Bank mode-select signal name</td>
+<td><code>TL_MODE_SEL</code></td>
+</tr>
+</tbody>
+</table>
+<p>Child element <code>mode_sel_name</code> (0..*): <code>bank_name</code> + <code>value</code> pairs recording the legal mode-select combinations.</p>
+<p><strong>ISF correspondence</strong>: <code>design.set_iobank_voltage("TL", "3.3")</code> actually writes @iostd (ISF volume §3). The SDK hard rules "MIPI banks must be 1.2 V" and "MIPI and LVDS never share a bank" ultimately land on this domain.</p>
+<h3 id="4-2-the-gpio-domain-gpio_design-xsd-690-lines">4.2 The gpio domain (gpio_design.xsd, 690 lines)</h3>
+<p><strong>Two forms</strong>: Trion families use plain <code>gpio</code>; Titanium families use <code>comp_gpio</code> (complex GPIO, with more attributes). The contents of <code>gpio_info_type</code> (L47-51):</p>
+<table>
+<thead>
+<tr>
+<th>Child element</th>
+<th>Occurrence</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gpio</code></td>
+<td>0..*</td>
+<td>Plain GPIO (gpio_config_type)</td>
+</tr>
+<tr>
+<td><code>comp_gpio</code></td>
+<td>0..*</td>
+<td>Complex GPIO (comp_gpio_config_type, Titanium)</td>
+</tr>
+<tr>
+<td><code>global_unused_config</code></td>
+<td><strong>exactly once</strong></td>
+<td>Default state of globally unused pins</td>
+</tr>
+<tr>
+<td><code>bus</code></td>
+<td>0..*</td>
+<td>Bus GPIO (bus_config_type)</td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ Legacy attribute: <code>@device_def</code> on gpio_info is annotated <em>"no longer needed ... backward compatibility"</em> (L47-51) — old files may carry it; new files rely on the root element's @device_def.</p>
+<p><strong>gpio_config_type (plain GPIO) attributes</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Type/enum</th>
+<th>Meaning</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>GPIO name (corresponds to an RTL top-level port)</td>
+<td><code>btn</code></td>
+</tr>
+<tr>
+<td><code>@gpio_def</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Physical GPIO definition name in the device library</td>
+<td><code>GPIOL_P_18</code></td>
+</tr>
+<tr>
+<td><code>@mode</code></td>
+<td>❌</td>
+<td><code>input</code> / <code>output</code> / <code>inout</code> / <code>none</code> / <code>clkout</code></td>
+<td>Pin direction mode</td>
+<td><code>input</code></td>
+</tr>
+<tr>
+<td><code>@bus_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Which bus GPIO it belongs to</td>
+<td><code>led</code></td>
+</tr>
+<tr>
+<td><code>@is_lvds_gpio</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Whether it is an LVDS-associated GPIO</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@io_standard</code></td>
+<td>❌</td>
+<td>string</td>
+<td>IO standard</td>
+<td><code>"1.8 V LVCMOS"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>input_config_type</strong> (attributes of the input child element):</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Type/enum</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>RTL signal name for the DDIO HI bit</td>
+<td><code>btn</code></td>
+</tr>
+<tr>
+<td><code>@name_ddio_lo</code></td>
+<td>❌</td>
+<td>string</td>
+<td>DDIO LO bit signal name</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@conn_type</code></td>
+<td>✅</td>
+<td>enum: <code>normal</code> / <code>alternate</code> / <code>gclk</code> / <code>gctrl</code> / <code>pll_clkin</code> / <code>pll_extfb</code> / <code>mipi_clkin</code></td>
+<td>Connection type (plain input/global clock/PLL reference clock, etc.)</td>
+<td><code>normal</code>, <code>pll_clkin</code></td>
+</tr>
+<tr>
+<td><code>@is_register</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Registered or not</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_schmitt_trigger</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Schmitt trigger</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@pull_option</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>weak pullup</code> / <code>weak pulldown</code>, <strong>default weak pullup</strong></td>
+<td>Pull-up/pull-down</td>
+<td><code>none</code></td>
+</tr>
+<tr>
+<td><code>@clock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Register clock</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_clock_inverted</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Clock inverted</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ddio_type</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>normal</code> / <code>resync</code></td>
+<td>DDIO type</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>output_config_type</strong> (attributes of the output child element, main entries):</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Type/enum</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>Output signal name</td>
+<td><code>led[0]</code></td>
+</tr>
+<tr>
+<td><code>@register_option</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>register</code> / <code>inv_register</code></td>
+<td>Output register option</td>
+<td><code>register</code></td>
+</tr>
+<tr>
+<td><code>@drive_strength</code></td>
+<td>❌</td>
+<td><code>"1"</code>~<code>"4"</code></td>
+<td>Drive strength</td>
+<td><code>"4"</code></td>
+</tr>
+<tr>
+<td><code>@is_slew_rate</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Slew rate</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@tied_option</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>__vcc__</code> / <code>__gnd__</code></td>
+<td>Tied option</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>output_enable_config_type</strong>: <code>@name</code> (required, the OE signal name), <code>@is_register</code>, <code>@clock_name</code>, <code>@is_clock_inverted</code>, <code>@name_oen</code>.</p>
+<p><strong>unused_gpio_state_type</strong> (the @state of global_unused_config): <strong>exactly two enum values</strong> — <code>"input with weak pullup"</code> / <code>"input with weak pulldown"</code>.</p>
+<p><strong>Attributes comp_gpio_config_type (complex GPIO) adds over the plain form</strong> (Titanium-exclusive capabilities):</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@is_serial</code></td>
+<td>Serialized IO or not</td>
+</tr>
+<tr>
+<td><code>@delay</code> / <code>@is_dyn_delay</code></td>
+<td>Delay and dynamic-delay enable</td>
+</tr>
+<tr>
+<td><code>@dyn_delay_en_name</code> / <code>@dyn_delay_reset_name</code> / <code>@dyn_delay_ctrl_name</code></td>
+<td>Dynamic-delay control signal names</td>
+</tr>
+<tr>
+<td><code>@fastclk_name</code></td>
+<td>Fast clock name</td>
+</tr>
+<tr>
+<td><code>@pullup_ena_name</code></td>
+<td>Pull-up enable signal name</td>
+</tr>
+<tr>
+<td><code>@clkmux_buf_name</code></td>
+<td>Clkmux buffer name</td>
+</tr>
+<tr>
+<td><code>@is_bus_hold</code></td>
+<td>Bus hold (annotated at the comp_gpio level as <strong>Deprecated → PT-1020</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>bus_config_type</strong>: <code>@name</code> / <code>@mode</code> / <code>@msb</code> / <code>@lsb</code> — the width declaration of a bus GPIO; member pins attach through the <code>gpio</code> element's <code>@bus_name</code>.</p>
+<p><strong>Note from the helloworld instance</strong>: in the Ti60 (Titanium) example even a plain reference-clock pin is written as <code>comp_gpio</code> (see §6.6).</p>
+<h3 id="4-3-the-pll-domain-pll_design-xsd-405-lines">4.3 The pll domain (pll_design.xsd, 405 lines)</h3>
+<p>Main attributes of <code>pll_config_type</code> (inherits base_instance):</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Type</th>
+<th>Meaning (XSD verbatim/translated)</th>
+<th>helloworld example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>PLL instance name</td>
+<td><code>pll_inst1</code></td>
+</tr>
+<tr>
+<td><code>@pll_def</code></td>
+<td>✅</td>
+<td>string</td>
+<td>Hard instance name in the device library ("hw instance name from device database")</td>
+<td><code>PLL_TL0</code></td>
+</tr>
+<tr>
+<td><code>@gpio_instance</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Associated reference-clock GPIO</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ref_clock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Reference clock name</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ref_clock_freq</code></td>
+<td>✅</td>
+<td>xs:float</td>
+<td>Reference clock frequency (MHz)</td>
+<td><code>25.0000</code></td>
+</tr>
+<tr>
+<td><code>@pre_divider</code></td>
+<td>✅</td>
+<td>int</td>
+<td><strong>N counter</strong> ("N counter value as per spec")</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>@multiplier</code></td>
+<td>✅</td>
+<td>int</td>
+<td><strong>M multiplier</strong> ("M counter multiplier as per spec")</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>@post_divider</code></td>
+<td>✅</td>
+<td>int</td>
+<td><strong>O divider</strong> ("O counter divider as per spec")</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>@reset_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Reset signal (corresponds to the hard pin <code>PCR_USER_EN</code>)</td>
+<td><code>""</code> (empty string = unused)</td>
+</tr>
+<tr>
+<td><code>@locked_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td><strong>"The pin name that goes high when PLL achieves lock"</strong> (L141-148) — the lock indicator signal</td>
+<td><code>""</code> (empty string when unused; once the lock signal is set in the ISF, a name is written here)</td>
+</tr>
+<tr>
+<td><code>@is_ipfrz</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>IP freeze (<code>PCR_IPEN_PCR_FRZ</code>)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_bypass_lock</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Bypass lock (<code>PCR_BYPASS_LOCK</code>)</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>@bypass_lock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td><strong>DEPRECATED</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Child element structure:</p>
+<table>
+<thead>
+<tr>
+<th>Child element</th>
+<th>Occurrence</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output_clock</code></td>
+<td>0..*</td>
+<td>Old-style output clock (<code>pll_output_clock_type</code>, phase attribute <code>@adv_out_phase_shift</code>, 0–270)</td>
+</tr>
+<tr>
+<td><code>adv_prop</code></td>
+<td>0..1</td>
+<td>Advanced properties (<code>pll_adv_prop_type</code>)</td>
+</tr>
+<tr>
+<td><code>gen_pin</code></td>
+<td>0..1</td>
+<td>Generic pin</td>
+</tr>
+<tr>
+<td><code>comp_output_clock</code></td>
+<td>0..*</td>
+<td>Complex output clock (new style, Titanium)</td>
+</tr>
+<tr>
+<td><code>comp_prop</code></td>
+<td>0..1</td>
+<td>Complex properties</td>
+</tr>
+<tr>
+<td><code>gen_param</code></td>
+<td>0..1</td>
+<td>Generic parameter</td>
+</tr>
+<tr>
+<td><code>dyn_reconfig</code></td>
+<td>0..*</td>
+<td>Dynamic reconfiguration</td>
+</tr>
+</tbody>
+</table>
+<p><code>pll_adv_prop_type</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Enum</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@ref_clock_mode</code></td>
+<td>✅</td>
+<td><code>external</code> / <code>core</code> / <code>dynamic</code></td>
+<td>Reference clock mode</td>
+<td><code>external</code></td>
+</tr>
+<tr>
+<td><code>@ext_ref_clock_id</code></td>
+<td>❌</td>
+<td>int</td>
+<td>External reference clock number</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>@ref_clock1_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Reference clock 1 name</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ref_clock2_name</code> / <code>@ref_clock2_res_name</code> / <code>@ref_clock3_name</code></td>
+<td>❌</td>
+<td>—</td>
+<td><strong>All Deprecated</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@gpio_instance1</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Associated GPIO</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@clksel_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Clock-select signal</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@feedback_mode</code></td>
+<td>✅</td>
+<td><code>internal</code> / <code>local</code> / <code>core</code> / <code>external</code> / <code>phy_clk</code></td>
+<td>Feedback mode</td>
+<td><code>local</code></td>
+</tr>
+<tr>
+<td><code>@feedback_clock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Feedback clock name</td>
+<td><code>clk</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>pll_comp_output_clock_type</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Enum</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>❌</td>
+<td>—</td>
+<td>Output clock name (the clock signal name in the RTL)</td>
+<td><code>clk</code></td>
+</tr>
+<tr>
+<td><code>@number</code></td>
+<td>✅</td>
+<td>int</td>
+<td>Output number (<strong>0-based</strong>)</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>@out_divider</code></td>
+<td>❌</td>
+<td>int</td>
+<td>Output divider (power-of-two semantics in the PLL volume / hard rules §4)</td>
+<td><code>110</code></td>
+</tr>
+<tr>
+<td><code>@phase_setting</code></td>
+<td>❌</td>
+<td>—</td>
+<td>Phase (45°-step semantics)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_dyn_phase</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Dynamic phase</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@conn_type</code></td>
+<td>❌</td>
+<td><code>gclk</code> (default) / <code>rclk</code> / <code>lclk</code> / <code>cm</code></td>
+<td>Connection type</td>
+<td><code>gclk</code></td>
+</tr>
+<tr>
+<td><code>@clkmux_buf_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>"Use when connection type is rclk"</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_inverted</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>Inverted</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-the-ctrl-domain-ctrl_design-xsd-98-lines">4.4 The ctrl domain (ctrl_design.xsd, 98 lines)</h3>
+<p><code>ctrl_config_type</code> (the configuration controller, the <code>cfg</code> in the example):</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Meaning</th>
+<th>helloworld example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>Controller name</td>
+<td><code>cfg</code></td>
+</tr>
+<tr>
+<td><code>@clock_name</code></td>
+<td>✅</td>
+<td>Clock name (may be an empty string)</td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>@ctrl_def</code></td>
+<td>✅</td>
+<td>Hard instance name in the device library</td>
+<td><code>CONFIG_CTRL0</code></td>
+</tr>
+<tr>
+<td><code>@cbsel_bus_name</code></td>
+<td>✅</td>
+<td>"Bus name for choosing image to use for configuration" (image-select bus)</td>
+<td><code>cfg_CBSEL</code></td>
+</tr>
+<tr>
+<td><code>@ena_capture_name</code></td>
+<td>✅</td>
+<td>Capture-enable signal name</td>
+<td><code>cfg_ENA</code></td>
+</tr>
+<tr>
+<td><code>@config_ctrl_name</code></td>
+<td>✅</td>
+<td>Configuration-control signal name</td>
+<td><code>cfg_CONFIG</code></td>
+</tr>
+<tr>
+<td><code>@error_status_name</code></td>
+<td>✅</td>
+<td>Error-status signal name</td>
+<td><code>cfg_ERROR</code></td>
+</tr>
+<tr>
+<td><code>@um_signal_status_name</code></td>
+<td>❌</td>
+<td>User-mode status signal name</td>
+<td><code>cfg_USR_STATUS</code></td>
+</tr>
+<tr>
+<td><code>@is_remote_update_enable</code></td>
+<td>❌</td>
+<td>Remote-update enable</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_user_mode_enable</code></td>
+<td>❌</td>
+<td>User-mode enable</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_clk_invert</code></td>
+<td>❌</td>
+<td>Clock inverted</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-5-the-clkmux-domain-clkmux_design-xsd-55-lines">4.5 The clkmux domain (clkmux_design.xsd, 55 lines)</h3>
+<p><code>clkmux_config_type</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>Mux name</td>
+<td><code>CLKMUX_T</code></td>
+</tr>
+<tr>
+<td><code>@block_def</code></td>
+<td>✅</td>
+<td>Block definition name in the device library (same as @name, e.g. <code>CLKMUX_T</code>)</td>
+<td><code>CLKMUX_T</code></td>
+</tr>
+<tr>
+<td><code>@is_mux_bot0_dyn</code></td>
+<td>✅</td>
+<td>Whether bottom input 0 is dynamic</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_mux_bot7_dyn</code></td>
+<td>✅</td>
+<td>Whether bottom input 7 is dynamic</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<p>Child elements (the inherent structure of a Titanium clkmux):
+- <code>gen_pin</code> (<strong>always present</strong>): each clkmux carries 8 gen_pins — <code>ROUTE0..ROUTE3</code>, <code>DYN_MUX_OUT_0</code>, <code>DYN_MUX_OUT_7</code>, <code>DYN_MUX_SEL_0</code>, <code>DYN_MUX_SEL_7</code>;
+- <code>dyn_mux0_inputs</code> / <code>dyn_mux7_inputs</code> (up to 4 <code>dyn_input</code> each: <code>@index</code> / <code>@resource</code> / <code>@resource_pin</code> / <code>@is_static</code>).</p>
+<h3 id="4-6-the-osc-domain-osc_design-xsd-59-lines">4.6 The osc domain (osc_design.xsd, 59 lines)</h3>
+<p><code>osc_config_type</code> (inherits base_instance):</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Meaning</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>Oscillator instance name</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@osc_def</code></td>
+<td>✅</td>
+<td>Definition name in the device library</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@clock_name</code></td>
+<td>❌</td>
+<td>Output clock name</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@frequency</code></td>
+<td>❌</td>
+<td>Frequency</td>
+<td>XSD verbatim: <em>"This is not available to all devices"</em> — <strong>not all devices have this attribute</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-7-the-seu-domain-seu_design-xsd">4.7 The seu domain (seu_design.xsd)</h3>
+<p>Corresponds to the <code>seu</code> block at L21-32 of the example: <code>@block_def="CONFIG_SEU0"</code>, <code>@mode</code> (e.g. <code>auto</code>), <code>@wait_interval="16500000"</code>, with 6 <code>gen_pin</code> children underneath (SEU detection status/error signals, etc.). The attribute details follow the same style as the ctrl domain (@name/@block_def + a set of signal names) and are not repeated here.</p>
+<h3 id="4-8-common-types-common_design-xsd-101-lines">4.8 Common types (common_design.xsd, 101 lines)</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Key attributes</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gen_pin_type</code></td>
+<td><code>@type_name</code> (required) / <code>@name</code> (required) / <code>@is_bus</code> (required) / <code>@is_clk</code> / <code>@is_clk_invert</code></td>
+<td>The minimal unit of an inter-block pin; used heavily by iobank/clkmux/seu/gpio</td>
+</tr>
+<tr>
+<td><code>gen_pin_info_type</code></td>
+<td>—</td>
+<td>Collection container of gen_pins</td>
+</tr>
+<tr>
+<td><code>gen_param_type</code></td>
+<td><code>@name</code> / <code>@value</code> / <code>@value_type</code> (<code>int</code>/<code>float</code>/<code>str</code>/<code>bool</code>/<code>enum</code>/<code>hex</code>) / <code>@flags</code> <code>hex_value</code></td>
+<td>Generic key-value parameter</td>
+</tr>
+<tr>
+<td><code>base_instance</code></td>
+<td>embeds <code>netlist_config</code> (0..1, <code>@netlist_checksum</code>)</td>
+<td>The inherited base class of most block types</td>
+</tr>
+<tr>
+<td><code>hex_value</code></td>
+<td>pattern <code>0x([0-9A-Fa-f])+</code></td>
+<td>Hexadecimal literal</td>
+</tr>
+<tr>
+<td>(peri_util.xsd) <code>ne_string</code> / <code>loc_string</code> / <code>comma_sep_string</code></td>
+<td>non-empty string / <code>"x,y,z"</code> coordinate pattern / comma-separated string</td>
+<td>Common simple types in the peri_tool namespace</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-designwriterxml-write-out-logic">5. DesignWriterXml write-out logic</h2>
+<blockquote>
+<p>This section gives only a <strong>summary + pointers</strong>; the line-by-line dissection of the call chain (DesignAPI.save → IntDesignAPI.save → DesignService.save_design → DesignWriterXml.write, with the L3484→L3526→L3596-3713 line-level detail) is in the sibling volume <em>Efinity DesignAPI Reference</em> (<code>docs/efinity/Efinity-DesignAPI方法参考.md</code>), section 5 "DesignWriterXml write-out model"; the line-number evidence is consistent across the two volumes (<code>C:\Efinity\2026.1\pt\bin\design\service.py</code>).</p>
+</blockquote>
+<h3 id="5-1-when-the-peri-xml-is-written-out">5.1 When the peri.xml is written out</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Trigger</th>
+<th>Evidence (service.py)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The user clicks save in the Interface Designer / DesignAPI.save()</td>
+<td>DesignService.save_design (L720-732) iterates and calls each block service's save_design</td>
+<td>service.py L3696-3697</td>
+</tr>
+<tr>
+<td>During a unified compile (after ISF replay)</td>
+<td>After replay completes, the in-memory evolved design is written out as a whole tree</td>
+<td>the flow after efx_run_pt_unified.py L252</td>
+</tr>
+</tbody>
+</table>
+<p>The final persistence action (service.py L3711-3713): <code>open(design_file, mode='wb')</code> — binary write, UTF-8 XML, full-file rewrite (not incremental).</p>
+<h3 id="5-2-the-fixed-write-out-order-of-the-19-block-classes">5.2 The fixed write-out order of the 19 block classes</h3>
+<p>service.py <strong>L3596</strong> carries the source comment <code># Blocks must be written in correct order</code>. L3597-3695 then use <strong>19 if/elif slots</strong> to fix the order in which block services append — i.e. the order the blocks appear in the XML:</p>
+<pre><code class="language-text">①GPIO (GPIODesignService or GPIODesignServiceComplex, one of the two)
+②PLL (a 5-variant if/elif chain: plain/complex/advanced, etc.)
+③OSC (3 variants)         ④LVDS (3 variants)         ⑤MIPI (2 variants)
+⑥JTAG                     ⑦DDR (2 variants)          ⑧H264
+⑨MIPI DPHY (2 variants)   ⑩SPI Flash                 ⑪HyperRAM
+⑫PLL SSC                  ⑬CommonQuad               ⑭QuadPCIe
+⑮Lane10G                  ⑯Lane1G                    ⑰RawSerdes
+⑱SOC                      ⑲CM (cm_v1)
+</code></pre>
+<p><strong>Why the order matters</strong>: blocks reference each other (GPIO references iobanks; PLL outputs reference GPIOs), so the referenced side is written first. The tool writes in this order, and parsers/validators should read in this order too. After each block is written, save_design runs one by one (L3696-3697); L3699-3703 writes the <code>partial_design</code> element (a partial-design-mode marker, empty in normal projects).</p>
+<h3 id="5-3-empty-container-behavior">5.3 Empty-container behavior</h3>
+<p>Even a completely unused domain is written out by DesignWriterXml as an <strong>empty container element</strong> (e.g. helloworld's <code>&lt;efxpt:osc_info/&gt;</code>, L105-108). This matches <code>minOccurs=0</code> on every child of design_db_type (§3.3): <strong>an empty container ≠ a missing one</strong> — both are legal states; when diffing, do not treat an empty container as a "content change".</p>
+<hr />
+<h2 id="6-instance-anatomy-the-peri-xml-of-helloworld-unified">6. Instance anatomy: the .peri.xml of helloworld-unified</h2>
+<p>Sample: <code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.peri.xml</code> (109 lines, Ti60F225). The smallest real-world sample for grasping the whole of peri.xml.</p>
+<h3 id="6-1-root-element-l1-4">6.1 Root element (L1-4)</h3>
+<pre><code class="language-xml">&lt;efxpt:design_db name=&quot;helloworld&quot; device_def=&quot;Ti60F225&quot; version=&quot;2025.2.276&quot;
+    db_version=&quot;20252006&quot; last_change_date=&quot;Wed Oct 29 10:27:16 2025&quot;
+    xmlns:efxpt=&quot;http://www.efinixinc.com/peri_design_db&quot; ...&gt;
+</code></pre>
+<p>Reading: <code>@name</code> shares the project's name; <code>@device_def</code> corresponds to the Ti60F225 device definition; <code>@db_version="20252006"</code> is the 8-digit library version (§2.2); <code>@version="2025.2.276"</code> is the producing tool's version.</p>
+<h3 id="6-2-the-12-iobanks-l4-17">6.2 The 12 iobanks (L4-17)</h3>
+<pre><code class="language-xml">&lt;efxpt:iobank name=&quot;1A&quot; iostd=&quot;1.8 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot;/&gt;
+... (1B/2A/2B/3A/3B/4A/4B likewise &quot;1.8 V LVCMOS&quot;)
+&lt;efxpt:iobank name=&quot;BL&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;BL_MODE_SEL&quot;/&gt;
+&lt;efxpt:iobank name=&quot;BR&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;BR_MODE_SEL&quot;/&gt;
+&lt;efxpt:iobank name=&quot;TL&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;TL_MODE_SEL&quot;/&gt;
+&lt;efxpt:iobank name=&quot;TR&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;TR_MODE_SEL&quot;/&gt;
+</code></pre>
+<p>Reading: Ti60F225 lists <strong>all 12 banks</strong> (eight 1A-4B + the four corners BL/BR/TL/TR); unused banks are written anyway (with only @iostd, no @mode_sel_name). The four corner banks carry <code>mode_sel_name</code> (their mode-select pins are configurable). This confirms §4.1: the iobank domain is an <strong>exhaustive per-bank declaration</strong>, not "write only what is used".</p>
+<h3 id="6-3-ctrl_info-l18-20">6.3 ctrl_info (L18-20)</h3>
+<pre><code class="language-xml">&lt;efxpt:ctrl name=&quot;cfg&quot; ctrl_def=&quot;CONFIG_CTRL0&quot; clock_name=&quot;&quot; cbsel_bus_name=&quot;cfg_CBSEL&quot;
+    ena_capture_name=&quot;cfg_ENA&quot; error_status_name=&quot;cfg_ERROR&quot;
+    um_signal_status_name=&quot;cfg_USR_STATUS&quot;
+    is_remote_update_enable=&quot;false&quot; is_user_mode_enable=&quot;false&quot;/&gt;
+</code></pre>
+<p>Reading: the real-world landing of the full §4.4 table — the configuration controller exists by default in every project, and the 5 required signal names are written as empty strings or placeholder names even when unused.</p>
+<h3 id="6-4-seu_info-l21-32">6.4 seu_info (L21-32)</h3>
+<pre><code class="language-xml">&lt;efxpt:seu block_def=&quot;CONFIG_SEU0&quot; mode=&quot;auto&quot; wait_interval=&quot;16500000&quot;&gt;
+  &lt;!-- 6 gen_pins: SEU detection/error status signals --&gt;
+&lt;/efxpt:seu&gt;
+</code></pre>
+<p>Reading: the SEU block's mode is <code>auto</code>, its wait interval is 16500000 (a loop count), and its 6 gen_pins expose the status signals.</p>
+<h3 id="6-5-clkmux_info-4-multiplexers-l33-82">6.5 clkmux_info: 4 multiplexers (L33-82)</h3>
+<pre><code class="language-xml">&lt;efxpt:clkmux name=&quot;CLKMUX_B&quot; block_def=&quot;CLKMUX_B&quot; is_mux_bot0_dyn=&quot;false&quot; is_mux_bot7_dyn=&quot;false&quot;&gt;
+  &lt;!-- 8 gen_pins: ROUTE0..ROUTE3, DYN_MUX_OUT_0, DYN_MUX_OUT_7, DYN_MUX_SEL_0, DYN_MUX_SEL_7 --&gt;
+&lt;/efxpt:clkmux&gt;
+&lt;!-- followed by CLKMUX_L / CLKMUX_R / CLKMUX_T in order --&gt;
+</code></pre>
+<p>Reading: Titanium has one clkmux per edge — <strong>four in total, CLKMUX_B/L/R/T</strong> — with a structure exactly as §4.5 describes (8 mandatory gen_pins; the dynamic-input groups are simply absent when unused).</p>
+<h3 id="6-6-gpio_info-the-reference-clock-pin-and-the-globally-unused-pins-l84-89">6.6 gpio_info: the reference-clock pin and the globally unused pins (L84-89)</h3>
+<pre><code class="language-xml">&lt;efxpt:comp_gpio name=&quot;pll_refclk&quot; gpio_def=&quot;GPIOL_P_18&quot; mode=&quot;input&quot; io_standard=&quot;1.8 V LVCMOS&quot;&gt;
+  &lt;efxpt:input_config name=&quot;pll_refclk&quot; conn_type=&quot;pll_clkin&quot; pull_option=&quot;none&quot;
+      pullup_ena_name=&quot;pll_refclk_PULL_UP_ENA&quot; .../&gt;
+&lt;/efxpt:comp_gpio&gt;
+&lt;efxpt:global_unused_config state=&quot;input with weak pullup&quot;/&gt;
+</code></pre>
+<p>Reading:
+- On Ti60 (Titanium) even a <strong>plain PLL reference-clock pin uses <code>comp_gpio</code></strong> (complex GPIO), with <code>@conn_type="pll_clkin"</code> declaring its PLL clock-input role — confirming the two-form division of §4.2 (Titanium goes through the comp form uniformly).
+- <code>@pullup_ena_name</code> is a comp_gpio-exclusive extension attribute (plain gpio has no such attribute).
+- <code>global_unused_config</code> appears exactly once; globally unused pins default to weak-pull-up inputs — <strong>this is exactly where the ISF volume / hard rule §16 on "unused pin handling" lands</strong>.</p>
+<h3 id="6-7-pll_info-the-single-pll-l90-104">6.7 pll_info: the single PLL (L90-104)</h3>
+<pre><code class="language-xml">&lt;efxpt:pll name=&quot;pll_inst1&quot; pll_def=&quot;PLL_TL0&quot; ref_clock_freq=&quot;25.0000&quot;
+    multiplier=&quot;1&quot; pre_divider=&quot;1&quot; post_divider=&quot;2&quot;
+    reset_name=&quot;&quot; locked_name=&quot;&quot; is_bypass_lock=&quot;true&quot;&gt;
+  &lt;efxpt:adv_prop ref_clock_mode=&quot;external&quot; ext_ref_clock_id=&quot;2&quot;
+      feedback_mode=&quot;local&quot; feedback_clock_name=&quot;clk&quot;/&gt;
+  &lt;efxpt:comp_output_clock name=&quot;clk&quot; number=&quot;0&quot; out_divider=&quot;110&quot; conn_type=&quot;gclk&quot;/&gt;
+&lt;/efxpt:pll&gt;
+</code></pre>
+<p>Reading (against §4.3):
+- <code>PLL_TL0</code>: the hard PLL instance of the top bank; reference clock 25 MHz, N=1 / M=1 / O=2;
+- <code>@locked_name=""</code>: this example does not wire the lock signal into the RTL — <strong>an empty string means unused</strong>; after a replay where the ISF sets lock via <code>set_property</code>, a real signal name is written here (the project template requires <code>wire async_rst_n = rst_n_i &amp; pll_locked</code>, see hard rules §4);
+- <code>adv_prop</code>: external-reference mode, <code>ext_ref_clock_id="2"</code> (the external reference number corresponding to GPIOL_P_18); feedback mode <code>local</code>, feedback clock <code>clk</code>;
+- <code>comp_output_clock</code>: output clock name <code>clk</code> (the clock port name in the RTL), number 0, output divider 110 → after 25MHz×1/1/2 the VCO and the divider yield the divide-by-110 output (computing the final clock frequency of this example is the PLL volume's job and is not expanded here);
+- <code>@conn_type="gclk"</code>: the output feeds the global clock network — the object name of the SDC <code>create_clock</code> must exactly match <code>@name="clk"</code> here (SDC volume hard rule §7).</p>
+<h3 id="6-8-empty-containers-l105-108">6.8 Empty containers (L105-108)</h3>
+<pre><code class="language-xml">&lt;efxpt:osc_info/&gt;
+&lt;efxpt:lvds_info/&gt;
+&lt;efxpt:jtag_info/&gt;
+&lt;efxpt:mipi_dphy_info/&gt;
+</code></pre>
+<p>Reading: empty containers of unused domains (§5.3). helloworld uses only three domains: device_info (iobank/ctrl/seu/clkmux), gpio_info, and pll_info.</p>
+<hr />
+<h2 id="7-confusable-format-erratum-lpf-xsd-is-misnamed">7. Confusable-format erratum: lpf.xsd is misnamed</h2>
+<h3 id="7-1-the-problem-the-name-lpf-is-highly-misleading">7.1 The problem: the name <code>lpf</code> is highly misleading</h3>
+<p>The schema directory contains <code>C:\Efinity\2026.1\pt\bin\schema\lpf.xsd</code> (167 lines). The file name <code>lpf</code> immediately suggests "Logic Preference File" / "LPF constraint file" (a physical-constraint format used by some FPGA vendors), leading people to <strong>assume Efinity also has some LPF constraint format</strong>.</p>
+<h3 id="7-2-the-fact-it-is-a-device-database-in-the-peri_device_db-namespace">7.2 The fact: it is a device database in the peri_device_db namespace</h3>
+<p>First-hand evidence (lpf.xsd):</p>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Content</th>
+<th>Conclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2</td>
+<td><code>targetNamespace="http://www.efinixinc.com/peri_device_db"</code></td>
+<td><strong>Belongs to the device-library namespace</strong>, not peri_design_db (the design library); it has no aggregation relationship whatsoever with peri.xml (efxpt) — see the §3.2 list, where lpf.xsd does not appear</td>
+</tr>
+<tr>
+<td>whole file</td>
+<td>Root element <code>periphery</code> (periphery_type: <code>@device</code> / <code>@design</code> / <code>@checksum</code>)</td>
+<td>Describes <strong>the periphery block data of a specific device</strong> — a checksummed database snapshot</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Child elements <code>sequence</code> / <code>block_def</code> (<code>@name</code> / <code>@bitsize</code> / <code>@paramsize</code>) / <code>instance</code> (<code>@id</code> / <code>@type</code> + parameter + binary value)</td>
+<td><strong>Bit-level block definitions</strong>: each block's (block_def) width, parameter layout, and per-instance binary image</td>
+</tr>
+<tr>
+<td>—</td>
+<td>The setting type of <code>parameter_value</code> is <code>binary_string_type</code> (pattern <code>([01])+</code>)</td>
+<td>Parameter values are <strong>01 bit strings</strong></td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>parameter_int_type</code> carries <code>@min</code> / <code>@max</code> / <code>@endianness</code> (little/big) / <code>@format</code> (binary/hex)</td>
+<td>Bit-encoding rules for integer parameters</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-3-conclusion">7.3 Conclusion</h3>
+<table>
+<thead>
+<tr>
+<th>Common misreading</th>
+<th>Fact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"lpf.xsd defines Efinity's LPF constraint file format"</td>
+<td>❌ Efinity <strong>has no</strong> LPF constraint format; constraints come in exactly two kinds — ISF (for PT) and SDC (for pnr) (hard rules §1)</td>
+</tr>
+<tr>
+<td>"peri.xml references lpf"</td>
+<td>❌ lpf.xsd belongs to <code>peri_device_db</code> (device library) while peri.xml belongs to <code>peri_design_db</code> (design library); different namespaces, no include/import relationship (§2.1, §3.2)</td>
+</tr>
+<tr>
+<td>"lpf is a variant of SDC"</td>
+<td>❌ Nothing to do with SDC; SDC is consumed by efx_pnr, while lpf.xsd describes the bit-level block definitions inside the PT device database</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Purpose</strong>: lpf.xsd serves PT's internal scenario of aligning/validating design-library data (peri.xml) against the device's factory bit-level definitions (block_def's bitsize/paramsize + instance binary values). SDK-level tooling <strong>never needs to parse it</strong>; any code that treats "lpf" as a constraint format is a bug misled by the file name.</p>
+<blockquote>
+<p>For similar namespace errata, compare the DesignAPI volume's §0.1 "three errata" and the SDC volume's analysis of report-artifact namespaces.</p>
+</blockquote>
+<hr />
+<h2 id="8-engineering-rules-and-sibling-volume-cross-references">8. Engineering rules and sibling-volume cross-references</h2>
+<h3 id="8-1-peri-xml-engineering-rules-checklist">8.1 peri.xml engineering rules (checklist)</h3>
+<ol>
+<li><strong>Never hand-write or hand-edit a peri.xml</strong>. The vendor's own words: "You should not edit this file directly!" (gloss-peri.xml.html L190-193). There are exactly two modification entry points: the Interface Designer (GUI) or ISF/DesignAPI (scripts).</li>
+<li><strong>peri.xml is a project source file</strong>: place it under version control together with the ISFs; no build path (SDK / adapter / scripts) may <strong>delete it before a build</strong> — delete-and-regenerate is a workaround, not a fix (hard rules §15).</li>
+<li><strong>Self-check gate</strong>: after every constraint change, first pass the ISF through <code>cli/import_gpio.bat --dry-run</code>, then run one replay compile to confirm the peri.xml loads cleanly (ISF volume §4; hard rules §16).</li>
+<li><strong>Bootstrap is one-shot</strong>: <code>create_*</code> runs only once, while the peri.xml does not exist, and must be commented out afterwards (ISF volume §3; this volume §1.4).</li>
+<li><strong>Do not write homegrown tools that parse/generate peri.xml</strong>: the format spans 24 sub-schemas and evolves with db_version (§3, @db_version §2.2); the correct approach is DesignAPI (the DesignAPI volume). The only legitimate programmatic surface is the DesignAPI read interface (e.g. for a workbench UI display).</li>
+<li><strong>Notes for diffing</strong>: an empty container ≠ a content change (§5.3); <code>@last_change_date</code> changes on every save — ignore it in diffs.</li>
+<li><strong>Triple device consistency</strong>: the peri.xml's <code>@device_def</code> must match the project XML's device information, or the unified flow errors out immediately at L224-230 (§1.3) — when copying another project as a template, switching the device is the first thing to do.</li>
+<li><strong>SDC clock-name alignment</strong>: the PLL <code>comp_output_clock/@name</code> in a peri.xml is the RTL clock name, and the SDC <code>create_clock</code> must match it exactly (§6.7; SDC volume hard rule §7).</li>
+</ol>
+<h3 id="8-2-cooperation-with-isfs-one-diagram">8.2 Cooperation with ISFs (one diagram)</h3>
+<pre><code class="language-text">            ┌──────────────────────────────────────────────┐
+            │  ISF (human-readable, Python API source, replay-safe) │
+            │  set_property / assign_pkg_pin / ...          │
+            └──────────────┬───────────────────────────────┘
+                           │ replay by efx_run_pt_unified.py (L252)
+                           ▼
+            ┌──────────────────────────────────────────────┐
+            │  &lt;design&gt;.peri.xml (efxpt:design_db design library) │  ← project source file
+            │  21 domains / 19 block classes in fixed order / exhaustive bank declaration │  ← hand-editing forbidden
+            └──────────────┬───────────────────────────────┘
+                           │ PT derivation
+                           ▼
+        {design}.unified.isf / peri.rtl.v / peri.pt.v / pbn / cdo  ← generated artifacts
+</code></pre>
+<h3 id="8-3-sibling-volume-cross-reference-index">8.3 Sibling-volume cross-reference index</h3>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Where to look</th>
+<th>Key anchors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISF syntax, the bootstrap/replay contract, the unified-flow step table</td>
+<td><code>Efinity-ISF语法参考.md</code></td>
+<td>§3 replay-safety contract, §4 the official file pairs, §7.1 unified six-step table, §7.4 the <code>&lt;design&gt;.peri.xml</code> entry</td>
+</tr>
+<tr>
+<td>DesignAPI → DesignWriterXml line-by-line dissection</td>
+<td><code>Efinity-DesignAPI方法参考.md</code></td>
+<td>section 5 "DesignWriterXml write-out model" (L3484 / L3521-3526 / L3596-3697), section 6 division-of-labor table, section 7 evidence list</td>
+</tr>
+<tr>
+<td>The project-file (<code>enf_proj</code>) format and <code>&lt;efx:inter_file&gt;</code></td>
+<td><code>xml-project-schema.md</code></td>
+<td>the whole volume</td>
+</tr>
+<tr>
+<td>PLL/OSC parameter semantics (N/M/O, phase, lock)</td>
+<td><code>Efinity硬IP-PLL与OSC参考.md</code></td>
+<td>the PLL parameter section (this volume's §4.3 covers only the XML attributes)</td>
+</tr>
+<tr>
+<td>SDC and compile report artifacts</td>
+<td><code>file-formats-sdc-and-reports.md</code></td>
+<td>§5 build-artifact glossary (its "peri.xml is the only design source? = Yes" shares a source with this volume's §1.1)</td>
+</tr>
+<tr>
+<td>Hard rules (bank voltages, PLL, ISF acceptance)</td>
+<td><code>rules-efinity-hard.md</code> (SDK user rules)</td>
+<td>§1 file formats, §3 bank voltages, §4 PLL, §15 interface baseline contract, §16 self-check list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-4-evidence-file-list-this-volume-s-first-hand-sources">8.4 Evidence file list (this volume's first-hand sources)</h3>
+<table>
+<thead>
+<tr>
+<th>Evidence file</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\peri_design_db.xsd</code> (256 lines)</td>
+<td>Root element, aggregation list, design_db_type (§2.2, §3)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\{gpio,iobank,pll,ctrl,clkmux,osc,lvds,...}_design.xsd</code></td>
+<td>The per-domain attribute tables of §4</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\common_design.xsd</code> (101 lines), <code>peri_util.xsd</code> (39 lines)</td>
+<td>Common types (§4.8)</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\lpf.xsd</code> (167 lines)</td>
+<td>The §7 erratum section</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.peri.xml</code> (109 lines)</td>
+<td>The §6 instance anatomy</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\design\service.py</code> L3596-3713</td>
+<td>§5 write-out order and persistence</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code> L99/L180-184/L224-230/L243-248/L252/L318-331</td>
+<td>§1.3 lifecycle</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\gloss-peri.xml.html</code> L168-197</td>
+<td>§1.1 official definition</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>End of this volume. Previous volume: <code>Efinity-DesignAPI方法参考.md</code>; related volumes: <code>Efinity-ISF语法参考.md</code>, <code>xml-project-schema.md</code>, <code>file-formats-sdc-and-reports.md</code>, <code>Efinity硬IP-PLL与OSC参考.md</code>.</em></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

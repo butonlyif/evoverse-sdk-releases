@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Reference Design Index</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Find official reference designs by use case.</span>
+<code>efinity/reference-design-index.md</code>
+<a href="../../../efinity/reference-design-index.md">Markdown source</a></p>
+<h1>Efinity Reference Design Index</h1></header>
+<main class="article"><h1 id="efinity-reference-design-index">Efinity Reference Design Index</h1>
+<blockquote>
+<p>Single source of truth: this file consolidates every reference-design entry point that ships <strong>with the Efinity tool</strong> or is <strong>officially released by Efinix</strong>.
+All material that is "not code in this repository" is given as <strong>links</strong>; <code>git clone</code> or download from the link when needed.</p>
+<p>Last updated: 2026-09-30
+Corresponding Efinity tool version: 2026.1 (install root <code>C:\Efinity\2026.1\</code>)
+Corresponding SDK version: EvoVerse SDK v1.0.0</p>
+<p>Sections A (official examples) and B (IP Catalog) are based on a per-directory hands-on audit of <code>C:\Efinity\2026.1\examples\</code> and <code>C:\Efinity\2026.1\ipm\ip\</code> performed on 2026-09-25.</p>
+</blockquote>
+<hr />
+<h2 id="0-quick-index">0. Quick index</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Category</th>
+<th>Entry</th>
+<th>Form</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>Bundled with the Efinity installer</td>
+<td><code>C:\Efinity\2026.1\examples\</code></td>
+<td>Local path</td>
+<td>10 official examples: helloworld / dbg×4 / ru / unified / r4000×3</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Official IP Catalog</td>
+<td><code>C:\Efinity\2026.1\ipm\ip\</code></td>
+<td>Local path</td>
+<td>47 IPXACT components (34 top-level + 13 composite-package sub-IPs)</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Website <code>support/ed/</code></td>
+<td>https://www.efinixinc.com/support/ed/</td>
+<td>Link</td>
+<td>Board-preloaded / application demo designs</td>
+</tr>
+<tr>
+<td>D</td>
+<td>GitHub: EmbeddedSystem-Solution</td>
+<td>https://github.com/Efinix-Inc/EmbeddedSystem-Solution</td>
+<td>Link</td>
+<td>Linux + Ethernet + SDHC + Sapphire SoC integration</td>
+</tr>
+<tr>
+<td>E</td>
+<td>GitHub: EVSoC</td>
+<td>https://github.com/Efinix-Inc/evsoc</td>
+<td>Link</td>
+<td>Edge Vision SoC video pipeline</td>
+</tr>
+<tr>
+<td>F</td>
+<td>GitHub: TinyML</td>
+<td>https://github.com/Efinix-Inc/tinyml</td>
+<td>Link</td>
+<td>TFLite Micro + custom instructions</td>
+</tr>
+<tr>
+<td>G</td>
+<td>GitHub: br2-efinix</td>
+<td>https://github.com/Efinix-Inc/br2-efinix</td>
+<td>Link</td>
+<td>Buildroot external tree for building Linux</td>
+</tr>
+<tr>
+<td>H</td>
+<td>GitHub: xyloni</td>
+<td>https://github.com/Efinix-Inc/xyloni</td>
+<td>Link</td>
+<td>Xyloni thumb board + Opal SoC</td>
+</tr>
+<tr>
+<td>I</td>
+<td>GitHub: zephyr-efinix</td>
+<td>https://github.com/Efinix-Inc/zephyr-efinix</td>
+<td>Link</td>
+<td>Zephyr RTOS BSP</td>
+</tr>
+<tr>
+<td>J</td>
+<td>GitHub: libusb / openocd_riscv</td>
+<td>https://github.com/Efinix-Inc/libusb , openocd_riscv</td>
+<td>Link</td>
+<td>USB driver / OpenOCD</td>
+</tr>
+<tr>
+<td>K</td>
+<td>Application Notes</td>
+<td>https://www.efinixinc.com/support/docs.php</td>
+<td>Link</td>
+<td>AN033 / AN043 / AN061, etc.</td>
+</tr>
+<tr>
+<td>L</td>
+<td>Sapphire SoC example software</td>
+<td>Delivered with the <code>efx_soc</code> IP</td>
+<td>Local path</td>
+<td>26 bare-metal firmware examples (list in <a href="ip-manager-guide.html">Efinity-IP-Manager使用指南.md §12</a>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="a-examples-bundled-with-the-efinity-installer-10-all-fully-audited">A. Examples bundled with the Efinity installer (10, all fully audited)</h2>
+<p><strong>Location</strong>: <code>C:\Efinity\2026.1\examples\</code>
+<strong>Devices</strong>: all 10 examples target <strong>Ti60F225 / C4</strong> (Titanium), verified one by one from each example project XML's <code>device_info</code>.
+<strong>Notes</strong>: shipped with the Efinity installer; see <em>Efinity Software User Guide</em> Chapter 2, "Example Designs".</p>
+<h3 id="a-1-master-table">A.1 Master table</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Directory</th>
+<th>Topic</th>
+<th>Project XML</th>
+<th>unified_flow</th>
+<th>Copy-and-adapt value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>helloworld/</code></td>
+<td>LED blinky baseline</td>
+<td><strong>None</strong></td>
+<td>— (N/A)</td>
+<td>ISF syntax onboarding; ISF material library for the classic PT flow</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>helloworld-dbg/</code></td>
+<td>Efinity Debugger onboarding</td>
+<td>Yes</td>
+<td><code>false</code></td>
+<td>mark_debug probes + the inithex debug flow</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>helloworld-dbg_AUTO_AND_MANUAL/</code></td>
+<td>Automatic + manual probes</td>
+<td>Yes</td>
+<td><code>false</code></td>
+<td>dbg_manual.json template-driven probe generation</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>helloworld-dbg_GOLDEN/</code></td>
+<td>Golden waveform regression</td>
+<td>Yes</td>
+<td><code>false</code></td>
+<td>Baseline for waveform-consistency regression</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>helloworld-dbg_MULTI_USERS/</code></td>
+<td>VIO + LA multi-user debug</td>
+<td>Yes</td>
+<td><code>false</code></td>
+<td>la.json / vio.json multi-probe coordination</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>helloworld-ru/</code></td>
+<td>Remote Update multi-image</td>
+<td>4 sub-project XMLs</td>
+<td><code>false</code></td>
+<td>Multi-image + cfg_CBSEL/cfg_ENA switching</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>helloworld-unified/</code></td>
+<td><strong>Unified Flow golden template</strong></td>
+<td>Yes</td>
+<td><strong><code>true</code> (the only one)</strong></td>
+<td>Alignment baseline for the EvoVerse project generator (see the A.9 deep dive)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>r4000-mixed-preservation/</code></td>
+<td>Incremental compile / preservation</td>
+<td>Yes</td>
+<td><code>false</code></td>
+<td>step1~4 + stubs replacing unfinished modules</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>r4000-place-regions/</code></td>
+<td>Region constraints</td>
+<td>Yes (old 2018.4 format)</td>
+<td><code>false</code></td>
+<td>partitions.pdefn placement constraints</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>r4000-team-based-design/</code></td>
+<td>Team-based parallel design</td>
+<td>Multiple sub-projects</td>
+<td><code>false</code></td>
+<td>The floorplan → sub-projects → integration collaboration flow</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source</strong>: enumeration of the 10 subdirectories of <code>C:\Efinity\2026.1\examples\</code> + reading of each XML (2026-09-25). Only <code>helloworld-unified/helloworld.xml</code> contains <code>unified_flow="true"</code>.</p>
+</blockquote>
+<h3 id="a-2-helloworld-the-classic-pt-flow-material-library">A.2 helloworld/ — the classic PT-flow material library</h3>
+<ul>
+<li><strong>No project XML</strong> (the audited directory contains no <code>*.xml</code>). It only provides material: one <code>*_kit.isf</code> per each of the 9 official dev kits, plus <code>helloworld.v</code> / <code>helloworld.sdc</code> / testbench / <code>example_report.tcl</code>.</li>
+<li>All four top-level ports of <code>helloworld.v</code> carry the <code>(* syn_peri_port = 0 *)</code> attribute — external ports must be marked this way in the classic flow (it can be omitted under the unified flow).</li>
+<li><strong>Copy-and-adapt value</strong>: the cleanest starting point for learning ISF pin-constraint style; not itself an "open-and-compile" project — create your own project and reference its ISF.</li>
+</ul>
+<blockquote>
+<p><strong>Source</strong>: <code>C:\Efinity\2026.1\examples\helloworld\</code> directory enumeration + direct read of <code>helloworld.v</code></p>
+</blockquote>
+<h3 id="a-3-the-helloworld-dbg-family-4-efinity-debugger">A.3 The helloworld-dbg family (4) — Efinity Debugger</h3>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Probe source</th>
+<th>Key files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>helloworld-dbg/</code></td>
+<td>RTL <code>mark_debug</code> + xml <code>enable-mark-debug=1</code></td>
+<td><code>*.peri.xml</code>, original/reverse/v1/v2 <code>.inithex</code></td>
+</tr>
+<tr>
+<td><code>helloworld-dbg_AUTO_AND_MANUAL/</code></td>
+<td>Wizard-generated automatic + manual templates mixed</td>
+<td><code>dbg_manual.json</code>, <code>dbg_manual_TEMPLATE.v</code>, <code>wizard.json</code></td>
+</tr>
+<tr>
+<td><code>helloworld-dbg_GOLDEN/</code></td>
+<td>Fixed golden baseline</td>
+<td>Used for waveform regression</td>
+</tr>
+<tr>
+<td><code>helloworld-dbg_MULTI_USERS/</code></td>
+<td>Multi-user grouped probes</td>
+<td><code>la.json</code>, <code>vio.json</code>, per-group <code>*_TEMPLATE.v</code> / <code>top.v</code></td>
+</tr>
+</tbody>
+</table>
+<p>All four are classic-flow projects with <code>unified_flow="false"</code> and contain <code>*.peri.xml</code>. The SDK's six-step CLI debug flow (scan → probe table → trigger → capture → VCD) uses this example family as its teaching prototype.</p>
+<blockquote>
+<p><strong>Source</strong>: <code>C:\Efinity\2026.1\examples\helloworld-dbg*\</code> directory enumeration (2026-09-25)</p>
+</blockquote>
+<h3 id="a-4-helloworld-ru-remote-update-multi-image">A.4 helloworld-ru/ — Remote Update multi-image</h3>
+<ul>
+<li>4 complete sub-projects <code>helloworld0..3</code>, each with its own XML / peri.xml / sdc / v;</li>
+<li>The top-level <code>isf/</code> subdirectory contains only 6 sets of kit ISFs (not all 9 boards);</li>
+<li>Demonstrates multi-image switching through the <code>cfg_CBSEL</code> / <code>cfg_ENA</code> / <code>cfg_ERROR</code> / <code>cfg_USR_STATUS</code> configuration control signals.</li>
+</ul>
+<p><strong>Copy-and-adapt value</strong>: the only official reference for field OTA / multi-image fault-tolerance needs.</p>
+<blockquote>
+<p><strong>Source</strong>: <code>C:\Efinity\2026.1\examples\helloworld-ru\</code> directory enumeration</p>
+</blockquote>
+<h3 id="a-5-helloworld-unified-the-golden-template-deep-dive-guide-in-a-9">A.5 helloworld-unified/ — the golden template (deep-dive guide in A.9)</h3>
+<p>The only <code>unified_flow="true"</code> example, and the default-parameter alignment baseline for the EvoVerse project generator (<code>_build_native_project_xml</code>).</p>
+<h3 id="a-6-the-r4000-family-3-advanced-flows">A.6 The r4000 family (3) — advanced flows</h3>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Mechanism</th>
+<th>Key files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r4000-mixed-preservation/</code></td>
+<td>Incremental compile: finished modules preserved, unfinished modules replaced by stubs</td>
+<td><code>common/</code> + <code>r4000.sdc/v</code> + <code>stubs.v</code>; step1~4 each contain <code>.pifce</code>/<code>.pdefn</code></td>
+</tr>
+<tr>
+<td><code>r4000-place-regions/</code></td>
+<td>Region-constrained placement</td>
+<td><code>partitions.pdefn</code>; <strong>note its XML is in the old 2018.4 format</strong> and cannot be applied directly to a 2026.1 project</td>
+</tr>
+<tr>
+<td><code>r4000-team-based-design/</code></td>
+<td>Team collaboration: top-level floorplan + parallel sub-projects + integration</td>
+<td><code>step0-flrpln</code> (contains example-configs), <code>step1a-alu</code> / <code>1b-cntrl</code> / <code>1c-register</code>, <code>step2-integ</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source</strong>: <code>C:\Efinity\2026.1\examples\r4000-*\</code> directory enumeration (2026-09-25)</p>
+</blockquote>
+<h3 id="a-7-dedicated-conclusion-the-official-examples-do-not-cover-ddr-lvds-standalone-pll">A.7 Dedicated conclusion: the official examples do <strong>not</strong> cover DDR / LVDS / standalone PLL</h3>
+<p>Conclusions after enumerating all 10 examples one by one:</p>
+<ol>
+<li><strong>None of the official examples contains a complete project with a DDR controller or LVDS transceivers</strong>;</li>
+<li>PLLs appear only in <code>helloworld-unified</code>'s <code>_kit_manual.isf</code> (a one-time bootstrap script); there is no "standalone PLL example project";</li>
+<li>Efinix places the complete DDR/LVDS/MIPI references in the <strong>official website <code>support/ed/</code></strong> (§C) and in <strong>each IP's Example Design in the IP Catalog</strong> (§B, generated by IP Manager), not in the examples directory.</li>
+</ol>
+<p><strong>Implications for EvoVerse (only two authoritative template sources; the AGENTS.md §15 contract)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Authoritative template source</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISF / project skeleton</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code></td>
+<td>pins-style ISF + unified flow; this repository's generator default parameters align with it</td>
+</tr>
+<tr>
+<td>DDR / LVDS / device-specific baselines</td>
+<td>Authoritative baseline demos in this repository's catalog that have <strong>passed bitstream-level on-board verification</strong> (e.g., the same-device <code>ddr-memtest</code>)</td>
+<td>"Copy and adapt, never invent from zero" (<code>rules-efinity-hard.md</code> §15)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source</strong>: full enumeration of examples; the AGENTS.md "authoritative template sources" section</p>
+</blockquote>
+<h3 id="a-8-general-porting-points-prerequisites-for-the-m-2-table">A.8 General porting points (prerequisites for the M.2 table)</h3>
+<ul>
+<li>Classic-flow examples carry <code>(* syn_peri_port = 0 *)</code> on their top-level ports; <code>unified_flow="true"</code> projects may omit it;</li>
+<li><code>helloworld-ru</code>'s sub-projects are independent, complete projects — you cannot copy just one of their files;</li>
+<li><code>r4000-place-regions</code>'s old-format XML serves as semantic reference only; elements must be rewritten to the 2026.1 schema.</li>
+</ul>
+<hr />
+<h2 id="a-9-deep-dive-guide-to-the-helloworld-unified-golden-template">A.9 Deep-dive guide to the helloworld-unified golden template</h2>
+<p><strong>Location</strong>: <code>C:\Efinity\2026.1\examples\helloworld-unified\</code>
+<strong>Status</strong>: the default-parameter alignment baseline for the EvoVerse project generator (<code>awesomsdk\sdk\cli\evoverse</code> <code>_build_native_project_xml</code>); the official proof of the ISF bootstrap/replay contract (AGENTS.md §15).</p>
+<h3 id="a-9-1-roles-and-relationships-of-the-three-file-types">A.9.1 Roles and relationships of the three file types</h3>
+<pre><code>helloworld.xml (project XML, enf_proj namespace)
+   │  design_info → design_file (user RTL)
+   │  constraint_info → &lt;efx:isf_file name=&quot;Ti60F225_kit_pins.isf&quot;/&gt;   ← references only the pins ISF
+   │            └──────→ &lt;efx:inter_file name=&quot;&quot;/&gt;                     ← empty entry (see the A.9.4 pitfall)
+   ▼
+Ti60F225_kit_pins.isf (replay-safe: set_property / assign_pkg_pin only)
+   │  replayed on every unified build ──┐
+   ▼                               ▼
+Ti60F225_kit_manual.isf      helloworld.peri.xml (efxpt:design_db namespace)
+(one-time bootstrap: create_*)   (design source produced by the PT tool; must survive the build)
+</code></pre>
+<p>The three-way relationship in one sentence: <strong>the project XML declares "which pins ISF I use"; the manual ISF is the bootstrap tool that runs only once; peri.xml is the persisted result after bootstrap, incrementally replayed by the pins ISF on every build.</strong></p>
+<h3 id="a-9-2-the-dual-isf-split-9-boards-2-18-isfs-audited">A.9.2 The dual-ISF split (9 boards × 2 = 18 ISFs, audited)</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Command style</th>
+<th>When executed</th>
+<th>Replayable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;kit&gt;_pins.isf</code></td>
+<td>Only <code>design.set_property</code> (PULL_OPTION etc.) + <code>design.assign_pkg_pin</code> (e.g., <code>("led[0]","K14")</code>)</td>
+<td>Every build (the project XML's <code>efx:isf_file</code> references it)</td>
+<td>Idempotent; can be replayed indefinitely</td>
+</tr>
+<tr>
+<td><code>&lt;kit&gt;_manual.isf</code></td>
+<td><code>design.create_pll_input_clock_gpio</code> + <code>design.create_block("pll_inst1","PLL")</code> + PLL-parameter set_property (M/N/O, <code>REFCLK_FREQ=25.0</code>, <code>CLKOUT0_DIV=110</code>) + <code>assign_pkg_pin("pll_refclk","B2")</code> + <code>assign_resource("pll_inst1","PLL_TL0","PLL")</code></td>
+<td>A <strong>one-time bootstrap</strong> only when peri.xml does not exist</td>
+<td>Not replayable (re-running <code>create_*</code> raises an exists error)</td>
+</tr>
+</tbody>
+</table>
+<p>The project XML references only <code>_kit_pins.isf</code> — <code>_kit_manual.isf</code> is referenced by no XML and is executed manually during the bootstrap phase. This corresponds exactly to the AGENTS.md §15 acceptance rule of "bootstrap compile + replay compile, two consecutive PASSes".</p>
+<h3 id="a-9-3-what-is-inside-peri-xml-audited-highlights">A.9.3 What is inside peri.xml (audited highlights)</h3>
+<p><code>helloworld.peri.xml</code> (namespace <code>efxpt:design_db</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Content</th>
+<th>Audited value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>device_def</code></td>
+<td><code>Ti60F225</code></td>
+</tr>
+<tr>
+<td>iobank definitions</td>
+<td>12 banks: 1A~4B are 1.8V LVCMOS; BL/BR/TL/TR are 3.3V</td>
+</tr>
+<tr>
+<td><code>ctrl_info</code></td>
+<td><code>cfg_CBSEL</code> / <code>cfg_ENA</code> / <code>cfg_ERROR</code> / <code>cfg_USR_STATUS</code> (the Remote Update control plane)</td>
+</tr>
+<tr>
+<td><code>clkmux_info</code></td>
+<td><code>CLKMUX_B</code> / <code>CLKMUX_L</code> / <code>CLKMUX_R</code></td>
+</tr>
+<tr>
+<td><code>seu_info</code></td>
+<td>SEU-related configuration</td>
+</tr>
+</tbody>
+</table>
+<p>peri.xml is a <strong>design source file</strong>: put it under version control, keep it alive after builds, and never let any build path delete it — deleting and regenerating it is a workaround, not a fix (AGENTS.md §15).</p>
+<h3 id="a-9-4-a-real-observed-pitfall-the-empty-efx-inter_file-name">A.9.4 A real, observed pitfall: the empty <code>&lt;efx:inter_file name=""/&gt;</code></h3>
+<p>The audited <code>helloworld.xml</code> contains an empty <code>&lt;efx:inter_file name=""/&gt;</code> entry in its <code>constraint_info</code>. The official example compiles with it, but in EvoVerse practice this entry breaks the build — <code>rules-efinity-hard.md</code> §2 states explicitly that "the name of <code>&lt;efx:inter_file&gt;</code> must not be an empty string". This repository's generator (<code>_build_native_project_xml</code>) handles it as follows: it does not emit the inter_file line; likewise, an empty <code>isf_file</code> omits the whole line (an empty <code>&lt;efx:isf_file name=""/&gt;</code> makes PT reject a project that carries a peri.xml).</p>
+<p><strong>Mandatory when copying and adapting</strong>: delete the empty <code>&lt;efx:inter_file/&gt;</code>; confirm that <code>efx:isf_file</code> points to a pins ISF that actually exists.</p>
+<h3 id="a-9-5-the-bootstrap-ritual-aligned-with-agents-md-15">A.9.5 The bootstrap ritual (aligned with AGENTS.md §15)</h3>
+<ol>
+<li>Write the pins-style ISF (set/assign only) and temporarily enable the manual ISF's <code>create_*</code> lines;</li>
+<li>Compile once to generate peri.xml → <strong>immediately comment out the <code>create_*</code> lines</strong>, adding a one-line note (when to enable them);</li>
+<li>The replay compile must PASS again in full — only bootstrap + replay, two consecutive PASSes, counts as ISF acceptance;</li>
+<li>Put peri.xml under version control together with the ISFs.</li>
+</ol>
+<blockquote>
+<p><strong>Source</strong>: full read of <code>C:\Efinity\2026.1\examples\helloworld-unified\</code> (helloworld.xml, 18 ISFs, helloworld.peri.xml, 2026-09-25); AGENTS.md §15</p>
+</blockquote>
+<hr />
+<h2 id="b-official-ip-catalog-47-ipxact-components">B. Official IP Catalog (47 IPXACT components)</h2>
+<p><strong>Location</strong>: <code>C:\Efinity\2026.1\ipm\ip\</code>
+<strong>Scale (audited 2026-09-25)</strong>: 47 IPXACT components = 34 top-level + 13 composite-package sub-IPs (<code>efx_csi2</code>×4, <code>efx_dphy</code>×4, <code>efx_dsi</code>×4, <code>efx_soc</code>×1); 38 directories in total (34 top-level + 4 composite-package containers + <code>common</code>).
+<strong>Complete list</strong> (including each component's IPXACT library/name/version/moduleName and the 7 directory-name ≠ IPXACT-name traps): see <a href="ip-manager-guide.html">Efinity-IP-Manager使用指南.md §3</a> — this section no longer duplicates the full table; that file is the single source of truth.</p>
+<p><strong>Top-level directory quick view</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Directories</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bus / bridge / DMA</td>
+<td><code>efx_apb3_2_axi4_lite</code> <code>efx_apb_interconnect</code> <code>efx_data_pipeline</code> <code>efx_dma</code> <code>efx_pcie_dma</code> <code>efx_pma_64b66b_gb</code></td>
+</tr>
+<tr>
+<td>AXI infrastructure</td>
+<td><code>efx_axi_data_fifo</code> <code>efx_axi_interconnect</code> <code>efx_axi_stream_switch</code></td>
+</tr>
+<tr>
+<td>Memory</td>
+<td><code>efx_bram</code> <code>efx_fifo_2</code></td>
+</tr>
+<tr>
+<td>Memory controllers</td>
+<td><code>efx_ddr3_soft_controller</code> <code>efx_ddr_reset_controller</code> <code>efx_flash_controller</code> <code>efx_hyper_ram_2</code> <code>efx_jtag2spi_flash</code> <code>efx_sdram_controller</code> <code>efx_sd_host_controller</code> <code>efx_socddr_calrst</code></td>
+</tr>
+<tr>
+<td>Arithmetic</td>
+<td><code>efx_cordic</code> <code>efx_divider</code> <code>efx_divider_2</code> <code>efx_integer_square_root</code></td>
+</tr>
+<tr>
+<td>MIPI (composite packages)</td>
+<td><code>efx_csi2\</code> (4 sub-IPs) <code>efx_dphy\</code> (4 sub-IPs) <code>efx_dsi\</code> (4 sub-IPs)</td>
+</tr>
+<tr>
+<td>SoC (composite packages)</td>
+<td><code>efx_soc\efx_soc</code> (RV32) <code>efx_soc_rv64</code> <code>efx_hard_soc</code></td>
+</tr>
+<tr>
+<td>Serial interfaces</td>
+<td><code>efx_i2c_controller</code> <code>efx_jtag</code> <code>efx_uart</code></td>
+</tr>
+<tr>
+<td>Ethernet</td>
+<td><code>efx_tsemac</code> <code>efx_mac10gbe</code> <code>efx_usxgmii_an_37</code></td>
+</tr>
+<tr>
+<td>PLL configuration</td>
+<td><code>efx_pll_cfg</code> <code>efx_pll_autoreset</code></td>
+</tr>
+<tr>
+<td>Transceivers</td>
+<td><code>efx_prbs_tx_rx</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to use</strong>: in Efinity, <em>IP Manager → select the IP → Deliverables, check "Generate Example Design"</em>; for scripting, use <code>IPMDesignAPI</code> (see <a href="ip-manager-guide.html">Efinity-IP-Manager使用指南.md §8</a>).</p>
+<blockquote>
+<p><strong>Source</strong>: <code>C:\Efinity\2026.1\ipm\ip\</code> directory enumeration and a full read of all 47 <code>ip_component.xml</code> files (2026-09-25)</p>
+</blockquote>
+<hr />
+<h2 id="c-official-website-support-ed-example-design">C. Official website <code>support/ed/</code> Example Design</h2>
+<p>Entry point: https://www.efinixinc.com/support/ed/index.php
+Board-preloaded / application-demo designs grouped by board. <strong>The complete DDR/LVDS/MIPI references live mainly here and in the IP-bundled Example Designs</strong> (the A.7 conclusion).</p>
+<h3 id="c-1-active">C.1 Active</h3>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60 F225</td>
+<td>Ti60 F225 Development Kit Design</td>
+<td>Mini-DSI display + UVC USB video + SD card reader</td>
+</tr>
+<tr>
+<td>Ti60 F225</td>
+<td>Memory Efficiency Tester</td>
+<td>BRAM utilization benchmark</td>
+</tr>
+<tr>
+<td>Ti375 N1156</td>
+<td>PCIe® Reads/Writes on Linux Demo</td>
+<td>PCIe Gen4 EP with a host-side Linux driver</td>
+</tr>
+<tr>
+<td>T120 BGA324 / BGA576</td>
+<td>Edge Vision SoC Framework</td>
+<td>MIPI CSI-2 + DMA + Sapphire SoC (see E)</td>
+</tr>
+<tr>
+<td>Ti60 F225 / Ti180 J484</td>
+<td>Edge Vision SoC Framework</td>
+<td>Same as above</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-2-eol-still-downloadable-no-longer-maintained">C.2 EOL (still downloadable, no longer maintained)</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trion T20 LVDS Loopback (v2021.1)</td>
+<td>External LVDS loopback</td>
+</tr>
+<tr>
+<td>Trion T20 SPI Passive Programming with Raspberry Pi</td>
+<td>RPi configures the Trion; C/Python software</td>
+</tr>
+<tr>
+<td>Trion T8 Multi-Image Configuration</td>
+<td>Multi-image configuration based on a helloworld variant</td>
+</tr>
+<tr>
+<td>Floating-Point Converter</td>
+<td>Floating-point → fixed-point conversion</td>
+</tr>
+<tr>
+<td>Using the MIPI Virtual Channel</td>
+<td>Ti60F225 virtual-channel MIPI video loopback</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d-github-embeddedsystem-solution">D. GitHub: EmbeddedSystem-Solution</h2>
+<p><strong>Repository</strong>: https://github.com/Efinix-Inc/EmbeddedSystem-Solution
+<strong>License</strong>: open source
+<strong>Last updated</strong>: 2026-05-19
+<strong>Branches</strong>: <code>Ti375C529</code> (default) / <code>Ti180J484</code> / <code>T120F576</code>
+<strong>Key IP mix</strong>: <code>efx_soc</code> Sapphire SoC, <code>efx_tsemac</code> 10/100/1000 Mbps triple-speed Ethernet, <code>efx_sd_host_controller</code> SD/eMMC, <code>efx_dma</code> + memory controller, <code>efx_hard_soc</code> (Ti375C529 branch only, hardened quad-core RISC-V), and an SDIO Wi-Fi daughterboard (Embedded Artist 1×1 Wi-Fi 6).</p>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>SoC type</th>
+<th>OS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti375C529 Devkit</td>
+<td>High-Performance Sapphire SoC (hardened quad-core)</td>
+<td>Linux + FreeRTOS</td>
+</tr>
+<tr>
+<td>Ti180J484 Devkit</td>
+<td>Sapphire SoC (soft core)</td>
+<td>FreeRTOS</td>
+</tr>
+<tr>
+<td>T120F576 Devkit</td>
+<td>Sapphire SoC (soft core)</td>
+<td>FreeRTOS</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to get it</strong>: after <code>git clone https://github.com/Efinix-Inc/EmbeddedSystem-Solution</code>, run <code>git checkout &lt;board-branch&gt;</code> (branches above); open <code>&lt;board&gt;_devkit.peri.xml</code> in Efinity.</p>
+<hr />
+<h2 id="e-github-evsoc-edge-vision-soc-framework">E. GitHub: EVSoC (Edge Vision SoC Framework)</h2>
+<p><strong>Repository</strong>: https://github.com/Efinix-Inc/evsoc
+<strong>License</strong>: MIT
+<strong>Last updated</strong>: 2026-07-01
+<strong>Branches</strong>: <code>main</code> (active, based on Sapphire SoC) / <code>evsoc_ruby</code> (historical, no longer updated)</p>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>Resolution</th>
+<th>Subdirectory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trion T120 BGA324</td>
+<td>1280×720 / 640×480 (dual camera supported)</td>
+<td><code>T120F324_1280_720/</code>, <code>T120F324_1280_720_dualCam/</code>, <code>T120F324_640_480/</code></td>
+</tr>
+<tr>
+<td>Trion T120 BGA576</td>
+<td>Same as above</td>
+<td><code>T120F576_1280_720/</code>, <code>T120F576_1280_720_dualCam/</code>, <code>T120F576_640_480/</code></td>
+</tr>
+<tr>
+<td>Titanium Ti60 F225</td>
+<td>DSI</td>
+<td><code>Ti60F225_dsi/</code>, <code>Ti60F225_coral_dsi/</code></td>
+</tr>
+<tr>
+<td>Titanium Ti180 J484</td>
+<td>HDMI</td>
+<td><code>Ti180J484_hdmi/</code>, <code>Ti180J484_coral_hdmi/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key modules</strong>: Sapphire RISC-V SoC control, DMA Controller (frame mover), Camera Subsystem (MIPI CSI-2), Display Subsystem (MIPI DSI / HDMI), and Hardware Accelerator Interface (user accelerators can be attached).
+<strong>How to get it</strong>: <code>git clone https://github.com/Efinix-Inc/evsoc</code>.</p>
+<hr />
+<h2 id="f-github-tinyml">F. GitHub: TinyML</h2>
+<p><strong>Repository</strong>: https://github.com/Efinix-Inc/tinyml
+<strong>License</strong>: MIT
+<strong>Last updated</strong>: 2026-03-24</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model_zoo/</code></td>
+<td>Trained TFLite models (MobilenetV1, YOLO, MediaPipe Face Landmark)</td>
+</tr>
+<tr>
+<td><code>tinyml_hello_world/</code></td>
+<td>Static-input inference example</td>
+</tr>
+<tr>
+<td><code>tinyml_vision/</code></td>
+<td>End-to-end vision pipeline (combined with EVSoC)</td>
+</tr>
+<tr>
+<td><code>tools/tinyml_generator/</code></td>
+<td>GUI tool that generates accelerator configurations</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>FAQ and user manual</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceleration strategies</strong>: ① pure TFLite Micro C++ (runs on CPU) → ② Efinix TinyML Accelerator (custom-instruction acceleration) → ③ user-defined accelerators (attached to the hardware accelerator socket) → ④ data exchange via DMA and the SoC slave interface.
+<strong>Supported cameras</strong> (quick start): Raspberry Pi Camera Module v2, Sony IMX219, Google Coral Camera, Omnivision OV5645; lead board: Ti180 J484.
+<strong>How to get it</strong>: <code>git clone https://github.com/Efinix-Inc/tinyml</code>.</p>
+<hr />
+<h2 id="g-github-br2-efinix">G. GitHub: br2-efinix</h2>
+<p><strong>Repository</strong>: https://github.com/Efinix-Inc/br2-efinix
+<strong>License</strong>: open source
+<strong>Notes</strong>: a Buildroot external tree containing OpenSBI v0.9, U-Boot v2021.04, Linux v5.10, and the RISC-V cross GCC v8.4.0.
+<strong>Supported boards</strong>: T120F324, T120F576, Ti60F225, Ti180F484.
+<strong>Pairs with D</strong>: used together with <code>EmbeddedSystem-Solution</code>'s <code>embedded_sw/efx_solution</code> — the former is RTL+ISF, the latter is the software stack.</p>
+<pre><code class="language-bash">git clone https://github.com/Efinix-Inc/br2-efinix
+</code></pre>
+<hr />
+<h2 id="h-github-xyloni">H. GitHub: xyloni</h2>
+<p><strong>Repository</strong>: https://github.com/Efinix-Inc/xyloni
+<strong>License</strong>: MIT
+<strong>Last updated</strong>: 2023-01-16
+<strong>Notes</strong>: projects and software for the Xyloni thumb-size dev board (T8F81), including getting-started examples for the Opal RISC-V SoC. Aimed at embedded and hobbyist beginners.</p>
+<pre><code class="language-bash">git clone https://github.com/Efinix-Inc/xyloni
+</code></pre>
+<hr />
+<h2 id="i-github-zephyr-efinix">I. GitHub: zephyr-efinix</h2>
+<p><strong>Repository</strong>: https://github.com/Efinix-Inc/zephyr-efinix
+<strong>Upstream baseline</strong>: https://github.com/Efinix-Inc/zephyr (fork of zephyrproject-rtos/zephyr)
+<strong>License</strong>: MIT
+<strong>Notes</strong>: the BSP for Zephyr RTOS on Efinix FPGAs plus development-environment setup guide.</p>
+<pre><code class="language-bash">git clone https://github.com/Efinix-Inc/zephyr-efinix
+</code></pre>
+<hr />
+<h2 id="j-github-debug-usb-toolchain">J. GitHub: debug / USB toolchain</h2>
+<table>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Purpose</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Efinix-Inc/libusb</code></td>
+<td>Cross-platform USB access library (LGPL-2.1)</td>
+<td>https://github.com/Efinix-Inc/libusb</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/openocd_riscv</code></td>
+<td>RISC-V OpenOCD debugging</td>
+<td>https://github.com/Efinix-Inc/openocd_riscv</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/opensbi</code></td>
+<td>OpenSBI source mirror</td>
+<td>https://github.com/Efinix-Inc/opensbi</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/u-boot</code></td>
+<td>U-Boot source mirror</td>
+<td>https://github.com/Efinix-Inc/u-boot</td>
+</tr>
+<tr>
+<td><code>Efinix-Inc/buildroot</code></td>
+<td>Buildroot source mirror</td>
+<td>https://github.com/Efinix-Inc/buildroot</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="k-application-notes">K. Application Notes</h2>
+<p><strong>Entry point</strong>: https://www.efinixinc.com/support/docs.php
+<strong>Link format</strong>: <code>https://www.efinixinc.com/docs/an&lt;NUM&gt;-&lt;title&gt;-v&lt;rev&gt;.pdf</code></p>
+<table>
+<thead>
+<tr>
+<th>AN</th>
+<th>Title</th>
+<th>Applicable to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AN033</td>
+<td>Configuring Titanium FPGAs</td>
+<td>Ti60 / Ti180 / Ti375</td>
+</tr>
+<tr>
+<td>AN043 v1.3</td>
+<td>10/100/1000 Mbps TSE MAC + Sapphire SoC on lwIP</td>
+<td>Ti60/Ti180/T120</td>
+</tr>
+<tr>
+<td>AN061</td>
+<td>Configuring Topaz FPGAs</td>
+<td>Tz170</td>
+</tr>
+<tr>
+<td>AN 020+</td>
+<td>MIPI / DDR / configuration modes</td>
+<td>As needed</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>AN043 v1.3 resource reference (Efinity 2023.1, 100 MHz system clock):</p>
+<table>
+<thead>
+<tr>
+<th>FPGA</th>
+<th>LUTs</th>
+<th>FFs</th>
+<th>BRAM</th>
+<th>DSP</th>
+<th>fMAX TSEMAC</th>
+<th>fMAX SoC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ti60 F225 C4</td>
+<td>17,958</td>
+<td>15,117</td>
+<td>176</td>
+<td>4</td>
+<td>245 MHz</td>
+<td>289 MHz</td>
+</tr>
+<tr>
+<td>Ti180 M484 C4</td>
+<td>24,224</td>
+<td>28,669</td>
+<td>284</td>
+<td>4</td>
+<td>245 MHz</td>
+<td>289 MHz</td>
+</tr>
+<tr>
+<td>Ti180 J484 C4</td>
+<td>24,369</td>
+<td>28,668</td>
+<td>284</td>
+<td>4</td>
+<td>233 MHz</td>
+<td>241 MHz</td>
+</tr>
+<tr>
+<td>T120 F324</td>
+<td>15,678</td>
+<td>14,223</td>
+<td>204</td>
+<td>4</td>
+<td>134 MHz</td>
+<td>63 MHz</td>
+</tr>
+<tr>
+<td>T120 F576</td>
+<td>15,588</td>
+<td>14,215</td>
+<td>204</td>
+<td>4</td>
+<td>134 MHz</td>
+<td>65 MHz</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr />
+<h2 id="l-sapphire-soc-example-software">L. Sapphire SoC example software</h2>
+<p>Delivered alongside <code>efx_soc</code> / <code>efx_soc_rv64</code> / <code>efx_hard_soc</code> IP generation, at the project-root path <code>embedded_sw/&lt;soc&gt;/software/</code>.
+Every example contains a <code>makefile</code> + <code>src/</code> and can be built directly in the Efinity RISC-V Embedded Software IDE.</p>
+<p><strong>Complete list of the 26 firmware examples and the BSP structure</strong>: see <a href="ip-manager-guide.html">Efinity-IP-Manager使用指南.md §12</a> (single source of truth; this section does not duplicate it).</p>
+<p>BSP skeleton quick view:</p>
+<pre><code>embedded_sw/&lt;soc&gt;/
+├── bsp/efinix/EfxSapphireSoC/   # soc.h / soc.mk / linker/*.ld / openocd
+├── config/                       # Windows Eclipse project configuration
+├── config_linux/                 # Linux Eclipse project configuration
+├── software/                     # the 26 examples
+└── tool/                         # helper scripts
+</code></pre>
+<hr />
+<h2 id="m-how-sdk-evoverse-projects-pick-an-entry-point">M. How SDK / EvoVerse projects pick an entry point</h2>
+<h3 id="m-1-decision-table">M.1 Decision table</h3>
+<table>
+<thead>
+<tr>
+<th>Your goal</th>
+<th>Section to consult</th>
+<th>Entry point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Get the simplest LED blinky running (any board)</td>
+<td>A</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code> (unified-flow baseline) or <code>helloworld\</code> (classic ISF material)</td>
+</tr>
+<tr>
+<td>Learn the unified-flow project structure / write a project generator</td>
+<td>A.9</td>
+<td>the <code>helloworld-unified</code> golden template</td>
+</tr>
+<tr>
+<td>Probe signals with the Efinity Debugger</td>
+<td>A</td>
+<td>the 4 <code>helloworld-dbg</code> variants</td>
+</tr>
+<tr>
+<td>Multi-image / field OTA</td>
+<td>A</td>
+<td><code>helloworld-ru/helloworld0..3</code></td>
+</tr>
+<tr>
+<td>Incremental compile / region constraints / team collaboration</td>
+<td>A</td>
+<td><code>r4000-*</code></td>
+</tr>
+<tr>
+<td>DDR / LVDS baseline</td>
+<td>A.7</td>
+<td><strong>not in the official examples</strong> — use this repository's audited catalog baseline (ddr-memtest) or the §C website ED</td>
+</tr>
+<tr>
+<td>Use an IP — first run the IP's bundled example</td>
+<td>B</td>
+<td><code>C:\Efinity\2026.1\ipm\ip\efx_*</code> + IP Manager generation</td>
+</tr>
+<tr>
+<td>On-board demos (MIPI/PCIe/USB/SD)</td>
+<td>C</td>
+<td>website <code>support/ed/</code></td>
+</tr>
+<tr>
+<td>Full Linux + Ethernet + SDHC system</td>
+<td>D</td>
+<td><code>EmbeddedSystem-Solution</code></td>
+</tr>
+<tr>
+<td>Camera video processing</td>
+<td>E</td>
+<td><code>evsoc</code></td>
+</tr>
+<tr>
+<td>AI / inference</td>
+<td>F</td>
+<td><code>tinyml</code></td>
+</tr>
+<tr>
+<td>Run an RTOS</td>
+<td>I</td>
+<td><code>zephyr-efinix</code></td>
+</tr>
+<tr>
+<td>Evaluate the USB / debug stack</td>
+<td>J</td>
+<td><code>libusb</code> / <code>openocd_riscv</code></td>
+</tr>
+<tr>
+<td>Modify SoC firmware</td>
+<td>L</td>
+<td><code>embedded_sw/&lt;soc&gt;/software/&lt;example&gt;/</code></td>
+</tr>
+<tr>
+<td>Timing / lwIP Ethernet example</td>
+<td>K</td>
+<td>AN043</td>
+</tr>
+<tr>
+<td>Configure Titanium / Topaz</td>
+<td>K</td>
+<td>AN033 / AN061</td>
+</tr>
+<tr>
+<td>Evaluate an IP's resources/power</td>
+<td>Vibe Coding</td>
+<td>Generate an IP prototype → <code>efx_map</code> → <code>.res.csv</code> → <code>efx_pnr</code> → power report</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m-2-points-to-watch-when-porting-into-this-repository">M.2 Points to watch when porting into this repository</h3>
+<ol>
+<li><strong>XML element order</strong>: the <code>&lt;efx:project&gt;</code> order of every reference design must follow <code>xml-project-schema.md</code>:
+   <code>device_info → design_info → interface_info → constraint_info → sim_info → misc_info → ooc_info → ip_info</code>.
+   <code>peri.xml</code> belongs to <code>interface_info</code> and <strong>must not</strong> be placed in <code>constraint_info</code>. An IP's <code>design_file</code> registration entry must come before <code>&lt;efx:top_vhdl_arch&gt;</code>.</li>
+<li><strong>ISF references</strong>: the <code>*_kit.isf</code> in reference designs are the board vendor's original ISFs; when this repository uses its own ISFs, replace them with <code>evoverse-sdk/catalog/boards/&lt;board&gt;/&lt;board&gt;.isf</code>.</li>
+<li><strong><code>syn_peri_port</code></strong>: the classic flow requires <code>(* syn_peri_port = 0 *)</code> on the RTL top-level external ports (see <code>helloworld/helloworld.v</code>); it can be omitted under the unified flow (<code>unified_flow="true"</code>).</li>
+<li><strong>Empty inter_file / empty isf_file</strong>: <code>helloworld-unified</code> ships an empty <code>&lt;efx:inter_file name=""/&gt;</code> that must be deleted when copying and adapting; when <code>efx:isf_file</code> has no value, omit the whole line (A.9.4).</li>
+<li><strong>Timing constraints</strong>: the <code>sdc</code> in reference designs contains only a baseline; production projects must add PLL/clock-group/IO-delay constraints.</li>
+<li><strong>Licenses</strong>: all official Efinix source follows either Efinix's own license or MIT; redistribution must keep the original <code>LICENSE</code> file.</li>
+</ol>
+<hr />
+<h2 id="n-fetch-flow-memo">N. Fetch flow (memo)</h2>
+<p>The standard fetch flow for any of the GitHub repositories:</p>
+<pre><code class="language-bash"># 1. Create a separate directory in a suitable location (not inside this repository)
+mkdir -p d:/work/efinix-refs &amp;&amp; cd d:/work/efinix-refs
+
+# 2. Shallow-clone as needed
+git clone --depth 1 https://github.com/Efinix-Inc/&lt;repo&gt;.git
+
+# 3. Enter the project
+cd &lt;repo&gt;
+git log -1   # confirm the commit
+</code></pre>
+<blockquote>
+<p><strong>This repository does not host any of this code</strong> — only GitHub links are kept, to avoid repository bloat and license contamination; fetch it with the commands above when needed.</p>
+</blockquote>
+<hr />
+<h2 id="o-citation-and-update-rules">O. Citation and update rules</h2>
+<ul>
+<li><strong>Adding a GitHub repository</strong>: append a row to the §0 index table and expand it in the matching category section.</li>
+<li><strong>Handling dead links</strong>: check the GitHub repositories and <code>support/ed/</code> links once a quarter; mark dead ones <code>⚠ Link dead: &lt;date&gt;</code>.</li>
+<li><strong>Extending board coverage</strong>: when a new board is added, add rows to D/E/F in step.</li>
+<li><strong>IP Catalog data</strong>: the 47-component full table and the name traps are maintained only in <a href="ip-manager-guide.html">Efinity-IP-Manager使用指南.md</a>; this file's §B keeps only the grouped quick view, and a full re-extraction is authoritative on version upgrades.</li>
+</ul>
+<hr />
+<h2 id="p-version-and-date-history">P. Version and date history</h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-30</td>
+<td>Initial version: 12 categories consolidated, 30+ reference-design entry points</td>
+</tr>
+<tr>
+<td>2026-07-30</td>
+<td>Restructure: A/B slimmed down to path+highlight tables; GitHub repositories kept as links only, no clones; new §N "fetch flow"</td>
+</tr>
+<tr>
+<td>2026-07-30</td>
+<td>Annotated the latest-commit times of the EVSoC, EmbeddedSystem-Solution, and TinyML repositories</td>
+</tr>
+<tr>
+<td>2026-09-25</td>
+<td>Hands-on-audit enhancements: §A expanded to the full 10-example table (with copy-and-adapt value, unified_flow ground truth, and the r4000 old-format XML warning); added the A.7 dedicated conclusion "no official DDR/LVDS/standalone-PLL examples" and the A.9 helloworld-unified deep-dive guide (the dual-ISF / peri.xml / project-XML relationship); §B corrected to 47 components and the full table's maintenance handed off; the helloworld dev-kit count corrected to 9; M.2 extended with the empty inter_file/isf_file traps</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>File location</strong>: <code>docs/efinity/Efinity参考设计索引.md</code>
+<strong>Companion documents</strong>:
+- <a href="ip-manager-guide.html">Efinity-IP-Manager使用指南.md</a> — the 47-component full table, IPMDesignAPI, IP data flow
+- <a href="toolchain-reference.html">toolchain-reference.md</a> — tool commands
+- <a href="xml-project-schema.html">xml-project-schema.md</a> — XML element order
+- <a href="isf-syntax-reference.html">isf-syntax-reference.md</a> — ISF writing style
+- <a href="design-rules.html">design-rules.md</a> — RTL rules
+- <a href="optimization-guide.html">optimization-guide.md</a> — timing/resource optimization
+- <em>Efinity file formats — peri.xml</em> — peri.xml structure (being written in parallel)
+- <em>Efinity hard-IP * references</em> — ISF usage for each hard IP (being written in parallel)
+- <a href="fpga-sta-basics.html">FPGA-STA基础.md</a> — setup/hold/slack/skew/jitter general theory (Q1)
+- <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md</a> — 2-FF/Gray/handshake/Async FIFO (Q2)
+- <a href="fpga-clock-constraints-cookbook.html">FPGA-时钟约束Cookbook.md</a> — create_clock/latency/uncertainty (Q3)
+- <a href="fpga-timing-exceptions-cookbook.html">FPGA-时序例外Cookbook.md</a> — false_path/MCP/clock_groups (Q4)
+- <a href="fpga-io-timing-constraints.html">FPGA-IO时序约束.md</a> — set_input_delay/set_output_delay (Q5)
+- <a href="fpga-retiming-pipelining.html">FPGA-Retiming与Pipelining.md</a> — Leiserson/Efinity --retiming (Q6)
+- <a href="fpga-mtbf-metastability.html">fpga-mtbf-metastability.md</a> — the MTBF equation and async registers (Q7)</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

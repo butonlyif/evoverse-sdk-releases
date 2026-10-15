@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Generic Simulation Flow</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The generic RTL and IP simulation path.</span>
+<code>efinity/generic-simulation-flow.md</code>
+<a href="../../../efinity/generic-simulation-flow.md">Markdown source</a></p>
+<h1>Efinity Generic Simulation Flow</h1></header>
+<main class="article"><h1 id="efinity-generic-simulation-flow">Efinity Generic Simulation Flow</h1>
+<blockquote>
+<p>Version: v1.0 | Based on Efinity 2026.1 (sim_models / efx_run / efx_map / efx_pnr)</p>
+</blockquote>
+<h2 id="1-simulation-flow-overview">1. Simulation flow overview</h2>
+<p>The Efinity toolchain provides simulation flows at four levels, from pure RTL to the final timing-annotated gate-level netlist:</p>
+<table>
+<thead>
+<tr>
+<th>Flow</th>
+<th>efx_run --flow</th>
+<th>Simulation level</th>
+<th>Timing annotation</th>
+<th>Applicable stage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTL simulation</td>
+<td><code>rtlsim</code></td>
+<td>Behavioral</td>
+<td>None</td>
+<td>Functional verification</td>
+</tr>
+<tr>
+<td>Post-synthesis simulation</td>
+<td><code>mapsim</code></td>
+<td>Gate-level (post-synthesis)</td>
+<td>None</td>
+<td>Synthesis correctness verification</td>
+</tr>
+<tr>
+<td>Post-P&amp;R simulation</td>
+<td><code>pnrsim</code></td>
+<td>Gate-level (post-place-and-route)</td>
+<td>SDF</td>
+<td>Timing verification</td>
+</tr>
+<tr>
+<td>PT-level RTL simulation</td>
+<td><code>ptsimrtl</code></td>
+<td>Behavioral (PT timing)</td>
+<td>efx_sta</td>
+<td>Interface timing verification</td>
+</tr>
+<tr>
+<td>PT-level full-chip simulation</td>
+<td><code>ptsimfc</code></td>
+<td>Full-chip (PT timing)</td>
+<td>efx_sta</td>
+<td>System-level timing verification</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Relationship between the full compile flow and simulation:</strong></p>
+<pre><code>map → PT(interface) → pnr → pgm
+                   ↑ pnrsim becomes available after this point
+       ↑ mapsim becomes available after this point
+ ↑ rtlsim runs without any compile
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — <code>--flow</code> option; <code>C:\Efinity\2026.1\scripts\efx_run.py</code></p>
+</blockquote>
+<hr />
+<h2 id="2-simulation-libraries">2. Simulation libraries</h2>
+<h3 id="2-1-library-directory-layout">2.1 Library directory layout</h3>
+<p>The Efinity simulation models live under <code>C:\Efinity\2026.1\sim_models\</code>:</p>
+<pre><code>C:\Efinity\2026.1\sim_models\
+├── maplib/                              — synthesis libraries (pure Verilog, general simulation)
+│   ├── efinix_maplib.v                  — primitive mapping library
+│   ├── efinix_peri_lib.v                — peripheral library
+│   ├── efxlib_maplib.vdb                — Aldec compiled library
+│   └── *.vdb                            — other compiled VDB files
+├── verilog/                             — gate-level primitive Verilog models
+│   ├── efx_add.v, efx_comb4.v           — arithmetic/combinational primitives
+│   ├── efx_dpram10.v, efx_dpram_5k.v    — dual-port Block RAM primitives
+│   ├── efx_dsp12.v, efx_dsp24.v, efx_dsp48.v — DSP primitives
+│   ├── efx_ff.v, efx_gbufce.v, efx_lut4.v, efx_mult.v
+│   ├── efx_ram10.v, efx_ram_10k.v, efx_ram_5k.v, efx_srl8.v
+└── vhdl/packages/                       — VHDL simulation packages
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\sim_models\</code> directory structure</p>
+</blockquote>
+<h3 id="2-2-library-initialization-setup_efxlib">2.2 Library initialization (setup_efxlib)</h3>
+<p><code>efx_run --flow setup_efxlib</code> compiles the Efinity simulation libraries for third-party simulators:</p>
+<ul>
+<li>Compiles both the Verilog and VHDL libraries</li>
+<li>The target simulator is selected via <code>--modelsim</code> (ModelSim/QuestaSim), <code>--aldec</code> (Active-HDL/Riviera-PRO), or <code>--ncsim</code> (Cadence)</li>
+</ul>
+<pre><code class="language-powershell"># Compile libraries for ModelSim
+efx_run.bat --flow setup_efxlib --modelsim
+
+# Compile libraries for Aldec
+efx_run.bat --flow setup_efxlib --aldec
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — <code>--flow setup_efxlib</code>; <code>efx_run.py</code> lines 178–233</p>
+</blockquote>
+<h3 id="2-3-open-source-simulator-iverilog">2.3 Open-source simulator (iverilog)</h3>
+<p>iverilog can use the <code>maplib/*.v</code> files directly, with no VDB compilation required:</p>
+<ul>
+<li>Add <code>efinix_maplib.v</code> and <code>efinix_peri_lib.v</code> to the source file list</li>
+<li>Suitable for RTL simulation (rtlsim) and basic gate-level simulation</li>
+</ul>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\sim_models\maplib\</code> contains pure-Verilog libraries (<code>.v</code> files) — directly usable by iverilog</p>
+</blockquote>
+<h3 id="2-4-aldec-compiled-libraries-vdb">2.4 Aldec compiled libraries (VDB)</h3>
+<p>The <code>.vdb</code> files in <code>maplib/</code> are precompiled binary libraries dedicated to the Aldec Riviera-PRO / Active-HDL simulators:</p>
+<ul>
+<li><code>efxlib_maplib.vdb</code> — the main mapping library</li>
+<li>Other <code>*.vdb</code> — auxiliary libraries</li>
+</ul>
+<blockquote>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\sim_models\maplib\</code> contains <code>.vdb</code> files</p>
+</blockquote>
+<hr />
+<h2 id="3-rtl-simulation-rtlsim">3. RTL simulation (rtlsim)</h2>
+<p>RTL simulation verifies design functionality at the behavioral level, with no synthesis or place-and-route required.</p>
+<pre><code class="language-powershell"># Basic RTL simulation
+efx_run.bat my_design --flow rtlsim --tb &lt;testbench_top.v&gt; --tb_top &lt;tb_module_name&gt;
+
+# Select the simulator
+efx_run.bat my_design --flow rtlsim --tb tb_top.v --tb_top tb_top --modelsim
+efx_run.bat my_design --flow rtlsim --tb tb_top.v --tb_top tb_top --aldec
+efx_run.bat my_design --flow rtlsim --tb tb_top.v --tb_top tb_top --ncsim
+</code></pre>
+<p><strong>Key parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--tb arg</code></td>
+<td>Path to the simulation-only testbench file</td>
+</tr>
+<tr>
+<td><code>--tb_top arg</code></td>
+<td>Top-level testbench module name</td>
+</tr>
+<tr>
+<td><code>--modelsim</code></td>
+<td>Use ModelSim / QuestaSim</td>
+</tr>
+<tr>
+<td><code>--aldec</code></td>
+<td>Use Aldec Active-HDL / Riviera-PRO</td>
+</tr>
+<tr>
+<td><code>--ncsim</code></td>
+<td>Use Cadence</td>
+</tr>
+<tr>
+<td><code>--sim_opts arg</code></td>
+<td>Extra options passed straight to the simulator</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — simulation-related parameters</p>
+</blockquote>
+<hr />
+<h2 id="4-post-synthesis-simulation-mapsim">4. Post-synthesis simulation (mapsim)</h2>
+<p>mapsim runs simulation on the post-synthesis gate-level netlist, verifying that the logic produced by the synthesis tool is correct.</p>
+<h3 id="4-1-generating-the-post-synthesis-netlist">4.1 Generating the post-synthesis netlist</h3>
+<p>Output options provided by efx_map:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--write-efx-verilog arg</code></td>
+<td>Write the post-synthesis Verilog netlist (used by mapsim)</td>
+</tr>
+<tr>
+<td><code>--binary-db arg</code></td>
+<td>Write the mapped netlist as a Verific binary DB</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_map --help</code></p>
+</blockquote>
+<h3 id="4-2-running-mapsim">4.2 Running mapsim</h3>
+<pre><code class="language-powershell"># First synthesize and write the netlist
+efx_run.bat my_design --flow map --map_opts write-efx-verilog=post_synth.v
+
+# Then run mapsim
+efx_run.bat my_design --flow mapsim --tb tb_top.v --tb_top tb_top
+</code></pre>
+<p>mapsim uses the gate-level primitive models (the <code>efx_*.v</code> files in <code>sim_models/verilog/</code>) as the simulation backend.</p>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — <code>--flow mapsim</code>; <code>efx_map --help</code> — <code>--write-efx-verilog</code>; <code>C:\Efinity\2026.1\sim_models\verilog\</code></p>
+</blockquote>
+<hr />
+<h2 id="5-post-p-r-simulation-pnrsim">5. Post-P&amp;R simulation (pnrsim)</h2>
+<p>pnrsim runs simulation on the post-place-and-route netlist with <strong>SDF timing annotation (Standard Delay Format annotation)</strong> — the simulation level closest to real hardware.</p>
+<h3 id="5-1-the-role-of-sdc-constraints">5.1 The role of SDC constraints</h3>
+<p>The SDC constraint file used by efx_pnr determines the precision of timing analysis:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--sdc_file</code></td>
+<td>SDC constraint file (SDF annotation in pnrsim is based on it)</td>
+</tr>
+<tr>
+<td><code>--sdc_filelist</code></td>
+<td>Multi-file SDC list</td>
+</tr>
+<tr>
+<td><code>--unified_sdc_file</code></td>
+<td>Unified timing-analysis SDC</td>
+</tr>
+<tr>
+<td><code>--unified_sdc_filelist</code></td>
+<td>Unified SDC file list</td>
+</tr>
+<tr>
+<td><code>--print_critical_path N</code></td>
+<td>Print the N most critical paths (default 10)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_pnr --help</code> and <code>--help-verbose</code></p>
+</blockquote>
+<h3 id="5-2-running-pnrsim">5.2 Running pnrsim</h3>
+<pre><code class="language-powershell"># compile or pnr must be completed first
+efx_run.bat my_design --flow compile
+
+# Then run pnrsim
+efx_run.bat my_design --flow pnrsim --tb tb_top.v --tb_top tb_top
+</code></pre>
+<ul>
+<li>pnrsim uses the netlist output by P&amp;R plus the SDF delay file</li>
+<li>The simulation models are the gate-level primitives in <code>sim_models/verilog/</code></li>
+<li>It reflects real place-and-route delays, clock skew, and setup/hold times</li>
+</ul>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — <code>--flow pnrsim</code></p>
+</blockquote>
+<hr />
+<h2 id="6-pt-level-simulation-ptsimrtl-ptsimfc">6. PT-level simulation (ptsimrtl / ptsimfc)</h2>
+<p>PT-level simulation uses the Interface Designer's timing models (efx_sta) to add interface-level timing annotation to simulation; it is suited to verifying inter-module interface timing.</p>
+<h3 id="6-1-ptsimrtl-pt-level-rtl-simulation">6.1 ptsimrtl (PT-level RTL simulation)</h3>
+<p>Uses efx_sta timing data + RTL behavioral models:</p>
+<pre><code class="language-powershell">efx_run.bat my_design --flow ptsimrtl --tb tb_top.v --tb_top tb_top
+</code></pre>
+<h3 id="6-2-ptsimfc-pt-level-full-chip-simulation">6.2 ptsimfc (PT-level full-chip simulation)</h3>
+<p>Full-chip gate-level simulation + efx_sta timing:</p>
+<pre><code class="language-powershell">efx_run.bat my_design --flow ptsimfc --tb tb_top.v --tb_top tb_top
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — <code>--flow ptsimrtl</code> and <code>--flow ptsimfc</code></p>
+</blockquote>
+<hr />
+<h2 id="7-third-party-simulator-integration">7. Third-party simulator integration</h2>
+<table>
+<thead>
+<tr>
+<th>Simulator</th>
+<th>Parameter</th>
+<th>Library format</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ModelSim / QuestaSim</td>
+<td><code>--modelsim</code></td>
+<td>Compiled libraries (via setup_efxlib)</td>
+<td>Industry standard, full featured</td>
+</tr>
+<tr>
+<td>Aldec Active-HDL / Riviera-PRO</td>
+<td><code>--aldec</code></td>
+<td>VDB (precompiled)</td>
+<td>efxlib_maplib.vdb works out of the box</td>
+</tr>
+<tr>
+<td>Cadence</td>
+<td><code>--ncsim</code></td>
+<td>Compiled libraries (via setup_efxlib)</td>
+<td>Enterprise-grade simulation</td>
+</tr>
+<tr>
+<td>iverilog</td>
+<td>Manual</td>
+<td>maplib/*.v (source files)</td>
+<td>Open source, no library compilation needed</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — <code>--modelsim</code> / <code>--aldec</code> / <code>--ncsim</code>; <code>C:\Efinity\2026.1\sim_models\maplib\</code></p>
+</blockquote>
+<h3 id="7-1-passing-options-straight-to-the-simulator">7.1 Passing options straight to the simulator</h3>
+<pre><code class="language-powershell"># Pass extra options to the simulator
+efx_run.bat my_design --flow rtlsim --tb tb.v --tb_top tb_top --modelsim --sim_opts &quot;-voptargs=+acc&quot;
+</code></pre>
+<blockquote>
+<p><strong>Source:</strong> <code>efx_run --help</code> — <code>--sim_opts</code></p>
+</blockquote>
+<hr />
+<h2 id="8-simulation-flow-selection-guide">8. Simulation flow selection guide</h2>
+<pre><code>            ┌──────────────┐
+            │  Write RTL    │
+            └──────┬───────┘
+                   │
+                   ▼
+         ┌─────────────────┐
+         │  rtlsim          │ ← Is the function correct?
+         │  (behavioral, no delays) │
+         └────────┬─────────┘
+                  │
+                  ▼
+         ┌─────────────────┐
+         │  map (synthesis) │
+         └────────┬─────────┘
+                  │
+                  ▼
+         ┌─────────────────┐
+         │  mapsim          │ ← Is synthesis correct?
+         │  (gate-level, no delays) │   Are primitives connected correctly?
+         └────────┬─────────┘
+                  │
+                  ▼
+         ┌─────────────────┐
+         │  pnr (place-and-route) │
+         └────────┬─────────┘
+                  │
+                  ▼
+         ┌─────────────────┐
+         │  pnrsim          │ ← Timing closure?
+         │  (gate-level + SDF delays) │   Do critical-path delays meet timing?
+         └────────┬─────────┘
+                  │
+                  ▼
+         ┌─────────────────┐
+         │  pgm (bitstream) │
+         └─────────────────┘
+</code></pre>
+<p><strong>Quick decision table:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Recommended flow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fast functional verification</td>
+<td>rtlsim</td>
+</tr>
+<tr>
+<td>Verify synthesis did not break the logic</td>
+<td>mapsim</td>
+</tr>
+<tr>
+<td>Suspected timing problems</td>
+<td>pnrsim</td>
+</tr>
+<tr>
+<td>Multi-module interface timing verification</td>
+<td>ptsimrtl / ptsimfc</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Source:</strong> synthesized from the flow-stage definitions in <code>efx_run --help</code></p>
+</blockquote>
+<hr />
+<h2 id="9-integration-with-the-evoverse-sdk">9. Integration with the EvoVerse SDK</h2>
+<h3 id="9-1-simulation-support-in-the-sdk">9.1 Simulation support in the SDK</h3>
+<p>The EvoVerse SDK selects the simulation flow through efx_run's <code>--flow</code> parameter:</p>
+<pre><code class="language-powershell"># The SDK forwards simulation commands through buildRunner.ts
+efx_run.bat &lt;project&gt; --flow rtlsim --tb &lt;tb_file&gt; --tb_top &lt;tb_module&gt; --aldec
+</code></pre>
+<p>The SDK does not implement a simulation engine itself; it schedules third-party simulators through efx_run.</p>
+<blockquote>
+<p><strong>Source:</strong> EvoVerse SDK <code>buildRunner.ts</code> — efx_run invocation pattern</p>
+</blockquote>
+<h3 id="9-2-recommended-workflow">9.2 Recommended workflow</h3>
+<ol>
+<li><strong>Development stage</strong>: iterate quickly with rtlsim for functional verification</li>
+<li><strong>After synthesis</strong>: verify primitive-mapping correctness with mapsim</li>
+<li><strong>After place-and-route</strong>: verify timing closure with pnrsim</li>
+<li><strong>Before board bring-up</strong>: confirm pnrsim passes, then run pgm to program the board</li>
+</ol>
+<blockquote>
+<p><strong>Source:</strong> based on the Efinity 2026.1 simulation-level definitions</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>Document version:</strong> v1.0<br />
+<strong>Applicable toolchain:</strong> Efinity 2026.1<br />
+<strong>Data sources:</strong> <code>C:\Efinity\2026.1\sim_models\</code> directory structure, <code>efx_run --help</code>, <code>efx_map --help</code>, <code>efx_pnr --help</code> / <code>--help-verbose</code></p>
+</blockquote></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

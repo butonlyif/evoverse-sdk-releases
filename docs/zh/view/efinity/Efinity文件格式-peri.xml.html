@@ -1,0 +1,1844 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 文件格式：peri.xml</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>peri_design_db 命名空间、域属性全表与 bootstrap/重放两阶段契约。</span>
+<code>efinity/Efinity文件格式-peri.xml.md</code>
+<a href="../../../efinity/Efinity文件格式-peri.xml.md">Markdown 源文件</a></p>
+<h1>Efinity 文件格式：peri.xml</h1></header>
+<main class="article"><h1 id="efinity-文件格式参考-project-peri-xml-pt-设计库">Efinity 文件格式参考 —— <code>&lt;project&gt;.peri.xml</code>（PT 设计库）</h1>
+<blockquote>
+<p><strong>适用版本</strong>：Efinity 2026.1（<code>C:\Efinity\2026.1</code>）
+<strong>调查日期</strong>：2026-09-25
+<strong>证据方法</strong>：全部结论来自对 Efinity 2026.1 安装目录下真实文件的一手实读（XSD schema、Python 源码、官方示例、官方 HTML 词汇表），证据路径在正文逐条标注。<strong>不含任何推测或外部来源内容。</strong></p>
+<p><strong>警告</strong>：本卷描述的是 Efinity PT（Periphery Tool / Interface Designer）的<strong>内部设计库文件格式</strong>。它是<strong>工程源文件</strong>，由 PT 工具独占产出，<strong>永远不要手工编写</strong>。手工编写既无 schema 保障也无重放语义保障（见 §1.4）。</p>
+</blockquote>
+<hr />
+<h2 id="目录">目录</h2>
+<ul>
+<li><a href="#0-文档定位与兄弟卷分工">§0 文档定位与兄弟卷分工</a></li>
+<li><a href="#1-定位与生命周期工程源文件不是生成物">§1 定位与生命周期：工程源文件，不是生成物</a></li>
+<li><a href="#2-命名空间与根元素">§2 命名空间与根元素</a></li>
+<li><a href="#3-schema-结构地图">§3 Schema 结构地图</a></li>
+<li><a href="#4-核心域属性全表">§4 核心域属性全表</a></li>
+<li><a href="#5-designwriterxml-写出逻辑">§5 DesignWriterXml 写出逻辑</a></li>
+<li><a href="#6-实例剖析helloworld-unified-的-perixml">§6 实例剖析：helloworld-unified 的 .peri.xml</a></li>
+<li><a href="#7-易混淆格式勘误lpfxsd-名不副实">§7 易混淆格式勘误：lpf.xsd 名不副实</a></li>
+<li><a href="#8-工程守则与兄弟卷交叉引用">§8 工程守则与兄弟卷交叉引用</a></li>
+</ul>
+<hr />
+<h2 id="0-文档定位与兄弟卷分工">0. 文档定位与兄弟卷分工</h2>
+<p>本卷是 EvoVerse SDK 知识库「Efinity 文件格式」系列中聚焦 <strong><code>&lt;project&gt;.peri.xml</code>（PT 设计库，命名空间 <code>efxpt:design_db</code>）</strong> 的分卷。</p>
+<table>
+<thead>
+<tr>
+<th>卷</th>
+<th>文件</th>
+<th>聚焦内容</th>
+<th>与本卷的关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工程文件卷</td>
+<td><code>docs/efinity/Efinity-XML工程文件Schema参考.md</code></td>
+<td><code>&lt;project&gt;.xml</code>（<code>enf_proj</code> 命名空间）：device_info / design_info / inter_file 引用</td>
+<td>讲 peri.xml <strong>被谁引用</strong></td>
+</tr>
+<tr>
+<td>ISF 卷</td>
+<td><code>docs/efinity/Efinity-ISF语法参考.md</code></td>
+<td>ISF 语法、bootstrap/重放契约、unified 流程</td>
+<td>讲 peri.xml 的<strong>写入者</strong>（ISF 命令重放到 peri.xml 上）</td>
+</tr>
+<tr>
+<td>DesignAPI 卷</td>
+<td><code>docs/efinity/Efinity-DesignAPI方法参考.md</code></td>
+<td>DesignAPI / IntDesignAPI / DesignService / DesignWriterXml 调用链</td>
+<td>讲 peri.xml 的<strong>程序化读写接口</strong>（本卷 §5 只做概述）</td>
+</tr>
+<tr>
+<td>SDC 与报告卷</td>
+<td><code>docs/efinity/Efinity文件格式-SDC与报告产物.md</code></td>
+<td>SDC 约束、编译报告产物</td>
+<td>讲 <strong>pnr/合成侧</strong>的文件，与 peri.xml 无关</td>
+</tr>
+<tr>
+<td>PLL 与 OSC 卷</td>
+<td><code>docs/efinity/Efinity硬IP-PLL与OSC参考.md</code></td>
+<td>PLL/OSC 硬 IP 配置语义</td>
+<td>讲 peri.xml 中 <code>pll_info</code>/<code>osc_info</code> 域的<strong>参数含义</strong></td>
+</tr>
+<tr>
+<td><strong>本卷</strong></td>
+<td><code>docs/efinity/Efinity文件格式-peri.xml.md</code></td>
+<td>peri.xml 自身格式：命名空间、schema 结构、域属性全表、写出逻辑、实例剖析</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>阅读建议</strong>：想知道「peri.xml 是什么、能不能手改、为什么构建后必须存活」→ 读 §1；想校验或解析 peri.xml → 读 §2/§3/§4；想理解工具如何写出它 → 读 §5；想看真实长什么样 → 读 §6。</p>
+<hr />
+<h2 id="1-定位与生命周期-工程源文件-不是生成物">1. 定位与生命周期：工程源文件，不是生成物</h2>
+<h3 id="1-1-官方定义-词汇表原文">1.1 官方定义（词汇表原文）</h3>
+<p>官方词汇表对 <code>&lt;project&gt;.peri.xml</code> 的定义（证据：<code>C:\Efinity\2026.1\doc\topics\gloss-peri.xml.html</code> L168-197）：</p>
+<ul>
+<li>标题（L168）：<code>&lt;project&gt;.peri.xml</code></li>
+<li>文件系统位置（L177-178）：<code>&lt;project&gt;</code>（即工程根目录下，与工程 XML 同名）</li>
+<li><strong>Created by</strong>（L181-183）：<em>"Interface Designer when you create an interface"</em></li>
+<li><strong>Design source? Yes</strong>（L185-186）——这是 PT 关联产物中<strong>唯一</strong>被官方标记为 design source 的文件（SDC 报告卷 §5 曾对比：报告类产物均为 "Design source? No"）</li>
+<li>内容（L190-193，原文照录）：</li>
+</ul>
+<blockquote>
+<p><em>"The Interface Designer creates this file when you create a new interface for your project. This file contains all of the settings that you specified in the Interface Designer for I/O banks, GPIO, LVDS, PLLs, MIPI, DDR, etc. </em><em>You should not edit this file directly!</em><em>"</em></p>
+</blockquote>
+<p><strong>两条关键官方结论</strong>：
+1. <code>Design source? Yes</code> → peri.xml 是<strong>工程源文件</strong>，与 <code>.v</code>、<code>.sdc</code>、<code>.isf</code> 平级，构建后必须存活，必须纳入版本管理。
+2. <code>You should not edit this file directly!</code> → 官方明令禁止直接编辑。所有修改必须通过 Interface Designer（GUI）或 ISF/DesignAPI（脚本）。</p>
+<h3 id="1-2-三重身份">1.2 三重身份</h3>
+<p>peri.xml 同时是三样东西，理解任何一条都不能丢掉另外两条：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>身份</th>
+<th>含义</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td><strong>工程源文件</strong></td>
+<td>存放你在 Interface Designer 中指定的全部 periphery 设置（IO bank、GPIO、PLL、MIPI、DDR……），与工程 XML 一起构成工程</td>
+<td>gloss-peri.xml.html L185-193</td>
+</tr>
+<tr>
+<td>②</td>
+<td><strong>PT 工具独占产物</strong></td>
+<td>只能由 PT 工具 / Interface Designer 产出（XSD schema 是 <code>efxpt:design_db</code>，内部结构复杂且随版本演进）</td>
+<td>§2、§3</td>
+</tr>
+<tr>
+<td>③</td>
+<td><strong>每次 unified build 的重放目标</strong></td>
+<td>每次 unified 编译都会加载已持久化的 peri.xml，并把工程 XML 引用的 ISF 重放上去；所以 ISF 必须重放安全</td>
+<td>efx_run_pt_unified.py L180-184、L252；ISF 卷 §3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-生命周期与-unified-流程中的位置">1.3 生命周期与 unified 流程中的位置</h3>
+<p><code>efx_run_pt_unified.py</code>（证据：<code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code>）中 peri.xml 相关的关键行：</p>
+<table>
+<thead>
+<tr>
+<th>行号</th>
+<th>代码/注释（摘录）</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L99</td>
+<td><code>new_design_file = proj_path / f"{proj_db.project_name}.peri.xml"</code></td>
+<td><code>--create</code> 新建工程时在工程根目录创建 peri.xml</td>
+</tr>
+<tr>
+<td>L180-184</td>
+<td>peri_file 参数缺省取 <code>&lt;design&gt;.peri.xml</code></td>
+<td>每次运行都<strong>加载已存在的</strong> peri.xml</td>
+</tr>
+<tr>
+<td>L224-230</td>
+<td>器件 family / name / timing model 三重一致性校验</td>
+<td>peri.xml 的 <code>@device_def</code> 必须与工程 XML 器件信息匹配，不匹配直接 ERROR</td>
+</tr>
+<tr>
+<td>L243-248</td>
+<td>peri_netlist → <code>{design}.unified.isf</code>，并 <code>peri_scripts.insert(0, ...)</code></td>
+<td>自动生成的 unified ISF 被插入脚本队列<strong>队首</strong>最先执行</td>
+</tr>
+<tr>
+<td>L252</td>
+<td><code>for script in peri_scripts:</code></td>
+<td><strong>重放循环</strong>：把工程 XML 引用的全部 ISF 依次重放到已加载的 peri.xml 上</td>
+</tr>
+<tr>
+<td>L269-272</td>
+<td>注释掉的 merged peri.xml 调试产物</td>
+<td>重放后的合并结果默认不落盘，peri.xml 本体在内存中演化</td>
+</tr>
+<tr>
+<td>L318-320</td>
+<td>导出 <code>{design}.peri.rtl.v</code> / <code>{design}.peri.pt.v</code></td>
+<td>仿真网表产物（从 peri.xml 派生，是生成物）</td>
+</tr>
+<tr>
+<td>L328-331</td>
+<td><code>peri.pbn</code> / <code>.qdelay</code> / <code>.csi</code> / <code>.cdo</code></td>
+<td>时序网表与配置产物（生成物）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>unified 九步流程全景</strong>（详细步骤表见 ISF 卷 §7.1，此处只标注 peri.xml 相关环节）：</p>
+<pre><code>工程 XML (.xml)
+   │ 引用
+   ▼
+ISF 约束 (*.isf) ──重放──▶ &lt;design&gt;.peri.xml（已持久化的设计库，内存中演化）
+                              │
+                              ├──▶ {design}.unified.isf / {design}.auto_asg.isf（生成物）
+                              ├──▶ {design}.peri.rtl.v / .peri.pt.v（仿真网表，生成物）
+                              └──▶ peri.pbn / .qdelay / .csi / .cdo（时序网表，生成物）
+</code></pre>
+<p><strong>推论</strong>：所有从 peri.xml 派生的 <code>.v</code> / <code>.pbn</code> / <code>.isf</code> 都是<strong>生成物</strong>，可以删除重生成；唯独 peri.xml 本体是<strong>源文件</strong>——删除它等于丢失全部 periphery 设计。</p>
+<h3 id="1-4-bootstrap-重放两阶段契约-与-isf-的分工">1.4 bootstrap / 重放两阶段契约（与 ISF 的分工）</h3>
+<p>peri.xml 的存在直接决定了 ISF 的写法约束（完整契约见 ISF 卷 §3 与硬约束 rules-efinity-hard.md §15，此处从 peri.xml 视角复述要点）：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>条件</th>
+<th>ISF 允许的命令</th>
+<th>对 peri.xml 的效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>bootstrap（引导）</strong></td>
+<td>peri.xml 尚不存在（新工程/新基线）</td>
+<td><code>create_*_gpio</code> / <code>create_block</code> / <code>create_pll_input_clock_gpio</code> 等 create 类 + set/assign 类</td>
+<td>创建实例并设置属性，落盘生成第一个 peri.xml</td>
+</tr>
+<tr>
+<td><strong>重放（replay）</strong></td>
+<td>peri.xml 已存在（每次后续 build）</td>
+<td><strong>只有</strong>幂等命令：<code>set_property</code> / <code>assign_pkg_pin</code> / <code>assign_resource</code> / <code>set_device_property</code> / <code>set_iobank_voltage</code></td>
+<td>在已有实例上重设属性；<code>create_*</code> 会因实例已存在而报 <code>GPIO/PLL ... exists</code> → 第二次编译失败</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ISF 命令集<strong>没有</strong> delete/clear——PT 原生 API 对不存在的实例会 raise，不存在可写进 ISF 的幂等删除（不要试图发明）。</li>
+<li>因此标准引导仪式是：create_<em> 临时启用 → 编译一次生成 peri.xml → </em><em>立即注释掉 create_</em>** → 重放编译必须再次全 PASS（两连 PASS 才算验收）。</li>
+</ul>
+<h3 id="1-5-源文件-vs-生成物-判别速查">1.5 「源文件 vs 生成物」判别速查</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>源/产物</th>
+<th>能否手改</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;project&gt;.peri.xml</code></td>
+<td><strong>源文件</strong>（Design source? Yes）</td>
+<td>❌ 官方禁止直接编辑；只能经 ISF/DesignAPI</td>
+<td>gloss-peri.xml.html L185-193</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.xml</code></td>
+<td>源文件</td>
+<td>✅（受 <code>enf_proj</code> schema 约束）</td>
+<td>XML 工程文件卷</td>
+</tr>
+<tr>
+<td><code>*.isf</code></td>
+<td>源文件</td>
+<td>✅（Python API 源码，须过 <code>--dry-run</code> 自检）</td>
+<td>ISF 卷</td>
+</tr>
+<tr>
+<td><code>*.sdc</code></td>
+<td>源文件</td>
+<td>✅</td>
+<td>SDC 卷</td>
+</tr>
+<tr>
+<td><code>{design}.unified.isf</code> / <code>{design}.auto_asg.isf</code></td>
+<td>生成物</td>
+<td>❌</td>
+<td>ISF 卷 §7</td>
+</tr>
+<tr>
+<td><code>{design}.peri.rtl.v</code> / <code>.peri.pt.v</code></td>
+<td>生成物</td>
+<td>❌</td>
+<td>efx_run_pt_unified.py L318-320</td>
+</tr>
+<tr>
+<td><code>peri.pbn</code> / <code>.qdelay</code> / <code>.csi</code> / <code>.cdo</code></td>
+<td>生成物</td>
+<td>❌</td>
+<td>efx_run_pt_unified.py L328-331</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-命名空间与根元素">2. 命名空间与根元素</h2>
+<h3 id="2-1-命名空间三足鼎立">2.1 命名空间三足鼎立</h3>
+<p>Efinity PT 的 XML 世界由三个 targetNamespace 构成，前缀习惯与职责泾渭分明（证据：各 XSD 头部 <code>targetNamespace</code> 声明，<code>C:\Efinity\2026.1\pt\bin\schema\</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>命名空间 URI</th>
+<th>惯用前缀</th>
+<th>职责</th>
+<th>代表文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http://www.efinixinc.com/peri_design_db</code></td>
+<td><code>efxpt</code></td>
+<td><strong>设计库</strong>：你工程中的 periphery 实例（GPIO/PLL/iobank…）</td>
+<td><code>peri_design_db.xsd</code> + 24 个设计类子 schema</td>
+</tr>
+<tr>
+<td><code>http://www.efinixinc.com/peri_device_db</code></td>
+<td>（器件库）</td>
+<td><strong>器件库</strong>：芯片出厂数据（die/package/timing model/bit 级块定义）</td>
+<td><code>peri_device_db.xsd</code>、<code>lpf.xsd</code>、<code>die_definition.xsd</code> 等 9 个</td>
+</tr>
+<tr>
+<td><code>http://www.efinixinc.com/peri_tool</code></td>
+<td>（工具类型）</td>
+<td>公共简单类型（非空串、坐标串等）</td>
+<td><code>peri_util.xsd</code></td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ peri.xml 与工程 XML（<code>enf_proj</code> 命名空间 <code>http://www.efinixinc.com/enf_proj</code>）<strong>完全不同</strong>——工程 XML 由用户/SDK 编写，peri.xml 由 PT 编写，二者靠工程 XML 的 <code>&lt;efx:inter_file name="*.isf"&gt;</code> 引用间接协作。</p>
+<h3 id="2-2-根元素与六个根属性">2.2 根元素与六个根属性</h3>
+<p>peri.xml 的根元素是 <code>design_db</code>（证据：<code>C:\Efinity\2026.1\pt\bin\schema\peri_design_db.xsd</code> L36 <code>&lt;xs:element name="design_db" type="design_db_type"/&gt;</code>）。</p>
+<p>根属性定义（peri_design_db.xsd L175-222）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>类型</th>
+<th>含义</th>
+<th>helloworld 实测值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>设计名 = 工程名（与 <code>{design}.peri.xml</code> 的 <code>{design}</code> 一致）</td>
+<td><code>helloworld</code></td>
+</tr>
+<tr>
+<td><code>@device_def</code></td>
+<td>✅</td>
+<td>string</td>
+<td>器件定义名（须与工程 XML 器件一致，加载时三重校验，见 §1.3）</td>
+<td><code>Ti60F225</code></td>
+</tr>
+<tr>
+<td><code>@version</code></td>
+<td>❌</td>
+<td>string</td>
+<td>产出该文件的工具版本</td>
+<td><code>2025.2.276</code></td>
+</tr>
+<tr>
+<td><code>@db_version</code></td>
+<td>❌</td>
+<td>string</td>
+<td><strong>设计库 schema 版本号，8 位数字形如 <code>20252006</code></strong>（不是点分版本）</td>
+<td><code>20252006</code></td>
+</tr>
+<tr>
+<td><code>@last_change_date</code></td>
+<td>❌</td>
+<td>string</td>
+<td>最后修改时间（PT 写出时的人类可读时间戳）</td>
+<td><code>Wed Oct 29 10:27:16 2025</code></td>
+</tr>
+<tr>
+<td><code>@location</code></td>
+<td>❌</td>
+<td>string</td>
+<td>文件路径（PT 写出时的位置记录）</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>@db_version 语义</strong>：值形如 <code>20252006</code> 的 8 位整数，是 PT 内部 design_db 格式的代际标记，PT 用它判断旧文件是否需要迁移。<strong>不要手工改动它</strong>——值与工具版本强绑定。</p>
+<h3 id="2-3-最小片段示例-结构示意-非手工模板">2.3 最小片段示例（结构示意，非手工模板）</h3>
+<p>以下片段摘自官方示例（<code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.peri.xml</code> L1-4 + L105-108，展示根元素、iobank 与空容器），<strong>仅用于理解格式</strong>：</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;efxpt:design_db name=&quot;helloworld&quot; device_def=&quot;Ti60F225&quot; version=&quot;2025.2.276&quot;
+    db_version=&quot;20252006&quot; last_change_date=&quot;Wed Oct 29 10:27:16 2025&quot;
+    xmlns:efxpt=&quot;http://www.efinixinc.com/peri_design_db&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+  &lt;efxpt:iobank name=&quot;1A&quot; iostd=&quot;1.8 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot;/&gt;
+  &lt;!-- ... 其余 11 个 iobank，见 §6.2 ... --&gt;
+  &lt;efxpt:osc_info/&gt;
+  &lt;efxpt:lvds_info/&gt;
+  &lt;efxpt:jtag_info/&gt;
+  &lt;efxpt:mipi_dphy_info/&gt;
+&lt;/efxpt:design_db&gt;
+</code></pre>
+<p>要点：
+- 所有元素挂在 <code>efxpt:</code> 前缀下（声明于根元素 <code>xmlns:efxpt="http://www.efinixinc.com/peri_design_db"</code>）。
+- 未使用的域也会写出<strong>空容器</strong>（如 <code>&lt;efxpt:osc_info/&gt;</code>）——这是 DesignWriterXml 的固定行为，不代表缺内容（见 §5）。</p>
+<hr />
+<h2 id="3-schema-结构地图">3. Schema 结构地图</h2>
+<h3 id="3-1-聚合机制">3.1 聚合机制</h3>
+<p>peri.xml 的全部类型定义由 <code>peri_design_db.xsd</code> 聚合（证据：<code>C:\Efinity\2026.1\pt\bin\schema\peri_design_db.xsd</code>，共 256 行）：</p>
+<ul>
+<li>L3-4：<code>targetNamespace="http://www.efinixinc.com/peri_design_db"</code>，<code>xmlns:efxpt</code> 前缀声明；</li>
+<li><strong>24 个 <code>&lt;xs:include&gt;</code></strong> + <strong>1 个 <code>&lt;xs:import&gt;</code></strong>（import 的是 <code>peri_tool</code> 命名空间的 <code>peri_util.xsd</code>）；</li>
+<li>勘误点：<code>ext_flash_design.xsd</code> 在 <strong>L8 与 L26 被 include 了两次</strong>——同一文件重复聚合，XSD 处理器容忍这种情况（幂等），属于官方 schema 自身的小瑕疵，解析自定义校验器时按去重处理即可。</li>
+</ul>
+<h3 id="3-2-设计类子-schema-全清单-peri_design_db-命名空间">3.2 设计类子 schema 全清单（peri_design_db 命名空间）</h3>
+<p>下表是 peri_design_db.xsd 直接 include 的 24 个子 schema（逐个实读确认），顺序即 include 顺序：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>子 schema</th>
+<th>聚合进根元素的域</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>ext_flash_design.xsd</code></td>
+<td><code>device_info/ext_flash_ctrl_info</code></td>
+<td>外部 Flash 控制配置（<strong>被 include 两次，L8+L26</strong>）</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>gpio_design.xsd</code></td>
+<td><code>gpio_info</code></td>
+<td>GPIO / 复杂 GPIO / 总线（690 行，最庞杂）</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>pll_design.xsd</code></td>
+<td><code>pll_info</code></td>
+<td>PLL 及其输出时钟、高级属性（405 行）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>osc_design.xsd</code></td>
+<td><code>osc_info</code></td>
+<td>内部振荡器</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>iobank_design.xsd</code></td>
+<td><code>device_info/iobank_info</code></td>
+<td>IO Bank 电压标准</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>lvds_design.xsd</code></td>
+<td><code>lvds_info</code></td>
+<td>LVDS 收发器</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>mipi_design.xsd</code></td>
+<td><code>mipi_info</code></td>
+<td>MIPI CSI/DSI 主机从机</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>ctrl_design.xsd</code></td>
+<td><code>device_info/ctrl_info</code></td>
+<td>配置控制器（CONFIG_CTRL）</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>jtag_design.xsd</code></td>
+<td><code>jtag_info</code></td>
+<td>JTAG</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>ddr_design.xsd</code></td>
+<td><code>ddr_info</code></td>
+<td>DDR 存储控制器</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>h264_design.xsd</code></td>
+<td><code>h264_info</code></td>
+<td>H.264 编解码硬 IP</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>mipi_dphy_design.xsd</code></td>
+<td><code>mipi_dphy_info</code></td>
+<td>MIPI D-PHY</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>seu_design.xsd</code></td>
+<td><code>device_info/seu_info</code></td>
+<td>单粒子翻转检测（CONFIG_SEU）</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>clkmux_design.xsd</code></td>
+<td><code>device_info/clkmux_info</code></td>
+<td>时钟复用器（CLKMUX_B/L/R/T）</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>spi_flash_design.xsd</code></td>
+<td><code>spi_flash_info</code></td>
+<td>SPI Flash</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>hyper_ram_design.xsd</code></td>
+<td><code>hyper_ram_info</code></td>
+<td>HyperRAM</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>pll_ssc_design.xsd</code></td>
+<td><code>pll_ssc_info</code></td>
+<td>PLL 扩频时钟（SSC）</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>quad_pcie_design.xsd</code></td>
+<td><code>quad_pcie_info</code></td>
+<td>PCIe Quad lane</td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>lane_10g_design.xsd</code></td>
+<td><code>lane_10g_info</code></td>
+<td>10G lane</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>lane_1g_design.xsd</code></td>
+<td><code>lane_1g_info</code></td>
+<td>1G lane</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>raw_serdes_design.xsd</code></td>
+<td><code>raw_serdes_info</code></td>
+<td>裸 SerDes</td>
+</tr>
+<tr>
+<td>22</td>
+<td><code>soc_design.xsd</code></td>
+<td><code>soc_info</code></td>
+<td>SoC（如 Sapphire）</td>
+</tr>
+<tr>
+<td>23</td>
+<td><code>common_quad_lane_design.xsd</code></td>
+<td><code>quad_lane_info</code></td>
+<td>通用 Quad lane</td>
+</tr>
+<tr>
+<td>24</td>
+<td><code>cm_design.xsd</code></td>
+<td><code>cm_info</code></td>
+<td>CM（clock manager）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>间接依赖</strong>：<code>common_design.xsd</code>（101 行）不被 peri_design_db.xsd 直接 include，但被上面几乎所有设计类子 schema include——它定义公共类型 <code>gen_pin_type</code> / <code>gen_pin_info_type</code> / <code>gen_param_type</code> / <code>base_instance</code> / <code>hex_value</code>（见 §4.8）。</p>
+<p><strong>同命名空间但未被聚合的孤儿 schema（3 个，了解即可，不参与 peri.xml）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>孤儿</th>
+<th>状态</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clock_design.xsd</code></td>
+<td>疑为遗留孤儿：它 include 的 <code>util.xsd</code> 在 schema 目录中<strong>不存在</strong></td>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\</code> 目录清单 + clock_design.xsd 头部</td>
+</tr>
+<tr>
+<td><code>package_settings.xsd</code></td>
+<td>peri_design_db 命名空间但未被聚合</td>
+<td>目录 grep targetNamespace 结果</td>
+</tr>
+<tr>
+<td><code>design_issue.xsd</code></td>
+<td>同上（问题报告类，非设计数据）</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-根元素结构-design_db_type">3.3 根元素结构（design_db_type）</h3>
+<p><code>design_db_type</code> 的顶层序列共 <strong>21 个元素，全部 <code>minOccurs=0</code></strong>（peri_design_db.xsd L40-174），因此任何域都可能缺席，PT 写出时也只是补空容器：</p>
+<pre><code class="language-text">design_db
+├── device_info          （device_info_type，内嵌 5 个子元素，见下）
+├── gpio_info            ├── pll_info
+├── osc_info             ├── lvds_info
+├── mipi_info            ├── jtag_info
+├── ddr_info             ├── h264_info
+├── mipi_dphy_info       ├── spi_flash_info
+├── hyper_ram_info       ├── pll_ssc_info
+├── quad_lane_info       ├── quad_pcie_info
+├── lane_10g_info        ├── lane_1g_info
+├── raw_serdes_info      ├── soc_info
+├── cm_info              └── partial_design
+</code></pre>
+<p><code>device_info_type</code>（peri_design_db.xsd L230-253）内嵌 5 个子元素：</p>
+<table>
+<thead>
+<tr>
+<th>子元素</th>
+<th>出现次数</th>
+<th>内容</th>
+<th>所属子 schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iobank_info</code></td>
+<td>0..*</td>
+<td>IO Bank 列表</td>
+<td>iobank_design.xsd</td>
+</tr>
+<tr>
+<td><code>ctrl_info</code></td>
+<td>0..1</td>
+<td>配置控制器</td>
+<td>ctrl_design.xsd</td>
+</tr>
+<tr>
+<td><code>seu_info</code></td>
+<td>0..1</td>
+<td>SEU 检测</td>
+<td>seu_design.xsd</td>
+</tr>
+<tr>
+<td><code>clkmux_info</code></td>
+<td>0..1</td>
+<td>时钟复用器组</td>
+<td>clkmux_design.xsd</td>
+</tr>
+<tr>
+<td><code>ext_flash_ctrl_info</code></td>
+<td>0..1</td>
+<td>外部 Flash 控制</td>
+<td>ext_flash_design.xsd</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-核心域属性全表">4. 核心域属性全表</h2>
+<blockquote>
+<p>本节逐域列出 XML 属性：<strong>属性名 / 类型 / 含义 / 示例值</strong>。类型均取自 XSD 声明；「含义」以 XSD 内嵌 <code>&lt;xs:documentation&gt;</code> 原文（或忠实翻译）为准。来源文件均在 <code>C:\Efinity\2026.1\pt\bin\schema\</code> 下。</p>
+</blockquote>
+<h3 id="4-1-iobank-域-iobank_design-xsd-75-行">4.1 iobank 域（iobank_design.xsd，75 行）</h3>
+<p><code>iobank_config_type</code>：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>类型</th>
+<th>含义</th>
+<th>示例值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>IO Bank 名（"IO Bank name as per device"）</td>
+<td><code>TL</code></td>
+</tr>
+<tr>
+<td><code>@iostd</code></td>
+<td>✅</td>
+<td>string</td>
+<td><strong>该 Bank 设定的 IO 标准</strong>。XSD 原文（L36-39）：<em>"IO Standard set for this IOBank. This is not just the voltage since the decision to display voltage was rather late in the game."</em> ——<strong>@iostd 是完整 IO 标准（含电压+电平族），不只是电压</strong></td>
+<td><code>"1.8 V LVCMOS"</code> / <code>"3.3 V LVCMOS"</code></td>
+</tr>
+<tr>
+<td><code>@is_dyn_voltage</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>动态电压使能（PT-1225 引入）</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@mode_sel_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>Bank 模式选择信号名</td>
+<td><code>TL_MODE_SEL</code></td>
+</tr>
+</tbody>
+</table>
+<p>子元素 <code>mode_sel_name</code>（0..*）：<code>bank_name</code> + <code>value</code> 对，记录模式选择的合法组合。</p>
+<p><strong>ISF 对应关系</strong>：<code>design.set_iobank_voltage("TL", "3.3")</code> 写入的其实是 @iostd（ISF 卷 §3）。SDK 硬约束「MIPI bank 必须 1.2V、MIPI 与 LVDS 不共 bank」最终都落在这一域上。</p>
+<h3 id="4-2-gpio-域-gpio_design-xsd-690-行">4.2 gpio 域（gpio_design.xsd，690 行）</h3>
+<p><strong>双形态</strong>：Trion 系用普通 <code>gpio</code>，Titanium 系用 <code>comp_gpio</code>（complex GPIO，属性更多）。<code>gpio_info_type</code>（L47-51）内容：</p>
+<table>
+<thead>
+<tr>
+<th>子元素</th>
+<th>出现次数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gpio</code></td>
+<td>0..*</td>
+<td>普通 GPIO（gpio_config_type）</td>
+</tr>
+<tr>
+<td><code>comp_gpio</code></td>
+<td>0..*</td>
+<td>复杂 GPIO（comp_gpio_config_type，Titanium）</td>
+</tr>
+<tr>
+<td><code>global_unused_config</code></td>
+<td><strong>恰 1 次</strong></td>
+<td>全局未用引脚默认状态</td>
+</tr>
+<tr>
+<td><code>bus</code></td>
+<td>0..*</td>
+<td>总线 GPIO（bus_config_type）</td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ 遗留属性：gpio_info 上的 <code>@device_def</code> 标注 <em>"no longer needed ... backward compatibility"</em>（L47-51）——旧文件可能有，新文件靠根元素 @device_def。</p>
+<p><strong>gpio_config_type（普通 GPIO）属性</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>类型/枚举</th>
+<th>含义</th>
+<th>示例值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>GPIO 名（与 RTL 顶层端口对应）</td>
+<td><code>btn</code></td>
+</tr>
+<tr>
+<td><code>@gpio_def</code></td>
+<td>❌</td>
+<td>string</td>
+<td>器件库中的物理 GPIO 定义名</td>
+<td><code>GPIOL_P_18</code></td>
+</tr>
+<tr>
+<td><code>@mode</code></td>
+<td>❌</td>
+<td><code>input</code> / <code>output</code> / <code>inout</code> / <code>none</code> / <code>clkout</code></td>
+<td>引脚方向模式</td>
+<td><code>input</code></td>
+</tr>
+<tr>
+<td><code>@bus_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>属于哪个 bus GPIO</td>
+<td><code>led</code></td>
+</tr>
+<tr>
+<td><code>@is_lvds_gpio</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>是否 LVDS 关联 GPIO</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@io_standard</code></td>
+<td>❌</td>
+<td>string</td>
+<td>IO 标准</td>
+<td><code>"1.8 V LVCMOS"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>input_config_type</strong>（input 子元素属性）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>类型/枚举</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>DDIO HI 位对应的 RTL 信号名</td>
+<td><code>btn</code></td>
+</tr>
+<tr>
+<td><code>@name_ddio_lo</code></td>
+<td>❌</td>
+<td>string</td>
+<td>DDIO LO 位信号名</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@conn_type</code></td>
+<td>✅</td>
+<td>枚举：<code>normal</code> / <code>alternate</code> / <code>gclk</code> / <code>gctrl</code> / <code>pll_clkin</code> / <code>pll_extfb</code> / <code>mipi_clkin</code></td>
+<td>连接类型（普通输入/全局时钟/PLL 参考时钟等）</td>
+<td><code>normal</code>、<code>pll_clkin</code></td>
+</tr>
+<tr>
+<td><code>@is_register</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>是否寄存</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_schmitt_trigger</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>施密特触发</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@pull_option</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>weak pullup</code> / <code>weak pulldown</code>，<strong>默认 weak pullup</strong></td>
+<td>上/下拉</td>
+<td><code>none</code></td>
+</tr>
+<tr>
+<td><code>@clock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>寄存用时钟</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_clock_inverted</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>时钟反相</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ddio_type</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>normal</code> / <code>resync</code></td>
+<td>DDIO 类型</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>output_config_type</strong>（output 子元素属性，摘主要项）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>类型/枚举</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>输出信号名</td>
+<td><code>led[0]</code></td>
+</tr>
+<tr>
+<td><code>@register_option</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>register</code> / <code>inv_register</code></td>
+<td>输出寄存选项</td>
+<td><code>register</code></td>
+</tr>
+<tr>
+<td><code>@drive_strength</code></td>
+<td>❌</td>
+<td><code>"1"</code>~<code>"4"</code></td>
+<td>驱动强度</td>
+<td><code>"4"</code></td>
+</tr>
+<tr>
+<td><code>@is_slew_rate</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>摆率</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@tied_option</code></td>
+<td>❌</td>
+<td><code>none</code> / <code>__vcc__</code> / <code>__gnd__</code></td>
+<td>恒驱选项</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>output_enable_config_type</strong>：<code>@name</code>（必填，OE 信号名）、<code>@is_register</code>、<code>@clock_name</code>、<code>@is_clock_inverted</code>、<code>@name_oen</code>。</p>
+<p><strong>unused_gpio_state_type</strong>（global_unused_config 的 @state）：<strong>仅有两个枚举值</strong> —— <code>"input with weak pullup"</code> / <code>"input with weak pulldown"</code>。</p>
+<p><strong>comp_gpio_config_type（复杂 GPIO）相对普通版扩展的属性</strong>（Titanium 专属能力）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@is_serial</code></td>
+<td>是否串化 IO</td>
+</tr>
+<tr>
+<td><code>@delay</code> / <code>@is_dyn_delay</code></td>
+<td>延迟及动态延迟使能</td>
+</tr>
+<tr>
+<td><code>@dyn_delay_en_name</code> / <code>@dyn_delay_reset_name</code> / <code>@dyn_delay_ctrl_name</code></td>
+<td>动态延迟控制信号名</td>
+</tr>
+<tr>
+<td><code>@fastclk_name</code></td>
+<td>快时钟名</td>
+</tr>
+<tr>
+<td><code>@pullup_ena_name</code></td>
+<td>上拉使能信号名</td>
+</tr>
+<tr>
+<td><code>@clkmux_buf_name</code></td>
+<td>clkmux 缓冲名</td>
+</tr>
+<tr>
+<td><code>@is_bus_hold</code></td>
+<td>总线保持（在 comp_gpio 层标注 <strong>Deprecated → PT-1020</strong>）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>bus_config_type</strong>：<code>@name</code> / <code>@mode</code> / <code>@msb</code> / <code>@lsb</code>——总线 GPIO 的位宽声明，成员引脚通过 <code>gpio</code> 元素 <code>@bus_name</code> 挂靠。</p>
+<p><strong>helloworld 实例注意</strong>：Ti60（Titanium）示例中连普通参考时钟引脚都写成了 <code>comp_gpio</code>（见 §6.6）。</p>
+<h3 id="4-3-pll-域-pll_design-xsd-405-行">4.3 pll 域（pll_design.xsd，405 行）</h3>
+<p><code>pll_config_type</code>（继承 base_instance）主属性：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>类型</th>
+<th>含义（XSD 原文/翻译）</th>
+<th>helloworld 示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>string</td>
+<td>PLL 实例名</td>
+<td><code>pll_inst1</code></td>
+</tr>
+<tr>
+<td><code>@pll_def</code></td>
+<td>✅</td>
+<td>string</td>
+<td>器件库中的硬实例名（"hw instance name from device database"）</td>
+<td><code>PLL_TL0</code></td>
+</tr>
+<tr>
+<td><code>@gpio_instance</code></td>
+<td>❌</td>
+<td>string</td>
+<td>关联参考时钟 GPIO</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ref_clock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>参考时钟名</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ref_clock_freq</code></td>
+<td>✅</td>
+<td>xs:float</td>
+<td>参考时钟频率（MHz）</td>
+<td><code>25.0000</code></td>
+</tr>
+<tr>
+<td><code>@pre_divider</code></td>
+<td>✅</td>
+<td>int</td>
+<td><strong>N 计数器</strong>（"N counter value as per spec"）</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>@multiplier</code></td>
+<td>✅</td>
+<td>int</td>
+<td><strong>M 乘法器</strong>（"M counter multiplier as per spec"）</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>@post_divider</code></td>
+<td>✅</td>
+<td>int</td>
+<td><strong>O 分频器</strong>（"O counter divider as per spec"）</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>@reset_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>复位信号（对应硬引脚 <code>PCR_USER_EN</code>）</td>
+<td><code>""</code>（空串=未用）</td>
+</tr>
+<tr>
+<td><code>@locked_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td><strong>"The pin name that goes high when PLL achieves lock"</strong>（L141-148）——锁定指示信号</td>
+<td><code>""</code>（未用时为空串；ISF 中设置 lock 信号后此处会写出名字）</td>
+</tr>
+<tr>
+<td><code>@is_ipfrz</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>IP 冻结（<code>PCR_IPEN_PCR_FRZ</code>）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_bypass_lock</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>旁路锁定（<code>PCR_BYPASS_LOCK</code>）</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>@bypass_lock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td><strong>DEPRECATED</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>子元素结构：</p>
+<table>
+<thead>
+<tr>
+<th>子元素</th>
+<th>次数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output_clock</code></td>
+<td>0..*</td>
+<td>旧式输出时钟（<code>pll_output_clock_type</code>，相位属性为 <code>@adv_out_phase_shift</code>，0–270）</td>
+</tr>
+<tr>
+<td><code>adv_prop</code></td>
+<td>0..1</td>
+<td>高级属性（<code>pll_adv_prop_type</code>）</td>
+</tr>
+<tr>
+<td><code>gen_pin</code></td>
+<td>0..1</td>
+<td>通用引脚</td>
+</tr>
+<tr>
+<td><code>comp_output_clock</code></td>
+<td>0..*</td>
+<td>复杂输出时钟（新式，Titanium）</td>
+</tr>
+<tr>
+<td><code>comp_prop</code></td>
+<td>0..1</td>
+<td>复杂属性</td>
+</tr>
+<tr>
+<td><code>gen_param</code></td>
+<td>0..1</td>
+<td>通用参数</td>
+</tr>
+<tr>
+<td><code>dyn_reconfig</code></td>
+<td>0..*</td>
+<td>动态重配置</td>
+</tr>
+</tbody>
+</table>
+<p><code>pll_adv_prop_type</code>：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>枚举</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@ref_clock_mode</code></td>
+<td>✅</td>
+<td><code>external</code> / <code>core</code> / <code>dynamic</code></td>
+<td>参考时钟模式</td>
+<td><code>external</code></td>
+</tr>
+<tr>
+<td><code>@ext_ref_clock_id</code></td>
+<td>❌</td>
+<td>int</td>
+<td>外部参考时钟编号</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td><code>@ref_clock1_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>参考时钟 1 名</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@ref_clock2_name</code> / <code>@ref_clock2_res_name</code> / <code>@ref_clock3_name</code></td>
+<td>❌</td>
+<td>—</td>
+<td><strong>均 Deprecated</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@gpio_instance1</code></td>
+<td>❌</td>
+<td>string</td>
+<td>关联 GPIO</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@clksel_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>时钟选择信号</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@feedback_mode</code></td>
+<td>✅</td>
+<td><code>internal</code> / <code>local</code> / <code>core</code> / <code>external</code> / <code>phy_clk</code></td>
+<td>反馈模式</td>
+<td><code>local</code></td>
+</tr>
+<tr>
+<td><code>@feedback_clock_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>反馈时钟名</td>
+<td><code>clk</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>pll_comp_output_clock_type</code>：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>枚举</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>❌</td>
+<td>—</td>
+<td>输出时钟名（RTL 中的时钟信号名）</td>
+<td><code>clk</code></td>
+</tr>
+<tr>
+<td><code>@number</code></td>
+<td>✅</td>
+<td>int</td>
+<td>输出编号（<strong>从 0 起</strong>）</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>@out_divider</code></td>
+<td>❌</td>
+<td>int</td>
+<td>输出分频（2 的幂语义见 PLL 卷/硬约束 §4）</td>
+<td><code>110</code></td>
+</tr>
+<tr>
+<td><code>@phase_setting</code></td>
+<td>❌</td>
+<td>—</td>
+<td>相位（45° 步进语义）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_dyn_phase</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>动态相位</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@conn_type</code></td>
+<td>❌</td>
+<td><code>gclk</code>（默认）/ <code>rclk</code> / <code>lclk</code> / <code>cm</code></td>
+<td>连接类型</td>
+<td><code>gclk</code></td>
+</tr>
+<tr>
+<td><code>@clkmux_buf_name</code></td>
+<td>❌</td>
+<td>string</td>
+<td>"Use when connection type is rclk"</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@is_inverted</code></td>
+<td>❌</td>
+<td>bool</td>
+<td>反相</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-ctrl-域-ctrl_design-xsd-98-行">4.4 ctrl 域（ctrl_design.xsd，98 行）</h3>
+<p><code>ctrl_config_type</code>（配置控制器，对应示例中的 <code>cfg</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>含义</th>
+<th>helloworld 示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>控制器名</td>
+<td><code>cfg</code></td>
+</tr>
+<tr>
+<td><code>@clock_name</code></td>
+<td>✅</td>
+<td>时钟名（可为空串）</td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>@ctrl_def</code></td>
+<td>✅</td>
+<td>器件库硬实例名</td>
+<td><code>CONFIG_CTRL0</code></td>
+</tr>
+<tr>
+<td><code>@cbsel_bus_name</code></td>
+<td>✅</td>
+<td>"Bus name for choosing image to use for configuration"（镜像选择总线）</td>
+<td><code>cfg_CBSEL</code></td>
+</tr>
+<tr>
+<td><code>@ena_capture_name</code></td>
+<td>✅</td>
+<td>捕获使能信号名</td>
+<td><code>cfg_ENA</code></td>
+</tr>
+<tr>
+<td><code>@config_ctrl_name</code></td>
+<td>✅</td>
+<td>配置控制信号名</td>
+<td><code>cfg_CONFIG</code></td>
+</tr>
+<tr>
+<td><code>@error_status_name</code></td>
+<td>✅</td>
+<td>错误状态信号名</td>
+<td><code>cfg_ERROR</code></td>
+</tr>
+<tr>
+<td><code>@um_signal_status_name</code></td>
+<td>❌</td>
+<td>用户模式状态信号名</td>
+<td><code>cfg_USR_STATUS</code></td>
+</tr>
+<tr>
+<td><code>@is_remote_update_enable</code></td>
+<td>❌</td>
+<td>远程更新使能</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_user_mode_enable</code></td>
+<td>❌</td>
+<td>用户模式使能</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_clk_invert</code></td>
+<td>❌</td>
+<td>时钟反相</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-5-clkmux-域-clkmux_design-xsd-55-行">4.5 clkmux 域（clkmux_design.xsd，55 行）</h3>
+<p><code>clkmux_config_type</code>：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>复用器名</td>
+<td><code>CLKMUX_T</code></td>
+</tr>
+<tr>
+<td><code>@block_def</code></td>
+<td>✅</td>
+<td>器件库块定义名（与 @name 同名，如 <code>CLKMUX_T</code>）</td>
+<td><code>CLKMUX_T</code></td>
+</tr>
+<tr>
+<td><code>@is_mux_bot0_dyn</code></td>
+<td>✅</td>
+<td>底部输入 0 是否动态</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>@is_mux_bot7_dyn</code></td>
+<td>✅</td>
+<td>底部输入 7 是否动态</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<p>子元素（Titanium clkmux 固有结构）：
+- <code>gen_pin</code>（<strong>必现</strong>）：每个 clkmux 带 8 个 gen_pin——<code>ROUTE0..ROUTE3</code>、<code>DYN_MUX_OUT_0</code>、<code>DYN_MUX_OUT_7</code>、<code>DYN_MUX_SEL_0</code>、<code>DYN_MUX_SEL_7</code>；
+- <code>dyn_mux0_inputs</code> / <code>dyn_mux7_inputs</code>（各最多 4 个 <code>dyn_input</code>：<code>@index</code> / <code>@resource</code> / <code>@resource_pin</code> / <code>@is_static</code>）。</p>
+<h3 id="4-6-osc-域-osc_design-xsd-59-行">4.6 osc 域（osc_design.xsd，59 行）</h3>
+<p><code>osc_config_type</code>（继承 base_instance）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>必填</th>
+<th>含义</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@name</code></td>
+<td>✅</td>
+<td>振荡器实例名</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@osc_def</code></td>
+<td>✅</td>
+<td>器件库定义名</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@clock_name</code></td>
+<td>❌</td>
+<td>输出时钟名</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@frequency</code></td>
+<td>❌</td>
+<td>频率</td>
+<td>XSD 原文：<em>"This is not available to all devices"</em>——<strong>并非所有器件都有该属性</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-7-seu-域-seu_design-xsd">4.7 seu 域（seu_design.xsd）</h3>
+<p>对应示例 L21-32 的 <code>seu</code> 块：<code>@block_def="CONFIG_SEU0"</code>、<code>@mode</code>（如 <code>auto</code>）、<code>@wait_interval="16500000"</code>，下挂 6 个 <code>gen_pin</code>（SEU 检测状态/错误信号等）。属性细节与 ctrl 域同风格（@name/@block_def + 信号名集合），此处不赘。</p>
+<h3 id="4-8-公共类型-common_design-xsd-101-行">4.8 公共类型（common_design.xsd，101 行）</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>关键属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gen_pin_type</code></td>
+<td><code>@type_name</code>（必填）/ <code>@name</code>（必填）/ <code>@is_bus</code>（必填）/ <code>@is_clk</code> / <code>@is_clk_invert</code></td>
+<td>块间互连引脚的最小单元；iobank/clkmux/seu/gpio 大量使用</td>
+</tr>
+<tr>
+<td><code>gen_pin_info_type</code></td>
+<td>—</td>
+<td>gen_pin 的集合容器</td>
+</tr>
+<tr>
+<td><code>gen_param_type</code></td>
+<td><code>@name</code> / <code>@value</code> / <code>@value_type</code>（<code>int</code>/<code>float</code>/<code>str</code>/<code>bool</code>/<code>enum</code>/<code>hex</code>）/ <code>@flags</code> <code>hex_value</code></td>
+<td>通用键值参数</td>
+</tr>
+<tr>
+<td><code>base_instance</code></td>
+<td>内嵌 <code>netlist_config</code>（0..1，<code>@netlist_checksum</code>）</td>
+<td>多数块类型的继承基类</td>
+</tr>
+<tr>
+<td><code>hex_value</code></td>
+<td>pattern <code>0x([0-9A-Fa-f])+</code></td>
+<td>十六进制字面量</td>
+</tr>
+<tr>
+<td>（peri_util.xsd）<code>ne_string</code> / <code>loc_string</code> / <code>comma_sep_string</code></td>
+<td>非空串 / <code>"x,y,z"</code> 坐标 pattern / 逗号分隔串</td>
+<td>peri_tool 命名空间的公共简单类型</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-designwriterxml-写出逻辑">5. DesignWriterXml 写出逻辑</h2>
+<blockquote>
+<p>本节只做<strong>概述 + 指针</strong>；调用链逐行剖析（DesignAPI.save → IntDesignAPI.save → DesignService.save_design → DesignWriterXml.write 的 L3484→L3526→L3596-3713 行号详解）见兄弟卷 <strong>《Efinity-DesignAPI方法参考.md》第 5 节「DesignWriterXml 写出模型」</strong>，两卷行号证据一致（<code>C:\Efinity\2026.1\pt\bin\design\service.py</code>）。</p>
+</blockquote>
+<h3 id="5-1-何时写出-peri-xml">5.1 何时写出 peri.xml</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>触发点</th>
+<th>证据（service.py）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用户在 Interface Designer 点保存 / DesignAPI.save()</td>
+<td>DesignService.save_design（L720-732）遍历调用各块服务的 save_design</td>
+<td>service.py L3696-3697</td>
+</tr>
+<tr>
+<td>unified 编译过程（ISF 重放后）</td>
+<td>重放完成后对内存中演化的 design 执行整树写出</td>
+<td>efx_run_pt_unified.py L252 之后流程</td>
+</tr>
+</tbody>
+</table>
+<p>最终落盘动作（service.py L3711-3713）：<code>open(design_file, mode='wb')</code> ——二进制写、UTF-8 XML、整文件重写（非增量）。</p>
+<h3 id="5-2-19-类块的固定写出顺序">5.2 19 类块的固定写出顺序</h3>
+<p>service.py <strong>L3596</strong> 有源码注释：<code># Blocks must be written in correct order</code>。随后 L3597-3695 以 <strong>19 个 if/elif 槽位</strong>决定块服务追加顺序，即 XML 中块的出现顺序：</p>
+<pre><code class="language-text">①GPIO（GPIODesignService 或 GPIODesignServiceComplex，二选一）
+②PLL（5 变体 if/elif 链：普通/复杂/高级等）
+③OSC（3 变体）            ④LVDS（3 变体）          ⑤MIPI（2 变体）
+⑥JTAG                      ⑦DDR（2 变体）            ⑧H264
+⑨MIPI DPHY（2 变体）       ⑩SPI Flash                ⑪HyperRAM
+⑫PLL SSC                   ⑬CommonQuad               ⑭QuadPCIe
+⑮Lane10G                   ⑯Lane1G                   ⑰RawSerdes
+⑱SOC                       ⑲CM（cm_v1）
+</code></pre>
+<p><strong>顺序为什么重要</strong>：块之间存在引用（如 GPIO 引用 iobank、PLL 输出引用 GPIO），先写被引用者。工具按此顺序写，解析器/校验器也应按此顺序读。每块写出后再逐个 save_design（L3696-3697）；L3699-3703 写出 <code>partial_design</code> 元素（局部设计模式标记，常规工程为空）。</p>
+<h3 id="5-3-空容器行为">5.3 空容器行为</h3>
+<p>即使某域完全未使用，DesignWriterXml 也会写出<strong>空容器元素</strong>（如 helloworld 的 <code>&lt;efxpt:osc_info/&gt;</code>，L105-108）。这与 design_db_type 全部子元素 <code>minOccurs=0</code>（§3.3）一致：<strong>空容器 ≠ 缺失</strong>，都是合法状态；做差异比较时不要把空容器当作「内容变化」。</p>
+<hr />
+<h2 id="6-实例剖析-helloworld-unified-的-peri-xml">6. 实例剖析：helloworld-unified 的 .peri.xml</h2>
+<p>样本：<code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.peri.xml</code>（109 行，Ti60F225）。这是理解 peri.xml 全貌的最小真实样本。</p>
+<h3 id="6-1-根元素-l1-4">6.1 根元素（L1-4）</h3>
+<pre><code class="language-xml">&lt;efxpt:design_db name=&quot;helloworld&quot; device_def=&quot;Ti60F225&quot; version=&quot;2025.2.276&quot;
+    db_version=&quot;20252006&quot; last_change_date=&quot;Wed Oct 29 10:27:16 2025&quot;
+    xmlns:efxpt=&quot;http://www.efinixinc.com/peri_design_db&quot; ...&gt;
+</code></pre>
+<p>解读：<code>@name</code> 与工程同名；<code>@device_def</code> 对应 Ti60F225 器件定义；<code>@db_version="20252006"</code> 是 8 位库版本（§2.2）；<code>@version="2025.2.276"</code> 是产出工具版本。</p>
+<h3 id="6-2-12-个-iobank-l4-17">6.2 12 个 iobank（L4-17）</h3>
+<pre><code class="language-xml">&lt;efxpt:iobank name=&quot;1A&quot; iostd=&quot;1.8 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot;/&gt;
+...（1B/2A/2B/3A/3B/4A/4B 同为 &quot;1.8 V LVCMOS&quot;）
+&lt;efxpt:iobank name=&quot;BL&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;BL_MODE_SEL&quot;/&gt;
+&lt;efxpt:iobank name=&quot;BR&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;BR_MODE_SEL&quot;/&gt;
+&lt;efxpt:iobank name=&quot;TL&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;TL_MODE_SEL&quot;/&gt;
+&lt;efxpt:iobank name=&quot;TR&quot; iostd=&quot;3.3 V LVCMOS&quot; is_dyn_voltage=&quot;false&quot; mode_sel_name=&quot;TR_MODE_SEL&quot;/&gt;
+</code></pre>
+<p>解读：Ti60F225 列出<strong>全部 12 个 bank</strong>（1A-4B 八个 + BL/BR/TL/TR 四角）；未使用的 bank 也照写（只有 @iostd，无 @mode_sel_name）。四角 bank 带 <code>mode_sel_name</code>（其模式选择引脚可配置）。这印证 §4.1：iobank 域是<strong>逐 bank 全量声明</strong>，不是「用到才写」。</p>
+<h3 id="6-3-ctrl_info-l18-20">6.3 ctrl_info（L18-20）</h3>
+<pre><code class="language-xml">&lt;efxpt:ctrl name=&quot;cfg&quot; ctrl_def=&quot;CONFIG_CTRL0&quot; clock_name=&quot;&quot; cbsel_bus_name=&quot;cfg_CBSEL&quot;
+    ena_capture_name=&quot;cfg_ENA&quot; error_status_name=&quot;cfg_ERROR&quot;
+    um_signal_status_name=&quot;cfg_USR_STATUS&quot;
+    is_remote_update_enable=&quot;false&quot; is_user_mode_enable=&quot;false&quot;/&gt;
+</code></pre>
+<p>解读：即 §4.4 全表的真实落地——配置控制器默认存在于每个工程，5 个必填信号名即使未用也写成空串或占位名。</p>
+<h3 id="6-4-seu_info-l21-32">6.4 seu_info（L21-32）</h3>
+<pre><code class="language-xml">&lt;efxpt:seu block_def=&quot;CONFIG_SEU0&quot; mode=&quot;auto&quot; wait_interval=&quot;16500000&quot;&gt;
+  &lt;!-- 6 个 gen_pin：SEU 检测/错误状态信号 --&gt;
+&lt;/efxpt:seu&gt;
+</code></pre>
+<p>解读：SEU 块模式 <code>auto</code>、等待间隔 16500000（循环计数），6 个 gen_pin 暴露状态信号。</p>
+<h3 id="6-5-clkmux_info-4-个复用器-l33-82">6.5 clkmux_info：4 个复用器（L33-82）</h3>
+<pre><code class="language-xml">&lt;efxpt:clkmux name=&quot;CLKMUX_B&quot; block_def=&quot;CLKMUX_B&quot; is_mux_bot0_dyn=&quot;false&quot; is_mux_bot7_dyn=&quot;false&quot;&gt;
+  &lt;!-- 8 个 gen_pin：ROUTE0..ROUTE3、DYN_MUX_OUT_0、DYN_MUX_OUT_7、DYN_MUX_SEL_0、DYN_MUX_SEL_7 --&gt;
+&lt;/efxpt:clkmux&gt;
+&lt;!-- 依次还有 CLKMUX_L / CLKMUX_R / CLKMUX_T --&gt;
+</code></pre>
+<p>解读：Titanium 每边一个 clkmux，共 <strong>CLKMUX_B/L/R/T 四个</strong>，结构与 §4.5 完全一致（gen_pin 必现 8 个，动态输入组未用时缺省）。</p>
+<h3 id="6-6-gpio_info-参考时钟引脚与全局未用引脚-l84-89">6.6 gpio_info：参考时钟引脚与全局未用引脚（L84-89）</h3>
+<pre><code class="language-xml">&lt;efxpt:comp_gpio name=&quot;pll_refclk&quot; gpio_def=&quot;GPIOL_P_18&quot; mode=&quot;input&quot; io_standard=&quot;1.8 V LVCMOS&quot;&gt;
+  &lt;efxpt:input_config name=&quot;pll_refclk&quot; conn_type=&quot;pll_clkin&quot; pull_option=&quot;none&quot;
+      pullup_ena_name=&quot;pll_refclk_PULL_UP_ENA&quot; .../&gt;
+&lt;/efxpt:comp_gpio&gt;
+&lt;efxpt:global_unused_config state=&quot;input with weak pullup&quot;/&gt;
+</code></pre>
+<p>解读：
+- Ti60（Titanium）上连<strong>普通 PLL 参考时钟引脚也用 <code>comp_gpio</code></strong>（复杂 GPIO），<code>@conn_type="pll_clkin"</code> 声明其 PLL 时钟输入角色——印证 §4.2 的双形态分工（Titanium 统一走 comp 形态）。
+- <code>@pullup_ena_name</code> 是 comp_gpio 专属扩展属性（普通 gpio 无此项）。
+- <code>global_unused_config</code> 恰好出现 1 次，全局未用引脚默认弱上拉输入——<strong>这正是 ISF 卷/硬约束 §16「未用引脚处理」的落点</strong>。</p>
+<h3 id="6-7-pll_info-唯一-pll-l90-104">6.7 pll_info：唯一 PLL（L90-104）</h3>
+<pre><code class="language-xml">&lt;efxpt:pll name=&quot;pll_inst1&quot; pll_def=&quot;PLL_TL0&quot; ref_clock_freq=&quot;25.0000&quot;
+    multiplier=&quot;1&quot; pre_divider=&quot;1&quot; post_divider=&quot;2&quot;
+    reset_name=&quot;&quot; locked_name=&quot;&quot; is_bypass_lock=&quot;true&quot;&gt;
+  &lt;efxpt:adv_prop ref_clock_mode=&quot;external&quot; ext_ref_clock_id=&quot;2&quot;
+      feedback_mode=&quot;local&quot; feedback_clock_name=&quot;clk&quot;/&gt;
+  &lt;efxpt:comp_output_clock name=&quot;clk&quot; number=&quot;0&quot; out_divider=&quot;110&quot; conn_type=&quot;gclk&quot;/&gt;
+&lt;/efxpt:pll&gt;
+</code></pre>
+<p>解读（对照 §4.3）：
+- <code>PLL_TL0</code>：顶部 bank 的 PLL 硬实例；参考时钟 25 MHz，N=1 / M=1 / O=2；
+- <code>@locked_name=""</code>：本示例未把 lock 信号连到 RTL——<strong>空串表示未使用</strong>，而 ISF 中 <code>set_property</code> 设置 lock 后重放，这里会写出真实信号名（工程模板要求 <code>wire async_rst_n = rst_n_i &amp; pll_locked</code>，见硬约束 §4）；
+- <code>adv_prop</code>：外部参考模式，<code>ext_ref_clock_id="2"</code>（GPIOL_P_18 对应的外部参考编号）；反馈模式 <code>local</code>、反馈时钟 <code>clk</code>；
+- <code>comp_output_clock</code>：输出时钟名 <code>clk</code>（即 RTL 中的时钟端口名）、编号 0、输出分频 110 → 25MHz×1/1/2 后经 VCO 与分频得 110 分频输出（本例最终时钟频率计算属 PLL 卷职责，不展开）；
+- <code>@conn_type="gclk"</code>：输出接入全局时钟网络——SDC <code>create_clock</code> 的对象名必须与这里的 <code>@name="clk"</code> 精确匹配（SDC 卷硬约束 §7）。</p>
+<h3 id="6-8-空容器-l105-108">6.8 空容器（L105-108）</h3>
+<pre><code class="language-xml">&lt;efxpt:osc_info/&gt;
+&lt;efxpt:lvds_info/&gt;
+&lt;efxpt:jtag_info/&gt;
+&lt;efxpt:mipi_dphy_info/&gt;
+</code></pre>
+<p>解读：未使用域的空容器（§5.3）。helloworld 只用了 device_info（iobank/ctrl/seu/clkmux）、gpio_info、pll_info 三个域。</p>
+<hr />
+<h2 id="7-易混淆格式勘误-lpf-xsd-名不副实">7. 易混淆格式勘误：lpf.xsd 名不副实</h2>
+<h3 id="7-1-问题-lpf-这个名字极具误导性">7.1 问题：<code>lpf</code> 这个名字极具误导性</h3>
+<p>schema 目录中存在 <code>C:\Efinity\2026.1\pt\bin\schema\lpf.xsd</code>（167 行）。文件名 <code>lpf</code> 极易让人联想到 "Logic Preference File" / "LPF 约束文件"（某些 FPGA 厂商的物理约束格式），进而<strong>误以为 Efinity 也存在某种 LPF 约束</strong>。</p>
+<h3 id="7-2-事实-它是-peri_device_db-命名空间的器件数据库">7.2 事实：它是 peri_device_db 命名空间的器件数据库</h3>
+<p>实读证据（lpf.xsd）：</p>
+<table>
+<thead>
+<tr>
+<th>行号</th>
+<th>内容</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2</td>
+<td><code>targetNamespace="http://www.efinixinc.com/peri_device_db"</code></td>
+<td><strong>属于器件库命名空间</strong>，不是 peri_design_db（设计库）；与 peri.xml（efxpt）毫无聚合关系（见 §3.2 清单，lpf.xsd 不在其中）</td>
+</tr>
+<tr>
+<td>全文</td>
+<td>根元素 <code>periphery</code>（periphery_type：<code>@device</code> / <code>@design</code> / <code>@checksum</code>）</td>
+<td>描述<strong>某颗器件的 periphery 块数据</strong>，带 checksum 的数据库快照</td>
+</tr>
+<tr>
+<td>—</td>
+<td>子元素 <code>sequence</code> / <code>block_def</code>（<code>@name</code> / <code>@bitsize</code> / <code>@paramsize</code>）/ <code>instance</code>（<code>@id</code> / <code>@type</code> + parameter + 二进制 value）</td>
+<td><strong>bit 级块定义</strong>：每个块（block_def）的位宽、参数布局、实例的二进制映像</td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>parameter_value</code> 的 setting 类型是 <code>binary_string_type</code>（pattern <code>([01])+</code>）</td>
+<td>参数值是 <strong>01 比特串</strong></td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>parameter_int_type</code> 带 <code>@min</code> / <code>@max</code> / <code>@endianness</code>（little/big）/ <code>@format</code>（binary/hex）</td>
+<td>整数参数的比特编码规则</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-3-结论">7.3 结论</h3>
+<table>
+<thead>
+<tr>
+<th>常见误读</th>
+<th>事实</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>「lpf.xsd 定义了 Efinity 的 LPF 约束文件格式」</td>
+<td>❌ Efinity <strong>没有</strong> LPF 约束格式；约束只有 ISF（给 PT）和 SDC（给 pnr）两种（硬约束 §1）</td>
+</tr>
+<tr>
+<td>「peri.xml 会引用 lpf」</td>
+<td>❌ lpf.xsd 属于 <code>peri_device_db</code>（器件库），peri.xml 属于 <code>peri_design_db</code>（设计库），二者命名空间不同、无 include/import 关系（§2.1、§3.2）</td>
+</tr>
+<tr>
+<td>「lpf 是 SDC 的变体」</td>
+<td>❌ 与 SDC 毫无关系；SDC 由 efx_pnr 消费，lpf.xsd 描述的是 PT 器件数据库里的 bit 级块定义</td>
+</tr>
+</tbody>
+</table>
+<p><strong>用途定位</strong>：lpf.xsd 服务于 PT 内部把设计库数据（peri.xml）与器件出厂 bit 级定义对表/校验的场景（block_def 的 bitsize/paramsize + instance 二进制值）。做 SDK 级工具时<strong>不需要解析它</strong>；任何把「lpf」当约束格式的代码都是被文件名误导的 bug。</p>
+<blockquote>
+<p>同类命名空间勘误可对照 DesignAPI 卷第 0.1 节「三条勘误」与 SDC 卷对报告产物命名空间的分析。</p>
+</blockquote>
+<hr />
+<h2 id="8-工程守则与兄弟卷交叉引用">8. 工程守则与兄弟卷交叉引用</h2>
+<h3 id="8-1-peri-xml-工程守则-清单式">8.1 peri.xml 工程守则（清单式）</h3>
+<ol>
+<li><strong>绝不手工编写/编辑 peri.xml</strong>。官方原话 "You should not edit this file directly!"（gloss-peri.xml.html L190-193）。修改入口只有两条：Interface Designer（GUI）或 ISF/DesignAPI（脚本）。</li>
+<li><strong>peri.xml 是工程源文件</strong>：与 ISF 一起纳入版本管理；任何构建路径（SDK / adapter / 脚本）<strong>不得在构建前删除它</strong>——删除重生成是 workaround，不是修复（硬约束 §15）。</li>
+<li><strong>自检 gate</strong>：每次变更约束后，先让 ISF 过 <code>cli/import_gpio.bat --dry-run</code>，再跑一次重放编译确认 peri.xml 加载正常（ISF 卷 §4；硬约束 §16）。</li>
+<li><strong>bootstrap 一次性</strong>：<code>create_*</code> 只在 peri.xml 不存在时跑一次，之后必须注释（ISF 卷 §3；本卷 §1.4）。</li>
+<li><strong>不要写解析/生成 peri.xml 的自研工具</strong>：格式由 24 个子 schema 组成且随 db_version 演进（§3、@db_version §2.2），正确姿势是走 DesignAPI（DesignAPI 卷）。唯一合理的程序化接触面是 DesignAPI 读接口（如做工作台 UI 展示）。</li>
+<li><strong>差异比较的注意点</strong>：空容器 ≠ 内容变化（§5.3）；<code>@last_change_date</code> 每次保存必变，diff 时忽略。</li>
+<li><strong>器件三重一致性</strong>：peri.xml 的 <code>@device_def</code> 必须与工程 XML 器件信息匹配，否则 unified 流程 L224-230 直接 ERROR（§1.3）——复制别的工程当模板时第一件事就是换器件。</li>
+<li><strong>SDC 时钟名对齐</strong>：peri.xml 中 PLL <code>comp_output_clock/@name</code> 就是 RTL 时钟名，SDC <code>create_clock</code> 必须与之精确匹配（§6.7；SDC 卷硬约束 §7）。</li>
+</ol>
+<h3 id="8-2-与-isf-的配合-一图流">8.2 与 ISF 的配合（一图流）</h3>
+<pre><code class="language-text">            ┌──────────────────────────────────────────────┐
+            │  ISF（人类可读，Python API 源码，重放安全）    │
+            │  set_property / assign_pkg_pin / ...          │
+            └──────────────┬───────────────────────────────┘
+                           │ efx_run_pt_unified.py 重放（L252）
+                           ▼
+            ┌──────────────────────────────────────────────┐
+            │  &lt;design&gt;.peri.xml（efxpt:design_db 设计库）  │  ← 工程源文件
+            │  21 个域 / 19 类块固定顺序 / 全量 bank 声明    │  ← 禁止手改
+            └──────────────┬───────────────────────────────┘
+                           │ PT 派生
+                           ▼
+        {design}.unified.isf / peri.rtl.v / peri.pt.v / pbn / cdo  ← 生成物
+</code></pre>
+<h3 id="8-3-兄弟卷交叉引用索引">8.3 兄弟卷交叉引用索引</h3>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>去哪查</th>
+<th>关键锚点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISF 语法、bootstrap/重放契约、unified 流程步骤表</td>
+<td>《Efinity-ISF语法参考.md》</td>
+<td>§3 重放安全契约、§4 官方双文件对、§7.1 unified 六步表、§7.4 <code>&lt;design&gt;.peri.xml</code> 条目</td>
+</tr>
+<tr>
+<td>DesignAPI → DesignWriterXml 逐行剖析</td>
+<td>《Efinity-DesignAPI方法参考.md》</td>
+<td>第 5 节「DesignWriterXml 写出模型」（L3484 / L3521-3526 / L3596-3697）、第 6 节分工表、第 7 节证据清单</td>
+</tr>
+<tr>
+<td>工程文件（<code>enf_proj</code>）格式与 <code>&lt;efx:inter_file&gt;</code></td>
+<td>《Efinity-XML工程文件Schema参考.md》</td>
+<td>全卷</td>
+</tr>
+<tr>
+<td>PLL/OSC 参数语义（N/M/O、相位、lock）</td>
+<td>《Efinity硬IP-PLL与OSC参考.md》</td>
+<td>PLL 参数节（本卷 §4.3 只讲 XML 属性）</td>
+</tr>
+<tr>
+<td>SDC、编译报告产物</td>
+<td>《Efinity文件格式-SDC与报告产物.md》</td>
+<td>§5 编译产物词汇表（其中「peri.xml 是唯一 design source?=Yes」与本卷 §1.1 同源）</td>
+</tr>
+<tr>
+<td>硬约束（bank 电压、PLL、ISF 验收）</td>
+<td><code>rules-efinity-hard.md</code>（SDK 用户规则）</td>
+<td>§1 文件格式、§3 bank 电压、§4 PLL、§15 接口基线契约、§16 自检清单</td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-4-证据文件清单-本卷一手来源">8.4 证据文件清单（本卷一手来源）</h3>
+<table>
+<thead>
+<tr>
+<th>证据文件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\peri_design_db.xsd</code>（256 行）</td>
+<td>根元素、聚合清单、design_db_type（§2.2、§3）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\{gpio,iobank,pll,ctrl,clkmux,osc,lvds,...}_design.xsd</code></td>
+<td>§4 各域属性表</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\common_design.xsd</code>（101 行）、<code>peri_util.xsd</code>（39 行）</td>
+<td>公共类型（§4.8）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\lpf.xsd</code>（167 行）</td>
+<td>§7 勘误专节</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.peri.xml</code>（109 行）</td>
+<td>§6 实例剖析</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\design\service.py</code> L3596-3713</td>
+<td>§5 写出顺序与落盘</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code> L99/L180-184/L224-230/L243-248/L252/L318-331</td>
+<td>§1.3 生命周期</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\gloss-peri.xml.html</code> L168-197</td>
+<td>§1.1 官方定义</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>本卷完。上一卷：《Efinity-DesignAPI方法参考.md》；关联卷：《Efinity-ISF语法参考.md》《Efinity-XML工程文件Schema参考.md》《Efinity文件格式-SDC与报告产物.md》《Efinity硬IP-PLL与OSC参考.md》。</em></p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

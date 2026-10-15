@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity DesignAPI 集成</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>事务式接口修改与 DRC 流程。</span>
+<code>efinity/Efinity设计API集成.md</code>
+<a href="../../../efinity/Efinity设计API集成.md">Markdown 源文件</a></p>
+<h1>Efinity DesignAPI 集成</h1></header>
+<main class="article"><h1 id="efinity-designapi-原生集成">Efinity DesignAPI 原生集成</h1>
+<p>EvoVerse SDK 不定义额外的接口设计文件格式。接口设计以 Efinity 原生文件为准：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>角色</th>
+<th>是否建议版本管理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;project&gt;.xml</code></td>
+<td>Efinity 工程数据库</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>constraints/*.peri.isf</code></td>
+<td>Interface Designer Python API 命令，可重建设计</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.peri.xml</code></td>
+<td>Interface Designer 设计数据库</td>
+<td>作为生成物管理</td>
+</tr>
+<tr>
+<td><code>ip/&lt;instance&gt;/settings.json</code></td>
+<td>Efinity IP Manager 实例参数</td>
+<td>是</td>
+</tr>
+<tr>
+<td><code>outflow/&lt;project&gt;.*</code></td>
+<td>PT、综合、PNR 和 bitstream 产物</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<h2 id="编译流程">编译流程</h2>
+<ol>
+<li>SDK 选择明确的 Efinity 工程 XML，并以该 XML 所在目录作为工作目录。</li>
+<li>SDK 调用 Efinity 原生 <code>efx_run --flow compile</code>，不在主编译前另跑一遍 PT。</li>
+<li>Efinity 根据工程 XML 引用的 ISF / interface 配置执行原生 PT。</li>
+<li>PT 内部通过 <code>api_service.design.DesignAPI</code> 创建或加载接口设计。</li>
+<li>DesignAPI 导入 ISF、完成资源分配和 design check。</li>
+<li>Efinity 生成 PT 产物，再继续 Map / PNR / PGM。</li>
+<li>进入 Efinity synthesis、PNR、timing 和 bitstream 流程。</li>
+</ol>
+<p>SDK 在运行原生 PT 流程前保存当前 <code>peri.xml</code> 及同工程名的 PT outflow
+产物。若 ISF 导入、资源分配、DRC 或生成失败，旧产物会自动恢复，避免工程
+停留在半生成状态。</p>
+<h2 id="ip-实现">IP 实现</h2>
+<p>软 IP 继续由 Efinity <code>IPMDesignAPI</code> 创建、配置、校验和生成，并使用原生
+<code>settings.json</code> 保存实例参数。需要器件硬资源的 IP，由其 Efinity generator
+调用 <code>DesignAPI</code> 修改 <code>peri.xml</code>。SDK 不复制 Efinity 的硬 IP 实现规则。</p>
+<p>因此完整职责为：</p>
+<pre><code class="language-text">IPMDesignAPI/settings.json -&gt; IP RTL 与 IP 实例
+DesignAPI/*.peri.isf       -&gt; GPIO、PLL、DDR、MIPI、PCIe、JTAG、SoC
+Efinity project XML        -&gt; 工程、源文件和 IP 注册
+Efinity compile flow       -&gt; synthesis、PNR、timing、bitstream
+</code></pre>
+<h2 id="版本兼容">版本兼容</h2>
+<p>Block type、property、preset 和 resource 名称与器件及 Efinity 版本相关。
+应以当前 Efinity 安装目录的 <code>doc/pdf/efinity-python-api.pdf</code> 为准，不在 SDK
+中维护一份可能过期的属性副本。</p>
+<h2 id="designapi-cli">DesignAPI CLI</h2>
+<p>SDK 提供只操作原生 <code>peri.xml</code> / ISF 的结构化查询服务：</p>
+<pre><code class="language-text">evoverse design capabilities --peri &lt;project&gt;.peri.xml
+evoverse design capabilities --peri &lt;project&gt;.peri.xml --include-resources
+evoverse design inspect --peri &lt;project&gt;.peri.xml
+evoverse design validate --peri &lt;project&gt;.peri.xml
+evoverse design validate --peri &lt;project&gt;.peri.xml --isf constraints/base.peri.isf
+evoverse design export-isf --peri &lt;project&gt;.peri.xml --output exported.peri.isf
+evoverse design auto-assign --peri &lt;project&gt;.peri.xml
+evoverse design auto-assign --peri &lt;project&gt;.peri.xml --apply --output resolved.auto_asg.isf
+</code></pre>
+<p><code>capabilities</code>、<code>inspect</code> 和 <code>validate</code> 会在临时隔离副本上加载数据库，避免
+DesignAPI 自动升级数据库版本时改写用户的 <code>peri.xml</code>。<code>export-isf</code> 的唯一
+写入目标是用户明确指定的原生 ISF 文件。</p>
+<p><code>validate --isf</code> 会把 DRC实例映射到原生 ISF 的首次创建行。<code>auto-assign</code>
+默认只预览 Efinity <code>auto_assign_resource()</code> 的结果；只有同时提供 <code>--apply</code>
+和 <code>--output</code> 才写出独立的原生 ISF，不会合并或覆盖基础 ISF。</p>
+<p><code>evoverse ip add</code> 会在 IPM生成前保存当前 <code>peri.xml</code>，生成后运行 DesignAPI
+DRC。IPM、结果解析或后置 DRC失败时恢复原数据库，避免硬 IP generator 的
+半完成修改进入编译。</p>
+<p>历史 <code>peri.xml</code> 可能不兼容当前 Efinity schema。遇到此情况，应使用对应工程
+的 <code>*.peri.isf</code> 重新生成数据库，而不是修改 XML schema 或在 SDK 中维护迁移器。</p>
+<h2 id="tj180-实测基线">TJ180 实测基线</h2>
+<p>Efinity 2026.1 下已使用 <code>docs/tutorials/snapshots/stage3-pwm</code> 完成隔离闭环：</p>
+<ol>
+<li>删除复制工程中的旧 <code>peri.xml</code>。</li>
+<li>从 <code>constraints/base.peri.isf</code> 重建接口数据库。</li>
+<li>DesignAPI DRC 通过，问题数为 0。</li>
+<li>Synthesis PASS。</li>
+<li>Interface PASS。</li>
+<li>PNR PASS。</li>
+<li>PGM/bitstream PASS。</li>
+</ol>
+<p>主编译只调用一次 Efinity 原生 <code>efx_run --flow compile</code>，由 Efinity 完成 PT → map → pnr → pgm。SDK 不注入跳过 PT 的环境变量，也不复用预执行 PT 产物绕过原生阶段。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

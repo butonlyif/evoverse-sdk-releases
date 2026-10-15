@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Design Assurance 规则与证据</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← 返回EvoVerse SDK</a>
+<span>确定性 RTL 规则、协议契约与仿真证据的判定边界。</span>
+<code>design-assurance/README.md</code>
+<a href="../../../design-assurance/README.md">Markdown 源文件</a></p>
+<h1>Design Assurance 规则与证据</h1></header>
+<main class="article"><h1 id="evoverse-design-assurance">EvoVerse Design Assurance</h1>
+<p>零依赖、vendor 无关的设计保证（Design Assurance）引擎：对 RTL 项目运行确定性规则与协议契约检查，用同一套证据（evidence）与例外（exception）机制产出可复现的 JSON 报告。</p>
+<ul>
+<li>代码：<code>sdk/design-assurance/</code>（纯 Python 3 标准库，无第三方依赖）</li>
+<li>契约：<code>sdk/design-assurance/schema/</code> 下的 JSON Schema 是语言无关的公共契约</li>
+<li>测试：<code>python -m unittest discover -s sdk/design-assurance/tests -v</code></li>
+</ul>
+<h2 id="状态语义-三态而非两态">状态语义：三态而非两态</h2>
+<table>
+<thead>
+<tr>
+<th>status</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pass</code></td>
+<td>所有启用的规则均通过或被有效例外覆盖</td>
+</tr>
+<tr>
+<td><code>fail</code></td>
+<td>存在至少一条结构可证伪的 violation</td>
+</tr>
+<tr>
+<td><code>incomplete</code></td>
+<td>存在缺少证据的行为属性（unverified）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>缺少证据是 unverified，不是 pass（missing evidence is unverified, not pass）。</strong> 时序性属性（如握手 payload 稳定）无法由结构扫描证明，必须提交 property-run 证据；没有证据时报告状态为 <code>incomplete</code>，绝不静默放行。</p>
+<h2 id="规则包">规则包</h2>
+<table>
+<thead>
+<tr>
+<th>规则包</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rtl-baseline@1</code></td>
+<td>18 条确定性 RTL 基线规则：结构 9 条（latch、组合环、组合阻塞赋值、位宽截断、派生时钟、case 完备、复位极性、default_nettype、多驱动）+ 域 9 条（复位同步释放、复位已知值、CDC 同步属性、CDC 最少级数、CDC 总线禁逐位同步、FSM default 恢复、握手 payload 稳定、FIFO 溢出保护、FIFO 下溢保护）</td>
+</tr>
+<tr>
+<td><code>amba.axis@1</code></td>
+<td>AXI4-Stream 契约：6 条静态规则（binding 校验、信号存在、信号方向、TDATA/TKEEP 位宽、旁带位宽）+ 5 条行为规则（valid-stable、payload-stable、handshake=至少完成一次 beat 的死锁检测、reset-valid、beat-fields），并生成可直接 bind 的 SVA 断言/覆盖资产</td>
+</tr>
+<tr>
+<td><code>custom@1</code></td>
+<td>用户自定义正则规则（经规则管理器添加，存于 <code>assurance-rules.json</code>）——声明式 lint：对每个源文件全文 <code>re.finditer</code>，命中即报违规（带行号）。无内置规则</td>
+</tr>
+</tbody>
+</table>
+<h2 id="规则管理-rule-manager">规则管理（Rule Manager）</h2>
+<p>所有规则开关集中在一个全局配置文件：<code>&lt;EVOVERSE_HOME&gt;/assurance-rules.json</code>（契约见 <code>sdk/design-assurance/schema/rule-config.schema.json</code>）。它对<strong>每一次</strong> assurance 检查生效（CLI / MCP / 规则管理 UI 读取同一份）。</p>
+<pre><code class="language-json">{
+  &quot;version&quot;: 1,
+  &quot;enabled&quot;: true,
+  &quot;packs&quot;: { &quot;rtl-baseline@1&quot;: true, &quot;amba.axis@1&quot;: false },
+  &quot;disabledRules&quot;: [&quot;rtl.comb.blocking&quot;],
+  &quot;customRules&quot;: [
+    {
+      &quot;id&quot;: &quot;myteam.no-tabs&quot;,
+      &quot;description&quot;: &quot;tabs are not allowed in RTL sources&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;pattern&quot;: &quot;\t&quot;
+    }
+  ]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td>总开关。<code>false</code> 时跳过全部规则——<strong>fail-closed</strong>：报告产出 <code>engine.no-rule-packs</code> unverified，状态 <code>incomplete</code>，绝不冒充 pass</td>
+</tr>
+<tr>
+<td><code>packs</code></td>
+<td>每个规则包的开关；缺省视为启用</td>
+</tr>
+<tr>
+<td><code>disabledRules</code></td>
+<td>逐条规则禁用（比关包更细粒度）</td>
+</tr>
+<tr>
+<td><code>customRules</code></td>
+<td>用户自定义正则规则，注册为 <code>custom@1</code> 包，随 <code>packs["custom@1"]</code> 开关</td>
+</tr>
+</tbody>
+</table>
+<p>自定义规则约束：<code>id</code> 匹配 <code>^[a-z][a-z0-9.-]*$</code> 且不得与 <code>disabledRules</code> 中的条目重名；<code>severity</code> ∈ {<code>error</code>,<code>warning</code>,<code>info</code>}；<code>pattern</code> 必须是可编译的 Python 正则。非法配置会被引擎拒绝（CLI exit 64），不会静默降级。</p>
+<h3 id="ui-welcome-assure-rule-manager">UI：Welcome → Assure → Rule Manager</h3>
+<p><code>evoverse.assuranceRules</code> 命令（Welcome 页 Assure 卡片）打开规则管理面板：</p>
+<ul>
+<li>总开关 + 每包开关 + 每条规则开关（含 severity 徽标与规则描述）</li>
+<li>自定义规则的添加（id / severity / description / pattern，客户端预校验）与删除</li>
+<li>Save 写入 <code>assurance-rules.json</code> 后回读引擎校验——引擎拒绝的错误（如非法正则）会以引擎自身的错误消息回显；Reset 可一键恢复全启用默认态</li>
+<li>配置文件路径显示在面板头部</li>
+</ul>
+<h3 id="与请求级-disabledrules-的关系">与请求级 disabledRules 的关系</h3>
+<p>请求 JSON 的 <code>disabledRules</code>（见 <code>request.schema.json</code>）是单次运行级的临时禁用；全局配置在 CLI/MCP 入口处经 <code>apply_rule_config</code> 并入请求（全局禁用 ∪ 请求禁用）。引擎内部对二者一视同仁。</p>
+<h2 id="请求-assurance-request">请求（Assurance Request）</h2>
+<p>请求是一个 JSON 文档，契约见 <code>sdk/design-assurance/schema/request.schema.json</code>。可复制模板：</p>
+<pre><code class="language-json">{
+  &quot;projectRoot&quot;: &quot;.&quot;,
+  &quot;sources&quot;: [&quot;rtl/axis_source.sv&quot;],
+  &quot;rulePacks&quot;: [&quot;amba.axis@1&quot;],
+  &quot;interfaces&quot;: [
+    {
+      &quot;id&quot;: &quot;m_axis&quot;,
+      &quot;protocol&quot;: &quot;amba.axis&quot;,
+      &quot;role&quot;: &quot;master&quot;,
+      &quot;module&quot;: &quot;axis_source&quot;,
+      &quot;clock&quot;: &quot;clk_i&quot;,
+      &quot;reset&quot;: &quot;rst_n_i&quot;,
+      &quot;resetPolarity&quot;: &quot;active-low&quot;,
+      &quot;signals&quot;: {
+        &quot;tvalid&quot;: &quot;m_axis_tvalid_o&quot;,
+        &quot;tready&quot;: &quot;m_axis_tready_i&quot;,
+        &quot;tdata&quot;: &quot;m_axis_tdata_o&quot;,
+        &quot;tlast&quot;: &quot;m_axis_tlast_o&quot;,
+        &quot;tkeep&quot;: &quot;m_axis_tkeep_o&quot;
+      },
+      &quot;widths&quot;: { &quot;tdata&quot;: 32, &quot;tkeep&quot;: 4 }
+    }
+  ],
+  &quot;evidence&quot;: [
+    {
+      &quot;id&quot;: &quot;sim-pass-1&quot;,
+      &quot;kind&quot;: &quot;property-run&quot;,
+      &quot;status&quot;: &quot;pass&quot;,
+      &quot;executor&quot;: &quot;evoverse-sim&quot;,
+      &quot;executorVersion&quot;: &quot;1.0.0&quot;,
+      &quot;artifact&quot;: &quot;sim/m_axis.log&quot;,
+      &quot;propertyId&quot;: &quot;evoverse_axis_m_axis_payload_stable&quot;
+    }
+  ],
+  &quot;exceptions&quot;: [
+    {
+      &quot;ruleId&quot;: &quot;rtl.cdc.min-stages&quot;,
+      &quot;scope&quot;: { &quot;module&quot;: &quot;slow_sync&quot; },
+      &quot;reason&quot;: &quot;single-flop is acceptable for this debounce path&quot;,
+      &quot;expiresOn&quot;: &quot;2026-12-31&quot;
+    }
+  ]
+}
+</code></pre>
+<p>要点：</p>
+<ul>
+<li><code>sources</code> 必须是 <code>projectRoot</code> 内的相对路径，禁止越界</li>
+<li><code>interfaces</code> 显式绑定协议信号到模块端口名——引擎不靠端口名猜测</li>
+<li>属性命名：<code>evoverse_axis_&lt;接口id sanitized&gt;_&lt;suffix&gt;</code>（如 <code>evoverse_axis_m_axis_valid_stable</code>）</li>
+</ul>
+<h3 id="例外-exception-到期形式">例外（Exception）到期形式</h3>
+<p>每条例外必须恰好提供一种到期形式，防止例外变成永久豁免：</p>
+<ul>
+<li><code>expiresOn</code>：ISO 日期（YYYY-MM-DD），过期自动失效</li>
+<li><code>untilRulePack</code>：如 <code>"rtl-baseline@2"</code>，规则包升级后自动失效</li>
+</ul>
+<p>例外必须给出精确 scope（<code>file</code> / <code>module</code> / <code>interface</code> 三选一，禁止通配符）与理由。</p>
+<h3 id="证据-evidence">证据（Evidence）</h3>
+<ul>
+<li><code>status</code>：<code>pass</code> | <code>fail</code> | <code>error</code></li>
+<li><code>kind</code> 必须形如 <code>property-run</code> / <code>lint-run</code> 等小写 <code>*-run</code> 族；只有 <code>property-run</code> 能关闭行为属性</li>
+<li><code>pass</code> 证据清除对应的 unverified 行为规则；<code>fail</code> 证据把行为规则升级为 violation，引用 <code>executor</code> / <code>artifact</code> / <code>counterexample</code></li>
+<li>无任何证据 → <code>unverified</code>，报告 <code>incomplete</code></li>
+<li>作用域：<code>propertyId</code> 为规则 id（如 <code>rtl.handshake.payload-stable</code>）时只在整个项目恰好一个候选模块时生效；多模块项目需按模块限定 <code>propertyId=&lt;规则id&gt;@&lt;模块名&gt;</code>，一条证据不能同时关闭多个模块</li>
+<li>声明了 <code>interfaces</code> 却未启用对应协议包（如 <code>amba.axis@1</code>）时，报告产出 <code>engine.uncovered-interface</code> unverified（fail-closed），不会静默通过</li>
+</ul>
+<h2 id="cli">CLI</h2>
+<pre><code>evoverse assurance check &lt;project&gt;
+    [--request FILE] [--config FILE] [--format text|json]
+    [--include-testbench] [--include-glob PATTERN] [--exclude-glob PATTERN]
+evoverse assurance rules [--config FILE] [--format text|json]
+</code></pre>
+<ul>
+<li><code>check</code> 的 <code>--request</code> 缺省时依次查找 <code>&lt;project&gt;/.evoverse/assurance.json</code>，再退化为自动发现 <code>.v/.sv/.vh/.svh</code> 源 + <code>rtl-baseline@1</code></li>
+<li><code>--config</code> 缺省为 <code>&lt;EVOVERSE_HOME&gt;/assurance-rules.json</code>（存在才读；不存在视为全启用）</li>
+<li><code>rules</code> 输出规则目录（全部包 + 每条规则的开关状态/severity/description，custom 规则另含 pattern）——规则管理 UI 的数据源；<code>--format text</code> 为人读格式</li>
+<li>JSON 仅写 stdout，诊断仅写 stderr</li>
+</ul>
+<h3 id="自动发现时跳过-testbench-默认">自动发现时跳过 testbench（默认）</h3>
+<p><code>rtl-baseline@1</code> 只分析可综合子集；testbench（<code>initial</code>/<code>$task</code>/<code>#delay</code>/<code>@event</code>）属域外。自动发现按默认清单跳过 testbench 风格的文件：</p>
+<table>
+<thead>
+<tr>
+<th>跳过形态</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>子树</td>
+<td><code>sim/</code>、<code>testbench/</code>、<code>tb/</code></td>
+</tr>
+<tr>
+<td>基名</td>
+<td><code>tb_*.*</code>、<code>*_tb.*</code>、<code>sim_*</code>、<code>test_*</code></td>
+</tr>
+</tbody>
+</table>
+<p>跳过只是<strong>源收集层</strong>，引擎本身仍可分析；<code>--include-testbench</code> 可重新开启；<code>--include-glob PATTERN</code> 仅保留匹配文件（隐式关闭默认 testbench 跳过）；<code>--exclude-glob PATTERN</code> 在默认清单之上再叠加排除。scanner 对 <code>initial ... end</code> 整块作 testbench 跳过（记录 info，不入 unverified）。</p>
+<h3 id="退出码契约">退出码契约</h3>
+<table>
+<thead>
+<tr>
+<th>退出码</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>pass</code>（<code>rules</code> 子命令正常输出）</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>fail</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>incomplete</code></td>
+</tr>
+<tr>
+<td>64</td>
+<td>invalid request / usage（请求非法、项目目录缺失、无源文件、<strong>规则配置非法</strong>）</td>
+</tr>
+<tr>
+<td>70</td>
+<td>engine failure（引擎内部异常，绝不静默崩溃）</td>
+</tr>
+</tbody>
+</table>
+<p>示例：</p>
+<pre><code class="language-bash"># 检查一个工程（读取全局规则开关）
+sdk/cli/evoverse assurance check my-project --request my-project/assurance.json --format json
+
+# 查看规则目录与开关状态
+sdk/cli/evoverse assurance rules --format text
+
+# 用指定的配置文件检查（不动全局配置）
+sdk/cli/evoverse assurance check my-project --config team-rules.json
+</code></pre>
+<h2 id="mcp">MCP</h2>
+<p>MCP 工具 <code>assurance_check</code> 是 CLI 的薄适配器（不复制引擎逻辑）：</p>
+<ul>
+<li>入参：<code>project</code>（必填）、<code>request</code>（可选）、<code>include_testbench</code>（可选，默认 false）、<code>include_glob</code>（可选，fnmatch 模式数组）、<code>exclude_glob</code>（可选，fnmatch 模式数组）、format 固定为 JSON</li>
+<li>退出码 1（fail）与 2（incomplete）仍返回完整 JSON 报告；仅 64/70 映射为 MCP error</li>
+<li>testbench 跳过规则与 CLI <code>--include-testbench</code> / <code>--include-glob</code> / <code>--exclude-glob</code> 完全一致</li>
+<li>旧工具 <code>check_rtl_code_style</code> 保留原有字段（<code>violations</code> / <code>fileCount</code> / <code>totalLines</code> / severity <code>summary</code>），内部经 <code>legacy_style_report</code> 适配共享引擎，unverified 永不作为 violation 暴露</li>
+</ul>
+<h2 id="报告">报告</h2>
+<p>报告是确定性的：同请求产出同 digest。顶层字段：<code>status</code> / <code>engineVersion</code> / <code>rulePacks</code> / <code>timestamp</code> / <code>digest</code> / <code>projectRoot</code> / <code>sourceCount</code> / <code>summary</code>（errors/warnings/infos/unverified）/ <code>violations</code> / <code>unverified</code> / <code>exceptions</code> / <code>evidence</code>。契约见 <code>schema/report.schema.json</code>。</p>
+<h2 id="架构定位">架构定位</h2>
+<p>Design Assurance 是设计原则规则的可执行归属地（single source of truth）：规则、证据、例外都由它统一定义与裁决；Adapter 与 Catalog 职责不变。详见 <code>sdk/docs/SDK-ARCHITECTURE-VISION.md</code>。</p>
+<p>编辑器中的旧“代码检查”命令和 MCP 的 <code>check_rtl_code_style</code> 仅是兼容入口，不再拥有规则实现。Vibe Coding 生成前绑定 rule-pack/config/interface digest，候选 RTL 先做静态 Assurance；<code>incomplete</code> 中可执行的行为属性进入 Test IR，由 Icarus、Questa 或 Video Sim 产生合格 property evidence 后再次交给本引擎裁决。功能仿真与 Assurance 必须同时为 PASS，父级模块才会解锁。</p>
+<h2 id="视频-ip-合规">视频 IP 合规</h2>
+<p>视频 IP 不依赖模板生成入口。冻结规格声明 <code>evoverse.video@1</code> 契约后，Design Assurance 独立验证寄存器接口、端口组顺序和 TJ180 BRAM 行缓冲预算；缺少资源输入时报告 <code>incomplete</code>，不会推断通过。</p>
+<p>动态属性（payload 稳定性、AXIS handshake 活性）在测试层允许 unverified——按设计需仿真证据（property-run）闭环。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

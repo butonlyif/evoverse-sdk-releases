@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EvoVerse RTL Skill</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← 返回EvoVerse SDK</a>
+<span>候选 RTL、Design Assurance、仿真隔离和提升的受控 Skill。</span>
+<code>skills/EvoVerse-RTL-Skill.md</code>
+<a href="../../../skills/EvoVerse-RTL-Skill.md">Markdown 源文件</a></p>
+<h1>EvoVerse RTL Skill</h1></header>
+<main class="article"><h1 id="evoverse-rtl-skill">EvoVerse RTL Skill</h1>
+<p><code>evoverse-rtl</code> 用于一个边界明确的 RTL 生成或修改任务。自然语言描述所需行为，但真正允许修改什么、何时通过、能否进入正式基线，均由 EvoVerse 控制面的动作回执决定。</p>
+<h2 id="何时使用">何时使用</h2>
+<ul>
+<li>已有批准规格和一个可独立验证的叶子模块或子任务。</li>
+<li>需要对交付 RTL 同时执行候选冻结（含 RTL Design Assurance）和仿真门禁。</li>
+<li>希望保留已有工程作为只读基线，防止 Agent 把无关 RTL、测试资产或约束一起改掉。</li>
+</ul>
+<p>它不替代自由开发。普通 Agent 编辑和 Build 仍然可用，不会被本 Skill 阻塞；但它们不自动获得本 Skill 的候选、隔离和晋升证据。</p>
+<h2 id="在-trae-中调用">在 Trae 中调用</h2>
+<p>打开包含批准规格的工程，在对话中明确唯一任务、规格来源、目标 RTL 路径、仿真源和只读依赖。例如：</p>
+<pre><code class="language-text">/evoverse-rtl
+根据 design-package/specification.md 实现视频帧写入控制器。交付到 rtl/frame_writer.sv；
+保留 sim/frame_writer_tb.sv 与 sim/models/ 作为验证源；rtl/common/ 必须只读。
+请先展示任务范围和控制面回执，再开始生成。
+</code></pre>
+<p>如果接口、位宽、寄存器图、时钟/复位域、Oracle 或硬 IP 模型仍有歧义，Skill 会停止并要求先回到 <code>/evoverse-design-spec</code> 决策或更新规格。</p>
+<h2 id="受控生命周期">受控生命周期</h2>
+<ol>
+<li>读取工程、规格和依赖，不修改任何文件。用 <code>project_status</code> 读取当前 <code>revision</code> 与活动 Intent。</li>
+<li>用 <code>project_next</code> 读取当前允许的动作，确定 <code>intent.create</code>（新增量）等前置动作；向客户展示范围与选定动作，客户确认后用 <code>project_execute</code> 执行，<code>expectedRevision</code> 必须等于最近一次读到的 revision。</li>
+<li><strong>仿真等级先于规格（用户选择）</strong>：可靠迭代在 <code>spec.draft</code> 起草规格前必须先确认仿真等级，否则控制面以 <code>SIMULATION_PROFILE_REQUIRED</code> 阻塞起草。Agent 从用户需求、材料与拓扑提取 <code>riskFacts</code> 提交 <code>simulation.profile.select</code>；控制面按固定风险规则给出推荐（<code>FPGA_FUNCTIONAL</code> / <code>FPGA_INTEGRATION</code> / <code>HIGH_ASSURANCE</code>），向客户解释后由用户选择（低于推荐最低等级必须记录 <code>acceptedRisks</code>）。规格按所选等级的预算编写；超出预算时控制面要求超出预算重新确认，不得静默裁剪或扩大范围。</li>
+<li>把完整声明的文件集写到本地暂存目录（绝不直接写正式 RTL），用 <code>project_execute</code> 执行 <code>candidate.deliver</code>：一次提交完整候选集。可靠模式在这一步只冻结候选并执行 RTL Design Assurance，不晋级基线。</li>
+<li>用 <code>project_execute</code> 执行 <code>verification.simulate</code>，显式选择 <code>iverilog</code> 或 <code>questa</code> 后端；服务按所选等级的阻塞义务编译候选 RTL 与保留的 TB、BFM、Oracle，并保存候选绑定证据。当前候选取得有效 PASS 且满足资格后，执行 <code>candidate.promote</code> 才安装可靠基线。等级限定的仿真通过（如 <code>FPGA_FUNCTIONAL_PASS</code>）不是硬件结论。</li>
+<li>若出现 DUT_FAIL，保留失败需求与回执。单一证据充分的原因可用 <code>diagnostic.repair.record</code> 和 <code>candidate.repair</code> 定向修复一次；归因有歧义或修复仍失败时，用 <code>diagnostic.options.propose</code> 呈现依据、下一步检查、代价和不确定性，等待工程师通过 <code>diagnostic.choice.select</code> 判断。人的判断需要新证据核查；冲突时记录 <code>diagnostic.finding.record</code> 并及时沟通，不得当作 PASS。</li>
+<li>每次动作后重新 <code>project_status</code> 读取新 revision，并报告已验证与尚未验证的边界；延期事项逐项列出，<code>NATIVE_BUILD_PENDING</code> 与 <code>BOARD_VALIDATION_REQUIRED</code> 独立报告。</li>
+</ol>
+<p>流程走歪或旧状态无法继续时，Agent 只能解释服务端恢复描述并让客户确认，不能自行重置运行时。恢复描述固定列出保留、替换、丢弃、步骤与成功检查，并绑定当前 revision；旧计划不能跨 revision 使用。控制面发现非终态没有真实出口时，<code>project_next</code> 返回 <code>RECOVERY_REQUIRED</code> 和唯一的 <code>recovery.open</code>，其 <code>inputPreview</code> 必须原样提交；恢复记录落盘后重新读取，只执行服务端暴露的 <code>recovery.quarantine</code> 等安全出口。Quarantine 保留可信 baseline、事实历史和失败证据，只释放受影响范围，不等于交付成功。INITIAL_DESIGN 放弃会原子关闭 Intent 和初始系统集成，不创建不存在的 worktree execution。</p>
+<p>仿真器“可用”要求版本探测后完成最小真实编译、运行和事件解析。已选 Questa/Icarus 任一步失效时，控制面进入 <code>WAITING_FOR_USER</code>，只接受显式 re-probe 或 reselection；不会自动切换后端，失败前也不会写仿真 PASS 证据。</p>
+<p><code>project_status</code>、<code>project_next</code>、<code>project_execute</code>（另有 <code>evoverse_health</code> 健康检查）是这条流程的 MCP 协议；对应控制面动作由 <code>project_next</code> 给出，包括 <code>intent.create</code>、<code>simulation.profile.select</code>、<code>candidate.deliver</code>、<code>verification.simulate</code>、<code>candidate.promote</code> 和失败时的诊断动作。MCP 工具快照缺少稳定接口时，必须先刷新 MCP，不能用通用验证工具或直接 CLI 命令替代阶段动作。</p>
+<h2 id="rtl-design-assurance-与仿真门禁">RTL Design Assurance 与仿真门禁</h2>
+<p>RTL Design Assurance 不是普通 Coding Style Check。它检查候选生产 RTL 的结构、时钟、复位、CDC、状态机、FIFO、数据完整性和协议契约；不能由静态检查证明的动态义务保持 <code>incomplete</code>，不会被当作 PASS。Assurance 在 <code>candidate.deliver</code> 内由服务执行，不回执 PASS 就不算交付成功。</p>
+<p>仿真门禁必须使用 <code>verification.simulate</code>：候选生产 RTL 与 TB/BFM/Oracle 一起运行，且测试资产本身也要通过资格审查。测试平台损坏、Oracle 含糊、模型缺失、超时或覆盖不足都不能归因给 DUT，更不能把 RTL 视为已验证。临时编译输出留在项目外暂存目录，不进入正式工程；晋级时服务只安装已声明的 RTL 与保留的 <code>sim/</code> 源。</p>
+<h2 id="结果和剩余边界">结果和剩余边界</h2>
+<p>交付成功说明这一个任务拥有范围回执、规则结果和仿真证据。它不自动证明 Efinity 原生编译、时序、硬 IP 内部行为、板级连接或硬件显示结果——这些分别由 <code>build.native</code>、<code>hardware.program</code>、<code>hardware.validate</code> 独立取证。Skill 完成时应明确列出这些尚需执行的步骤，并将下一层任务保持锁定，直到当前证据完整。</p>
+<h2 id="停止条件">停止条件</h2>
+<p>控制面不可用、<code>project_execute</code> 返回失败、回执缺失、写入超出声明范围、规格未批准或验证结论为 <code>fail</code>/<code>incomplete</code> 时，Skill 必须停止。已有工程文件默认按字节哈希作为只读基线；依赖于编译的文件不因此变成可写文件，发现问题应报告为基线债务而非静默修复。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

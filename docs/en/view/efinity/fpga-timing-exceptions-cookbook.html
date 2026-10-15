@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FPGA Timing Exceptions Cookbook</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Multicycle paths, false paths and exception constraints.</span>
+<code>efinity/fpga-timing-exceptions-cookbook.md</code>
+<a href="../../../efinity/fpga-timing-exceptions-cookbook.md">Markdown source</a></p>
+<h1>FPGA Timing Exceptions Cookbook</h1></header>
+<main class="article"><h1 id="fpga-timing-exceptions-cookbook">FPGA Timing Exceptions Cookbook</h1>
+<blockquote>
+<p><strong>EvoVerse SDK · Knowledge Base — Cross-Vendor Supplement</strong></p>
+<p><strong>Intended audience</strong>: RTL engineers who need to write timing exceptions such as <code>set_false_path</code> / <code>set_multicycle_path</code> / <code>set_max_delay</code> for Efinity projects; timing-diagnosis and AI collaborators</p>
+<p><strong>Last updated</strong>: 2026-07-30</p>
+<p><strong>Scope</strong>: Authoritative sources are the Efinity 2026.1 official SDC documentation (<code>efinity-timing-closure.pdf §5, §7</code> + <code>C:\Efinity\2026.1\doc\topics\tim-false-path.html</code> + <code>tim-multicycle*.html</code> + <code>tim-min-max-delay.html</code> + <code>constraint-set-*.html</code>), supplemented by CSDN generic timing-analysis principles.</p>
+<p><strong>Related documents</strong>:
+- <a href="fpga-clock-constraints-cookbook.html">fpga-clock-constraints-cookbook.md</a> — <code>create_clock</code> / <code>create_generated_clock</code> / <code>set_clock_groups</code>
+- <a href="fpga-sta-basics.html">fpga-sta-basics.md</a> — Slack / Skew / Setup / Hold
+- <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md</a> — clock-domain crossing and false path
+- <a href="timing-analysis-guide.html">timing-analysis-guide.md</a> — the complete EvoVerse SDK timing analysis flow</p>
+</blockquote>
+<hr />
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#1-set_false_path--cutting-paths"><code>set_false_path</code> — cutting paths</a></li>
+<li><a href="#2-set_clock_groups--exclusive--exclusive-clocks"><code>set_clock_groups -exclusive</code> — exclusive clocks</a></li>
+<li><a href="#3-set_clock_groups--asynchronous--asynchronous-clocks"><code>set_clock_groups -asynchronous</code> — asynchronous clocks</a></li>
+<li><a href="#4-set_multicycle_path--multi-cycle-path"><code>set_multicycle_path</code> — multi-cycle path</a></li>
+<li><a href="#5-set_max_delay--set_min_delay--custom-path-constraints"><code>set_max_delay</code> / <code>set_min_delay</code> — custom path constraints</a></li>
+<li><a href="#6-which-one-to-use-a-decision-tree">Which one to use: a decision tree</a></li>
+<li><a href="#7-efinity-timing-exception-exploration-tools">Efinity timing exception exploration tools</a></li>
+<li><a href="#8-common-pitfalls">Common pitfalls</a></li>
+<li><a href="#9-multicycle-shifted-capture-windows">Multicycle shifted capture windows</a></li>
+<li><a href="#10-fastslow-clock-multicycle">Fast/slow clock multicycle</a></li>
+</ol>
+<hr />
+<h2 id="1-set_false_path-cutting-paths">1. <code>set_false_path</code> — cutting paths</h2>
+<p><strong>Purpose</strong>: tells the STA tool <strong>not to check</strong> these paths (neither setup nor hold); typically used for:
+- Asynchronous clock domains (a CDC synchronizer is in place, but the synchronizer path is still checked and reported as a setup violation—false path skips it)
+- Static configuration registers (independent of the clock frequency)
+- Debug / JTAG / test paths
+- Reset signals (asynchronous resets do not participate in timing)</p>
+<h3 id="1-1-complete-efinity-syntax">1.1 Complete Efinity syntax</h3>
+<pre><code class="language-sdc"># Unidirectional: cut clk1 → clk2
+set_false_path -from clk1 -to clk2
+
+# Bidirectional
+set_false_path -from clk1 -to clk2
+set_false_path -from clk2 -to clk1
+
+# Cut paths to a port
+set_false_path -from clk1 -to [get_ports testout]
+
+# Pin-level
+set_false_path -from [get_pins {u_fft/clk}] -to [get_pins {u_cpu/data_in[*]}]
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-set-false-path.html</code> ([A3.9])</p>
+<p>"Provides examples of unidirectional/bidirectional false path constraints."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-set-false-path.html</code> ([A3.9])</p>
+</blockquote>
+<h3 id="1-2-complete-asynchronous-reset-example">1.2 Complete asynchronous reset example</h3>
+<pre><code class="language-sdc"># All asynchronous reset paths are false paths
+set_false_path -from [get_ports arst_n]
+</code></pre>
+<h3 id="1-3-the-through-option-path-passes-through-a-specific-pin">1.3 The <code>-through</code> option (path passes through a specific pin)</h3>
+<pre><code class="language-sdc"># Cut all paths passing through a specific pin
+set_false_path -through [get_pins {u_xbar/sel}]
+</code></pre>
+<p>See <a href="fpga-clock-constraints-cookbook.html">fpga-clock-constraints-cookbook.md §7</a>.</p>
+<hr />
+<h2 id="2-set_clock_groups-exclusive-exclusive-clocks">2. <code>set_clock_groups -exclusive</code> — exclusive clocks</h2>
+<p><strong>Purpose</strong>: marks a set of clocks as mutually exclusive (only one active at a time). The STA tool <strong>completely skips</strong> checks between these clock domains.</p>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-add-clock-set-clock-groups.html</code> ([A3.8])</p>
+</blockquote>
+<h3 id="2-1-clock-mux-scenario">2.1 Clock mux scenario</h3>
+<pre><code class="language-sdc"># Only clk_a or clk_b active at a time (selected by the sel register)
+set_clock_groups -exclusive -group {clk_a clk_b}
+
+# Three-way selection
+set_clock_groups -exclusive -group {clk1 clk2} -group {clk3} -group {clk4}
+</code></pre>
+<h3 id="2-2-decision-criteria">2.2 Decision criteria</h3>
+<p>Preconditions for using <code>-exclusive</code>:
+- The clocks are hardware-<strong>exclusive</strong> (via a mux or clock gate)
+- No corner case exists where they actually run at the same time
+- If unsure, <strong>use <code>-asynchronous</code></strong> (more conservative)</p>
+<p>See <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md §6.1</a>.</p>
+<hr />
+<h2 id="3-set_clock_groups-asynchronous-asynchronous-clocks">3. <code>set_clock_groups -asynchronous</code> — asynchronous clocks</h2>
+<p><strong>Purpose</strong>: marks clock groups as <strong>completely independent</strong> (asynchronous clock domains). The STA tool <strong>completely skips</strong> the checks—this is the standard CDC practice.</p>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-unrelated-clk.html</code> ([A3.7])</p>
+</blockquote>
+<h3 id="3-1-typical-asynchronous-scenarios">3.1 Typical asynchronous scenarios</h3>
+<pre><code class="language-sdc"># sys_clk (100 MHz main system) vs ddr_ck (400 MHz DDR PHY)
+set_clock_groups -asynchronous -group {sys_clk} -group {ddr_ck}
+
+# Multiple asynchronous groups
+set_clock_groups -asynchronous \
+    -group {sys_clk vid_clk ddr_ck} \
+    -group {adc_clk usb_clk}
+</code></pre>
+<h3 id="3-2-caveats">3.2 Caveats</h3>
+<ul>
+<li><strong>Must</strong> be paired with a CDC synchronizer (2-FF + <code>async_reg</code>)—<code>set_clock_groups</code> only tells the tool to skip the check; it <strong>does not eliminate metastability</strong></li>
+<li>Use 2-FF for single-bit signals; use a handshake or FIFO for multi-bit data</li>
+</ul>
+<p>See the complete templates in <a href="fpga-cdc-patterns.html">fpga-cdc-patterns.md §3</a>.</p>
+<hr />
+<h2 id="4-set_multicycle_path-multi-cycle-path">4. <code>set_multicycle_path</code> — multi-cycle path</h2>
+<p><strong>Purpose</strong>: tells the STA tool that a path does <strong>not</strong> need to complete in a single cycle and may span multiple clock cycles.</p>
+<blockquote>
+<p>"In a default single-cycle clock relationship, the two clocks are in phase and toggle together. The default setup and hold represent a one clock cycle <em>capture window</em> and is the same as setting a constraint of setup = 1 and hold = 0. The hold is checking one clock cycle before the capture clock edge. When you use the <code>set_multicycle_path</code> constraint, you are adjusting the capture window by shifting it, widening it, or both."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-multicycle.html</code> ([A3.1])</p>
+</blockquote>
+<h3 id="4-1-default-equivalence">4.1 Default equivalence</h3>
+<pre><code class="language-sdc"># Default setup = 1, hold = 0 is equivalent to
+set_multicycle_path -setup -from a -to b 1
+set_multicycle_path -hold  -from a -to b 0
+</code></pre>
+<h3 id="4-2-typical-multicycle-2-scenario">4.2 Typical multicycle 2 scenario</h3>
+<pre><code class="language-sdc"># CPU bus read/write: registers in the CPU clock domain, 2 cycles across to the peripheral clock domain
+set_multicycle_path -setup -from [get_clocks cpu_clk] -to [get_clocks peri_clk] 2
+set_multicycle_path -hold  -from [get_clocks cpu_clk] -to [get_clocks peri_clk] 1
+</code></pre>
+<p><strong>Rule of thumb</strong>: setup N → hold N-1 (see <a href="#101-complete-formulas">§10.1</a>).</p>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\pdf\efinity-timing-closure.pdf §5 "set_multicycle_path"</code> ([A1])</p>
+</blockquote>
+<h3 id="4-3-slow-clock-domain-to-fast-clock-domain">4.3 Slow clock domain to fast clock domain</h3>
+<pre><code class="language-sdc"># Source 50 MHz, destination 200 MHz → data valid only after 4 destination cycles
+set_multicycle_path -setup -from [get_clocks slow_clk] -to [get_clocks fast_clk] 4
+set_multicycle_path -hold  -from [get_clocks slow_clk] -to [get_clocks fast_clk] 3
+</code></pre>
+<p>See <a href="#10-fastslow-clock-multicycle">§10</a>.</p>
+<hr />
+<h2 id="5-set_max_delay-set_min_delay-custom-path-constraints">5. <code>set_max_delay</code> / <code>set_min_delay</code> — custom path constraints</h2>
+<p><strong>Purpose</strong>: applies custom max/min delay constraints to <strong>specific paths</strong> (no clock identification needed).</p>
+<h3 id="5-1-when-to-use">5.1 When to use</h3>
+<ul>
+<li>Purely combinational paths (no clocked registers)—must use <code>set_max_delay</code>, not <code>create_clock</code></li>
+<li>Specific paths crossing multiple clock domains (more precise than a false path)</li>
+<li>Module-boundary IO constraints (internal clock relationships irrelevant)</li>
+</ul>
+<h3 id="5-2-complete-example">5.2 Complete example</h3>
+<pre><code class="language-sdc"># Impose a 10 ns cap on a cross-clock-domain path (tighter than a single-cycle constraint, but still satisfiable)
+set_max_delay -from [get_pins {u_fft/clk}] -to [get_pins {u_cpu/D_reg[*]/D}] 10.0
+
+# Purely combinational path
+set_max_delay -from [get_ports data_in[*]] -to [get_ports data_out[*]] 8.0
+set_min_delay -from [get_ports data_in[*]] -to [get_ports data_out[*]] 2.0
+</code></pre>
+<blockquote>
+<p>"set_max_delay / set_min_delay ... Used for combinational paths or specific inter-clock constraints."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\constraint_setmaxdelay-setmindelay.html</code> ([A3])</p>
+</blockquote>
+<hr />
+<h2 id="6-which-one-to-use-a-decision-tree">6. Which one to use: a decision tree</h2>
+<pre><code>START
+│
+├── Does the path need a timing check?
+│   ├── No → set_false_path
+│   └── Yes ↓
+│
+├── Is there a clock?
+│   ├── No → set_max_delay / set_min_delay (purely combinational path)
+│   └── Yes ↓
+│
+├── Does the path span multiple clock cycles?
+│   ├── Yes → set_multicycle_path
+│   └── No → default single-cycle constraint (no exception needed)
+│
+└── Multiple clock domains?
+    ├── Exclusive clocks → set_clock_groups -exclusive
+    ├── Asynchronous clocks → set_clock_groups -asynchronous (needs a CDC synchronizer)
+    └── Same source / known phase → default checks are fine
+</code></pre>
+<hr />
+<h2 id="7-efinity-timing-exception-exploration-tools">7. Efinity timing exception exploration tools</h2>
+<h3 id="7-1-timing-browser-gui">7.1 Timing Browser (GUI)</h3>
+<p><code>Efinity GUI → Timing Browser</code>: visualizes all currently effective SDC exceptions (false path / multicycle / max delay, etc.).</p>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\efn-exploring-timing.html</code> ([A3])</p>
+</blockquote>
+<h3 id="7-2-tcl-commands">7.2 Tcl commands</h3>
+<pre><code class="language-tcl"># Report all current timing exceptions
+report_exceptions
+
+# List all clocks
+report_clocks
+
+# List all clock groups
+report_clock_groups
+
+# Report timing for a specific path
+report_timing -from [get_clocks clk_a] -to [get_clocks clk_b] -max_paths 10
+</code></pre>
+<h3 id="7-3-the-report_sdc-command">7.3 The <code>report_sdc</code> command</h3>
+<pre><code class="language-tcl"># Print all current SDC constraints (for debugging)
+report_sdc
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\constraint-report-sdc.html</code> ([A3])</p>
+</blockquote>
+<hr />
+<h2 id="8-common-pitfalls">8. Common pitfalls</h2>
+<h3 id="8-1-over-using-false-paths">8.1 Over-using false paths</h3>
+<p><strong>Pitfall</strong>: marking all cross-domain paths as false paths, causing functional bugs.</p>
+<blockquote>
+<p>"If you don't add constraints, the tool uses a very permissive default that only guarantees basic connectivity. The tool may route critical signals on slow channels, or use non-optimized placement, ultimately causing the design to fail to work."
+—— Source: [B7] CSDN timing analysis</p>
+</blockquote>
+<p><strong>Correct practice</strong>:
+- Only false-path <strong>genuinely</strong> false paths (asynchronous resets / static configuration / test)
+- For cross-domain data paths, use <code>set_clock_groups -asynchronous</code> + a CDC synchronizer
+- For cross-domain synchronous paths, use <code>set_multicycle_path</code></p>
+<h3 id="8-2-multicycle-setup-n-but-hold-0-wrong">8.2 Multicycle setup N but hold = 0 (wrong)</h3>
+<p><strong>Pitfall</strong>: forgetting to also set hold, causing hold violations.</p>
+<p><strong>Correct practice</strong>:
+- setup N → hold N-1 (synchronous paths)
+- setup N → hold 0 (shift-only)</p>
+<p>See <a href="#101-complete-formulas">§10.1</a>.</p>
+<h3 id="8-3-set_false_path-does-not-distinguish-setup-hold">8.3 set_false_path does not distinguish setup/hold</h3>
+<p><strong>Pitfall</strong>: false path skips both the setup and hold checks—if you only need to skip setup, constrain hold explicitly with <code>set_max_delay</code>.</p>
+<h3 id="8-4-mis-declared-clock-groups">8.4 Mis-declared clock groups</h3>
+<p><strong>Pitfall</strong>: using <code>-exclusive</code> when the two clocks <strong>may actually be active simultaneously</strong> (glitch), causing a race condition.</p>
+<p><strong>How to decide</strong>:
+- Different frequencies from the same PLL → do <strong>not</strong> use <code>-exclusive</code>
+- Outputs of different PLLs → <code>-asynchronous</code>
+- Multi-way mux selection → <code>-exclusive</code> (provided the mux output is glitch-free)</p>
+<h3 id="8-5-multicycle-path-with-the-wrong-clock-direction">8.5 Multicycle path with the wrong clock direction</h3>
+<p><strong>Pitfall</strong>: <code>set_multicycle_path -from slow -to fast 4</code> when the data actually flows the other way.</p>
+<p><strong>Fix</strong>: verify the path direction with <code>report_timing -from X -to Y</code>.</p>
+<hr />
+<h2 id="9-multicycle-shifted-capture-windows">9. Multicycle shifted capture windows</h2>
+<h3 id="9-1-basic-concept">9.1 Basic concept</h3>
+<p><strong>A multicycle path</strong> affects timing checks by adjusting the position of the <strong>capture window</strong>:</p>
+<blockquote>
+<p>"When you use the <code>set_multicycle_path</code> constraint, you are adjusting the capture window by shifting it, widening it, or both."
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-multicycle.html</code> ([A3.1])</p>
+</blockquote>
+<p><strong>Two classes of adjustment</strong>:
+1. <strong>Shifted Capture Window</strong> (<code>tim-multicycle-shift.html</code>) — moves the window position only
+2. <strong>Shifted and Widened Window</strong> (<code>tim-multicycle-shift-widen.html</code>) — shifts and widens the window at the same time</p>
+<h3 id="9-2-the-shift-formula">9.2 The shift formula</h3>
+<pre><code>setup N → hold N - 1
+</code></pre>
+<p><strong>Meaning</strong>: the hold check always starts <strong>one cycle before</strong> the setup window.</p>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-multicycle-shift.html</code> ([A3])</p>
+</blockquote>
+<hr />
+<h2 id="10-fast-slow-clock-multicycle">10. Fast/slow clock multicycle</h2>
+<h3 id="10-1-complete-formulas">10.1 Complete formulas</h3>
+<blockquote>
+<p>"Constraints between Fast and Slow Clocks"
+—— Source: <code>C:\Efinity\2026.1\doc\topics\tim-multicycle-fast-slow.html</code> ([A3])</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Source clock</th>
+<th>Destination clock</th>
+<th>setup N</th>
+<th>hold formula</th>
+<th>hold value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Slow</td>
+<td>Fast</td>
+<td>N (destination cycles)</td>
+<td>N - 1</td>
+<td>N - 1</td>
+</tr>
+<tr>
+<td>Fast</td>
+<td>Slow</td>
+<td>N (source cycles)</td>
+<td>N - 1</td>
+<td>N - 1</td>
+</tr>
+<tr>
+<td>Same frequency</td>
+<td>Same frequency</td>
+<td>N</td>
+<td>N - 1</td>
+<td>N - 1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="10-2-typical-example-cpu-peripherals">10.2 Typical example: CPU → peripherals</h3>
+<pre><code class="language-sdc"># CPU 200 MHz (5 ns period) → peripherals 50 MHz (20 ns period)
+# CPU data needs 4 CPU cycles to stabilize in the peripheral domain
+set_multicycle_path -setup -from [get_clocks cpu_clk] -to [get_clocks peri_clk] 4
+set_multicycle_path -hold  -from [get_clocks cpu_clk] -to [get_clocks peri_clk] 3
+</code></pre>
+<p><strong>Interpretation</strong>:
+- Setup N=4: 4 destination cycles allowed (peri_clk 4 × 20 ns = 80 ns)
+- Hold N-1=3: data must stay stable through the previous 3 destination cycles (the old data must not clobber the new data)</p>
+<h3 id="10-3-complex-scenario-with-a-1-2-frequency-ratio">10.3 Complex scenario with a 1:2 frequency ratio</h3>
+<pre><code class="language-sdc"># src 100 MHz → dst 50 MHz (2:1 ratio)
+# Data needs 2 cycles to stabilize in the dst domain (→ setup N=2)
+set_multicycle_path -setup -from [get_clocks src] -to [get_clocks dst] 2
+set_multicycle_path -hold  -from [get_clocks src] -to [get_clocks dst] 1
+</code></pre>
+<blockquote>
+<p>Source: <code>C:\Efinity\2026.1\doc\topics\tim-multicycle-fast-slow.html</code> ([A3])</p>
+</blockquote>
+<h3 id="10-4-verification">10.4 Verification</h3>
+<pre><code class="language-tcl">report_timing -from [get_clocks cpu_clk] -to [get_clocks peri_clk] -path_type full -max_paths 5
+# Confirm the &quot;captured by&quot; behavior is as expected
+</code></pre>
+<hr />
+<h2 id="appendix-a-efinity-timing-exception-quick-reference">Appendix A — Efinity timing exception quick reference</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Asynchronous reset</td>
+<td><code>set_false_path -from [get_ports arst_n]</code></td>
+</tr>
+<tr>
+<td>JTAG</td>
+<td><code>set_false_path -from [get_ports {tck tms tdi}] -to [get_ports tdo]</code></td>
+</tr>
+<tr>
+<td>Cross-clock-domain (synchronized data)</td>
+<td><code>set_clock_groups -asynchronous</code> + 2-FF synchronizer</td>
+</tr>
+<tr>
+<td>Multi-way clock mux</td>
+<td><code>set_clock_groups -exclusive -group {clk_a clk_b}</code></td>
+</tr>
+<tr>
+<td>CPU → peripherals (2 cycles)</td>
+<td><code>set_multicycle_path -setup 2; -hold 1</code></td>
+</tr>
+<tr>
+<td>Purely combinational path</td>
+<td><code>set_max_delay / set_min_delay</code></td>
+</tr>
+<tr>
+<td>Static configuration registers</td>
+<td><code>set_false_path</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-b-cross-vendor-source-index">Appendix B — Cross-vendor source index</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Source</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[B7]</td>
+<td>CSDN — FPGA timing analysis Setup/Hold guide (Chinese)</td>
+<td>Chinese tutorial</td>
+</tr>
+<tr>
+<td>[A1]</td>
+<td>Efinity Timing Closure User Guide §5, §7 (UG-EFN-TIMING-v7.1, Dec 2024)</td>
+<td>Official PDF</td>
+</tr>
+<tr>
+<td>[A3.1]</td>
+<td>Efinity topics — <code>tim-multicycle.html</code> (default + shift + widen + fast/slow)</td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.9]</td>
+<td>Efinity topics — <code>tim-set-false-path.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.10]</td>
+<td>Efinity topics — <code>tim-false-path.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.7]</td>
+<td>Efinity topics — <code>tim-unrelated-clk.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3.8]</td>
+<td>Efinity topics — <code>tim-add-clock-set-clock-groups.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>constraint_setmaxdelay-setmindelay.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>constraint-report-sdc.html</code></td>
+<td>Official HTML</td>
+</tr>
+<tr>
+<td>[A3]</td>
+<td>Efinity topics — <code>efn-exploring-timing.html</code></td>
+<td>Official HTML</td>
+</tr>
+</tbody>
+</table>
+<p>The research source index was originally recorded in the internal research notes §E; those temporary notes are not published with the repository.</p>
+<hr />
+<p><strong>End of FPGA Timing Exceptions Cookbook</strong></p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

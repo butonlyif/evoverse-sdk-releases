@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Hard IP: PLL and OSC Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The PLL/OSC hard-IP creation trio, the 60+ attribute table and the clock-calculation API.</span>
+<code>efinity/hard-ip-pll-osc.md</code>
+<a href="../../../efinity/hard-ip-pll-osc.md">Markdown source</a></p>
+<h1>Efinity Hard IP: PLL and OSC Reference</h1></header>
+<main class="article"><h1 id="efinity-hard-ip-reference-pll-and-osc">Efinity Hard IP Reference — PLL and OSC</h1>
+<blockquote>
+<p><strong>Applicable version</strong>: Efinity 2026.1 (verified against the installation at <code>C:\Efinity\2026.1</code>)
+<strong>Investigation date</strong>: 2026-09-25
+<strong>Evidence source</strong>: Every property name, legal value, and default behavior in this document was verified line by line against the Python source code inside the Efinity 2026.1 installation directory; each entry is annotated with <code>file:line</code>. Unless noted otherwise, the source root is <code>C:\Efinity\2026.1\pt\bin\</code> (abbreviated below as <code>pt\bin\</code>).
+<strong>Companion documents in this series</strong>: <em>Efinity ISF Syntax Reference</em> (<code>isf-syntax-reference.md</code>), <em>Efinity File Formats — peri.xml</em> (<code>file-formats-peri-xml.md</code>), <em>Efinity DesignAPI Method Reference</em> (<code>designapi-reference.md</code>), <em>Efinity Hard IP Reference — DDR</em> (<code>hard-ip-ddr.md</code>), <em>Efinity Hard IP — LVDS/MIPI/JTAG Interface Reference</em> (<code>hard-ip-interfaces-jtag.md</code>)</p>
+</blockquote>
+<hr />
+<h2 id="1-overview-and-positioning">1. Overview and positioning</h2>
+<p>PLL and OSC are the two <strong>on-chip clock-source hard IPs</strong> in Efinity devices:</p>
+<table>
+<thead>
+<tr>
+<th>Hard IP</th>
+<th>Role</th>
+<th>Creation</th>
+<th>API block_type string</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PLL</td>
+<td>Phase-locked loop: multiplies/divides/phase-shifts the reference clock into multiple output clocks</td>
+<td><code>create_block("name", "PLL")</code></td>
+<td><code>"PLL"</code></td>
+</tr>
+<tr>
+<td>OSC</td>
+<td>On-chip oscillator: generates a low-frequency clock without any external clock</td>
+<td><code>create_block("name", "OSC")</code></td>
+<td><code>"OSC"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Hard constraint</strong> (consistent with <code>rules-efinity-hard.md</code> §4): the PLL must be created in the ISF (<code>design.create_block("name", "PLL")</code>) and <strong>must not be instantiated in RTL</strong>; RTL only declares the <code>pll_clk_out</code> / <code>pll_locked</code> ports. Note that <code>create_*</code> is a one-time bootstrap (see §7 and AGENTS.md §15).</p>
+<h3 id="1-1-the-six-pll-generations-important">1.1 The six PLL generations (important)</h3>
+<p>In the 2026.1 source code the PLL is not a single class but an <strong>inheritance chain of six generations</strong>. When <code>design.create_block("x", "PLL")</code> runs, the tool automatically selects the Prop class for the device model; property writes use the unified uppercase property names, but <strong>the available properties and legal values differ per generation</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Generation</th>
+<th>Prop class (property authority)</th>
+<th>DB block_type (ISF export layer)</th>
+<th>Typical device families</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1 simple PLL</td>
+<td><code>PLLProp</code> (<code>pt\bin\api_service\property\pll_prop.py:49</code>)</td>
+<td><code>pll</code></td>
+<td>Trion (T4/T8/T13/T20 series)</td>
+</tr>
+<tr>
+<td>v2 advanced PLL</td>
+<td><code>PLLAdvProp</code> (<code>pll_prop.py:599</code>, inherits PLLProp)</td>
+<td><code>adv_pll</code></td>
+<td>Titanium (TiTi60/Ti375, Tz170, etc.)</td>
+</tr>
+<tr>
+<td>v3 five-output PLL</td>
+<td><code>PLLCompProp</code> (<code>pll_prop.py:1152</code>, inherits PLLAdvProp)</td>
+<td><code>comp_pll</code></td>
+<td>newer Titanium</td>
+</tr>
+<tr>
+<td>v4</td>
+<td><code>PLLV4Prop</code> (<code>pll_prop.py:1674</code>, inherits PLLCompProp)</td>
+<td>(reuses the v3 path)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>EfxFpll V1</td>
+<td><code>EfxFpllV1Prop</code> (<code>pll_prop.py:1786</code>, inherits PLLV4Prop)</td>
+<td><code>efx_fpll_v1</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>EfxFpll V2</td>
+<td><code>EfxFpllV2Prop</code> (<code>pll_prop.py:1990</code>, inherits EfxFpllV1Prop)</td>
+<td><code>efx_fpll_v2</code></td>
+<td>newest devices such as Ti125</td>
+</tr>
+</tbody>
+</table>
+<p>Inheritance-chain evidence: <code>pll_prop.py:599</code> <code>class PLLAdvProp(PLLProp)</code>, <code>:1152</code> <code>class PLLCompProp(PLLAdvProp)</code>, <code>:1674</code> <code>class PLLV4Prop(PLLCompProp)</code>, <code>:1786</code> <code>class EfxFpllV1Prop(PLLV4Prop)</code>, <code>:1990</code> <code>class EfxFpllV2Prop(EfxFpllV1Prop)</code>.</p>
+<p>Each generation has its own legal-value table (api_options) and its own ISF exporter (isf_exporter.py):</p>
+<ul>
+<li>Legal-value import evidence (<code>pll_prop.py:40-45</code>): <code>pll_api_options</code> → <code>v1_api_ops_map</code>, <code>pll_adv_api_options</code> → <code>v2_api_ops_map</code>, <code>pll_comp_api_options</code> → <code>v3_api_ops_map</code>, <code>pll_v4_api_options</code> → <code>v4_api_ops_map</code>, <code>fpll_v1_api_options</code>, <code>fpll_v2_api_options</code>.</li>
+<li>ISF exporter chain (<code>pt\bin\api_service\exim\isf_exporter.py</code>): <code>PLLISFBuilder</code> (:1476, db_block_type <code>pll</code>) → <code>PLLAdvISFBuilder</code> (:1495, <code>adv_pll</code>) → <code>PLLCompISFBuilder</code> (:1507, <code>comp_pll</code>) → <code>PLLV3ComplexISFBuilder</code> (:1518, <code>efx_pll_v3_comp</code>) → <code>EfxFpllV1ISFBuilder</code> (:1529, <code>efx_fpll_v1</code>) → <code>EfxFpllV2ISFBuilder</code> (:1540, <code>efx_fpll_v2</code>).</li>
+<li>There are also a separate <strong>PLL_SSC spread-spectrum clock block</strong> (block_type <code>"PLL_SSC"</code>, <code>PLLSSCISFBuilder</code> at isf_exporter.py:1953, property class <code>pll_ssc_prop.py</code>) and a <strong>CM clock block</strong> (<code>CMISFBuilder</code> :1452, db_block_type <code>cm_v1</code>); neither is expanded here — see §6.4.</li>
+</ul>
+<blockquote>
+<p><strong>Writing discipline</strong>: every "legal value" in this document is annotated with the applicable generation. Mixing legal values across generations is the number-one source of PLL configuration errors.</p>
+</blockquote>
+<hr />
+<h2 id="2-the-creation-trio">2. The creation trio</h2>
+<p>Hard IPs have <strong>no dedicated creation method</strong>; everything goes through the generic trio (the DesignAPI implementation lives in <code>pt\bin\api_service\design.py</code>, <code>create_block</code> signature at :192):</p>
+<pre><code class="language-python">design.create_block(&quot;pll_inst1&quot;, &quot;PLL&quot;)                      # 1. Create the block (block_type must be &quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;, &quot;REFCLK_FREQ&quot;, &quot;25.0&quot;, &quot;PLL&quot;)  # 2. Set properties one by one (the 4th argument must be &quot;PLL&quot;)
+design.assign_resource(&quot;pll_inst1&quot;, &quot;PLL_TL0&quot;, &quot;PLL&quot;)        # 3. Assign the PLL hard resource (3rd argument is the resource name, 4th is &quot;PLL&quot;)
+</code></pre>
+<p>Key points (all verified):</p>
+<ol>
+<li><strong>block_type strings</strong>: use <code>"PLL"</code> for PLL and <code>"OSC"</code> for OSC. The legal-value list is at <code>pt\bin\api_service\common\object_db.py:35-59</code> (<code>API_BLOCK_TYPE</code> Literal list: <code>GPIO, JTAG, PLL, OSC, MIPI_TX, MIPI_RX, ..., DDR, PLL_SSC, ...</code>); the enum→string mapping <code>otype2str_map</code> is at <code>object_db.py:109-140</code>. Passing an unsupported string raises <code>PTBlkCreateException</code> (<code>design.py:229-231</code>, which checks <code>is_block_supported</code>).</li>
+<li><strong>The reference-clock pin GPIO is created separately</strong>: an external reference clock needs a <code>design.create_pll_input_clock_gpio("pll_refclk")</code> call (official ISF example: <code>C:\Efinity\2026.1\examples\helloworld-unified\Ti60F225_kit_manual.isf:15</code>), followed by <code>design.assign_pkg_pin("pll_refclk", "B2")</code> to bind the package pin (same file :45).</li>
+<li><strong>The 4th argument of <code>set_property</code> (block_type) is mandatory</strong>: non-GPIO blocks such as JTAG/PLL/OSC must explicitly pass <code>"PLL"</code>/<code>"OSC"</code>.</li>
+<li><strong><code>create_*</code> is a one-time bootstrap</strong>: <code>create_block</code> / <code>create_pll_input_clock_gpio</code> may run only once, while the project's peri.xml does not yet exist; every unified build <strong>replays</strong> the ISF referenced by the project XML onto the persisted peri.xml, and a replayed ISF that still contains <code>create_*</code> fails with <code>... exists</code>. After the bootstrap compile, the <code>create_*</code> lines must be commented out (AGENTS.md §15, <code>rules-efinity-hard.md</code> §15).</li>
+</ol>
+<h3 id="2-1-the-three-osc-generations">2.1 The three OSC generations</h3>
+<p>As with the PLL, after <code>create_block("x", "OSC")</code> the tool picks the OSC generation by device (<code>pt\bin\api_service\property\osc_prop.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Generation</th>
+<th>Prop class</th>
+<th>DB block_type</th>
+<th>ISF exporter</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple OSC</td>
+<td><code>OSCProp</code> (osc_prop.py:34)</td>
+<td><code>osc</code></td>
+<td><code>OSCISFBuilder</code> (isf_exporter.py:1036)</td>
+<td>Has only one property: <code>CLKOUT_PIN</code></td>
+</tr>
+<tr>
+<td>Advanced OSC</td>
+<td><code>OSCAdvProp</code> (osc_prop.py:157)</td>
+<td><code>adv_osc</code></td>
+<td><code>OSCAdvISFBuilder</code> (:1202)</td>
+<td>Adds <code>FREQ</code> (output frequency selection)</td>
+</tr>
+<tr>
+<td>HP OSC</td>
+<td><code>HPOSCProp</code> (osc_prop.py:295)</td>
+<td><code>hposc</code></td>
+<td><code>HPOSCISFBuilder</code> (:1225)</td>
+<td>High-precision OSC; additionally adds <code>ENA_PIN</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-complete-pll-property-tables">3. Complete PLL property tables</h2>
+<p>The property strings are defined in <code>PLLProp.PropId</code> (<code>pt\bin\api_service\property\pll_prop.py:65-192</code>); descendants only add, never remove. In the tables below, the generation column means: v1 = simple PLL, v2 = advanced PLL, v3 = five-output PLL, f1/f2 = EfxFpll V1/V2.</p>
+<h3 id="3-1-reset-and-status">3.1 Reset and status</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal value/default</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RSTN_PIN</code></td>
+<td>Pin name (STR)</td>
+<td>Default <code>""</code></td>
+<td>Top-level signal name for the PLL reset pin (active low). Leave empty for no connection</td>
+<td>pll_prop.py:66 (PropId definition)</td>
+</tr>
+<tr>
+<td><code>LOCKED_PIN</code></td>
+<td>Pin name (STR)</td>
+<td>Default <code>""</code></td>
+<td>Name of the PLL lock indication output signal. <strong>Must be brought out and AND-ed with the RTL reset</strong> (<code>rst_n_i &amp; pll_locked</code>)</td>
+<td>pll_prop.py:67</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-divider-multiplier-counters-m-n-o">3.2 Divider/multiplier counters (M, N, O)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>N</code> (pre-divider)</td>
+<td>INT</td>
+<td>v1/v2: 1–15 (<code>RangeValidator(1,15)</code>)</td>
+<td>Reference-clock pre-divider</td>
+<td>pll_api_options.py:9; pll_prop.py:71</td>
+</tr>
+<tr>
+<td><code>M</code> (multiplier)</td>
+<td>INT</td>
+<td>v1/v2: 1–255 (<code>RangeValidator(1,255)</code>)</td>
+<td>Multiplier</td>
+<td>pll_api_options.py:7; pll_prop.py:70</td>
+</tr>
+<tr>
+<td><code>O</code> (post-divider)</td>
+<td>Enum</td>
+<td>v1/v2: <code>1,2,4,8</code> (<code>OptionValidator</code>)</td>
+<td>Post-VCO divider</td>
+<td>pll_api_options.py:8; pll_prop.py:72</td>
+</tr>
+<tr>
+<td><code>REFCLK_FREQ</code></td>
+<td>FLOAT (passed as STR)</td>
+<td>e.g. <code>"25.0"</code> (MHz)</td>
+<td>Reference-clock frequency; <strong>must match the actual input</strong>, otherwise every calculation is wrong</td>
+<td>pll_prop.py:74; official ISF <code>Ti60F225_kit_manual.isf:39</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>v3 (comp PLL) counter legal values differ: mult is only <code>{1,2,4}</code>, prediv <code>{1,2,4}</code>, postdiv 1–128 (<code>api_options\pll_comp_api_options.py</code>, 33 lines in total). fpll_v1: pdiv/sdiv 0–64 (<code>api_options\fpll_v1_api_options.py</code>).</p>
+</blockquote>
+<h3 id="3-3-output-clocks-clkout0-clkout4">3.3 Output clocks (CLKOUT0–CLKOUT4)</h3>
+<p>Each output channel has three switch properties plus two frequency properties:</p>
+<table>
+<thead>
+<tr>
+<th>Property pattern</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLKOUTn_EN</code> (n=0–4)</td>
+<td>BOOL</td>
+<td><code>"0"</code>/<code>"1"</code></td>
+<td>Enables output n. <strong>Do not set other CLKOUTn_* properties on a disabled output channel</strong></td>
+<td>pll_prop.py:76-80 (EN), :81-85 (PIN), :86-90 (DIV)</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_PIN</code></td>
+<td>Pin name (STR)</td>
+<td>Default <code>""</code></td>
+<td>RTL-side signal name of this output clock</td>
+<td>pll_prop.py:81-85</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_DIV</code></td>
+<td>INT</td>
+<td><strong>v1: powers of two only <code>[2,4,8,16,32,64,128,256]</code></strong>; <strong>v2: any integer 1–256</strong>; v3/f1: 1–128</td>
+<td>Output divider</td>
+<td>pll_api_options.py:4-6 (v1 OptionValidator); pll_adv_api_options.py:5,7,9 (v2 RangeValidator(1,256)); pll_comp_api_options.py (v3 1–128)</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_FREQ</code></td>
+<td>Read-only</td>
+<td>— (computed and back-filled by the tool)</td>
+<td>Output frequency (MHz), computed by <code>calc_pll_clock</code></td>
+<td>pll_prop.py:91-95</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Important clarification (tool-side evidence)</strong>: the rule "PLL output dividers support only powers of two" <strong>holds only for the v1 simple PLL</strong> (the <code>OptionValidator([2,4,...,256])</code> at <code>api_options\pll_api_options.py:4-6</code>). For the v2 advanced PLL (Titanium etc.), <code>clkout0/1/2_div</code> is a <code>RangeValidator(1,256)</code> (<code>api_options\pll_adv_api_options.py:5-9</code>) — <strong>any integer is legal</strong>. In the official example <code>C:\Efinity\2026.1\examples\helloworld-unified\Ti60F225_kit_manual.isf:26</code>, Ti60 configures <code>CLKOUT0_DIV="110"</code>, and <code>Ti60F225_kit.isf:101</code> uses <code>CLKOUT0_DIV="27"</code> — neither is a power of two, and both compile directly. Treat this constraint according to the actual device generation in your project.</p>
+<p>From v3 on, the 4th/5th output channels are supported: <code>CLKOUT3_EN/PIN/DIV/FREQ/PHASE</code>, <code>CLKOUT4_*</code> (pll_prop.py PropId definitions, :92-98 region); from v4 on, CLKOUT3/4 connection types support <code>GCLK</code>/<code>RCLK</code> (<code>PLLV4Presenter</code>, pll_prop.py:1773-1783).</p>
+</blockquote>
+<h3 id="3-4-reference-clock-source">3.4 Reference clock source</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REFCLK_SOURCE</code></td>
+<td>Enum</td>
+<td><code>EXTERNAL</code> / <code>CORE</code> / <code>DYNAMIC</code> (v2+)</td>
+<td>Reference clock source: external package pin / core clock / dynamic selection</td>
+<td>pll_prop.py:102 (PropId); pll_adv_api_options.py:18 (legal values); PLLAdvPresenter api2db mapping pll_prop.py:950-1015</td>
+</tr>
+<tr>
+<td><code>EXT_CLK</code></td>
+<td>Enum</td>
+<td>v2: <code>EXT_CLK0</code> / <code>EXT_CLK1</code>; f1: <code>EXT_CLK0</code>–<code>EXT_CLK2</code></td>
+<td>Selects the external clock input pair when <code>REFCLK_SOURCE=EXTERNAL</code></td>
+<td>pll_prop.py:103; pll_adv_api_options.py:11; fpll_v1_api_options.py</td>
+</tr>
+<tr>
+<td><code>REFCLK</code></td>
+<td>Enum</td>
+<td><code>""</code>, <code>EXT_CLK0/1/2</code>, <code>CORE_CLK0/1</code> (v2)</td>
+<td>Reference-clock connection name</td>
+<td>pll_prop.py:192; pll_adv_api_options.py:17</td>
+</tr>
+</tbody>
+</table>
+<p>When <code>REFCLK_SOURCE=CORE/DYNAMIC</code>, dynamic clock-selection pins are also required (v2+):</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DYN_CLK_SEL_PIN</code></td>
+<td>Dynamic reference-clock select signal</td>
+<td>pll_prop.py:104</td>
+</tr>
+<tr>
+<td><code>CORE_CLK_PIN</code> / <code>CORE_CLK1_PIN</code></td>
+<td>Signal names of the two core-clock inputs</td>
+<td>pll_prop.py:105-106</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-5-feedback-mode">3.5 Feedback mode</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FEEDBACK_MODE</code></td>
+<td>Enum</td>
+<td>v2: <code>CORE</code> / <code>INTERNAL</code> / <code>LOCAL</code>; f2: <code>CORE</code> / <code>LOCAL</code> / <code>EXTERNAL</code> / <code>PHY_CLK</code></td>
+<td>Feedback path mode</td>
+<td>pll_prop.py:99 (PropId); pll_adv_api_options.py:13 (v2 legal values); fpll_v2_api_options.py (f2 legal values); EfxFpllV2Presenter mapping pll_prop.py:2205-2247</td>
+</tr>
+<tr>
+<td><code>FEEDBACK_CLK</code></td>
+<td>STR/enum</td>
+<td>v2: <code>CLK0</code>/<code>CLK1</code>/<code>CLK2</code>; f2: also accepts a CM clock-name string</td>
+<td>Which output channel the feedback clock is taken from; f2 also accepts an int or a CM clock name</td>
+<td>pll_prop.py:100 (PropId), :2103-2144 (<code>set_feedback_clk</code> accepts int or str); pll_adv_api_options.py:12</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-6-phase-phase-phase_setting-phase_step">3.6 Phase (PHASE / PHASE_SETTING / PHASE_STEP)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLKOUTn_PHASE</code></td>
+<td>Enum (degrees)</td>
+<td><strong>v2: <code>[0,45,90,135,180,270]</code> (45° steps — note there is no 315)</strong>; v3: 0–360</td>
+<td>Static phase shift</td>
+<td>pll_adv_api_options.py:6,8,10 (OptionValidator); pll_comp_api_options.py (v3 0–360)</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_PHASE_SETTING</code></td>
+<td>Enum</td>
+<td>0–7 (psv levels)</td>
+<td>Phase setting level (the v3+ calculator names them psv0–4)</td>
+<td>pll_prop.py:120-124; pll_cal_prop.py (PLLCalcPresenter psv0-4)</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_PHASE_STEP</code></td>
+<td>Enum</td>
+<td>0–7</td>
+<td>Phase step level</td>
+<td>pll_prop.py:126-130</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_DYNPHASE_EN</code></td>
+<td>BOOL</td>
+<td><code>"0"</code>/<code>"1"</code></td>
+<td>Enables dynamic phase adjustment</td>
+<td>pll_prop.py:132-136; official ISF <code>Ti60F225_kit_manual.isf:27</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Precise statement of the 45°-step conclusion: the static phase legal values of the v2 advanced PLL are indeed 45° steps (and the 2026.1 v2 table <strong>does not include 315</strong>); the v3 five-output PLL offers continuous 0–360 levels. The "phase shifts only in 45° steps" statement in <code>rules-efinity-hard.md</code> §4 applies to the v2 generation.</p>
+</blockquote>
+<h3 id="3-7-output-connection-type-and-clkmux">3.7 Output connection type and CLKMUX</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLKOUTn_CONN_TYPE</code></td>
+<td>Enum</td>
+<td>v2: <code>GCLK</code>/<code>LCLK</code> (API uppercase); f2: <code>GCLK</code>/<code>RCLK</code>/<code>LCLK</code>/<code>PHY_CLK</code></td>
+<td>Routes the output clock onto the global/regional/local clock network; on f2, PHY_CLK goes through the CM</td>
+<td>pll_prop.py:138-142 (PropId); PLLAdvPresenter :950-1015; EfxFpllV2Presenter <code>conn_type_api2db_map {GCLK:gclk, RCLK:rclk, LCLK:lclk, PHY_CLK:cm}</code> (:2205-2247); fpll_v2_api_options.py</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_CLKMUX_BUF_PIN</code></td>
+<td>Pin name</td>
+<td>Default <code>""</code></td>
+<td>CLKMUX buffer enable signal</td>
+<td>pll_prop.py:144-148</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Case difference between API values and DB/ISF values</strong>: <code>set_property</code> accepts API-style uppercase values (e.g. <code>GCLK</code>); the presenter converts them to lowercase DB values (<code>gclk</code>); <strong>the ISF exports the DB value</strong> — the official ISF writes <code>"gclk"</code> (<code>Ti60F225_kit_manual.isf:25</code>). Both spellings are accepted in 2026.1, but copying the DB value from the official ISF is the safest.</p>
+</blockquote>
+<h3 id="3-8-dynamic-phase-shift-and-deskew">3.8 Dynamic phase shift and deskew</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PHASE_SHIFT_ENA_PIN</code> / <code>PHASE_SHIFT_SEL_PIN</code> / <code>PHASE_SHIFT_PIN</code></td>
+<td>The three dynamic-phase-shift interface signals (enable/select/pulse)</td>
+<td>pll_prop.py:150-152; official ISF :36-38</td>
+</tr>
+<tr>
+<td><code>DESKEW_PIN</code></td>
+<td>Deskew enable signal</td>
+<td>pll_prop.py:154</td>
+</tr>
+<tr>
+<td><code>OUTPUT_CLOCKS_INVERTED</code></td>
+<td>Inverts all output clocks uniformly</td>
+<td>pll_prop.py:155</td>
+</tr>
+<tr>
+<td><code>CLKOUTn_INVERT_EN</code></td>
+<td>Output-n inversion enable (BOOL)</td>
+<td>pll_prop.py:157-161</td>
+</tr>
+<tr>
+<td><code>IS_CLKOUTn_INVERTED</code></td>
+<td>Output-n inversion status (read-only/status)</td>
+<td>pll_prop.py:163-167; official ISF :31</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-9-ssc-spread-spectrum-fractional-division-duty-cycle-dynamic-configuration-f1-f2-generations">3.9 SSC spread spectrum, fractional division, duty cycle, dynamic configuration (f1/f2 generations)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SSC_MODE</code></td>
+<td>Enum</td>
+<td>See the fpll legal-value tables</td>
+<td>Spread-spectrum mode</td>
+<td>pll_prop.py:170</td>
+</tr>
+<tr>
+<td><code>SSC_FREQUENCY</code></td>
+<td>FLOAT</td>
+<td>30–33 (kHz)</td>
+<td>Spread-spectrum frequency</td>
+<td>pll_prop.py:171; fpll_v1_api_options.py (ssc_frequency 30-33)</td>
+</tr>
+<tr>
+<td><code>SSC_AMPLITUDE</code></td>
+<td>FLOAT</td>
+<td>0–0.5</td>
+<td>Spread-spectrum amplitude (ratio)</td>
+<td>pll_prop.py:172; fpll_v1_api_options.py (0-0.5)</td>
+</tr>
+<tr>
+<td><code>SSC_MODULATION_TYPE</code></td>
+<td>Enum</td>
+<td>—</td>
+<td>Modulation type</td>
+<td>pll_prop.py:173</td>
+</tr>
+<tr>
+<td><code>FRACTIONAL_MODE_EN</code></td>
+<td>BOOL</td>
+<td><code>"0"</code>/<code>"1"</code></td>
+<td>Fractional-division mode enable</td>
+<td>pll_prop.py:174</td>
+</tr>
+<tr>
+<td><code>FRACTIONAL_COEFFICIENT</code></td>
+<td>INT</td>
+<td>0–16777215</td>
+<td>Fractional coefficient (24 bit)</td>
+<td>pll_prop.py:175; fpll_v1_api_options.py (0-16777215)</td>
+</tr>
+<tr>
+<td><code>CLKOUT1_PROG_DUTY_CYCLE_EN</code></td>
+<td>BOOL</td>
+<td>—</td>
+<td>CLKOUT1 programmable duty-cycle enable</td>
+<td>pll_prop.py:177</td>
+</tr>
+<tr>
+<td><code>CLKOUT1_REQUEST_DUTY_CYCLE</code></td>
+<td>FLOAT</td>
+<td>0–100 (%)</td>
+<td>Requested duty cycle</td>
+<td>pll_prop.py:178; fpll_v1_api_options.py (0-100)</td>
+</tr>
+<tr>
+<td><code>CLKOUT1_SDIV</code> / <code>CLKOUT1_PDIV</code></td>
+<td>INT</td>
+<td>0–64</td>
+<td>Duty-cycle dividers</td>
+<td>pll_prop.py:179-180; fpll_v1_api_options.py</td>
+</tr>
+<tr>
+<td><code>CLKOUT1_DUTY_CYCLE</code></td>
+<td>Read-only</td>
+<td>—</td>
+<td>Actual duty cycle (computed and back-filled)</td>
+<td>pll_prop.py:181</td>
+</tr>
+<tr>
+<td><code>PDC_HALF_VCO_SHIFT_EN</code> / <code>DC_ODD</code></td>
+<td>BOOL/INT</td>
+<td>—</td>
+<td>Half-VCO shift / odd duty cycle</td>
+<td>pll_prop.py:182-183</td>
+</tr>
+<tr>
+<td><code>DYNAMIC_CFG_EN</code></td>
+<td>BOOL</td>
+<td>—</td>
+<td>Dynamic reconfiguration enable</td>
+<td>pll_prop.py:169</td>
+</tr>
+<tr>
+<td><code>CFG_EN</code> / <code>CFG_CLK</code> / <code>CFG_DATA_IN</code> / <code>CFG_DATA_OUT</code> / <code>CFG_SEL</code> / <code>USER_SSC_EN_PIN</code></td>
+<td>Pin name</td>
+<td>Default <code>""</code></td>
+<td>Five dynamic-configuration-port signals + user SSC enable</td>
+<td>pll_prop.py:185-190</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Refutation record</strong>: third-party material often lists the PLL properties <code>BYPASS</code> and <code>PWDN</code>. Verified against 2026.1 — <code>pll_prop.py</code> (2298 lines in total), <code>pll_ssc_prop.py</code> (266 lines), and <code>pll_cal_prop.py</code> (359 lines) contain <strong>neither</strong> property name — the 2026.1 DesignAPI has no such properties (the corresponding features in the GUI Interface Designer are not exposed through these property names). Referencing them in scripts is guaranteed to fail.</p>
+</blockquote>
+<hr />
+<h2 id="4-legal-value-quick-reference-for-all-six-pll-generations">4. Legal-value quick reference for all six PLL generations</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>v1 (pll_api_options.py)</th>
+<th>v2 (pll_adv_api_options.py)</th>
+<th>v3 (pll_comp_api_options.py)</th>
+<th>f1 (fpll_v1_api_options.py)</th>
+<th>f2 (fpll_v2_api_options.py)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clkout0/1/2_div</td>
+<td><strong>powers of two only [2..256]</strong></td>
+<td>1–256</td>
+<td>1–128 (incl. clkout3/4)</td>
+<td>1–128</td>
+<td>1–128</td>
+</tr>
+<tr>
+<td>mult</td>
+<td>1–255</td>
+<td>1–255</td>
+<td>{1,2,4}</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>postdiv</td>
+<td>[1,2,4,8]</td>
+<td>[1,2,4,8]</td>
+<td>1–128</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>prediv</td>
+<td>1–15</td>
+<td>1–15</td>
+<td>{1,2,4}</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>phase</td>
+<td>—</td>
+<td>[0,45,90,135,180,270]</td>
+<td>0–360; setting/step 0–7</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>feedback_mode</td>
+<td>—</td>
+<td>CORE/INTERNAL/LOCAL</td>
+<td>same as v2</td>
+<td>—</td>
+<td>CORE/LOCAL/EXTERNAL/PHY_CLK</td>
+</tr>
+<tr>
+<td>feedback_clk</td>
+<td>—</td>
+<td>CLK0/CLK1/CLK2</td>
+<td>CLK0–CLK4</td>
+<td>—</td>
+<td>includes CM clock names</td>
+</tr>
+<tr>
+<td>refclk_source</td>
+<td>—</td>
+<td>EXTERNAL/CORE/DYNAMIC</td>
+<td>same as v2</td>
+<td>same as v2</td>
+<td>same as v2</td>
+</tr>
+<tr>
+<td>ext_clk</td>
+<td>—</td>
+<td>EXT_CLK0/1</td>
+<td>same as v2</td>
+<td>EXT_CLK0–2</td>
+<td>same as f1</td>
+</tr>
+<tr>
+<td>conn_type (DB values)</td>
+<td>—</td>
+<td>gclk/lclk</td>
+<td>same as v2</td>
+<td>same as v2</td>
+<td>gclk/lclk/rclk/cm</td>
+</tr>
+<tr>
+<td>Specific</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>pdiv/sdiv 0–64; duty 0–100; ssc_freq 30–33; ssc_amp 0–0.5; fractional 0–16777215</td>
+<td>same as f1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-complete-osc-property-tables">5. Complete OSC property tables</h2>
+<p>Property definitions: <code>pt\bin\api_service\property\osc_prop.py</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Generation</th>
+<th>Type</th>
+<th>Legal values</th>
+<th>Description</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLKOUT_PIN</code></td>
+<td>All</td>
+<td>Pin name (STR)</td>
+<td>Default <code>""</code></td>
+<td>RTL-side signal name of the OSC output clock. The simple OSC (OSCProp) <strong>has only this one property</strong></td>
+<td>osc_prop.py:34 (OSCProp), :36-40 (CLKOUT_PIN)</td>
+</tr>
+<tr>
+<td><code>FREQ</code></td>
+<td>adv/hposc</td>
+<td>Enum (STR)</td>
+<td><code>"80"</code> / <code>"40"</code> / <code>"20"</code> / <code>"10"</code> (MHz)</td>
+<td>Output frequency selection. DB-side conversion: 80→÷1, 40→÷2, 20→÷4, 10→÷8</td>
+<td>osc_prop.py:158 (PropId FREQ), :242-262 (<code>freq_api2db_map {"80":div1,...,"10":div8}</code>)</td>
+</tr>
+<tr>
+<td><code>ENA_PIN</code></td>
+<td>hposc</td>
+<td>Pin name (STR)</td>
+<td>Default <code>""</code></td>
+<td>HP OSC enable signal</td>
+<td>osc_prop.py:162 (PropId), :320 (HPOSCProp adds ENA_PIN)</td>
+</tr>
+</tbody>
+</table>
+<p>OSC is ready to use right after creation, with no resource assignment (<code>assign_resource</code> does not apply to OSC — the OSC is an on-chip oscillator and does not occupy enumerable hard-resource slots the way PLL/LVDS does).</p>
+<hr />
+<h2 id="6-dedicated-apis-the-clock-calculator-family">6. Dedicated APIs (the clock-calculator family)</h2>
+<p>All of them live in the DesignAPI (<code>pt\bin\api_service\design.py</code>, class DesignAPI starting at :71).</p>
+<h3 id="6-1-calc_pll_clock-back-calculate-frequencies-after-manual-configuration">6.1 calc_pll_clock — back-calculate frequencies after manual configuration</h3>
+<pre><code class="language-python">design.calc_pll_clock(inst) -&gt; Dict[str, str]   # design.py:1989
+</code></pre>
+<ul>
+<li>Prerequisite: configure <code>M</code>/<code>N</code>/<code>O</code> and every <code>CLKOUTn_DIV</code> yourself first.</li>
+<li>Returns: a property map of the VCO frequency, PLL frequency, and each enabled output frequency (internally via <code>PLLProp.get_frequency_property</code>, design.py:2019).</li>
+<li>Raises <code>PTBlkEditException</code> if the instance does not exist (design.py:2003-2004).</li>
+</ul>
+<h3 id="6-2-auto_calc_pll_clock-automatic-solve-for-target-frequencies-recommended">6.2 auto_calc_pll_clock — automatic solve for target frequencies (recommended)</h3>
+<pre><code class="language-python">design.auto_calc_pll_clock(inst,
+                           target_freq: Dict[str, str],   # target frequencies (MHz) and phases (degrees)
+                           apply_optimal: bool = True,    # True = write the best solution back into the PLL counters
+                           result_len: Optional[int] = None  # number of solutions returned, default 5; 0 = all
+                          ) -&gt; List[Dict]                  # design.py:2219
+</code></pre>
+<ul>
+<li>The key names of <code>target_freq</code> depend on the PLL generation, determined by the calculator parameter mapping (<code>pt\bin\api_service\property\pll_cal_prop.py</code>):</li>
+<li>Simple PLL (PLLCalcPresenter): inputs include <code>M/N/O/REFCLK_FREQ/CLKOUTn_FREQ/CLKOUTn_PHASE/CLKOUTn_EN/CLKOUTn_DIV</code> etc.; results include <code>VCO_FREQ/CLKOUTn_DIV/...</code>;</li>
+<li>Five-output PLL (PLLCompCalcPresenter): adds the <code>PHASE_SETTING</code> (psv0–4) parameter;</li>
+<li>EfxFpllV2 (EfxFpllV2CalcPresenter): adds the inputs <code>FEEDBACK_CM_CLKOUT/FEEDBACK_CM_PHASE/FEEDBACK_CM_FREQ</code> and the results <code>FEEDBACK_CM_DIV/PHASE_SETTING</code>.</li>
+<li><code>target_freq=None</code> raises immediately (design.py:2242-2244).</li>
+<li>Typical usage:</li>
+</ul>
+<pre><code class="language-python">results = design.auto_calc_pll_clock(&quot;pll_inst1&quot;, {&quot;CLKOUT0_FREQ&quot;: &quot;100&quot;})
+best = results[0]                      # list of candidate solutions sorted by accuracy
+design.set_property(&quot;pll_inst1&quot;, &quot;M&quot;, str(best[&quot;M&quot;]), &quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;, &quot;N&quot;, str(best[&quot;N&quot;]), &quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;, &quot;O&quot;, str(best[&quot;O&quot;]), &quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT0_DIV&quot;, str(best[&quot;CLKOUT0_DIV&quot;]), &quot;PLL&quot;)
+</code></pre>
+<h3 id="6-3-remaining-clock-family-apis">6.3 Remaining clock-family APIs</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Signature/line</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calc_cm_clock</code></td>
+<td><code>design.calc_cm_clock(inst) -&gt; Dict[str,str]</code> (design.py:2024)</td>
+<td>CM block: back-calculates CLKOUT frequency/phase after the output dividers and phases are configured</td>
+</tr>
+<tr>
+<td><code>auto_calc_cm_clock</code></td>
+<td><code>design.auto_calc_cm_clock(inst, target_freq, ...)</code> (design.py:2293)</td>
+<td>Automatic solve for the CM block</td>
+</tr>
+<tr>
+<td><code>gen_pll_ref_clock</code></td>
+<td><code>design.gen_pll_ref_clock(inst, **kwargs)</code> (design.py:2182); kwargs: <code>pll_res</code> (PLL resource name; overrides if present), <code>refclk_name</code> (reference-clock GPIO instance name)</td>
+<td>Auto-detects the GPIO resource and generates the PLL reference-clock connection (internally <code>gen_ref_clock</code>, design.py:2214)</td>
+</tr>
+<tr>
+<td><code>trace_ref_clock</code></td>
+<td><code>design.trace_ref_clock(inst)</code> (design.py:2136)</td>
+<td>PLL only: traces the reference-clock source chain</td>
+</tr>
+<tr>
+<td><code>get_all_preset_info</code></td>
+<td><code>design.get_all_preset_info(name, block_type="DDR")</code> (design.py:2059)</td>
+<td>Only <code>DDR</code>/<code>PMA_DIRECT</code> are supported (:2067); <strong>PLL/OSC have no preset family</strong></td>
+</tr>
+<tr>
+<td><code>set_preset</code> / <code>get_preset</code></td>
+<td>design.py:2088 / :2105 (under the hood writes the <code>"PRESET"</code> property, :2101)</td>
+<td>Same as above; used only by the DDR family</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-4-the-pll_ssc-standalone-spread-spectrum-block-brief">6.4 The PLL_SSC standalone spread-spectrum block (brief)</h3>
+<p>The block_type is <code>"PLL_SSC"</code> (<code>otype2str_map</code>, object_db.py:133), the property class is <code>pt\bin\api_service\property\pll_ssc_prop.py</code> (266 lines in total), and the ISF exporter is <code>PLLSSCISFBuilder</code> (isf_exporter.py:1953, db_block_type <code>pll_ssc</code>). Main parameters: <code>REF_CLK_SOURCE</code>, <code>REF_CLK_FREQUENCY</code>, <code>REF_CLK_NAME</code>, <code>OUTPUT_CLK_FREQUENCY</code>, <code>OUTPUT_CLK_DIVIDER</code>, <code>PRE_DIVIDER</code>, <code>FEEDBACK_DIVIDER</code>, <code>FEEDBACK_DIVIDER_FRACTIONAL</code>, <code>POST_DIVIDER</code>, <code>ENABLE_SSC</code>, <code>PLL_SSC_FREQUENCY</code>, <code>PLL_SSC_AMP</code>, <code>PLL_SSC_AMP_INIT</code>, <code>OUTPUT_CLK_CONNECTION_TYPE</code>, <code>BUF_OUTPUT_CLK_NAME</code>; pins: <code>WORD_CLKOUT_HS_PIN</code>, <code>RESET_N_PIN</code>, <code>PLL_UNLOCK_PIN</code>, <code>PLL_SSC_EN_PIN</code>.</p>
+<hr />
+<h2 id="7-complete-isf-configuration-examples">7. Complete ISF configuration examples</h2>
+<h3 id="7-1-pll-official-ti60f225-manual-isf-verified-runnable-line-by-line">7.1 PLL (official Ti60F225 manual ISF, verified runnable line by line)</h3>
+<p>Source: <code>C:\Efinity\2026.1\examples\helloworld-unified\Ti60F225_kit_manual.isf</code> (Titanium v2 PLL style):</p>
+<pre><code class="language-python"># --- Bootstrap section (first run only, while peri.xml does not exist yet; comment out all create_* after the bootstrap compile) ---
+design.create_pll_input_clock_gpio(&quot;pll_refclk&quot;)     # :15 reference-clock input GPIO
+design.create_block(&quot;pll_inst1&quot;, &quot;PLL&quot;)              # :16
+
+# --- Replay-safe section (replayed on every compile; only set_property / assign_* allowed) ---
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT0_EN&quot;, &quot;1&quot;, &quot;PLL&quot;)          # :19 enable CLKOUT0
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT1_EN&quot;, &quot;0&quot;, &quot;PLL&quot;)          # :20
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT2_EN&quot;, &quot;0&quot;, &quot;PLL&quot;)          # :21
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT3_EN&quot;, &quot;0&quot;, &quot;PLL&quot;)          # :22
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT4_EN&quot;, &quot;0&quot;, &quot;PLL&quot;)          # :23
+design.set_property(&quot;pll_inst1&quot;, &quot;REFCLK_SOURCE&quot;, &quot;EXTERNAL&quot;, &quot;PLL&quot;) # :24 external reference clock
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT0_CONN_TYPE&quot;, &quot;gclk&quot;, &quot;PLL&quot;) # :25 DB value, lowercase
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT0_DIV&quot;, &quot;110&quot;, &quot;PLL&quot;)       # :26 v2 generation: any integer 1–256
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT0_DYNPHASE_EN&quot;, &quot;0&quot;, &quot;PLL&quot;) # :27
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT0_PHASE_STEP&quot;, &quot;0&quot;, &quot;PLL&quot;)  # :28
+design.set_property(&quot;pll_inst1&quot;, &quot;CLKOUT0_PIN&quot;, &quot;clk&quot;, &quot;PLL&quot;)       # :29 RTL-side clock signal name
+design.set_property(&quot;pll_inst1&quot;, &quot;EXT_CLK&quot;, &quot;EXT_CLK0&quot;, &quot;PLL&quot;)      # :30 external clock pair 0
+design.set_property(&quot;pll_inst1&quot;, &quot;IS_CLKOUT0_INVERTED&quot;, &quot;0&quot;, &quot;PLL&quot;) # :31
+design.set_property(&quot;pll_inst1&quot;, &quot;LOCKED_PIN&quot;, &quot;&quot;, &quot;PLL&quot;)           # :32
+design.set_property(&quot;pll_inst1&quot;, &quot;M&quot;, &quot;1&quot;, &quot;PLL&quot;)                   # :33
+design.set_property(&quot;pll_inst1&quot;, &quot;N&quot;, &quot;1&quot;, &quot;PLL&quot;)                   # :34
+design.set_property(&quot;pll_inst1&quot;, &quot;O&quot;, &quot;2&quot;, &quot;PLL&quot;)                   # :35
+design.set_property(&quot;pll_inst1&quot;, &quot;PHASE_SHIFT_ENA_PIN&quot;, &quot;&quot;, &quot;PLL&quot;)  # :36
+design.set_property(&quot;pll_inst1&quot;, &quot;PHASE_SHIFT_PIN&quot;, &quot;&quot;, &quot;PLL&quot;)      # :37
+design.set_property(&quot;pll_inst1&quot;, &quot;PHASE_SHIFT_SEL_PIN&quot;, &quot;&quot;, &quot;PLL&quot;)  # :38
+design.set_property(&quot;pll_inst1&quot;, &quot;REFCLK_FREQ&quot;, &quot;25.0&quot;, &quot;PLL&quot;)      # :39 MHz
+design.set_property(&quot;pll_inst1&quot;, &quot;RSTN_PIN&quot;, &quot;&quot;, &quot;PLL&quot;)             # :40
+design.set_property(&quot;pll_inst1&quot;, &quot;FEEDBACK_MODE&quot;, &quot;LOCAL&quot;, &quot;PLL&quot;)   # :41
+design.set_property(&quot;pll_inst1&quot;, &quot;FEEDBACK_CLK&quot;, &quot;CLK0&quot;, &quot;PLL&quot;)     # :42
+
+# --- Resource assignment ---
+design.assign_pkg_pin(&quot;pll_refclk&quot;, &quot;B2&quot;)            # :45 bind the reference clock to a package pin
+design.assign_resource(&quot;pll_inst1&quot;, &quot;PLL_TL0&quot;, &quot;PLL&quot;) # :46 bind the PLL hard resource (top/left bank index)
+</code></pre>
+<blockquote>
+<p><code>Ti60F225_kit_pins.isf</code> in the same directory is the "auto-assignment" version of the same project; <code>helloworld-dbg\Ti60F225_kit.isf:94-129</code> is another verified parameter set (M=4, DIV=27) for comparison.</p>
+</blockquote>
+<h3 id="7-2-osc-constructed-from-the-property-tables-block_type-osc">7.2 OSC (constructed from the property tables; block_type <code>"OSC"</code>)</h3>
+<p>The 2026.1 examples contain no official OSC ISF sample; the following is constructed from the <code>osc_prop.py</code> property tables and the creation-trio syntax (Titanium devices use adv_osc):</p>
+<pre><code class="language-python"># Bootstrap section (one-time)
+design.create_block(&quot;osc_inst1&quot;, &quot;OSC&quot;)
+
+# Replay-safe section
+design.set_property(&quot;osc_inst1&quot;, &quot;FREQ&quot;, &quot;80&quot;, &quot;OSC&quot;)            # 80/40/20/10 MHz (osc_prop.py:242-262)
+design.set_property(&quot;osc_inst1&quot;, &quot;CLKOUT_PIN&quot;, &quot;osc_clk&quot;, &quot;OSC&quot;) # RTL-side signal name
+</code></pre>
+<hr />
+<h2 id="8-common-errors-and-troubleshooting">8. Common errors and troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Root cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PTBlkCreateException: block type ... is not supported</code></td>
+<td>block_type misspelled (e.g. <code>pll</code>/<code>PLLV2</code>)</td>
+<td>Only strings from the <code>API_BLOCK_TYPE</code> list are accepted (object_db.py:35-59); for PLL it is always <code>"PLL"</code></td>
+</tr>
+<tr>
+<td>Second compile fails with <code>PLL pll_inst1 ... exists</code></td>
+<td>A replayed ISF still contains <code>create_block</code>/<code>create_pll_input_clock_gpio</code></td>
+<td>Comment out create_* right after the bootstrap compile (AGENTS.md §15; the ISF has no delete command — do not attempt an "idempotent delete")</td>
+</tr>
+<tr>
+<td><code>set_property</code> rejects a value</td>
+<td>Cross-generation mixing of legal values (most often <code>CLKOUT0_DIV=110</code> on v1, or <code>PHASE=315</code> on v2)</td>
+<td>Check the device generation against the §4 quick reference; v1 div is powers of two only, v2 phase has no 315</td>
+</tr>
+<tr>
+<td>Computed frequencies are all wrong</td>
+<td><code>REFCLK_FREQ</code> does not match the actual input; or the counters were changed after computing</td>
+<td>Re-run <code>calc_pll_clock</code> after changing M/N/O/DIV; or switch to <code>auto_calc_pll_clock</code></td>
+</tr>
+<tr>
+<td><code>Unknown instance</code> exception</td>
+<td>Instance name not created or misspelled; or a PLL calculator was called on a non-PLL instance</td>
+<td>Both design.py:2001-2004 and :2237-2240 validate the object type first</td>
+</tr>
+<tr>
+<td><code>BYPASS</code>/<code>PWDN</code> property errors</td>
+<td>The 2026.1 DesignAPI has no such properties (refuted, see §3.9)</td>
+<td>Delete the line; configure the corresponding feature in the GUI</td>
+</tr>
+<tr>
+<td>Debating the case of <code>CLKOUT0_CONN_TYPE</code> in the ISF</td>
+<td>Dual track: API uppercase (<code>GCLK</code>) / DB lowercase (<code>gclk</code>)</td>
+<td>Copy the DB value from the official ISF; both work when a script writes through the DesignAPI</td>
+</tr>
+<tr>
+<td>Bank resource conflict (<code>PLL_TL0</code> already occupied)</td>
+<td>PLL resource slots are unique</td>
+<td>Switch <code>assign_resource</code> to a free resource name; see the device datasheet for the PLL resource count per bank</td>
+</tr>
+<tr>
+<td>OSC output has no clock</td>
+<td><code>FREQ</code> set on a simple OSC (the property exists only on adv/hposc)</td>
+<td>The simple OSC has only <code>CLKOUT_PIN</code> (osc_prop.py:34-40); the frequency is fixed by the device</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-cross-references">9. Cross-references</h2>
+<ul>
+<li><em>Efinity ISF Syntax Reference</em> (<code>isf-syntax-reference.md</code>) — the complete ISF command set, replay-safety rules, and the list of 46 ISF exporter classes (§5 covers the six PLL-variant builders)</li>
+<li><em>Efinity File Formats — peri.xml</em> (<code>file-formats-peri-xml.md</code>) — the peri.xml↔ISF replay relationship and the <code>efxpt:design_db</code> namespace</li>
+<li><em>Efinity DesignAPI Method Reference</em> (<code>designapi-reference.md</code>) — full DesignAPI method signatures (<code>create_block</code> :192, <code>set_property</code>, <code>assign_resource</code>, the clock-calculator family)</li>
+<li><em>Efinity Toolchain Reference</em> (<code>toolchain-reference.md</code>) — <code>efx_run --flow compile</code> and PT-stage command lines</li>
+<li><code>rules-efinity-hard.md</code> §4/§15 — PLL hard constraints and the ISF bootstrap contract (note: read §4's "powers of two / 45° steps" as corrected by the per-generation evidence in §3.3/§3.6 of this document)</li>
+</ul></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

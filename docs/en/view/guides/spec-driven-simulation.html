@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Specification-Driven Layered Simulation and Vibe Coding</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
+<span>The controlled flow: freeze the specification, generate candidate RTL, run rule checks, simulate and promote.</span>
+<code>guides/spec-driven-simulation.md</code>
+<a href="../../../guides/spec-driven-simulation.md">Markdown source</a></p>
+<h1>Specification-Driven Layered Simulation and Vibe Coding</h1></header>
+<main class="article"><h1 id="spec-driven-layered-simulation-and-vibe-coding">Spec-Driven Layered Simulation and Vibe Coding</h1>
+<blockquote>
+<p>Applicable version: EvoVerse SDK v1.0.0</p>
+</blockquote>
+<p>This flow makes the design specification the sole behavioral authority. Even for a small feature, establish and freeze the specification before any RTL is generated. Simulation code, oracles, test vectors, and models are never reverse-engineered from the RTL under test, which rules out "the code and the test are both wrong yet everything still shows PASS".</p>
+<p>When you need a staged, reliable flow, start your specification or RTL design request with <code>@evoverse</code>; the SDK Agent first confirms the working mode: the reliable design flow or free-form development. Ordinary agent conversations stay in free-form development, with no automatic mode prompt. The product has exactly two working modes: choosing the reliable design flow commits you to stage-by-stage confirmation; choosing free-form development stays out of this flow entirely—direct editing and Builds are unaffected.</p>
+<p><strong>RTL design-rule verification is not a coding style check.</strong> It examines structure, clocks, resets, CDC, state machines, FIFOs, data integrity, and protocol contracts; dynamic obligations require simulation evidence, and <code>incomplete</code> is not PASS.</p>
+<h2 id="1-specification-layers-and-the-right-granularity">1. Specification layers and the right granularity</h2>
+<ul>
+<li><code>ModuleSpec</code>: a single functional unit that can be understood and verified on its own. It may span multiple HDL files; "one module spec per RTL file" is not required.</li>
+<li><code>SystemSpec</code>: describes module composition, subsystem boundaries, system behavior, dependencies, and hard-IP contracts.</li>
+<li>Verification units are split strictly along functional boundaries into <code>module</code>, <code>subsystem</code>, and <code>system</code>; simple glue logic is never mechanically fragmented into overly fine grains.</li>
+</ul>
+<p>Recommended layout:</p>
+<pre><code class="language-text">design/
+  modules/&lt;unit&gt;/rtl/              # multi-file DUT
+  modules/&lt;unit&gt;/sim/{tb,models,assertions,vectors}/
+  subsystems/&lt;unit&gt;/rtl/
+  subsystems/&lt;unit&gt;/sim/{tb,models,assertions,scenarios}/
+  system/&lt;unit&gt;/rtl/
+  system/&lt;unit&gt;/sim/{tb,models,assertions,scenarios}/
+.evoverse/verification/             # Frozen specs, graphs, requests, evidence, and decisions; do not edit by hand
+</code></pre>
+<h2 id="2-staged-sequence-of-the-reliable-design-flow">2. Staged sequence of the reliable design flow</h2>
+<ol>
+<li>Pick the concrete board/carrier and discover the relevant demos, IP, constraints, and Efinity models; copy them into the run-local quarantine and generate an exact-byte <code>baseline-manifest.json</code>. Unmodified legacy RTL may be reused with its recorded rule debt, but any byte change voids the exemption; encrypted code is treated purely as an interface/model-contract black box.</li>
+<li><strong>Confirm the simulation level (the user chooses; the level precedes the specification)</strong>: once the reliable iteration is established and before <code>spec.draft</code> drafts the specification, the simulation level must be confirmed first—otherwise the control plane blocks drafting with <code>SIMULATION_PROFILE_REQUIRED</code>. The AI extracts structured risk facts from the user's requirements, the bill of materials, and the project topology (single clock, CDC, FIFO, backpressure, cross-line/cross-frame state, safety-related, and so on) and submits them as <code>riskFacts</code> to <code>simulation.profile.select</code>; the control plane computes the recommended level under fixed risk rules, and the AI must never fill in the recommendation field itself. The three preset levels:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Applies to</th>
+<th>Default blocking obligations</th>
+<th>Deferred to board test by default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FPGA_FUNCTIONAL</code></td>
+<td>Simple features with a single clock, clear boundaries, and easily observable outputs (counters, LED chasers, stopwatches, GPIO)</td>
+<td>Compile/elaborate, reset, 1–3 main-path scenarios, 1 critical boundary, and, when needed, 1 integration smoke run</td>
+<td>Full wraparound, coverage quotas, long regressions, button feel, display aesthetics, parameter fine-tuning</td>
+</tr>
+<tr>
+<td><code>FPGA_INTEGRATION</code></td>
+<td>Protocols, buffering, cross-line/cross-frame state, shared resources (FIFO, AXI/streaming interfaces, windowed ISP, DMA)</td>
+<td>Everything at the functional level + handshake/backpressure/frame boundaries, width/saturation/truncation, FIFO overflow protection, CDC, integration regression</td>
+<td>Exhaustive input combinations, exhaustive subjective image-quality sweeps</td>
+</tr>
+<tr>
+<td><code>HIGH_ASSURANCE</code></td>
+<td>High-speed complex protocols, memory control, irreversible control, safety-related</td>
+<td>All obligations of the frozen specification (including recovery scenarios and coverage closure)</td>
+<td>No automatic deferrals; subjective tuning may still be deferred explicitly</td>
+</tr>
+</tbody>
+</table>
+<p>You may accept the recommendation, go higher or lower, or use <code>CUSTOM</code> to partition blocking/deferred obligations explicitly; choosing below the recommended minimum requires <code>acceptedRisks</code> to be recorded. The level is bound to the design iteration: the specification is written to the selected level's budget (the number of scenarios is controlled at the source), specification revisions within the same iteration do not change the level, and changing the level requires a new design iteration. When the budget is exceeded (for example, <code>FPGA_FUNCTIONAL</code> allows at most 3 core blocking scenarios, 1 critical boundary, and 1 integration smoke run), the control plane demands explicit reconfirmation of the overrun—silently trimming or expanding the verification scope is not allowed. Stopwatch example: under <code>FPGA_FUNCTIONAL</code>, only reset display, start/stop hold, one <code>00:00.99 → 00:01.00</code> boundary, and one scan-rotation smoke run are required; the full <code>59:59.99</code> wraparound, all-digit coverage, 1000 property activations, and narrow glitch injection are deferred by default. ISP example: functional-level coverage suffices for black-level offset, while Bayer interpolation/window filtering/video-stream integration fall into the integration level on structural facts, and HDR/3A/safety imaging are recommended at the high-assurance level—grading follows risk, not hardcoded application names.
+3. Extract readable facts from the archived materials, then combine them with the customer's requirements to draft the specification within the selected level's budget and complete the automated review; never reverse-derive a behavioral specification from legacy RTL—when ambiguity appears, generate options for the customer to choose from instead of guessing.
+4. Freeze the specification and record its semantic digest; code generation is forbidden while the spec is unfrozen or the digest is stale.
+5. Issue to the agent only the leaf functional units that are <code>READY</code> in the DAG; a response may modify only the declared <code>rtl/</code> root.
+6. Generate and qualify testbenches, oracles, assertions, vectors, and models automatically. A failure in compilation, interface binding, forward references, mutation detection, boundary/relational checks, watchdog, event integrity, or model compatibility is recorded as <code>TEST_ASSET_FAIL</code> and is never attributed to the DUT.
+7. Static Design Assurance violations are recorded directly as <code>DESIGN_RULE_FAIL</code>; executable dynamic properties are compiled into the Test IR and re-adjudicated by simulation evidence. A "PASS" in an ordinary log does not count as evidence.
+8. A subsystem's dependencies unlock only after both functional simulation and Design Assurance PASS for it; the system unlocks only after its subsystems PASS. The flow never generates every level first and backfills the tests later. A simulation pass is level-limited (<code>FPGA_FUNCTIONAL_PASS</code> / <code>FPGA_INTEGRATION_PASS</code> / <code>HIGH_ASSURANCE_PASS</code>; <code>DEFERRED_RISKS_ACCEPTED</code> is attached when deferred risks were accepted), and deferred items never produce a pseudo-PASS; <code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> and simulation status are always reported separately—a functional-level simulation pass does not mean a native build or hardware pass.
+9. Modifying a module automatically invalidates that node and its downstream nodes; unrelated upstream nodes stay valid. Only <code>change-promote</code> can write the official tree; external tooling or manual edits become <code>UNVERIFIED_EXTERNAL_CHANGE</code>.
+10. Before the customer confirms readiness for Build, BuildEligibility is read to summarize every node, dynamic obligation, registered asset, and final receipt. If anything does not match, the reliable flow advises against moving to the next stage; the customer may still explicitly exit to free-form development, and ordinary Builds are unaffected.</p>
+<h2 id="3-status-semantics">3. Status semantics</h2>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PASS</code></td>
+<td>Frozen specification, qualified assets, complete coverage, and certified evidence are all satisfied</td>
+</tr>
+<tr>
+<td><code>DESIGN_RULE_FAIL</code></td>
+<td>Design Assurance static or dynamic property evidence proves a design-rule violation</td>
+</tr>
+<tr>
+<td><code>DUT_FAIL</code></td>
+<td>Qualified test evidence shows the DUT disagrees with the specification</td>
+</tr>
+<tr>
+<td><code>TEST_ASSET_FAIL</code></td>
+<td>Qualification of simulation code or of oracles/vectors failed</td>
+</tr>
+<tr>
+<td><code>SIMULATOR_ERROR</code></td>
+<td>A simulator or infrastructure failure; not attributed to the DUT</td>
+</tr>
+<tr>
+<td><code>ORACLE_BLOCKED</code> / <code>MODEL_BLOCKED</code></td>
+<td>The customer must choose an oracle or model direction</td>
+</tr>
+<tr>
+<td><code>TIMEOUT_OR_DEADLOCK</code></td>
+<td>Timeout attribution is not unique; a choice or additional evidence is required</td>
+</tr>
+<tr>
+<td><code>INSUFFICIENT_EVIDENCE</code></td>
+<td>Insufficient coverage, missing evidence, or tampered evidence</td>
+</tr>
+<tr>
+<td><code>WAIVED_PASS</code></td>
+<td>An explicit, scope-limited, unexpired customer waiver exists; not a full PASS</td>
+</tr>
+</tbody>
+</table>
+<p>Results obtained with an <code>ASSUMPTION_MODEL</code> may only be stated as "passes under the approved assumption model", never as unconditional system compliance.</p>
+<h2 id="4-customer-choices-and-re-freezing">4. Customer choices and re-freezing</h2>
+<p>Whenever interface width, latency, register mapping, architectural boundaries, hard-IP models, or oracle direction are ambiguous, the system presents a finite set of options together with the recommendation rationale, the risks, the affected nodes, and the invalidation scope. The customer can only pick from the presented options; choice records are append-only evidence. If a choice changes the specification, the affected specifications must be re-reviewed and re-frozen before generation can continue.</p>
+<p>Neither simulation nor the DUT may silently modify the specification, oracles, tests, thresholds, models, or historical evidence. Automatic repair is capped at three attempts, each allowing exactly one assumption plus a DUT-only patch; on failure, a byte-level rollback follows.</p>
+<h2 id="5-efinity-hard-ip">5. Efinity hard IP</h2>
+<p>Hard-IP simulation must first identify instances and configuration digests from the project XML, the ISF, <code>peri.xml</code>, and IP configuration, then proceed under the following trust tiers:</p>
+<ul>
+<li><code>VENDOR_MODEL</code>: a vendor model whose configuration matches and that is available.</li>
+<li><code>QUALIFIED_BEHAVIOR_MODEL</code>: when no executable vendor model exists, a behavioral model qualified through contract testing.</li>
+<li><code>ASSUMPTION_MODEL</code>: usable only with explicit customer approval; conclusions must carry qualifying language.</li>
+</ul>
+<p>When a model is missing or its version or configuration does not match, the status is <code>MODEL_BLOCKED</code>; hollow or constant models must never fake a system PASS. For native Efinity commands and model facts, the <a href="../efinity/generic-simulation-flow.html">Efinity generic simulation flow</a> is authoritative.</p>
+<h2 id="6-testbench-authoring-checklist">6. Testbench authoring checklist</h2>
+<blockquote>
+<p>From case 2026-09-16-led-chaser-t20f256: all 3 first-round FAILs were testbench defects (false FAILs); the DUT had none.</p>
+</blockquote>
+<ul>
+<li><strong>Reset-initial-value checks must sample on the synchronous release edge (<code>posedge rst_n</code>).</strong> When the DUT uses an asynchronous reset with synchronous release (a 3-stage synchronizer chain), the internal reset release lags the removal of the external <code>rst_n_i</code> by 2–3 cycles; checking "the initial value was untouched during reset" against a fixed cycle count misaligns with the release edge and produces false FAILs.</li>
+<li><strong>The judgment semantics of coverage counters must align verbatim with the coverage-item definition.</strong> For example, the coverage item "switch between adjacent gears" cannot be implemented as "two consecutive period counts are equal"—if each gear has a distinct period, that condition is always false and the coverage point is unreachable. Re-read the coverage-item definition before implementing it and verify every comparison operator word for word.</li>
+<li>When a testbench FAIL appears, attribute it first (testbench defect or DUT defect) before changing anything; snapshot the FAIL log before re-running, and do not capture vvp output with a bare <code>&gt;</code> redirection (see the agent-rules harness rules).</li>
+</ul>
+<h2 id="7-entry-points">7. Entry points</h2>
+<pre><code class="language-text">evoverse verification --help
+evoverse verification next --project &lt;project&gt; --json
+evoverse verification run --project &lt;project&gt; --input &lt;request.json&gt; --json
+evoverse verification integrity-scan --project &lt;project&gt; --json
+evoverse verification build-eligibility --project &lt;project&gt; --json
+</code></pre>
+<p>MCP additionally provides <code>verification_change_prepare/validate/promote</code>, <code>verification_integrity_register/scan</code>, and <code>verification_build_eligibility</code>. The IDE's System Workspace shows the same status and customer decisions; the command-palette command "Request Next Verification-Gated Work Item" hands out only unlocked work.</p>
+<p>Tooling prerequisite: install system Python 3.11+ yourself; the SDK neither installs it automatically nor borrows Efinity's older Python. Specifications, Design Assurance, simulation orchestration, the CLI, and MCP use the system Python; Efinity Build, DesignAPI, IPM, and Debug are invoked by the Adapter with the vendor interpreter inside the selected installation's <code>setup.bat</code> environment, and the two run domains inherit neither each other's <code>PYTHONHOME</code>, <code>PYTHONPATH</code>, nor PATH.</p>
+<p>The Workbench shows availability separately for System Python, Build, DesignAPI, IPM, and Debug. A passing run-domain probe only means the interpreter/API can start: ordinary RTL/Video Sim runs can use Icarus Verilog, but vendor-model simulation with Efinity hard IP still requires a matching Efinity installation and an available Questa/ModelSim license. And a simulation pass still does not imply a native Efinity build, timing closure, or hardware validation pass.</p></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

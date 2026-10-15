@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity 文件格式：SDC 与报告产物</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>SDC 命令官方全集、tool_report 报告结构与编译产物词汇表、消息 ID 精选。</span>
+<code>efinity/Efinity文件格式-SDC与报告产物.md</code>
+<a href="../../../efinity/Efinity文件格式-SDC与报告产物.md">Markdown 源文件</a></p>
+<h1>Efinity 文件格式：SDC 与报告产物</h1></header>
+<main class="article"><h1 id="efinity-文件格式-sdc-与报告产物">Efinity 文件格式 — SDC 与报告产物</h1>
+<blockquote>
+<p><strong>适用版本</strong>：Efinity 2026.1（Titanium / Trion / Topaz 全器件线）
+<strong>调查日期</strong>：2026-09-25
+<strong>证据根路径</strong>：<code>C:\Efinity\2026.1\</code>（安装目录，只读调查）；本文所有行号均指该目录下文件的行号
+<strong>本卷定位</strong>：SDC 约束命令全集、工程 XML 约束挂载点（<code>constraint_info</code>）、工具 XML 报告格式（<code>tool_report.xsd</code>）、编译产物词汇表、官方消息 ID 目录。SDC 写法与策略详见《FPGA-时钟约束Cookbook》《FPGA-时序例外Cookbook》；ISF 语法详见《Efinity-ISF语法参考》。</p>
+</blockquote>
+<hr />
+<h2 id="1-本卷范围与证据约定">1. 本卷范围与证据约定</h2>
+<table>
+<thead>
+<tr>
+<th>约定</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>证据格式</td>
+<td>每个论断标注 <code>绝对路径 + 行号</code>；HTML 文档（DITA 生成）正文从 L168 前后开始（此前为导航样板）</td>
+</tr>
+<tr>
+<td>命名真值</td>
+<td>文件格式与元素名以 schema 为准：<code>C:\Efinity\2026.1\bin\enf_proj.xsd</code>（工程 XML）、<code>C:\Efinity\2026.1\bin\tool_report.xsd</code>（XML 报告）</td>
+</tr>
+<tr>
+<td>命令真值</td>
+<td>SDC 命令清单以官方文档 <code>C:\Efinity\2026.1\doc\topics\sdc-top.html</code>（SDC Constraints (Alphabetical)）为准</td>
+</tr>
+<tr>
+<td>消息真值</td>
+<td>消息 ID 以 <code>C:\Efinity\2026.1\doc\topics\msg-*.html</code> 9 个官方文件为准</td>
+</tr>
+<tr>
+<td>勘误提示</td>
+<td>本文 §3.4 记录了两处对既有认知的官方证据修正（<code>unified_sdc_filelist</code> 不存在、<code>--sync_file</code> 属于 efx_pnr）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-sdc-约束命令官方全集">2. SDC 约束命令官方全集</h2>
+<h3 id="2-1-权威清单与命令总表">2.1 权威清单与命令总表</h3>
+<p>官方 SDC 命令按字母序排列于 <code>C:\Efinity\2026.1\doc\topics\sdc-top.html</code>（父主题页，列出全部命令链接）。全集如下（18 个主题条目 = 16 条命令 + 2 个通用语法页）：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>命令 / 主题</th>
+<th>类别</th>
+<th>一句话作用</th>
+<th>官方语法页（doc\topics\）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>create_clock</code></td>
+<td>时钟定义</td>
+<td>定义时钟（周期/占空比/名字/目标端口）</td>
+<td><code>constraint-create-clock.html</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>create_generated_clock</code></td>
+<td>时钟定义</td>
+<td>定义生成时钟（分频/倍频/相位）</td>
+<td><code>constraint-create-generated-clock.html</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>set_clock_groups</code></td>
+<td>时钟关系</td>
+<td>声明时钟组关系（异步/互斥）</td>
+<td><code>constraint-set-clock-groups.html</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>set_clock_uncertainty</code></td>
+<td>时钟关系</td>
+<td>设置时钟不确定度</td>
+<td><code>constraint-set-clock-uncertainty.html</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>set_clock_latency</code></td>
+<td>时钟关系</td>
+<td>设置时钟源延迟</td>
+<td><code>constraint-set-clock-latency.html</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>set_false_path</code></td>
+<td>时序例外</td>
+<td>单向切断时序路径</td>
+<td><code>constraint-set-false-path.html</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>set_max_delay</code></td>
+<td>时序例外</td>
+<td>路径最大延迟上限</td>
+<td><code>constraint_setmaxdelay-setmindelay.html</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>set_min_delay</code></td>
+<td>时序例外</td>
+<td>路径最小延迟下限</td>
+<td><code>constraint_setmaxdelay-setmindelay.html</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>set_multicycle_path</code></td>
+<td>时序例外</td>
+<td>多周期路径</td>
+<td><code>constraint-set-multicycle-path.html</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>set_bus_skew</code></td>
+<td>时序例外</td>
+<td>总线偏斜要求（配合 report_bus_skew）</td>
+<td><code>constraint-set-bus-skew.html</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>set_input_delay</code></td>
+<td>IO 约束</td>
+<td>输入外部延迟</td>
+<td><code>constraint-setinput-setoutput-delay.html</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>set_output_delay</code></td>
+<td>IO 约束</td>
+<td>输出外部延迟</td>
+<td><code>constraint-setinput-setoutput-delay.html</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>set_bus_syntax_mode</code></td>
+<td>辅助</td>
+<td>总线方括号语法模式（natural/disabled）</td>
+<td><code>constraint-set-bus-syntax.html</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>get_fanins</code></td>
+<td>查询</td>
+<td>反查扇入（返回字符串）</td>
+<td><code>constraint-get-fanins.html</code></td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>get_fanouts</code></td>
+<td>查询</td>
+<td>反查扇出（对称命令）</td>
+<td>见 <code>sdc-top.html</code> 清单</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>check_timing</code></td>
+<td>报告</td>
+<td>检查未约束项（5 类默认检查）</td>
+<td><code>constraint-check-timing.html</code></td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>report_cdc</code></td>
+<td>报告</td>
+<td>CDC 结构报告（页面文件名为 constraint-report-sdc.html，<strong>实际标题是 report_cdc Command</strong>）</td>
+<td><code>constraint-report-sdc.html</code> L168</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Object Specifiers / <code>-through</code> Option</td>
+<td>通用语法</td>
+<td><code>get_ports/get_pins/get_cells/get_nets/get_clocks</code> 对象选择器；<code>-through</code> 中间点</td>
+<td><code>sdc-top.html</code>、<code>constraint-through-option.html</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意 #17：官方文件 <code>C:\Efinity\2026.1\doc\topics\constraint-report-sdc.html</code> 的文件名是 report-sdc，但 L168 实际标题为 <strong>"report_cdc Command"</strong>——按文件名找 report_sdc 命令会落空，这是官方文档的命名陷阱。</p>
+</blockquote>
+<h3 id="2-2-时钟定义命令">2.2 时钟定义命令</h3>
+<h4 id="create_clock">create_clock</h4>
+<pre><code class="language-sdc"># 官方语法（constraint-create-clock.html L170-172）
+create_clock -period &lt;float&gt; [-waveform {ris fall}] [-name &lt;clock name&gt;] [&lt;targets&gt;] [-add]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>要点</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-name</code> 无 target = 虚拟时钟</td>
+<td>只定义名字不挂端口的时钟，工具会打 info 提示；意外虚拟时钟是官方列举的 4 类 SDC 常见错误之一</td>
+<td><code>constraint-create-clock.html</code> L168-206；<code>efn-sdc-mistakes.html</code> L173-216</td>
+</tr>
+<tr>
+<td>同一 target 不支持多重时钟赋值</td>
+<td>除非加 <code>-add</code></td>
+<td><code>constraint-create-clock.html</code> L168-206</td>
+</tr>
+<tr>
+<td>时钟数量影响运行时间</td>
+<td>官方 Tip：STA/PNR 运行时间随时钟数增长</td>
+<td><code>constraint-create-clock.html</code> L168-206</td>
+</tr>
+<tr>
+<td>最小实例</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.sdc</code> 全文仅 1 行：<code>create_clock -period 10 -name clk [get_ports clk]</code></td>
+<td>该文件 L1</td>
+</tr>
+</tbody>
+</table>
+<h4 id="create_generated_clock">create_generated_clock</h4>
+<pre><code class="language-sdc"># 官方全参数（constraint-create-generated-clock.html L168-172）
+create_generated_clock -source &lt;pin/port&gt; (-divide_by &lt;n&gt; | -multiply_by &lt;n&gt;)
+    [-duty_cycle &lt;float&gt;] [-invert] [-master_clock &lt;name&gt;] [-phase &lt;deg&gt;]
+    [-offset &lt;float&gt;] [-edges &lt;list&gt;] [-edge_shift &lt;list&gt;] [-add] &lt;targets&gt;
+</code></pre>
+<p>要点：必须给 <code>-source</code>；<code>-divide_by</code> / <code>-multiply_by</code> 二选一；<code>-edges</code> / <code>-edge_shift</code> 用于逐边沿描述。证据：<code>constraint-create-generated-clock.html</code> L168-212。仓库硬约束「PLL 必须在 ISF 中创建、RTL 只声明端口」的配套做法是：PLL 输出时钟名出现在 SDC 时须与 ISF 创建的 PLL 输出名精确匹配（工程守则，见 §2.9）。</p>
+<h3 id="2-3-时钟关系命令">2.3 时钟关系命令</h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>官方语法与关键语义</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set_clock_groups</code></td>
+<td><code>set_clock_groups [-exclusive \| -asynchronous] -group {names} -group {names}</code>；<strong>不指定类型时默认 <code>-exclusive</code></strong>；等价于组间<strong>双向</strong> <code>set_false_path</code></td>
+<td><code>constraint-set-clock-groups.html</code> L168-198（默认行为 L191-193）</td>
+</tr>
+<tr>
+<td><code>set_clock_uncertainty</code></td>
+<td>不指定源/目的时钟时<strong>应用于所有时钟对</strong></td>
+<td><code>constraint-set-clock-uncertainty.html</code> L168-197</td>
+</tr>
+<tr>
+<td><code>set_clock_latency</code></td>
+<td><code>set_clock_latency [-clock &lt;names&gt;] [-rise] [-fall] -source &lt;latency&gt; [-setup] [-hold] &lt;latency&gt; &lt;target&gt;</code>；<code>-source</code> 必选；只对时钟和时钟源引脚生效；不写 <code>-rise</code>/<code>-fall</code> 则双沿生效</td>
+<td><code>constraint-set-clock-latency.html</code> L168-193</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>仓库规则「所有异步时钟域必须声明 <code>set_clock_groups -asynchronous</code>」与官方语义一致：<code>-asynchronous</code> 切断跨域 setup/hold 分析，是 CDC 处理的第一步（<code>constraint-set-clock-groups.html</code> L168-198）。</p>
+</blockquote>
+<h3 id="2-4-时序例外命令">2.4 时序例外命令</h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>官方关键语义</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set_false_path</code></td>
+<td>单向切断；不指定 <code>-setup</code>/<code>-hold</code> 则两者都切；官方 Note：<strong>双向都切应改用 <code>set_clock_groups</code></strong></td>
+<td><code>constraint-set-false-path.html</code> L168-199（Note L194-195）</td>
+</tr>
+<tr>
+<td><code>set_max_delay</code> / <code>set_min_delay</code></td>
+<td>官方 Important 警告：用 max/min delay 收时序"非常冒险"，会无意掩盖真实 setup/hold 违例，<strong>配合 beneficial skew 时尤其危险</strong></td>
+<td><code>constraint_setmaxdelay-setmindelay.html</code> L168-201（警告 L190-197）</td>
+</tr>
+<tr>
+<td><code>set_multicycle_path</code></td>
+<td>增加量为 <code>(value-1) × 目的时钟周期</code>；<code>-end</code> 为默认参考</td>
+<td><code>constraint-set-multicycle-path.html</code> L168-197</td>
+</tr>
+<tr>
+<td><code>set_bus_skew</code></td>
+<td><code>set_bus_skew [-from] [-to] [-through] &lt;value&gt;</code>；为 <code>report_bus_skew</code> 设定判定阈值；<code>-from</code> 不接受输入端口、<code>-to</code> 不接受输出端口</td>
+<td><code>constraint-set-bus-skew.html</code> L168-186</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-5-io-约束命令">2.5 IO 约束命令</h3>
+<pre><code class="language-sdc"># 官方要点（constraint-setinput-setoutput-delay.html L168-212）
+set_input_delay  [-clock &lt;name&gt;] [-reference_pin &lt;pin&gt;] [-add_delay] &lt;value&gt; &lt;targets&gt;
+set_output_delay [-clock &lt;name&gt;] [-reference_pin &lt;pin&gt;] [-add_delay] &lt;value&gt; &lt;targets&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>要点</th>
+<th>说明</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>不写 = 完全不分析</strong></td>
+<td>不写这两个命令，IO 路径<strong>完全不分析</strong>（官方原文）</td>
+<td><code>constraint-setinput-setoutput-delay.html</code> L179-181</td>
+</tr>
+<tr>
+<td><code>-reference_pin</code></td>
+<td>仅 Titanium/Topaz 支持；Interface Designer 会自动为同步接口信号加上</td>
+<td><code>constraint-setinput-setoutput-delay.html</code> L168-212</td>
+</tr>
+<tr>
+<td><code>-add_delay</code></td>
+<td>不加则后一条命令<strong>覆盖</strong>前一条</td>
+<td><code>constraint-setinput-setoutput-delay.html</code> L168-212</td>
+</tr>
+<tr>
+<td>约束顺序</td>
+<td>必须先 <code>create_clock</code> 定义时钟，再 <code>set_input_delay</code>/<code>set_output_delay</code> 引用它；顺序错误是官方 4 类常见 SDC 错误之一</td>
+<td><code>efn-sdc-mistakes.html</code> L173-216</td>
+</tr>
+<tr>
+<td>不要设 0 延迟</td>
+<td>工程守则：<code>set_input_delay 0</code> 等于"没有外部时序信息"；慢速信号用 false path 表达（见 §2.9）</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-6-辅助与查询命令">2.6 辅助与查询命令</h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>官方关键语义</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set_bus_syntax_mode</code></td>
+<td><code>set_bus_syntax_mode &lt;mode&gt;</code>，<code>natural</code>（默认，方括号不需转义）或 <code>disabled</code>（回到 Tcl 原生转义语法）；设置<strong>不跨会话持久</strong></td>
+<td><code>constraint-set-bus-syntax.html</code> L168-212（默认值 L177-179，持久性 L204-207）</td>
+</tr>
+<tr>
+<td><code>get_fanins</code></td>
+<td><code>get_fanins [-no_logic] -through &lt;names&gt; &lt;start point&gt;</code>；默认穿越组合 timing arc；<strong>返回字符串而非 Tcl 对象，不能嵌套进 get_nets/get_cells</strong></td>
+<td><code>constraint-get-fanins.html</code> L168-201（Note L199-201）</td>
+</tr>
+<tr>
+<td><code>get_fanouts</code></td>
+<td>对称的扇出反查命令（官方清单成员，未单列语法页）</td>
+<td><code>sdc-top.html</code></td>
+</tr>
+<tr>
+<td><code>check_timing</code></td>
+<td>默认 5 种检查：<code>no_clock</code>、<code>unconstrained_internal_endpoints</code>、<code>no_input_delay</code>、<code>no_output_delay</code>、<code>multiple_clock</code>；<code>-file</code> 把结果写入 outflow</td>
+<td><code>constraint-check-timing.html</code> L168-212</td>
+</tr>
+<tr>
+<td><code>report_cdc</code></td>
+<td><code>report_cdc [-from] [-to] [-details] [-file]</code>；详情报告可识别：未知 CDC 电路、有/无 <code>ASYNC_REG</code> 的同步器、同步器前组合逻辑、多时钟扇入同步器</td>
+<td><code>constraint-report-sdc.html</code> L168-207</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-7-路径选择-through-选项与-object-specifiers">2.7 路径选择：-through 选项与 Object Specifiers</h3>
+<p><code>-through</code> 被 <code>set_bus_skew</code>、<code>set_false_path</code>、<code>set_max_delay</code>、<code>set_min_delay</code>、<code>set_multicycle_path</code> 五条命令支持，官方支持的用法（<code>constraint-through-option.html</code> L168-187）：</p>
+<pre><code class="language-sdc">set_false_path -through [get_pins &lt;pin name1&gt;]
+set_false_path -through [get_pins {add*|CI}]
+set_false_path -through [get_pins &lt;pin1&gt;] -through [get_pins &lt;pin2&gt;]
+set_false_path -through [get_cells {add*}]
+set_false_path -through [get_cells &lt;cell1&gt;] -through [get_cells &lt;cell2&gt;]
+</code></pre>
+<p><strong>不支持</strong>在一次 <code>-through</code> 里混用多个 <code>get_*</code> 命令（<code>constraint-through-option.html</code> L181-186）：</p>
+<pre><code class="language-sdc"># ❌ 官方明示不支持
+set_false_path -through [[get_pins &lt;pin1&gt;] [get_pins &lt;pin2&gt;]]
+</code></pre>
+<h3 id="2-8-sdc-常见错误-官方-4-类">2.8 SDC 常见错误（官方 4 类）</h3>
+<p>出处：<code>C:\Efinity\2026.1\doc\topics\efn-sdc-mistakes.html</code> L173-216。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>错误类型</th>
+<th>官方要点</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Latch / 组合环</td>
+<td>不完整 if/case 产生 latch；Trion/Topaz/Titanium 原生不支持 latch，用 LUT 模拟；时序图不允许环，工具在任意点切环</td>
+<td>修 RTL（补 default/else），不靠约束掩盖</td>
+</tr>
+<tr>
+<td>2</td>
+<td>意外虚拟时钟</td>
+<td><code>-name</code> 带了但没挂 target → 虚拟时钟；工具打 info</td>
+<td>虚拟时钟仅用于 <code>set_clock_groups</code>/IO 约束等抽象引用；实体时钟必须挂端口</td>
+</tr>
+<tr>
+<td>3</td>
+<td>未定义时钟</td>
+<td>引用了不存在的时钟名</td>
+<td>先 <code>create_clock</code>，名字与 RTL 端口/PLL 输出精确一致</td>
+</tr>
+<tr>
+<td>4</td>
+<td>约束顺序错误</td>
+<td><code>set_input_delay</code>/<code>set_output_delay</code> 引用时钟之前必须已 <code>create_clock</code></td>
+<td>SDC 脚本按时钟定义 → 时钟组 → IO 延迟 → 例外的顺序组织</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-9-仓库工作区规则-官方证据对照表">2.9 仓库工作区规则 ↔ 官方证据对照表</h3>
+<p>仓库硬约束（<code>c:\work\awesomsdk\.trae\rules\</code> 及 AGENTS.md 引用的用户规则）中涉及 SDC 的条目与官方证据对照：</p>
+<table>
+<thead>
+<tr>
+<th>仓库规则</th>
+<th>官方证据佐证</th>
+<th>性质</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>每个时钟端口必须有一个 <code>create_clock</code>；同名端口多个 <code>create_clock</code> 只最后一个生效</td>
+<td>同 target 不支持多重赋值、除非 <code>-add</code>：<code>constraint-create-clock.html</code> L168-206</td>
+<td>官方语义（"只最后一个生效"为工程表述）</td>
+</tr>
+<tr>
+<td>所有异步时钟域声明 <code>set_clock_groups -asynchronous</code></td>
+<td>官方命令语义：<code>constraint-set-clock-groups.html</code> L168-198</td>
+<td>官方语义 + 工程守则</td>
+</tr>
+<tr>
+<td>不对整个 CDC 路径设 false path；只对同步链第一级设</td>
+<td>官方 Note"双向都切应改用 set_clock_groups"：<code>constraint-set-false-path.html</code> L194-195；report_cdc 可识别同步器结构：<code>constraint-report-sdc.html</code> L168-207</td>
+<td>官方语义 + 工程守则</td>
+</tr>
+<tr>
+<td>IO delay 不要设 0</td>
+<td>官方"不写则完全不分析"（设 0 等价于无外部信息）：<code>constraint-setinput-setoutput-delay.html</code> L179-181</td>
+<td>官方语义推导 + 工程守则</td>
+</tr>
+<tr>
+<td>SDC 时钟名必须与 RTL 端口/PLL 输出名精确匹配</td>
+<td>SDC 常见错误"未定义时钟"：<code>efn-sdc-mistakes.html</code> L173-216</td>
+<td>官方语义 + 工程守则</td>
+</tr>
+<tr>
+<td>不要用 max/min delay 代替真实时序收敛</td>
+<td>官方 Important"非常冒险、掩盖违例、beneficial skew 下尤其危险"：<code>constraint_setmaxdelay-setmindelay.html</code> L190-197</td>
+<td>官方明示</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-约束文件在工程-xml-constraint_info-中的角色分工">3. 约束文件在工程 XML constraint_info 中的角色分工</h2>
+<h3 id="3-1-enf_proj-xsd-权威定义">3.1 enf_proj.xsd 权威定义</h3>
+<p>工程 XML 的约束挂载点全部定义于 <code>C:\Efinity\2026.1\bin\enf_proj.xsd</code> 的 <code>constraint_info_type</code>（L152-196）。元素全集：</p>
+<table>
+<thead>
+<tr>
+<th>元素</th>
+<th>出现次数</th>
+<th>官方注释/语义</th>
+<th>xsd 行号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sdc_file</code></td>
+<td>0..unbounded</td>
+<td>传统 SDC 约束文件（efx_pnr 消费）</td>
+<td>L152-196 范围内</td>
+</tr>
+<tr>
+<td><code>unified_sdc_file</code></td>
+<td>0..unbounded</td>
+<td>unified flow 的 SDC 文件</td>
+<td><strong>L156</strong></td>
+</tr>
+<tr>
+<td><code>io_place_file</code></td>
+<td>0..1</td>
+<td><strong>Deprecated due to PT integration</strong>（已废弃，勿用）</td>
+<td>L152-196 范围内</td>
+</tr>
+<tr>
+<td><code>inter_file</code></td>
+<td>0..1</td>
+<td>Interface 数据文件</td>
+<td>L152-196 范围内</td>
+</tr>
+<tr>
+<td><code>interface_script_file</code></td>
+<td>0..unbounded</td>
+<td>注释原文 "ISF file for unified netlist flow"</td>
+<td>L152-196 范围内</td>
+</tr>
+<tr>
+<td><code>isf_file</code></td>
+<td>0..unbounded</td>
+<td>注释原文 "ISF file for unified netlist flow"</td>
+<td>L152-196 范围内</td>
+</tr>
+</tbody>
+</table>
+<p>配套类型 <code>isf_info_type</code> 定义于 L186-196。</p>
+<h3 id="3-2-官方示例实例-helloworld-unified">3.2 官方示例实例（helloworld-unified）</h3>
+<p><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code>（全文 100 行，unified_flow 示例）：</p>
+<pre><code class="language-xml">&lt;!-- helloworld.xml L2 / L8 / L13-17（摘录） --&gt;
+&lt;efx:project ... xmlns:efx=&quot;http://www.efinixinc.com/enf_proj&quot; unified_flow=&quot;true&quot; ...&gt;
+  &lt;efx:constraint_info&gt;
+    &lt;efx:sdc_file name=&quot;helloworld.sdc&quot;/&gt;
+    &lt;efx:inter_file name=&quot;&quot;/&gt;
+    &lt;efx:isf_file name=&quot;Ti60F225_kit_pins.isf&quot;/&gt;
+  &lt;/efx:constraint_info&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>观察点</th>
+<th>事实</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>namespace</td>
+<td><code>xmlns:efx="http://www.efinixinc.com/enf_proj"</code></td>
+<td><code>helloworld.xml</code> L2</td>
+</tr>
+<tr>
+<td>unified_flow</td>
+<td><code>unified_flow="true"</code></td>
+<td><code>helloworld.xml</code> L8</td>
+</tr>
+<tr>
+<td>sdc_file</td>
+<td>指向工程根目录的 <code>helloworld.sdc</code>（该文件全文仅 1 行 create_clock）</td>
+<td><code>helloworld.xml</code> L14；<code>helloworld.sdc</code> L1</td>
+</tr>
+<tr>
+<td><strong>inter_file 为空字符串</strong></td>
+<td>官方示例本身就写 <code>&lt;efx:inter_file name=""/&gt;</code></td>
+<td><code>helloworld.xml</code> L15</td>
+</tr>
+<tr>
+<td>isf_file</td>
+<td>指向 <code>Ti60F225_kit_pins.isf</code>；示例目录共 9 组器件成对 ISF（<code>&lt;dev&gt;_kit_pins.isf</code> + <code>&lt;dev&gt;_kit_manual.isf</code>）</td>
+<td><code>helloworld.xml</code> L16；<code>C:\Efinity\2026.1\examples\helloworld-unified\</code> 目录 Glob 共 24 文件</td>
+</tr>
+<tr>
+<td>peri.xml 位置</td>
+<td><code>helloworld.peri.xml</code> 位于<strong>工程根目录</strong>（非自创子目录）</td>
+<td><code>examples\helloworld-unified\</code> 目录清单</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>与仓库规则的张力，如实记录</strong>：仓库规则称"空的 <code>&lt;efx:inter_file name=""/&gt;</code> 会导致 build 失败"，但官方 unified 示例本身携带空 inter_file（<code>helloworld.xml</code> L15）。两种可能的调和：官方示例的空标签可能被工具当作"未使用"忽略，而仓库遇到的失败案例可能是其他字段组合触发。<strong>处置建议</strong>：工程 XML 生成器不要输出空 <code>inter_file</code> 标签（直接省略），既满足仓库守则也不与官方示例冲突。此为本文记录的观察，不是定论。</p>
+</blockquote>
+<h3 id="3-3-五类约束元素的角色分工">3.3 五类约束元素的角色分工</h3>
+<table>
+<thead>
+<tr>
+<th>元素</th>
+<th>谁写</th>
+<th>谁消费</th>
+<th>典型内容</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sdc_file</code></td>
+<td>用户（GUI Constraint menu 或手工）</td>
+<td>efx_pnr（STA/约束导入）</td>
+<td>标准 SDC 文本</td>
+<td>gloss：Created by <strong>User defined</strong>、Design source? <strong>Yes</strong>（<code>gloss-sdc.html</code> L181/185；文件系统位置 <code>&lt;project&gt;</code>）</td>
+</tr>
+<tr>
+<td><code>unified_sdc_file</code></td>
+<td>用户/工具（unified flow）</td>
+<td>efx_map/efx_pnr（unified flow 时序）</td>
+<td>标准 SDC</td>
+<td><strong>官方 doc 无专页描述</strong>（全 doc 目录 Grep <code>unified_sdc_file</code> 无命中），唯一权威出处是 xsd L156</td>
+</tr>
+<tr>
+<td><code>isf_file</code></td>
+<td>用户（bootstrap 编写）</td>
+<td>efx_map（synthesis 阶段 <code>efx_run_pt_unified.py</code> 重放到 peri.xml）</td>
+<td>Python-API ISF（<code>design.set_property</code> / <code>assign_pkg_pin</code>）</td>
+<td>xsd 注释 "ISF file for unified netlist flow"；ISF 语法见《Efinity-ISF语法参考》</td>
+</tr>
+<tr>
+<td><code>interface_script_file</code></td>
+<td>用户</td>
+<td>同上（同一注释）</td>
+<td>Python-API ISF</td>
+<td>xsd L152-196，与 <code>isf_file</code> 注释相同</td>
+</tr>
+<tr>
+<td><code>inter_file</code></td>
+<td>Interface Designer</td>
+<td>PT/工具链</td>
+<td>Interface 数据</td>
+<td><strong>官方示例为空串</strong>（§3.2）；xsd 中 0..1</td>
+</tr>
+<tr>
+<td><code>io_place_file</code></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><strong>已废弃</strong>（"Deprecated due to PT integration"），新工程禁止使用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-4-命名勘误与-sync_file-证据链">3.4 命名勘误与 --sync_file 证据链</h3>
+<p>本节修正两处流传认知，均有官方证据：</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>勘误结论</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unified_sdc_filelist</code></td>
+<td><strong>该元素不存在</strong>。xsd 全文与整个 doc 目录 Grep 均无此名；正确元素名是 <code>unified_sdc_file</code>（单数，0..unbounded，天然支持多文件）</td>
+<td><code>C:\Efinity\2026.1\bin\enf_proj.xsd</code> L156；<code>C:\Efinity\2026.1\doc\</code> 全目录 Grep <code>unified_sdc_file</code> → No matches</td>
+</tr>
+<tr>
+<td><code>--sync_file</code> 归属</td>
+<td><strong>属于 efx_pnr</strong>（Place and Route Options 页），描述 "Interface synchronization file (.csv)"——即 outflow 中 <code>interface.csv</code> 的官方消费入口。此前"bin/ 目录 Grep 无命中"是因为选项表在 doc 页而非二进制内</td>
+<td><code>C:\Efinity\2026.1\doc\topics\cli-pnr-opts.html</code> L168（页标题 "Place and Route Options"）、L280-283（<code>--sync_file</code> 行）、L366（"Using pnr_opts" 小节）</td>
+</tr>
+</tbody>
+</table>
+<p>interface.csv 本体的官方定义：<code>C:\Efinity\2026.1\doc\topics\gloss-interface.html</code> L178-186——路径 <code>&lt;project&gt;/outflow</code>、Created by "Interface Designer when generating constraints"、Design source? No；L190-191 说明其内容为核心与接口之间的 FPGA 引脚约束。</p>
+<hr />
+<h2 id="4-tool_report-xsd-工具-xml-报告格式">4. tool_report.xsd — 工具 XML 报告格式</h2>
+<h3 id="4-1-schema-结构">4.1 schema 结构</h3>
+<p><code>C:\Efinity\2026.1\bin\tool_report.xsd</code>（全文 30 行）定义了 efx_run / 各工具统一输出的 XML 报告骨架。<strong>两级结构</strong>：</p>
+<pre><code class="language-text">tool_report  (根元素, 属性: project, date)
+└── group    (1..n, 属性: name)
+    └── group_data  (0..n, 属性: name, value, info?, severity?)
+</code></pre>
+<h3 id="4-2-元素-属性表">4.2 元素/属性表</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>元素</th>
+<th>属性</th>
+<th>语义</th>
+<th>证据（xsd 行）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根</td>
+<td><code>tool_report</code></td>
+<td><code>project</code>、<code>date</code></td>
+<td>报告所属工程与生成日期</td>
+<td><code>bin\tool_report.xsd</code>（全文 30 行）</td>
+</tr>
+<tr>
+<td>1 级</td>
+<td><code>group</code></td>
+<td><code>name</code></td>
+<td>报告分组（如资源、时钟域、流程阶段）</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>2 级</td>
+<td><code>group_data</code></td>
+<td><code>name</code>、<code>value</code></td>
+<td>键值对数据点</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>2 级可选</td>
+<td><code>group_data</code></td>
+<td><code>info</code>、<code>severity</code></td>
+<td>附加说明与严重级</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-3-报告实例-示意">4.3 报告实例（示意）</h3>
+<pre><code class="language-xml">&lt;!-- 按 tool_report.xsd 结构示意：属性名与层级忠实于 schema，具体分组名以实际 outflow 输出为准 --&gt;
+&lt;tool_report project=&quot;helloworld&quot; date=&quot;2026-09-25&quot;&gt;
+  &lt;group name=&quot;utilization&quot;&gt;
+    &lt;group_data name=&quot;Logic&quot; value=&quot;1234&quot; info=&quot;LUT count&quot; severity=&quot;info&quot;/&gt;
+  &lt;/group&gt;
+&lt;/tool_report&gt;
+</code></pre>
+<h3 id="4-4-与-outflow-其他报告的关系">4.4 与 outflow 其他报告的关系</h3>
+<table>
+<thead>
+<tr>
+<th>报告</th>
+<th>格式</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tool_report XML</td>
+<td>XML（本 schema）</td>
+<td>efx_run 流程级结构化输出；官方消息 <code>FlowPreparingXmlReportFile</code> / <code>FlowWritingXmlReportFile</code> / <code>FlowWriteXmlReportFileFailed</code> 表明该报告由 flow 写出（<code>doc\topics\msg-flow.html</code> L491/641/631）</td>
+</tr>
+<tr>
+<td><code>*.rpt</code>（map.rpt / pnr.rpt / route.rpt 等）</td>
+<td>文本</td>
+<td>各工具人类可读报告（§5）</td>
+</tr>
+<tr>
+<td><code>place.out</code></td>
+<td>文本日志</td>
+<td><strong>SDC 消息保存在 <code>&lt;project&gt;.place.out</code></strong>（<code>doc\topics\efn-sdc-warnings.html</code> L171-175）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-编译产物词汇表">5. 编译产物词汇表</h2>
+<h3 id="5-1-总览-设计源-vs-生成物">5.1 总览：设计源 vs 生成物</h3>
+<p>官方 gloss 对每个产物给出三要素：<strong>文件系统位置 / Created by / Design source?</strong>。判定"构建后必须存活"的依据就是 Design source? = Yes。出处模式：<code>C:\Efinity\2026.1\doc\topics\gloss-*.html</code> 各文件 L181（Created by）与 L185/186（Design source?）。</p>
+<table>
+<thead>
+<tr>
+<th>产物</th>
+<th>位置</th>
+<th>生成者（官方原文）</th>
+<th>设计源?</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;project&gt;.xml</code> 工程文件</td>
+<td><code>&lt;project&gt;</code></td>
+<td>创建工程时</td>
+<td><strong>Yes</strong></td>
+<td><code>gloss-proj_xml.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;.peri.xml</code></td>
+<td><code>&lt;project&gt;</code>（根目录）</td>
+<td>Interface Designer when you create an interface</td>
+<td><strong>Yes</strong></td>
+<td><code>gloss-peri.xml.html</code> L178-186</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.sdc</code></td>
+<td><code>&lt;project&gt;</code></td>
+<td><strong>User defined</strong></td>
+<td><strong>Yes</strong></td>
+<td><code>gloss-sdc.html</code> L181/185</td>
+</tr>
+<tr>
+<td>其余全部产物</td>
+<td><code>&lt;project&gt;/outflow</code></td>
+<td>各工具步骤</td>
+<td>No</td>
+<td>下述各节</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-综合-efx_map-synthesis-step-产物">5.2 综合（efx_map / synthesis step）产物</h3>
+<table>
+<thead>
+<tr>
+<th>产物</th>
+<th>生成者</th>
+<th>设计源?</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map.rpt</code></td>
+<td>synthesis step</td>
+<td>No</td>
+<td><code>gloss-map.rpt.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>map.out</code></td>
+<td>synthesis step</td>
+<td>No</td>
+<td><code>gloss-map.out.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>map.v</code></td>
+<td>synthesis step</td>
+<td>No</td>
+<td><code>gloss-map.v.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>map.core.v</code> / <code>map.peri.v</code></td>
+<td>synthesis step</td>
+<td>No</td>
+<td><code>gloss-map.core.v.html</code> / <code>gloss-map.peri.v.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>res.csv</code></td>
+<td>synthesis step（资源统计）</td>
+<td>No</td>
+<td><code>gloss-res.csv.html</code> L181/185</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-3-interface-designer-unified-flow-约束产物">5.3 Interface Designer / unified flow 约束产物</h3>
+<p>全部位于 <code>&lt;project&gt;/outflow</code>，Design source? 全部 No：</p>
+<table>
+<thead>
+<tr>
+<th>产物</th>
+<th>生成者（官方原文）</th>
+<th>内容要点</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;design&gt;.interface.csv</code></td>
+<td>Interface Designer when generating constraints</td>
+<td>核心与接口间的引脚约束；由 <strong>efx_pnr <code>--sync_file</code></strong> 引用（§3.4）</td>
+<td><code>gloss-interface.html</code> L178-191；<code>cli-pnr-opts.html</code> L280-283</td>
+</tr>
+<tr>
+<td><code>pinout.csv</code> / <code>pinout.rpt</code></td>
+<td>Interface Designer when generating constraints</td>
+<td>引脚分配表/报告</td>
+<td><code>gloss-pinout.csv.html</code>、<code>gloss-pinout.rpt.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>pt.rpt</code></td>
+<td>Interface Designer（PT 报告）</td>
+<td>PT 流程报告</td>
+<td><code>gloss-pt.rpt.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>pt_timing.rpt</code></td>
+<td>Interface Designer</td>
+<td>PT 时序报告</td>
+<td><code>gloss-pt_timing.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>pt.sdc</code></td>
+<td>Interface Designer when generating constraints</td>
+<td><strong>模板 SDC</strong>：官方建议 copy-paste 改造成自己的 SDC</td>
+<td><code>gloss-pt.sdc.html</code> L178-191</td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;_or.ini</code></td>
+<td>Interface Designer when generating constraints</td>
+<td>bitstream 配置设置（option register settings）</td>
+<td><code>gloss-pt_or.html</code> L178-191</td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;_template.v</code></td>
+<td>Interface Designer</td>
+<td>Debug/模板网表骨架</td>
+<td><code>gloss-pt_template.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;.unified.isf</code></td>
+<td><strong>Synthesis when generating constraints in the unified design flow</strong>（注意：是 mapper/synthesis 生成，不是 Interface Designer）</td>
+<td>unified flow 的 ISF</td>
+<td><code>gloss-pt_unified_isf.html</code> L178-191</td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;.auto_asg.isf</code></td>
+<td>Synthesis when generating constraints in the unified design flow</td>
+<td>自动分配的 ISF</td>
+<td><code>gloss-pt_autoasg_isf.html</code> L178-191</td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;.peri_rtl.v</code></td>
+<td>Interface Designer when generating constraints in the unified design flow</td>
+<td>RTL 侧外围实例化包装</td>
+<td><code>gloss-pt_peri_rtl_v.html</code> L178-191</td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;.peri_pt.v</code></td>
+<td>Interface Designer when generating constraints in the unified design flow</td>
+<td>PT 侧外围包装</td>
+<td><code>gloss-pt_peri_pt_v.html</code> L178-191</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>工程含义（对照仓库 §15 接口基线契约）</strong>：<code>peri.xml</code> 是唯一 Design source = Yes 的 PT 关联产物，位于工程根目录——这从官方 gloss 层面佐证了"peri.xml 是工程源文件不是生成物、任何构建路径不得删除"的仓库规则。而 <code>.unified.isf</code> / <code>.auto_asg.isf</code> 由 synthesis 步骤<strong>再生成</strong>，不纳入版本管理。</p>
+</blockquote>
+<h3 id="5-4-布局布线-efx_pnr-产物">5.4 布局布线（efx_pnr）产物</h3>
+<table>
+<thead>
+<tr>
+<th>产物</th>
+<th>生成者</th>
+<th>设计源?</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>place</code> / <code>place.rpt</code> / <code>place.out</code></td>
+<td>placement step</td>
+<td>No</td>
+<td><code>gloss-place.html</code>、<code>gloss-place.rpt.html</code>、<code>gloss-place.out.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>pnr.rpt</code></td>
+<td>route step</td>
+<td>No</td>
+<td><code>gloss-pnr.rpt.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>route.rpt</code> / <code>route.out</code></td>
+<td>route step</td>
+<td>No</td>
+<td><code>gloss-route.rpt.html</code>、<code>gloss-route.out.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>timing</code>（时序报告数据）</td>
+<td>route step</td>
+<td>No</td>
+<td><code>gloss-timing.html</code> L181/185</td>
+</tr>
+<tr>
+<td><code>pgm.out</code></td>
+<td>烧录步骤日志</td>
+<td>No</td>
+<td><code>gloss-pgm.out.html</code> L181/186</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-5-烧录-efx_pgm-bitstream-generation-产物">5.5 烧录（efx_pgm / bitstream generation）产物</h3>
+<table>
+<thead>
+<tr>
+<th>产物</th>
+<th>生成者</th>
+<th>设计源?</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.hex</code> / <code>.bit</code></td>
+<td>bitstream generation step</td>
+<td>No</td>
+<td><code>gloss-hex.html</code>、<code>gloss-bit.html</code> L181/186</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-6-rcf-路由约束-beta-全链路">5.6 .rcf 路由约束（Beta）全链路</h3>
+<p>路由约束（Routing Constraints）自 <strong>v2022.2</strong> 起为 <strong>Beta</strong> 特性，用途是把指定 net 锁定到特定布线路径（<code>doc\topics\rcf-intro.html</code> L168-185）。</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>操作</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 开启模板生成</td>
+<td>工程目录建 <code>efx_pnr_settings.ini</code>，写 <code>dump_placeloc = on</code> + <code>generate_rcf_template = on</code></td>
+<td><code>doc\topics\rcf-enable-template.html</code> L168-194</td>
+</tr>
+<tr>
+<td>2. 编译一次产出模板</td>
+<td>outflow 中得到 <code>&lt;project&gt;.out.placeloc</code>、<code>&lt;project&gt;.rcf.template</code>、<code>&lt;project&gt;.troutingtraces</code>（Titanium/Topaz）或 <code>&lt;project&gt;.route2</code>（Trion）、<code>&lt;project&gt;.placer_keepout</code></td>
+<td><code>doc\topics\rcf-flow.html</code> L168-207</td>
+</tr>
+<tr>
+<td>3. 编辑 .rcf</td>
+<td><code>.rcf</code> 为<strong>行导向文本</strong>：<code>routeTraceFile &lt;path&gt;/&lt;file&gt;.troutingtraces</code>（仅 Ti/Topaz；Trion 用命令行 <code>routing_constraint_file="{project}.route2"</code>）、<code>restoreNetFromTraceFile &lt;net&gt;</code>、<code>#</code> 注释。<strong>官方警告：勿整份复制模板</strong></td>
+<td><code>doc\topics\rcf-file.html</code> L168-205</td>
+</tr>
+<tr>
+<td>4. 产物移出 outflow</td>
+<td>官方要求把模板产物移出 outflow 目录再引用（outflow 会被覆盖）</td>
+<td><code>doc\topics\rcf-flow.html</code> L168-207</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-ini">; efx_pnr_settings.ini（rcf-enable-template.html L168-194）
+dump_placeloc = on
+generate_rcf_template = on
+</code></pre>
+<pre><code class="language-text"># .rcf 行格式示例（rcf-file.html L168-205，行导向文本）
+routeTraceFile &lt;path&gt;/&lt;file&gt;.troutingtraces
+restoreNetFromTraceFile &lt;net_name&gt;
+</code></pre>
+<h3 id="5-7-sdc-消息落盘位置">5.7 SDC 消息落盘位置</h3>
+<p>SDC 解析产生的消息显示于 Console，并<strong>保存在 <code>&lt;project&gt;.place.out</code></strong>（outflow 目录）。证据：<code>C:\Efinity\2026.1\doc\topics\efn-sdc-warnings.html</code> L171-175。排查 SDC 报错时先看该文件。</p>
+<hr />
+<h2 id="6-官方消息-id-精选表">6. 官方消息 ID 精选表</h2>
+<h3 id="6-1-消息体系统述与完整清单位置">6.1 消息体系统述与完整清单位置</h3>
+<p>官方消息目录共 9 个文件（<code>C:\Efinity\2026.1\doc\topics\msg-*.html</code>），两套编号体系并存：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>体系</th>
+<th>数量</th>
+<th>行号范围（sectiontitle）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>msg-flow.html</code></td>
+<td>描述性 ID（Flow 层）</td>
+<td>141 条</td>
+<td>L171-1469+</td>
+</tr>
+<tr>
+<td><code>msg-synthesis-s.html</code></td>
+<td><strong>EFX-#### 数字 ID</strong>（EFX-0002..0809）</td>
+<td>135 条</td>
+<td>L171 起</td>
+</tr>
+<tr>
+<td><code>msg-synthesis-p.html</code></td>
+<td><strong>EFX-#### 数字 ID</strong>（错误 EFX-9001..9064；警告 EFX-8001..8009）</td>
+<td>66 条</td>
+<td>L171 起</td>
+</tr>
+<tr>
+<td><code>msg-database.html</code></td>
+<td>描述性 ID</td>
+<td>150 条</td>
+<td>L171 起</td>
+</tr>
+<tr>
+<td><code>msg-placer.html</code></td>
+<td>描述性 ID</td>
+<td>34 条</td>
+<td>L171-513</td>
+</tr>
+<tr>
+<td><code>msg-packer.html</code></td>
+<td>描述性 ID</td>
+<td>10 条</td>
+<td>L171-273</td>
+</tr>
+<tr>
+<td><code>msg-router.html</code></td>
+<td>描述性 ID</td>
+<td>2 条</td>
+<td>L171-181</td>
+</tr>
+<tr>
+<td><code>msg-timing.html</code></td>
+<td>描述性 ID</td>
+<td>22 条</td>
+<td>L171-393</td>
+</tr>
+<tr>
+<td><code>msg-timer.html</code></td>
+<td>描述性 ID（STA/SDC 引擎）</td>
+<td>9 条</td>
+<td>L171-251</td>
+</tr>
+</tbody>
+</table>
+<p>每个消息条目的官方结构：<code>&lt;section&gt;</code> 标题 = ID + 严重级，表内字段 Main Message / Action / Sub-Message / Description。<strong>完整清单以官方文件为准</strong>（上表给出位置）；下表为精选 56 条。</p>
+<blockquote>
+<p><strong>口径声明</strong>：§6.2 中 synthesis（EFX-####）与 flow 部分依据官方正文提炼；timer/placer/packer/timing/router 部分的"含义/根因/处置"是<strong>据官方消息 ID 标题语义提炼</strong>（正文未逐条翻译），处置动作请以对应文件的官方 Description 为准。</p>
+</blockquote>
+<h3 id="6-2-精选-56-条-消息id-含义-根因-处置">6.2 精选 56 条：消息ID → 含义 → 根因 → 处置</h3>
+<h4 id="a-flow-层-msg-flow-html-20-条">A. Flow 层（msg-flow.html，20 条）</h4>
+<table>
+<thead>
+<tr>
+<th>消息 ID</th>
+<th>级别</th>
+<th>含义</th>
+<th>常见根因</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EfinityHomeUnset</code></td>
+<td>Error</td>
+<td>EFINITY_HOME 环境变量未设置</td>
+<td>环境未初始化</td>
+<td>设置 EFINITY_HOME 指向安装目录（正文 L239-248）</td>
+</tr>
+<tr>
+<td><code>FailedToOpenInputFile</code></td>
+<td>Error</td>
+<td>输入文件打不开</td>
+<td>路径错/权限/文件不存在</td>
+<td>核对工程 XML 中路径与相对基准（正文 L379-388）</td>
+</tr>
+<tr>
+<td><code>FailedToFindPort</code></td>
+<td>Error</td>
+<td>找不到端口</td>
+<td>SDC/约束引用了不存在的端口名</td>
+<td>名字与 RTL 顶层精确对齐（正文 L369-378）</td>
+</tr>
+<tr>
+<td><code>NoInputSourceFile</code></td>
+<td>Error</td>
+<td>没有输入源文件</td>
+<td>工程未加 design_file</td>
+<td>工程 XML 至少一个 <code>&lt;efx:design_file&gt;</code></td>
+</tr>
+<tr>
+<td><code>NoModuleOrDesignUnitFound</code></td>
+<td>Error</td>
+<td>源码中找不到模块/设计单元</td>
+<td>top 名不匹配、文件遗漏</td>
+<td>核对 top_module 与源文件清单</td>
+</tr>
+<tr>
+<td><code>ProjectXmlNotSpecified</code></td>
+<td>Error</td>
+<td>未指定工程 XML</td>
+<td>命令行缺 <code>--project</code></td>
+<td>带上工程 XML 路径</td>
+</tr>
+<tr>
+<td><code>ProjectDatabaseDoesNotExist</code></td>
+<td>Error</td>
+<td>工程数据库不存在</td>
+<td>上一步骤未跑/被清理</td>
+<td>按完整流程重跑（efx_run --flow compile）</td>
+</tr>
+<tr>
+<td><code>ProjectDatabaseParseFailed</code></td>
+<td>Error</td>
+<td>工程数据库解析失败</td>
+<td>数据库损坏/版本不符</td>
+<td>清 outflow 重编译</td>
+</tr>
+<tr>
+<td><code>InvalidCommandLineOption</code></td>
+<td>Error</td>
+<td>非法命令行选项</td>
+<td>拼写错误</td>
+<td>对照 <code>cli-pnr-opts.html</code> 等选项页</td>
+</tr>
+<tr>
+<td><code>RunningFlowStage</code></td>
+<td>Info</td>
+<td>正在运行流程阶段</td>
+<td>正常输出</td>
+<td>无需处理（L1393-1402）</td>
+</tr>
+<tr>
+<td><code>StageDuration</code></td>
+<td>Info</td>
+<td>阶段耗时</td>
+<td>正常输出</td>
+<td>用于性能观察（L1403-1418）</td>
+</tr>
+<tr>
+<td><code>PrjXMLPnROptionIgnored</code></td>
+<td>Warning</td>
+<td>工程 XML 中的 PnR 选项被忽略</td>
+<td>与命令行/ini 冲突</td>
+<td>二选一，保持单一真值</td>
+</tr>
+<tr>
+<td><code>PrjXMLUnknownPnROption</code></td>
+<td>Warning</td>
+<td>工程 XML 含未知 PnR 选项</td>
+<td>拼写或版本不识别</td>
+<td>删除或更正选项名</td>
+</tr>
+<tr>
+<td><code>INIPnROptionIgnored</code></td>
+<td>Warning</td>
+<td>ini 中的 PnR 选项被忽略</td>
+<td>同上</td>
+<td>同上（L687-696）</td>
+</tr>
+<tr>
+<td><code>DeprecatedOption</code></td>
+<td>Warning</td>
+<td>使用了已废弃选项</td>
+<td>旧版本选项残留</td>
+<td>换用新选项（正文 L229-238）</td>
+</tr>
+<tr>
+<td><code>ConfFileMsgLimitOverriden</code></td>
+<td>Warning</td>
+<td>消息数超配置上限被截断</td>
+<td>消息风暴</td>
+<td>先修首批根因（正文 L171-180）</td>
+</tr>
+<tr>
+<td><code>DanglingPartitionInterface</code></td>
+<td>Warning</td>
+<td>partition 接口悬空</td>
+<td>partition 定义与网表不一致</td>
+<td>修 partition 定义或接口连线（正文 L207-228）</td>
+</tr>
+<tr>
+<td><code>TrionBeneficialSkewUnsupported</code></td>
+<td>Warning</td>
+<td>Trion 不支持 beneficial skew</td>
+<td>器件能力差异</td>
+<td>Trion 工程关闭该选项（L1439-1448）</td>
+</tr>
+<tr>
+<td><code>SyncHeadDrivenByNonSeq</code></td>
+<td>Warning</td>
+<td>同步头由非时序单元驱动</td>
+<td>时钟/同步链结构异常</td>
+<td>检查时钟结构（L1419-1428）</td>
+</tr>
+<tr>
+<td><code>InvalidPartCellPlaceCnst</code></td>
+<td>Error</td>
+<td>非法的 cell 位置约束</td>
+<td>位置约束坐标/格式错</td>
+<td>修正 placement 约束（L779-806）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="b-综合-efx_map-msg-synthesis-s-html-efx-14-行">B. 综合 efx_map（msg-synthesis-s.html，EFX-####，14 行）</h4>
+<table>
+<thead>
+<tr>
+<th>消息 ID</th>
+<th>级别</th>
+<th>含义</th>
+<th>常见根因</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EFX-0002</code></td>
+<td>Error</td>
+<td>Illegal command line</td>
+<td>命令行结构非法</td>
+<td>按官方用法重写命令行</td>
+</tr>
+<tr>
+<td><code>EFX-0003</code></td>
+<td>Error</td>
+<td>Unknown Command Line Option</td>
+<td>选项名拼错</td>
+<td>对照选项表</td>
+</tr>
+<tr>
+<td><code>EFX-0005</code></td>
+<td>Error</td>
+<td>Invalid syntax</td>
+<td>语法错误</td>
+<td>修正语法</td>
+</tr>
+<tr>
+<td><code>EFX-0006</code></td>
+<td>Warning</td>
+<td>deprecated option 被忽略</td>
+<td>旧选项残留</td>
+<td>移除或替换</td>
+</tr>
+<tr>
+<td><code>EFX-0007</code></td>
+<td>Error</td>
+<td>参数值超出范围</td>
+<td>数值越界</td>
+<td>修正取值</td>
+</tr>
+<tr>
+<td><code>EFX-0008</code></td>
+<td>Info</td>
+<td>未指定 top module，自动推断</td>
+<td>显式 top 缺失</td>
+<td>建议显式声明 top</td>
+</tr>
+<tr>
+<td><code>EFX-0010</code></td>
+<td>Error</td>
+<td>VERIFIC_ERROR（带 file:line）</td>
+<td>RTL/源码语法或语义错误</td>
+<td>按指出的 file:line 修源码</td>
+</tr>
+<tr>
+<td><code>EFX-0011</code></td>
+<td>Warning</td>
+<td>VERIFIC_WARNING（带 file:line）</td>
+<td>源码可疑写法</td>
+<td>逐条清理</td>
+</tr>
+<tr>
+<td><code>EFX-0013</code></td>
+<td>Warning</td>
+<td>当前 mode 不支持，回退默认 speed</td>
+<td>mode 组合不受支持</td>
+<td>接受回退或改配置</td>
+</tr>
+<tr>
+<td><code>EFX-0015..0018</code></td>
+<td>Error</td>
+<td>源文件/include 目录/-f 文件不存在类</td>
+<td>路径错、flist 引用断链</td>
+<td>修工程 XML 的 design_file/flist</td>
+</tr>
+<tr>
+<td><code>EFX-0019</code></td>
+<td>Error</td>
+<td>Analysis failed</td>
+<td>源码无法通过分析</td>
+<td>先修 EFX-0010/0011 级问题</td>
+</tr>
+<tr>
+<td><code>EFX-0020</code></td>
+<td>Error</td>
+<td>Elaboration failed</td>
+<td>例化层级展开失败</td>
+<td>检查端口/参数匹配</td>
+</tr>
+<tr>
+<td><code>EFX-0021</code></td>
+<td>Warning</td>
+<td>Elaboration 警告</td>
+<td>同上（轻）</td>
+<td>逐条清理</td>
+</tr>
+<tr>
+<td><code>EFX-0022</code></td>
+<td>Warning</td>
+<td>top 未指定时顶层参数被忽略</td>
+<td>依赖自动推断 top</td>
+<td>显式指定 top 与参数</td>
+</tr>
+</tbody>
+</table>
+<h4 id="c-sta-sdc-引擎-msg-timer-html-9-条全收-与-sdc-强相关">C. STA/SDC 引擎（msg-timer.html，9 条全收——与 SDC 强相关）</h4>
+<table>
+<thead>
+<tr>
+<th>消息 ID</th>
+<th>级别</th>
+<th>含义（据标题提炼）</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CannotDeriveGeneratedClockFromSpecifiedSourcePin</code></td>
+<td>Error</td>
+<td>无法从指定 source pin 推导生成时钟</td>
+<td>核对 <code>-source</code> 指向真实时钟传播路径</td>
+</tr>
+<tr>
+<td><code>CannotFindSpecifiedMasterClock</code></td>
+<td>Warning</td>
+<td>找不到指定的主时钟</td>
+<td><code>-master_clock</code> 名与 create_clock 一致</td>
+</tr>
+<tr>
+<td><code>CannotTraceBackToMasterClock</code></td>
+<td>Warning</td>
+<td>无法回溯到主时钟</td>
+<td>检查生成时钟链路</td>
+</tr>
+<tr>
+<td><code>ClockPeriodIsTooLarge</code></td>
+<td>Warning</td>
+<td>时钟周期过大</td>
+<td>核对 create_clock 数值</td>
+</tr>
+<tr>
+<td><code>ClockPeriodIsTooSmall</code></td>
+<td>Warning</td>
+<td>时钟周期过小</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>CombinationalLoopDetected</code></td>
+<td>Warning</td>
+<td>检测到组合环</td>
+<td>修 RTL（呼应 §2.8 第 1 类）</td>
+</tr>
+<tr>
+<td><code>IgnoreThruClockPinInException</code></td>
+<td>Warning</td>
+<td>时序例外中的 -through 时钟引脚被忽略</td>
+<td>换 -through 对象</td>
+</tr>
+<tr>
+<td><code>MissingNetInQDelay</code></td>
+<td>Warning</td>
+<td>延迟查询缺少 net</td>
+<td>补全对象名</td>
+</tr>
+<tr>
+<td><code>TooManyExceptionsAreInputted</code></td>
+<td>Warning</td>
+<td>时序例外过多</td>
+<td>官方提示例外数量影响 STA 性能，收敛例外集</td>
+</tr>
+</tbody>
+</table>
+<h4 id="d-布局-msg-placer-html-5-条">D. 布局（msg-placer.html，5 条）</h4>
+<table>
+<thead>
+<tr>
+<th>消息 ID</th>
+<th>级别</th>
+<th>含义（据标题提炼）</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UnassignedIOCell</code></td>
+<td>Warning</td>
+<td>IO cell 未分配引脚</td>
+<td>补 pin 约束（ISF assign_pkg_pin）</td>
+</tr>
+<tr>
+<td><code>ClkSinkPlacementConstrainedOutsideClkRegion</code></td>
+<td>Error</td>
+<td>时钟汇被约束到时钟区之外</td>
+<td>修正位置约束区域</td>
+</tr>
+<tr>
+<td><code>CellInMultipleRegions</code></td>
+<td>Error</td>
+<td>cell 被放进多个区域</td>
+<td>区域约束去重</td>
+</tr>
+<tr>
+<td><code>ResourceCapacityViolations</code></td>
+<td>Error</td>
+<td>区域资源容量超限</td>
+<td>扩区域或减约束密度</td>
+</tr>
+<tr>
+<td><code>TileDeficit</code></td>
+<td>Error</td>
+<td>tile 数量不足</td>
+<td>区域过大/资源过挤，调整布局约束</td>
+</tr>
+</tbody>
+</table>
+<h4 id="e-打包-msg-packer-html-3-条">E. 打包（msg-packer.html，3 条）</h4>
+<table>
+<thead>
+<tr>
+<th>消息 ID</th>
+<th>级别</th>
+<th>含义（据标题提炼）</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AutoPinIOResourceExhaustion</code></td>
+<td>Error</td>
+<td>自动分配引脚时 IO 资源耗尽</td>
+<td>检查 bank 电压/IO 标准兼容性与引脚总量</td>
+</tr>
+<tr>
+<td><code>ClockResourceExhaustion</code></td>
+<td>Error</td>
+<td>时钟资源耗尽</td>
+<td>减少全局时钟/改用 clock enable</td>
+</tr>
+<tr>
+<td><code>CellPackingStatistics</code></td>
+<td>Info</td>
+<td>cell 打包统计</td>
+<td>正常输出</td>
+</tr>
+</tbody>
+</table>
+<h4 id="f-时序-msg-timing-html-4-条">F. 时序（msg-timing.html，4 条）</h4>
+<table>
+<thead>
+<tr>
+<th>消息 ID</th>
+<th>级别</th>
+<th>含义（据标题提炼）</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CantReadConstraintDB</code></td>
+<td>Error</td>
+<td>约束数据库读不了</td>
+<td>数据库损坏→重编译；版本不符→升级</td>
+</tr>
+<tr>
+<td><code>RoutingNotLoaded</code></td>
+<td>Error</td>
+<td>布线数据未加载</td>
+<td>按流程先完成 route 再做时序分析</td>
+</tr>
+<tr>
+<td><code>TimingNotLoaded</code></td>
+<td>Error</td>
+<td>时序数据未加载</td>
+<td>先跑 timing 更新步骤</td>
+</tr>
+<tr>
+<td><code>RefPinModified</code></td>
+<td>Error</td>
+<td>reference pin 被修改</td>
+<td><code>-reference_pin</code> 指向被工具改动的引脚，改用稳定引脚</td>
+</tr>
+</tbody>
+</table>
+<h4 id="g-布线-msg-router-html-1-条">G. 布线（msg-router.html，1 条）</h4>
+<table>
+<thead>
+<tr>
+<th>消息 ID</th>
+<th>级别</th>
+<th>含义（据标题提炼）</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UsingGlobalRoutingWithTimingDrivenPlacement</code></td>
+<td>Warning</td>
+<td>时序驱动布局下使用了全局布线</td>
+<td>配置确认：接受或切换时序驱动布线</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-与仓库其他卷的交叉引用">7. 与仓库其他卷的交叉引用</h2>
+<p>以下文件均已确认存在于 <code>c:\work\awesomsdk\docs\efinity\</code>（Glob 验证 2026-09-25）：</p>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>卷</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工具链命令行</td>
+<td><code>Efinity工具链参考.md</code></td>
+<td>efx_map/efx_pnr/efx_pgm/efx_run 参数全集；本文 §3.4 的 <code>--sync_file</code> 在该卷亦有语境</td>
+</tr>
+<tr>
+<td>ISF 语法</td>
+<td><code>Efinity-ISF语法参考.md</code></td>
+<td><code>isf_file</code> / <code>interface_script_file</code> 内容的写法权威</td>
+</tr>
+<tr>
+<td>工程 XML schema</td>
+<td><code>Efinity-XML工程文件Schema参考.md</code></td>
+<td><code>constraint_info</code> 所属的 enf_proj.xsd 全卷解析</td>
+</tr>
+<tr>
+<td>Interface Designer</td>
+<td><code>Efinity-Interface-Designer参考.md</code></td>
+<td>peri.xml / interface.csv / pt.sdc 的 GUI 操作侧</td>
+</tr>
+<tr>
+<td>SDC 写法策略</td>
+<td><code>FPGA-时钟约束Cookbook.md</code>、<code>FPGA-时序例外Cookbook.md</code>、<code>FPGA-IO时序约束.md</code></td>
+<td>本文 §2 命令的"怎么写好"</td>
+</tr>
+<tr>
+<td>STA 理论</td>
+<td><code>FPGA-STA基础.md</code>、<code>时序分析指南.md</code></td>
+<td>check_timing / report_cdc 输出的解读基础</td>
+</tr>
+<tr>
+<td>编译报错</td>
+<td><code>Efinity常见编译错误排查.md</code></td>
+<td>本文 §6 消息表的排查流程化版本</td>
+</tr>
+<tr>
+<td>优化</td>
+<td><code>Efinity优化设计.md</code></td>
+<td>max/min delay 风险（§2.4）与 beneficial skew 的展开</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-证据文件索引">8. 证据文件索引</h2>
+<table>
+<thead>
+<tr>
+<th>证据文件（绝对路径）</th>
+<th>本文引用点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\bin\enf_proj.xsd</code></td>
+<td>§3.1（L152-196、L156、L186-196）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\bin\tool_report.xsd</code></td>
+<td>§4 全节（全文 30 行）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\sdc-top.html</code></td>
+<td>§2.1 权威清单</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\constraint-*.html</code>（12 页）</td>
+<td>§2.2-2.7 各命令</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\efn-sdc-warnings.html</code></td>
+<td>§5.7（L171-175）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\efn-sdc-mistakes.html</code></td>
+<td>§2.8（L173-216）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\rcf-intro/file/flow/enable-template.html</code></td>
+<td>§5.6（L168 起）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\cli-pnr-opts.html</code></td>
+<td>§3.4（L168、L280-283、L366）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\gloss-*.html</code></td>
+<td>§5 全节（每页 L181 Created by / L185-186 Design source?）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\msg-flow.html</code></td>
+<td>§6.2-A（141 条，L171-1469+）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\msg-synthesis-s.html</code></td>
+<td>§6.2-B（135 条 EFX-0002..0809，L171-350 已读正文）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\msg-synthesis-p.html</code></td>
+<td>§6.1（66 条 EFX-9001..9064/8001..8009）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\msg-database.html</code></td>
+<td>§6.1（150 条）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\doc\topics\msg-placer/packer/router/timing/timer.html</code></td>
+<td>§6.2-C~G（34/10/2/22/9 条）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.xml</code></td>
+<td>§3.2（L2、L8、L13-17）</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\helloworld.sdc</code></td>
+<td>§2.2（L1）</td>
+</tr>
+</tbody>
+</table></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

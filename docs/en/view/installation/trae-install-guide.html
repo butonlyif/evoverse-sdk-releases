@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trae Installation and First-Time Setup</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
+<span>The full installation flow for the default host.</span>
+<code>installation/trae-install-guide.md</code>
+<a href="../../../installation/trae-install-guide.md">Markdown source</a></p>
+<h1>Trae Installation and First-Time Setup</h1></header>
+<main class="article"><h1 id="evoverse-sdk-trae-from-a-bare-machine-to-full-feature-use">EvoVerse SDK: Trae — From a Bare Machine to Full-Feature Use</h1>
+<blockquote>
+<p>Updated: 2026-08-15
+Goal: starting from a computer with no development environment installed, get to RTL editing, rules and constraints, simulation, Efinity builds, timing diagnosis, programming, the MCP Agent, and native Chat integration in Trae (Trae CN / Trae International).</p>
+</blockquote>
+<h2 id="0-relationship-to-the-vs-code-installation">0. Relationship to the VS Code installation</h2>
+<p>The EvoVerse SDK supports Trae, standard Visual Studio Code, and other VS Code forks with the <strong>same VSIX</strong>. The vast majority of installation steps are identical to <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md</a>; this document <strong>covers only the differences under Trae</strong> plus installation and initialization behavior unique to Trae.</p>
+<table>
+<thead>
+<tr>
+<th>What you want to know</th>
+<th>Read this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Install the SDK from scratch to full functionality under Trae</td>
+<td><strong>This document</strong></td>
+</tr>
+<tr>
+<td>Install the SDK under standard VS Code</td>
+<td><a href="vscode-install-guide.html">VSCODE-INSTALLATION.md</a></td>
+</tr>
+<tr>
+<td>All differences and gotchas between hosts</td>
+<td>HOST-DIFFERENCES.md</td>
+</tr>
+<tr>
+<td>Multi-host packaging / release / deployment</td>
+<td><a href="deployment-guide.html">DEPLOYMENT.md</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Intended audience</strong>:
+- Customers who have chosen Trae as their daily development editor;
+- Customers who need <code>@evoverse</code> and MCP tools in the Trae Chat panel;
+- Operations staff who need to understand which files under the Trae-specific path <code>~/.trae/</code> are managed automatically by the SDK.</p>
+<h3 id="0-1-agent-and-the-reliable-flow-entry-point">0.1 Agent and the reliable-flow entry point</h3>
+<ul>
+<li>When you need a specification, RTL Design Assurance, and stage-by-stage simulation confirmation, start the requirement with <code>@evoverse</code>, for example: <code>@evoverse I want to implement MIPI to USB on ws-e1, with DDR buffering in between</code>. The SDK first confirms the working mode with you: the reliable design flow or free-form development.</li>
+<li>When starting a new, independent design iteration in an existing project, raise the requirement with <code>@evoverse</code> again; the SDK updates the existing specification, or creates one if none exists.</li>
+<li>Ordinary Agent conversations without <code>@evoverse</code> remain free-form development: the reliable flow is not enabled automatically, and no dedicated rule files are generated into customer projects.</li>
+<li>Build, Timing, and Debug are standalone tool entry points; they do not require selecting the reliable flow first.</li>
+</ul>
+<hr />
+<h2 id="1-first-pin-down-the-scope-of-full-functionality">1. First pin down the scope of "full functionality"</h2>
+<p>In this guide, full functionality covers:</p>
+<ul>
+<li>The EvoVerse Workbench, Catalog, project creation, and health checks;</li>
+<li>Verilog/SystemVerilog editing, RTL coding rules, and Agent workflows;</li>
+<li>Icarus Verilog functional simulation and VCD waveform viewing;</li>
+<li>Efinity synthesis, place-and-route (PNR), bitstream generation, resource reports, and timing reports;</li>
+<li>Timing Diagnosis, Build AI, and the multi-turn Conversation Runtime;</li>
+<li>Programming Efinix FPGAs over USB/JTAG;</li>
+<li>Invoking SDK tools through <code>@evoverse</code> in the Trae Chat panel;</li>
+<li>Optional Sapphire/RISC-V software compilation, flashing, and GDB debugging.</li>
+</ul>
+<h3 id="1-1-recommended-operating-systems">1.1 Recommended operating systems</h3>
+<p>As with the VS Code installation, use one of the following:</p>
+<ul>
+<li><strong>Windows 10/11, 64-bit</strong>: the first choice for customer desktop environments;</li>
+<li><strong>macOS 12 or later</strong>: an officially supported platform for the Trae desktop app;</li>
+<li><strong>Ubuntu 20.04 or later</strong>.</li>
+</ul>
+<blockquote>
+<p>macOS can run Trae, EvoVerse, MCP, AI, and Icarus simulation, but it cannot serve as a complete Efinity build/programming workstation as defined in this guide. For Efinity's current official installation requirements and USB driver steps, see the <a href="https://www.efinixinc.com/docs/efinity-installation-v4.0.pdf">Efinity Software Installation User Guide</a>.</p>
+</blockquote>
+<h3 id="1-2-recommended-hardware-configuration">1.2 Recommended hardware configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th style="text-align: right;">Bare minimum to launch</th>
+<th style="text-align: right;">Recommended full-feature customer workstation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td style="text-align: right;">64-bit dual-core</td>
+<td style="text-align: right;">8 cores or more</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td style="text-align: right;">~1 GB for Trae + EvoVerse; ~8 GB for the Efinity design flow</td>
+<td style="text-align: right;">16 GB; 32 GB recommended for larger designs</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td style="text-align: right;">10 GB of free space</td>
+<td style="text-align: right;">30 GB or more of free SSD space</td>
+</tr>
+<tr>
+<td>USB</td>
+<td style="text-align: right;">1 free USB port</td>
+<td style="text-align: right;">2 or more; avoid unpowered hubs</td>
+</tr>
+<tr>
+<td>Network</td>
+<td style="text-align: right;">Optional for offline installation</td>
+<td style="text-align: right;">Required for the first download of Trae, Efinity, extensions, models, and toolchains</td>
+</tr>
+</tbody>
+</table>
+<p>For Trae's own minimum system requirements, see the <a href="https://www.trae.ai/">official Trae download page</a>; for Efinity memory and system requirements, defer to the official documentation of the version you install.</p>
+<hr />
+<h2 id="2-hardware-preparation">2. Hardware preparation</h2>
+<p>This is exactly the same as the VS Code installation: read <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §2</a> for the hardware checklist and pre-connection checks. At minimum, prepare:</p>
+<ol>
+<li>An EvoVerse/Efinix FPGA core module — for example <code>ws-e1</code> in the Catalog;</li>
+<li>A carrier board matching the core module, or a customer-built board;</li>
+<li>A power supply that matches the board specification; never guess voltage and polarity from connector shape alone;</li>
+<li>A USB cable that carries data; charge-only cables cannot be used for JTAG/serial;</li>
+<li>An on-board FTDI debug interface, or a compatible FT2232H/FT4232H JTAG module;</li>
+<li>For serial logs, an on-board USB-UART or a standalone 3.3 V USB-UART adapter;</li>
+<li>For sensors, MIPI, display, or networking, the corresponding Jackets, cables, and peripherals.</li>
+</ol>
+<p>Before connecting anything, read the board specification in the Catalog (available after installation):</p>
+<pre><code class="language-text">${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
+${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/docs/
+${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/carriers/
+</code></pre>
+<hr />
+<h2 id="3-install-the-base-software">3. Install the base software</h2>
+<h3 id="3-1-install-trae">3.1 Install Trae</h3>
+<ol>
+<li>Download the build for your platform from the <a href="https://www.trae.ai/">official Trae download page</a>:</li>
+<li><strong>Trae CN</strong>: for users in mainland China; connects to domestic model providers by default;</li>
+<li><strong>Trae International</strong>: for users outside mainland China; connects to international model providers by default.</li>
+<li>Launch Trae after installation and complete account registration and sign-in as the wizard guides you.</li>
+<li>Verify:</li>
+</ol>
+<pre><code class="language-powershell"># Run from the command palette
+Trae: Show Version
+</code></pre>
+<p>Or from a terminal:</p>
+<pre><code class="language-powershell">where trae     # Windows
+which trae     # macOS / Linux
+</code></pre>
+<h3 id="3-2-install-python-3-11">3.2 Install Python 3.11+</h3>
+<p>The EvoVerse CLI and MCP Server use only the Python standard library; no <code>pip install</code> of other packages is required.</p>
+<p>Windows:</p>
+<ol>
+<li>Install 64-bit Python 3.11 or newer from <a href="https://www.python.org/downloads/">python.org</a>;</li>
+<li>Check <strong>Add Python to PATH</strong>;</li>
+<li>Verify:</li>
+</ol>
+<pre><code class="language-powershell">py -3 --version
+python --version
+</code></pre>
+<p>macOS / Linux:</p>
+<pre><code class="language-bash">python3 --version
+</code></pre>
+<p>The output must show <code>3.10</code> or newer. Customers installing from the VSIX do not need Node.js or npm; those are only used to build the extension from source.</p>
+<h3 id="3-3-install-efinity">3.3 Install Efinity</h3>
+<p>This is exactly the same as the VS Code installation: follow <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §3.3</a> to install Efinity and configure the license. When finished, note the Efinity root directory:</p>
+<pre><code class="language-text">Windows:  C:\Efinity\2026.1
+macOS:    /Applications/efinity.app/Contents/Resources/2026.1
+Linux:    /opt/efinity/2026.1
+</code></pre>
+<p>Every time EvoVerse runs a tool it sets up the child-process environment using Efinity's setup script, so permanent changes to the system PATH are normally not required.</p>
+<h3 id="3-4-install-the-fpga-usb-jtag-drivers">3.4 Install the FPGA USB/JTAG drivers</h3>
+<p>Identical to the VS Code installation:</p>
+<ul>
+<li>Windows: use Zadig or the designated driver per the target board's user manual and the Efinity installation guide. Do <strong>not</strong> blindly replace every interface of a composite FTDI device; first confirm which interface the board documentation requires.</li>
+<li>macOS: the official Efinity installer bundles the drivers; if a device is not recognized, follow the Efinity documentation to load them.</li>
+<li>Linux: disconnect the board, then run:</li>
+</ul>
+<pre><code class="language-bash">sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+</code></pre>
+<p>Reconnect the board.</p>
+<h3 id="3-5-install-icarus-verilog">3.5 Install Icarus Verilog</h3>
+<p>Full simulation functionality requires <code>iverilog</code> and <code>vvp</code>.</p>
+<ul>
+<li>macOS: <code>brew install icarus-verilog</code></li>
+<li>Linux:</li>
+</ul>
+<pre><code class="language-bash">sudo apt update
+sudo apt install iverilog
+</code></pre>
+<p>Verify:</p>
+<pre><code class="language-bash">iverilog -V
+vvp -V
+</code></pre>
+<h3 id="3-6-optional-the-risc-v-software-toolchain">3.6 Optional: the RISC-V software toolchain</h3>
+<p>Only needed when you use the Sapphire/RISC-V SoC; identical to the VS Code installation. See <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §3.6</a>.</p>
+<hr />
+<h2 id="4-install-the-evoverse-sdk-vsix">4. Install the EvoVerse SDK VSIX</h2>
+<p>Trae and VS Code share the <strong>same</strong> <code>evoverse-sdk-0.9.0.vsix</code> for EvoVerse.</p>
+<h3 id="4-1-installation-steps">4.1 Installation steps</h3>
+<ol>
+<li>In Trae, press <code>Ctrl+Shift+X</code> (macOS: <code>Cmd+Shift+X</code>) to open the Extensions panel;</li>
+<li>Click <code>...</code> in the top-right corner → <strong>Install from VSIX...</strong>;</li>
+<li>Select <code>evoverse-sdk-0.9.0.vsix</code> from the delivery package.</li>
+</ol>
+<p>Or use the command line:</p>
+<pre><code class="language-powershell"># Windows (PowerShell)
+trae --install-extension D:\packages\evoverse-sdk-0.9.0.vsix
+
+# macOS / Linux
+trae --install-extension ~/packages/evoverse-sdk-0.9.0.vsix
+</code></pre>
+<h3 id="4-2-recommended-companion-extensions">4.2 Recommended companion extensions</h3>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Purpose</th>
+<th>Declared as an EvoVerse dependency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VaporView</td>
+<td>Opens VCD waveforms produced by simulation</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Cortex-Debug</td>
+<td>RISC-V/MCU GDB debugging</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Verilog/SystemVerilog language plugin</td>
+<td>Syntax highlighting, navigation, and lint</td>
+<td>No; choose per your license and team standards</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Trae ships with a built-in Chat Agent; you do <strong>not</strong> need to install GitHub Copilot separately to use <code>@evoverse</code> in the Chat panel. To use the OpenAI-compatible Provider of the EvoVerse built-in Runtime, see §7.</p>
+</blockquote>
+<hr />
+<h2 id="5-first-launch-trae-specific-set-up-behavior">5. First launch: Trae-specific <code>Set Up</code> behavior</h2>
+<p>If the EvoVerse extension detects that <code>~/evoverse-sdk</code> is not ready when it activates, it prompts you to <strong>Set Up</strong>. Under Trae, Set Up additionally performs the following operations (not performed under VS Code):</p>
+<h3 id="5-1-writing-trae-mcp-json">5.1 Writing <code>~/.trae/mcp.json</code></h3>
+<p>The SDK automatically writes the EvoVerse MCP Server into the <code>mcpServers.evoverse</code> field of <code>~/.trae/mcp.json</code>:</p>
+<ul>
+<li>It <strong>merges only</strong> and never overwrites other entries under <code>mcpServers</code>;</li>
+<li>It creates <code>~/.trae/mcp.json</code> if the file does not exist;</li>
+<li>If <code>mcpServers.evoverse</code> already exists, it compares byte-for-byte: equal means skip; otherwise it backs the file up as <code>~/.trae/mcp.json.evoverse.bak</code> and then overwrites.</li>
+</ul>
+<p>Example (for reference only; generated by the SDK):</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;evoverse&quot;: {
+      &quot;command&quot;: &quot;python&quot;,
+      &quot;args&quot;: [&quot;-m&quot;, &quot;mcp_server.server&quot;],
+      &quot;env&quot;: {}
+    }
+  }
+}
+</code></pre>
+<h3 id="5-2-writing-trae-user_rules">5.2 Writing <code>~/.trae/user_rules/</code></h3>
+<p>The SDK automatically installs two Agent Rules files:</p>
+<ul>
+<li><code>~/.trae/user_rules/evoverse.md</code> — general EvoVerse rules;</li>
+<li><code>~/.trae/user_rules/evoverse-rtl-style.md</code> — dedicated RTL coding-style rules.</li>
+</ul>
+<p>The rule sources live in <code>~/evoverse-sdk/agent-rules/</code>; the SDK compares byte-for-byte before writing:</p>
+<ul>
+<li>Equal → skip (<code>unchanged</code>);</li>
+<li>Different → back up as <code>*.evoverse.bak</code>, then overwrite;</li>
+<li>Corrupted or unexpected format → back up and report an error; never silently wipe.</li>
+</ul>
+<h3 id="5-3-the-restart-now-prompt">5.3 The "Restart now" prompt</h3>
+<p><strong>Only under Trae</strong> will you see the "Restart Trae now to load MCP" prompt. Trae loads MCP from a host-fixed directory, so MCP tools appear in the Chat panel only after Trae restarts.</p>
+<blockquote>
+<p>Standard VS Code and unknown hosts <strong>never</strong> show this prompt; if you see it under VS Code, host detection is off — first check whether <code>vscode.env.appName</code> starts with <code>trae</code>.</p>
+</blockquote>
+<h3 id="5-4-handling-corrupted-host-configuration">5.4 Handling corrupted host configuration</h3>
+<p>If <code>~/.trae/mcp.json</code> or <code>~/.trae/user_rules/*.md</code> is already corrupted, the SDK will:</p>
+<ol>
+<li>Back up the original file as <code>*.evoverse.bak</code>;</li>
+<li>Surface an error message in the UI;</li>
+<li><strong>Not</strong> silently overwrite (so customer-defined rules are never wiped unintentionally).</li>
+</ol>
+<hr />
+<h2 id="6-quick-reference-differences-from-the-vs-code-installation">6. Quick reference: differences from the VS Code installation</h2>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Trae</th>
+<th>Standard VS Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VSIX used</td>
+<td>The same <code>evoverse-sdk-0.9.0.vsix</code></td>
+<td>The same</td>
+</tr>
+<tr>
+<td>Auto-write <code>~/.trae/mcp.json</code></td>
+<td>✅ (merges <code>mcpServers.evoverse</code>)</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Auto-write <code>~/.trae/user_rules/*.md</code></td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>"Restart now" prompt</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>*.evoverse.bak</code> backup before overwrite</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Native Chat open commands</td>
+<td><code>trae.chat.open</code> / <code>trae.chat.focus</code></td>
+<td><code>workbench.action.chat.open</code></td>
+</tr>
+<tr>
+<td><code>@evoverse</code> Chat participant</td>
+<td>✅ (Trae Chat panel)</td>
+<td>✅ (VS Code Chat panel)</td>
+</tr>
+<tr>
+<td>Project-level instructions</td>
+<td>Via <code>.github/copilot-instructions.md</code> (same as VS Code)</td>
+<td>Via <code>.github/copilot-instructions.md</code></td>
+</tr>
+<tr>
+<td>Deprecated paths</td>
+<td>❌ Do <strong>not</strong> add <code>.trae/rules.md</code> or <code>CLAUDE.md</code></td>
+<td>❌ Not recommended</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>For detailed differences and gotchas, see HOST-DIFFERENCES.md.</p>
+</blockquote>
+<hr />
+<h2 id="7-using-an-openai-compatible-provider-optional">7. Using an OpenAI-compatible Provider (optional)</h2>
+<p>If you prefer not to use Trae's built-in models, configure an OpenAI-compatible Provider in the EvoVerse Conversation Runtime:</p>
+<ol>
+<li>Run <code>EvoVerse: Set OpenAI-compatible API Key</code> to store the API key in SecretStorage;</li>
+<li>Fill in the model ID from your provider under <code>evoverse.model.modelId</code>;</li>
+<li>Restart Trae to make sure the configuration takes effect.</li>
+</ol>
+<blockquote>
+<p><strong>Never</strong> write a model API key into the <code>env</code> field of <code>~/.trae/mcp.json</code>; the SDK rejects such configurations.</p>
+</blockquote>
+<hr />
+<h2 id="8-troubleshooting">8. Troubleshooting</h2>
+<h3 id="8-1-evoverse-is-missing-from-the-trae-chat-panel">8.1 <code>@evoverse</code> is missing from the Trae Chat panel</h3>
+<p>Work through the following in order:</p>
+<ol>
+<li>Confirm that <code>~/.trae/mcp.json</code> contains <code>mcpServers.evoverse</code>;</li>
+<li>Confirm that the SDK showed the <strong>Restart now</strong> prompt and that the restart has completed;</li>
+<li>Open Trae → Settings → MCP and confirm the <code>evoverse</code> server shows as <code>running</code>;</li>
+<li>Type <code>@</code> in the Chat panel and confirm <code>evoverse</code> appears in the dropdown.</li>
+</ol>
+<h3 id="8-2-trae-mcp-json-is-corrupted">8.2 <code>~/.trae/mcp.json</code> is corrupted</h3>
+<ol>
+<li>Before writing, the SDK backs the file up as <code>~/.trae/mcp.json.evoverse.bak</code>; restore from that backup:
+   <code>bash
+   cp ~/.trae/mcp.json.evoverse.bak ~/.trae/mcp.json</code></li>
+<li>Run <code>EvoVerse: Set Up</code> again.</li>
+</ol>
+<h3 id="8-3-trae-user_rules-md-conflicts-with-team-rules">8.3 <code>~/.trae/user_rules/*.md</code> conflicts with team rules</h3>
+<ul>
+<li>The rule sources EvoVerse installs live in <code>~/evoverse-sdk/agent-rules/</code>; do <strong>not</strong> edit <code>~/.trae/user_rules/*.md</code> directly;</li>
+<li>To add rules for a project, edit the project-level <code>.github/copilot-instructions.md</code>;</li>
+<li>If you must change user rules, back them up first and re-merge manually after every SDK upgrade.</li>
+</ul>
+<h3 id="8-4-host-detection-is-wrong">8.4 Host detection is wrong</h3>
+<p>Open the Trae command palette and run:</p>
+<pre><code class="language-powershell"># Inspect via Developer Tools
+Developer: Toggle Developer Tools
+</code></pre>
+<p>In the Console, run:</p>
+<pre><code class="language-javascript">JSON.stringify({ appName: require('vscode').env.appName })
+</code></pre>
+<p>It should return one of <code>"Trae"</code>, <code>"Trae CN"</code>, or <code>"Trae - ide"</code>. If it returns something else, see HOST-DIFFERENCES.md §1 for the <code>detectHostId()</code> decision logic.</p>
+<h3 id="8-5-model-unavailability-breaks-build-report-generation">8.5 Model unavailability breaks build/report generation</h3>
+<p>EvoVerse's <strong>deterministic capabilities</strong> (build, reporting, rule diagnostics, timing analysis) must work independently on every host. If builds or reports are also blocked while the model is unavailable, the model provider configuration under Trae has leaked into the child-process environment; re-check the Efinity setup script invocation per <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §3.3</a>.</p>
+<hr />
+<h2 id="9-next-steps">9. Next steps</h2>
+<ul>
+<li>Read the <a href="../sdk/user-manual.html">user manual</a> for the overall EvoVerse SDK workflow;</li>
+<li>Read <a href="../efinity/toolchain-reference.html">efinity-toolchain-reference.md</a> to master the Efinity CLI;</li>
+<li>Read <a href="../efinity/rtl-coding-style.html">efinity-coding-style.md</a> for the RTL coding rules;</li>
+<li>For detailed host differences, see HOST-DIFFERENCES.md.</li>
+</ul></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

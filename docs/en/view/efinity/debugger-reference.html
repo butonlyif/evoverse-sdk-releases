@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity Debugger Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>The on-chip debug tool entry point and operating boundary.</span>
+<code>efinity/debugger-reference.md</code>
+<a href="../../../efinity/debugger-reference.md">Markdown source</a></p>
+<h1>Efinity Debugger Reference</h1></header>
+<main class="article"><h1 id="efinity-debugger-reference">Efinity Debugger Reference</h1>
+<blockquote>
+<p>Version: v1.0 | Based on Efinity 2026.1 (HLP-EFN-DBG-v2.0)</p>
+</blockquote>
+<h2 id="1-debugger-overview">1. Debugger Overview</h2>
+<p>Efinity Debugger is a JTAG-based FPGA hardware debugging tool that provides two perspectives:</p>
+<ul>
+<li><strong>Profile Editor Perspective</strong>: the interface for manually configuring debug cores</li>
+<li><strong>Debug Perspective</strong>: the interface for observing probe signal values at runtime</li>
+</ul>
+<p>The Debugger contains two kinds of debug cores:
+- <strong>Virtual I/O (VIO)</strong>: supports probe inputs and outputs, emulating virtual IO
+- <strong>Logic Analyzer (LA)</strong>: samples and captures internal signal waveforms</p>
+<p><strong>Minimum frequency requirement:</strong> the minimum operating frequency of a debug core is twice the JTAG TCK frequency.</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\hlp-dbg-intro.html</code></p>
+<hr />
+<h2 id="2-debug-workflow">2. Debug Workflow</h2>
+<ol>
+<li>Create a debug profile (VIO and/or LA cores)</li>
+<li>Generate the debug design file and add it to the project</li>
+<li>Compile</li>
+<li>Program the FPGA</li>
+<li>Run the Debugger GUI to observe probe values</li>
+</ol>
+<hr />
+<h2 id="3-debug-profile-json-format">3. Debug Profile JSON Format</h2>
+<p>A Debug Profile is a JSON file that defines the debug core configuration. Key structure:</p>
+<pre><code class="language-json">{
+    &quot;debug_cores&quot;: [
+        {
+            &quot;name&quot;: &quot;vio0&quot;,
+            &quot;type&quot;: &quot;vio&quot;,
+            &quot;uuid&quot;: &quot;b60ce617846c46eb85bdb96be34cc1b0&quot;,
+            &quot;probes&quot;: [
+                {&quot;name&quot;: &quot;counter&quot;, &quot;width&quot;: 29, &quot;init&quot;: null},
+                {&quot;name&quot;: &quot;vio_reverse&quot;, &quot;width&quot;: 1, &quot;init&quot;: &quot;0x0&quot;}
+            ]
+        },
+        {
+            &quot;name&quot;: &quot;la0&quot;,
+            &quot;type&quot;: &quot;la&quot;,
+            &quot;uuid&quot;: &quot;55ccee6a763c4221a397cfa01e4fa0b2&quot;,
+            &quot;probes&quot;: [
+                {&quot;name&quot;: &quot;counter&quot;, &quot;width&quot;: 29, &quot;probe_type&quot;: 1}
+            ],
+            &quot;data_depth&quot;: 1024,
+            &quot;trigin_en&quot;: false,
+            &quot;trigout_en&quot;: false,
+            &quot;capture_control&quot;: false,
+            &quot;input_pipeline&quot;: 1,
+            &quot;auto_inserted&quot;: false
+        }
+    ],
+    &quot;session&quot;: {&quot;debug_widget&quot;: [], &quot;wizard&quot;: {}},
+    &quot;jtag_user&quot;: &quot;USER1&quot;
+}
+</code></pre>
+<p><strong>Key fields:</strong>
+| Field | Description |
+|-------|-------------|
+| <code>debug_cores</code> | Array of debug cores; may contain multiple VIO and LA cores |
+| <code>type</code> | Core type: <code>"vio"</code> or <code>"la"</code> |
+| <code>uuid</code> | 128-bit unique identifier, used for JTAG routing |
+| <code>probes[].probe_type</code> | LA probe type: 1 = Data and Trigger |
+| <code>data_depth</code> | LA buffer depth (uses on-chip RAM) |
+| <code>trigin_en</code> / <code>trigout_en</code> | Trigger input/output enable |
+| <code>capture_control</code> | Capture control enable (consumes more resources) |
+| <code>auto_inserted</code> | Whether generated automatically by the Debug Wizard |
+| <code>jtag_user</code> | JTAG USER TAP: <code>"USER1"</code> or <code>"USER2"</code> |</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\examples\helloworld-dbg_GOLDEN\dbg_manual.json</code></p>
+<hr />
+<h2 id="4-vio-debug-core">4. VIO Debug Core</h2>
+<p><strong>Purpose:</strong> drive internal signals (output probes) and observe internal signals (input probes) during debugging.</p>
+<p><strong>Parameters:</strong>
+| Parameter | Description |
+|-----------|-------------|
+| <code>NUM_PROBE_IN</code> | Number of input probes (signals read from the FPGA) |
+| <code>NUM_PROBE_OUT</code> | Number of output probes (signals driven into the FPGA) |
+| <code>PROBE_INn_WIDTH</code> | Width of the n-th input probe |
+| <code>PROBE_OUTn_WIDTH</code> | Width of the n-th output probe |
+| <code>UUID</code> | 128-bit unique identifier |
+| <strong>Data depth</strong> | 4096 |</p>
+<p><strong>Probe types:</strong>
+- Probe Inputs (probe_in): read signal values from the design
+- Probe Outputs (probe_out): write signal values into the design (an initial value <code>init</code> can be set)</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-vio.html</code></p>
+<hr />
+<h2 id="5-la-debug-core">5. LA Debug Core</h2>
+<p><strong>Purpose:</strong> capture timing waveforms of internal signals, like a logic analyzer.</p>
+<p><strong>Parameters:</strong>
+| Parameter | Description |
+|-----------|-------------|
+| Buffer Depth | Buffer depth (4K, 8K, 16K, etc.), uses on-chip RAM |
+| input_pipeline | Number of input pipeline stages (0-2) |
+| Capture Control | When enabled, the capture mode can be switched in Capture Setup in the Debug Perspective |
+| Trigger Enable | Supports triggers to start/stop capture |</p>
+<p><strong>Probe types (probe_type):</strong>
+| Value | Type | Description |
+|-------|------|-------------|
+| 1 | Data and Trigger | Data + trigger |
+| 2 | Data Only | Data only |
+| 3 | Trigger Only | Trigger only |</p>
+<p><strong>Capture modes:</strong>
+- <strong>Immediately</strong>: start capturing immediately after the bitstream is downloaded
+- <strong>Wait for Trigger</strong>: start capturing after the trigger condition is met</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-la.html</code></p>
+<hr />
+<h2 id="6-debug-wizard">6. Debug Wizard</h2>
+<p><strong>Purpose:</strong> provides an automated flow for adding Logic Analyzers. Suited to multi-level, complex designs.</p>
+<p><strong>Workflow:</strong>
+1. Launch the Debug Wizard
+2. Choose the buffer depth (affects RAM usage)
+3. Optionally enable Capture Control
+4. Choose the JTAG User TAP (USER1/USER2)
+5. Choose the signal source: Elaborated Netlist or Post-Map netlist
+6. Select signals and add them with the arrows (regex filtering supported)
+7. Specify each signal's probe type (Data+Trigger / Data Only / Trigger Only)
+8. Click Next; the wizard generates and connects the cores automatically
+9. Turn on Enable Auto Instantiation
+10. Click Finish</p>
+<p><strong>Generated files:</strong>
+| File | Description |
+|------|-------------|
+| <code>debug_profile.wizard.json</code> | The debug profile created by the wizard |
+| <code>debug_TEMPLATE.v</code> | Debug template (contains the module instantiation) |
+| <code>debug_top.v</code> | RTL logic of the debug cores |</p>
+<p><strong>Notes:</strong>
+- Requires the JTAG_USER1 or JTAG_USER2 resource; if that resource is occupied by the Debugger, other JTAG functions cannot be used
+- Signals whose clock domain is "Undefined" have no clock driver in the post-map netlist; add an LA core for them manually</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-wizard.html</code></p>
+<hr />
+<h2 id="7-mark_debug-synthesis-attribute">7. mark_debug Synthesis Attribute</h2>
+<p><strong>Purpose:</strong> mark signals in RTL that need debugging; the synthesis tool automatically generates a debug profile containing those signals.</p>
+<p><strong>Verilog usage:</strong></p>
+<pre><code class="language-verilog">(* mark_debug = &quot;true&quot; *) wire [7:0] debug_signal;
+// or
+(* mark_debug = &quot;1&quot; *) reg debug_reg;
+</code></pre>
+<p><strong>VHDL usage:</strong></p>
+<pre><code class="language-vhdl">attribute mark_debug : string;
+attribute mark_debug of debug_signal : signal is &quot;true&quot;;
+</code></pre>
+<p><strong>Synthesis options:</strong>
+- Enable: <code>efx_map --enable-mark-debug</code> (or turn on the synthesis option in the GUI)
+- After synthesis completes, <code>debug_profile.mark_debug.json</code> is generated
+- This profile can be imported into the Debug Wizard</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-mark-debug.html</code></p>
+<hr />
+<h2 id="8-debugger-auto-instantiation">8. Debugger Auto Instantiation</h2>
+<p><strong>Project XML configuration (<code>&lt;efx:debugger&gt;</code> section):</strong></p>
+<pre><code class="language-xml">&lt;efx:debugger&gt;
+    &lt;efx:profile name=&quot;profile_path&quot;/&gt;
+    &lt;efx:auto_instantiation name=&quot;&quot;/&gt;
+    &lt;efx:work_dir name=&quot;work_directory&quot;/&gt;
+&lt;/efx:debugger&gt;
+</code></pre>
+<p><strong>Parameters:</strong>
+| Parameter | Description |
+|-----------|-------------|
+| <code>profile</code> | Path of the debug profile JSON file |
+| <code>auto_instantiation</code> | Whether auto-instantiation is enabled |
+| <code>work_dir</code> | Working directory of the debug cores |</p>
+<p><strong>In the GUI:</strong> Project Editor → Debugger tab → Debugger Auto Instantiation toggle</p>
+<p><strong>CLI trigger conditions (verified against efx_run.py sources, 2026.1):</strong> before <code>efx_run --flow compile</code> schedules <code>run_debugger_auto_instantation</code>, two silent checks run (<code>check_and_set_auto_dbg_mark_dbg</code>):</p>
+<ol>
+<li>The file pointed to by the XML <code>profile</code> parameter <strong>must actually exist</strong> (<code>os.path.isfile</code>, relative to CWD = project root) — if it does not, the debug flow is <strong>silently skipped as a whole, with no warning in the log</strong>, and the compile still "succeeds"</li>
+<li>The mark_debug auto-generation flow (<code>--mark_debug</code> mode) activates only when the <code>profile</code> value is <strong>exactly equal to</strong> <code>outflow/debug_profile.mark_debug.json</code> (string match against <code>args.output_dir + "/debug_profile.mark_debug.json"</code>; a relative path must be used); in that case <code>efx_run_dbg.py</code> uses <code>DbgWizard.gen_debug_v_from_profile</code> to automatically generate the debug core RTL from the mark_debug profile produced by synthesis</li>
+</ol>
+<p>Correct minimal XML configuration (mark_debug flow):</p>
+<pre><code class="language-xml">&lt;efx:debugger&gt;
+    &lt;efx:param name=&quot;profile&quot; value=&quot;outflow/debug_profile.mark_debug.json&quot; value_type=&quot;e_string&quot;/&gt;
+    &lt;efx:param name=&quot;auto_instantiation&quot; value=&quot;on&quot; value_type=&quot;e_bool&quot;/&gt;
+    &lt;efx:param name=&quot;work_dir&quot; value=&quot;work_dbg&quot; value_type=&quot;e_string&quot;/&gt;
+&lt;/efx:debugger&gt;
+</code></pre>
+<p><strong>Verification date:</strong> 2026-08-16 (ws-e1-sys: profile mistakenly pointing to a non-existent path → compile silently skipped debug, <code>work_dbg/</code> not generated; fixed after pointing it to the outflow path)</p>
+<p><strong>The first-compile pitfall (measured in the 2026-08-16 debug_flow_test):</strong> starting a compile with <code>auto=on + profile=outflow/debug_profile.mark_debug.json</code> while the profile file does not exist yet makes <strong>the whole compile crash with exit 1</strong> (not a silent skip) — <code>An exception occurred: No such file: outflow\&lt;design&gt;.elab.vdb</code>. Mechanism:
+- <code>efx_run.py:1249-1251</code>: the map step appends <code>--opt write-premap-module=&lt;design&gt;.elab.vdb</code> to write out the elab library only if <code>args.debug_profile</code> was already set when the flow started (i.e. the profile file existed at that time)
+- <code>efx_run_dbg.py:291-292</code>: the mark_debug (pre-map) profile must read <code>outflow/&lt;design&gt;.elab.vdb</code> for the VDB merge
+- Yet in the same map run, <code>enable-mark-debug</code> generates the mark_debug profile and triggers the debug step → the step crashes because it cannot find elab.vdb</p>
+<p><strong>The correct two-compile order (must be followed):</strong> build #1 with <code>auto=off</code> (here <code>enable-mark-debug</code> collects signals and generates the profile JSON, no debug step) → build #2 with <code>auto=on</code> (the profile already exists when the flow starts → map writes elab.vdb → the efx_run_dbg merge succeeds). The tool side (SDK adapter preview validation + SDK saveBuildOptions) has been tightened accordingly: auto=on requires the profile file to exist beforehand.</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\scripts\efx_run.py:129-145</code> (check_and_set_auto_dbg_mark_dbg), <code>efx_run.py:1650-1702</code> (run_debugger_auto_instantation), <code>efx_run.py:1249-1251</code> (write-premap-module condition), <code>efx_run_dbg.py:291-292</code> (elab.vdb dependency)</p>
+<hr />
+<h2 id="9-command-line-scripts">9. Command-Line Scripts</h2>
+<p><strong>efx_run_dbg.py — the Debugger auto-instantiation flow:</strong>
+- <code>compile_dbg_core()</code> — compiles the debug cores
+- <code>merge_vdb()</code> — merges VDB files
+- <code>insert_jtag()</code> — inserts the JTAG user tap</p>
+<p><strong>Usage:</strong></p>
+<pre><code>efx_run.bat --flow compile  # automatically includes the debug cores in the compile
+</code></pre>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\scripts\efx_run_dbg.py</code></p>
+<hr />
+<h2 id="10-debugger-options">10. Debugger Options</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Allow .bit/.hex for all configuration modes</td>
+<td>Allow programming with .hex files in JTAG mode (Trion legacy support)</td>
+</tr>
+<tr>
+<td>Always launch new waveform viewer window</td>
+<td>Open a new waveform window each time a debug session starts</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-options.html</code></p>
+<hr />
+<h2 id="11-concurrent-debugging">11. Concurrent Debugging</h2>
+<ul>
+<li>Multiple debug windows can be open at the same time, each connected to a different JTAG USER TAP interface</li>
+<li>Requires a Hardware Server connection</li>
+<li>Open multiple windows via Tools → Open Debugger or by clicking the Debugger icon repeatedly</li>
+</ul>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-concurrent.html</code></p>
+<hr />
+<h2 id="12-rtl-structure-of-auto-generated-debug-cores">12. RTL Structure of Auto-Generated Debug Cores</h2>
+<p>Taking <code>helloworld-dbg_GOLDEN\dbg_manual_top.v</code> as the example:</p>
+<pre><code class="language-verilog">module dbg_manual_edb_top (
+    // JTAG boundary scan ports
+    input  bscan_CAPTURE, bscan_DRCK, bscan_RESET, bscan_RUNTEST,
+    input  bscan_SEL, bscan_SHIFT, bscan_TCK, bscan_TDI, bscan_TMS,
+    input  bscan_UPDATE, output bscan_TDO,
+    // VIO clock and probes
+    input  vio0_clk, input [28:0] vio0_counter,
+    input [3:0] vio0_raddr, input [5:0] vio0_led,
+    output vio0_vio_reverse, output vio0_vio_mux_sel,
+    output [3:0] vio0_vio_maddr,
+    // LA clock and probes
+    input  la0_clk, input [28:0] la0_counter,
+    input [3:0] la0_raddr, input [5:0] la0_led
+);
+    // Debug Hub (JTAG bus converter)
+    // edb_vio_top instantiation
+    // edb_la_top instantiation
+endmodule
+</code></pre>
+<p><strong>Structural hierarchy:</strong></p>
+<pre><code>debug_top.v
+├── Debug Hub (JTAG → internal bus)
+├── VIO Core (edb_vio_top)
+└── LA Core (edb_la_top)
+</code></pre>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\examples\helloworld-dbg_GOLDEN\dbg_manual_top.v</code></p>
+<hr />
+<h2 id="13-resource-usage">13. Resource Usage</h2>
+<p>Estimated resource usage can be checked in the Debugger table of the Dashboard Results panel:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auto Instantiation</td>
+<td>Whether auto-instantiation is enabled</td>
+</tr>
+<tr>
+<td>Target Netlist</td>
+<td>elaborated or post-map</td>
+</tr>
+<tr>
+<td>Flipflops Used</td>
+<td>Number of flip-flops used</td>
+</tr>
+<tr>
+<td>Adders Used</td>
+<td>Number of adders used</td>
+</tr>
+<tr>
+<td>LUTs Used</td>
+<td>Number of lookup tables used</td>
+</tr>
+<tr>
+<td>Memory Blocks Used</td>
+<td>Number of memory blocks used</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> resource usage figures are estimates and for reference only.</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-resources.html</code></p>
+<hr />
+<h2 id="14-disabling-debug-cores">14. Disabling Debug Cores</h2>
+<p>Via the GUI:
+1. Open the Project Editor
+2. Click the Debugger tab
+3. Turn off the Debugger Auto Instantiation option
+4. Click OK
+5. Recompile</p>
+<p>Note: disabling does not delete the debug profile on disk; it can be re-enabled at any time.</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\debugger\doc\topics\dbg-disable.html</code></p>
+<hr />
+<h2 id="15-related-file-index">15. Related File Index</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\</code></td>
+<td>Debugger installation directory</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\bin\</code></td>
+<td>Debugger executables</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\debugger\doc\topics\</code></td>
+<td>Debugger documentation</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg\</code></td>
+<td>Automatic debug flow example</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\examples\helloworld-dbg_GOLDEN\</code></td>
+<td>Manual debug flow example</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\scripts\efx_run_dbg.py</code></td>
+<td>CLI script for debug core auto-instantiation</td>
+</tr>
+</tbody>
+</table></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>

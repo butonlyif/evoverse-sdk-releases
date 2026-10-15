@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity ISF 语法参考</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>接口、引脚和资源约束语法。</span>
+<code>efinity/Efinity-ISF语法参考.md</code>
+<a href="../../../efinity/Efinity-ISF语法参考.md">Markdown 源文件</a></p>
+<h1>Efinity ISF 语法参考</h1></header>
+<main class="article"><h1 id="efinity-isf-语法参考">Efinity ISF 语法参考</h1>
+<blockquote>
+<p><strong>适用版本</strong>：Efinity 2026.1（<code>C:\Efinity\2026.1</code>）
+<strong>更新日期</strong>：2026-09-25
+<strong>证据基准</strong>：本文所有论断均直接取自 Efinity 2026.1 安装目录内的 Python 源码、官方 <code>examples/helloworld-unified</code> 示例，以及 EvoVerse SDK 自带的 <code>sdk/cli/import_gpio.*</code> 自检工具。每条论断后以 <code>（路径:行号）</code> 形式标注证据出处。</p>
+</blockquote>
+<hr />
+<h2 id="0-文档定位">0. 文档定位</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解决什么问题</td>
+<td>写 ISF 约束脚本、判断一个 ISF 文件是否"重放安全"、排查 <code>GPIO ... already exists</code> 类构建失败</td>
+</tr>
+<tr>
+<td>证据源代码</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code>（DesignAPI，约 2810 行）、<code>...\api_service\exim\isf_importer.py</code>、<code>...\api_service\exim\isf_exporter.py</code>、<code>...\api_service\isf_command.py</code></td>
+</tr>
+<tr>
+<td>官方范例</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code>（9 个器件各一套双 ISF 文件对）</td>
+</tr>
+<tr>
+<td>SDK 自检工具</td>
+<td><code>c:\work\awesomsdk\sdk\cli\import_gpio.bat</code> + <code>import_gpio_cli.py</code></td>
+</tr>
+<tr>
+<td>姊妹文档</td>
+<td>《Efinity工具链参考.md》（命令行）、《Efinity设计规范.md》（RTL/SDC）、《Efinity-XML工程文件Schema参考.md》（工程 XML）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>一句话结论（先记住这个）</strong>：
+ISF 是<strong>被 Python <code>exec()</code> 逐行执行的源码</strong>，执行上下文中 <code>design</code> 变量绑定 Efinity DesignAPI 实例；它分为<strong>一次性 bootstrap</strong>（含 <code>create_*</code>）与<strong>重放安全</strong>（仅 set/assign）两种合法用法，工程 XML 只允许引用重放安全的 ISF。</p>
+<hr />
+<h2 id="1-isf-本质-被-exec-执行的-python-api-源码">1. ISF 本质：被 exec 执行的 Python API 源码</h2>
+<h3 id="1-1-执行模型">1.1 执行模型</h3>
+<p>ISF 文件的每一行都会被取出并交给 Python <code>exec()</code> 执行：</p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>逐行 <code>exec(code)</code></td>
+<td><code>isf_importer.py:236</code></td>
+</tr>
+<tr>
+<td>执行前注入 <code>design = self.design_api</code>（绑定 DesignAPI 实例）</td>
+<td><code>isf_importer.py:217</code></td>
+</tr>
+<tr>
+<td>模块化执行路径同样注入：<code>setattr(module, "design", self.design_api)</code></td>
+<td><code>isf_importer.py:287</code></td>
+</tr>
+<tr>
+<td>导出侧写出的行同样以 <code>design.</code> 开头（<code>design_api_handle="design"</code>）</td>
+<td><code>isf_exporter.py:94</code></td>
+</tr>
+</tbody>
+</table>
+<p>因此在 ISF 里能写的，就是 <strong>DesignAPI 暴露的 Python 方法调用</strong>（第 2 章全集），外加 Python 语言本身允许的注释与空行。不存在任何"ISF 专用语法"——所谓 ISF 语法就是 DesignAPI 方法签名的文本序列化格式。</p>
+<h3 id="1-2-预过滤规则">1.2 预过滤规则</h3>
+<p>导入器在 exec 之前对每行做预判断（<code>isf_importer.py</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>行为</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>空行或整行 <code>#</code> 注释</td>
+<td>直接跳过，不执行</td>
+<td><code>isf_importer.py:227</code>（<code>code == "" or code.startswith("#")</code>）</td>
+</tr>
+<tr>
+<td><code>--skip-resasg</code> 启用时，以 <code>design.assign</code> 开头的行</td>
+<td>跳过（用于消费 <code>.auto_asg.isf</code> 时只要属性、不要分配）</td>
+<td><code>isf_importer.py:231-233</code></td>
+</tr>
+<tr>
+<td>其余行</td>
+<td>交给 <code>exec()</code></td>
+<td><code>isf_importer.py:236</code></td>
+</tr>
+</tbody>
+</table>
+<p>推论：<strong>注释必须写成 Python 注释</strong>（<code>#</code>），行尾注释作为合法 Python 也能执行；但为了与导出器产出一致（见 §5.5），建议只使用整行注释。</p>
+<h3 id="1-3-错误分级与终止行为-决定-一个坏行毁掉整个文件-的范围">1.3 错误分级与终止行为（决定"一个坏行毁掉整个文件"的范围）</h3>
+<p>导入器按异常类型分级处理（<code>isf_importer.py</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>异常</th>
+<th>级别</th>
+<th>是否继续处理后续行</th>
+<th>证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PTException</code>（Efinity 语义错误，如实例不存在）</td>
+<td>warning</td>
+<td><strong>继续</strong></td>
+<td>importer 异常分支</td>
+</tr>
+<tr>
+<td><code>AttributeError</code>（方法名不存在 → 打错字）</td>
+<td>error</td>
+<td><strong>继续</strong></td>
+<td>importer 异常分支</td>
+</tr>
+<tr>
+<td><code>SyntaxError</code> / <code>UnicodeError</code> / <code>TypeError</code> / 其他 Exception</td>
+<td>fatal</td>
+<td><strong>break，终止整次导入</strong></td>
+<td>importer 异常分支</td>
+</tr>
+</tbody>
+</table>
+<p>关键语义：<code>import_isf</code> 只要 issue 注册表<strong>非空</strong>（哪怕全是 warning 级）就返回 False（<code>isf_importer.py:191</code> 附近）。也就是说——</p>
+<blockquote>
+<p><strong>warning ≠ 通过</strong>。任何一条 issue 都会导致该次 import 判定失败，统一流程随即 abort（§7.2）。</p>
+</blockquote>
+<p>导入完成后还有后处理：重算 PLL 频率 + 运行 <code>APIPropertyChecker</code> 设计检查（<code>isf_importer.py:414-431</code>），检查产生的问题同样计入 issue。</p>
+<h3 id="1-4-isf-不是-xml-也不是引脚表格">1.4 ISF 不是 XML、也不是引脚表格</h3>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>本质</th>
+<th>消费者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.isf</code>（ISF）</td>
+<td>Python API 源码，<code>design.create_input_gpio(...)</code> 等</td>
+<td><code>efx_run_pt_unified.py</code> / <code>DesignAPI.import_design()</code></td>
+</tr>
+<tr>
+<td><code>&lt;design&gt;.peri.xml</code></td>
+<td><code>efxpt:design_db</code> 命名空间的<strong>工程源文件</strong>（数据库），只能由 Efinity PT 工具产出</td>
+<td>PT 工具 / GUI</td>
+</tr>
+<tr>
+<td>3 列 GPIO <code>.csv</code></td>
+<td>仅引脚清单，走 <code>ImportGPIODesign</code> 后端（GUI 向导同款）</td>
+<td><code>import_gpio_cli.py:154</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>不要</strong>在 <code>.isf</code> 后缀里写 <code>&lt;efx:gpio&gt;</code> 之类 XML；<strong>不要</strong>手写 <code>&lt;design&gt;.peri.xml</code>（namespace 是 <code>efxpt:design_db</code>，schema 为 <code>peri_design_db.xsd</code>，官方 <code>helloworld.peri.xml</code> 头部可证）。历史上 SDK 曾产出过 46 KB 的 <code>&lt;EFX_PERI_INTERFACE&gt;</code> XML 命名为 <code>*.peri.isf</code>，被 ISF 导入器以 "invalid syntax" 直接拒绝——这个教训已固化为强制自检（§6）。</p>
+<h3 id="1-5-isf-与-peri-xml-的关系-理解重放的前提">1.5 ISF 与 peri.xml 的关系（理解重放的前提）</h3>
+<p>统一流程（unified flow）中：</p>
+<ol>
+<li><code>&lt;design&gt;.peri.xml</code> 是<strong>持久化的工程源文件</strong>（官方 unified 示例全部自带），构建时被加载；</li>
+<li>工程 XML 引用的每个 <code>.isf</code> 会被<strong>重放</strong>（import）到这份已存在的数据库上；</li>
+<li><code>design_api.save()</code> 把合并结果写回 peri.xml（<code>efx_run_pt_unified.py:281</code>）。</li>
+</ol>
+<p>所以 ISF 的每一条命令都跑在"数据库已存在"的前提下——这就是 §3 重放安全契约的根源。</p>
+<hr />
+<h2 id="2-designapi-方法参考-isf-可用命令全集">2. DesignAPI 方法参考（ISF 可用命令全集）</h2>
+<p>所有方法定义于 <code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code>，行号为该文件行号。</p>
+<h3 id="2-1-分类总表">2.1 分类总表</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>方法</th>
+<th>幂等/重放</th>
+<th>ISF 序列化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>创建族</td>
+<td><code>create_block</code> + 14 个 <code>create_*_gpio</code></td>
+<td>❌ 一次性 bootstrap</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>属性族</td>
+<td><code>set_property</code> / <code>set_device_property</code> / <code>set_gpio_unused_state</code> / <code>set_mode_sel_name</code> / <code>lock_property</code></td>
+<td>✅ 可重放</td>
+<td>✅（<code>lock_property</code> 亦有序列化）</td>
+</tr>
+<tr>
+<td>资源与引脚</td>
+<td><code>assign_resource</code> / <code>assign_pkg_pin</code></td>
+<td>✅ 可重放</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>查询族</td>
+<td><code>is_resource_used</code> / <code>is_pkg_pin_used</code> / <code>get_resource</code> / <code>get_pkg_pin</code> / <code>get_bonded_bank</code></td>
+<td>✅ 只读</td>
+<td>❌ 无序列化器</td>
+</tr>
+<tr>
+<td>器件级</td>
+<td><code>set_iobank_voltage</code></td>
+<td>✅ 可重放（属性族糖）</td>
+<td>✅（经 IOBANK set_property 通道）</td>
+</tr>
+<tr>
+<td>删除族</td>
+<td><code>delete_block</code> / <code>delete_gpio</code> / <code>reset_device_settings</code> / <code>clear_design</code></td>
+<td>—（API-only）</td>
+<td>❌ <strong>无任何 ISF 序列化器</strong></td>
+</tr>
+<tr>
+<td>流程族</td>
+<td><code>export_design</code> / <code>import_design</code> / <code>setup_partial_design</code> / <code>finish_partial_design</code> / <code>convert_periphery_netlist_to_isf_commands</code> / <code>auto_assign_resource</code> / <code>export_isf_commands_file</code> / <code>export_auto_assignment_isf_file</code></td>
+<td>—（工具侧调用）</td>
+<td>部分（见 §2.6）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-2-创建族-一次性-bootstrap">2.2 创建族（一次性 bootstrap）</h3>
+<h4 id="2-2-1-create_block">2.2.1 <code>create_block</code></h4>
+<pre><code class="language-python"># design.py:192
+def create_block(self, name: str, block_type: str, **kwargs)
+</code></pre>
+<ul>
+<li><code>block_type</code> 常用：<code>PLL</code>、<code>OSC</code>、<code>DDR</code>、<code>LVDS_RX</code>、<code>LVDS_TX</code>、<code>MIPI_RX</code>、<code>MIPI_TX</code>、<code>JTAG</code>、<code>SPI_FLASH</code> 等（完整合法集合见 §5.2 导出器支持表）。</li>
+<li><code>kwargs</code> 支持创建期参数：<code>mode</code> / <code>conn_type</code> / <code>tx_mode</code> / <code>rx_conn_type</code>（<code>design.py:192</code> 签名）。</li>
+<li>序列化格式（<code>isf_command.py:102-108</code>）：</li>
+</ul>
+<pre><code class="language-text">design.create_block(&quot;pll_inst1&quot;,&quot;PLL&quot;)
+design.create_block(&quot;inst&quot;,&quot;TYPE&quot;,mode=&quot;X&quot;)     # 带 kwargs 时
+</code></pre>
+<h4 id="2-2-2-14-个-create_-_gpio">2.2.2 14 个 <code>create_*_gpio</code></h4>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>design.py 行号</th>
+<th>用途</th>
+<th>典型使用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_input_gpio</code></td>
+<td>1072</td>
+<td>普通输入</td>
+<td>RTL 顶层输入端口（通常由综合自动推断，ISF 中一般不需要）</td>
+</tr>
+<tr>
+<td><code>create_output_gpio</code></td>
+<td>1098</td>
+<td>普通输出</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>create_inout_gpio</code></td>
+<td>1124</td>
+<td>双向</td>
+<td>顶层双向 IO（如 <code>sda_io</code>）</td>
+</tr>
+<tr>
+<td><code>create_open_drain_output_gpio</code></td>
+<td>1150</td>
+<td>开漏输出</td>
+<td>I2C 类开漏驱动</td>
+</tr>
+<tr>
+<td><code>create_vref_gpio</code></td>
+<td>1170</td>
+<td>VREF 参考电压</td>
+<td>SSTL 等需要 VREF 的接口</td>
+</tr>
+<tr>
+<td><code>create_input_clock_gpio</code></td>
+<td>1188</td>
+<td>单端输入时钟</td>
+<td>普通时钟输入引脚</td>
+</tr>
+<tr>
+<td><code>create_regional_input_clock_gpio</code></td>
+<td>1207</td>
+<td>区域时钟输入</td>
+<td>Regional clock 网络</td>
+</tr>
+<tr>
+<td><code>create_pll_input_clock_gpio</code></td>
+<td>1226</td>
+<td>PLL 参考时钟输入</td>
+<td><strong>PLL 必备</strong>（见 §4.2 实录第 15 行）</td>
+</tr>
+<tr>
+<td><code>create_pll_ext_fb_gpio</code></td>
+<td>1245</td>
+<td>PLL 外部反馈</td>
+<td>EXTERNAL_FEEDBACK 模式</td>
+</tr>
+<tr>
+<td><code>create_mipi_input_clock_gpio</code></td>
+<td>1265</td>
+<td>MIPI 输入时钟</td>
+<td>MIPI RX 参考</td>
+</tr>
+<tr>
+<td><code>create_pcie_perstn_gpio</code></td>
+<td>1285</td>
+<td>PCIe 复位</td>
+<td>PERSTn 引脚</td>
+</tr>
+<tr>
+<td><code>create_clockout_gpio</code></td>
+<td>1305</td>
+<td>时钟输出</td>
+<td>Clock-out 引脚</td>
+</tr>
+<tr>
+<td><code>create_global_control_gpio</code></td>
+<td>1324</td>
+<td>全局控制</td>
+<td>全局控制网络</td>
+</tr>
+<tr>
+<td><code>create_unused_gpio</code></td>
+<td>1343</td>
+<td>显式未用</td>
+<td>声明保留/悬空脚</td>
+</tr>
+</tbody>
+</table>
+<p><strong>总线判定规则</strong>（<code>design.py:1088-1091</code>，以 <code>create_input_gpio</code> 为代表，其余 create 同构）：</p>
+<pre><code class="language-python"># msb == lsb → 标量 GPIO；msb != lsb → GPIO 总线（gpio_bus）
+if msb == lsb:
+    gpio = ...
+else:
+    gpio_bus = ...
+</code></pre>
+<p>序列化格式（<code>isf_command.py:45-48</code>）：</p>
+<pre><code class="language-text">design.create_input_gpio(&quot;rstn&quot;)            # 标量
+design.create_input_gpio(&quot;data_in&quot;, 3, 0)   # 总线，msb=3, lsb=0
+</code></pre>
+<blockquote>
+<p>陷阱：<strong>普通 GPIO（RTL 顶层端口）不要在 ISF 里重新创建</strong>。Unified Flow 下综合工具会从 RTL 端口自动推断 GPIO；ISF 里重复 create 同名实例会在重放时触发 <code>already exists</code>（§3.4、§8.2）。ISF 的 create_<em> 只应服务于</em><em>硬 IP 与其专用 GPIO</em>*（PLL/DDR/LVDS/OSC/MIPI 及 <code>PLL_CLKIN</code> 类）。</p>
+</blockquote>
+<h3 id="2-3-属性族-可重放">2.3 属性族（可重放）</h3>
+<h4 id="set_property-design-py-507"><code>set_property</code>（<code>design.py:507</code>）</h4>
+<pre><code class="language-python">def set_property(self, inst, prop_name: Union[str, Dict[str, str]], prop_value=None, block_type: str=&quot;GPIO&quot;)
+</code></pre>
+<ul>
+<li>四参形式是 ISF 序列化的<strong>唯一形态</strong>：序列化器恒输出 4 个位置参数（<code>isf_command.py:147</code>）：</li>
+</ul>
+<pre><code class="language-text">design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_FREQ&quot;,&quot;25.0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;reverse&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)     # block_type 省略时为 GPIO
+</code></pre>
+<ul>
+<li>⚠️ <code>set_property</code> 的 docstring 明确警告：<strong>不要用它设置资源和引脚</strong>——那是 <code>assign_resource</code> / <code>assign_pkg_pin</code> 的职责（<code>design.py:507</code> docstring）。</li>
+<li><code>prop_name</code> 可传 dict 批量设置（Python 调用层能力；文本 ISF 一行一条属性）。</li>
+<li><code>from_str</code> 解析正则只给 <code>prop_value</code> 开了空格与方括号：<code>[\w\s\.\[\]]*</code>（<code>isf_command.py:130</code>）——含逗号/引号的值在文本 ISF 中不可表达。</li>
+</ul>
+<h4 id="set_device_property-design-py-559"><code>set_device_property</code>（<code>design.py:559</code>）</h4>
+<pre><code class="language-python">def set_device_property(self, inst: str, prop_name, prop_value=None, devset_type: str=&quot;IOBANK&quot;)
+</code></pre>
+<p>器件级设置入口。<code>devset_type</code> 的合法集合<strong>恰好 5 类</strong>（<code>int_device_setting.py:79-108</code>，<code>is_setting_supported</code> 判定）：</p>
+<table>
+<thead>
+<tr>
+<th>devset_type</th>
+<th>支持条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IOBANK</code></td>
+<td>恒支持</td>
+</tr>
+<tr>
+<td><code>SEU</code></td>
+<td>仅 Tesseract 家族</td>
+</tr>
+<tr>
+<td><code>RU</code></td>
+<td>器件存在 <code>ctrl_reg</code></td>
+</tr>
+<tr>
+<td><code>EXT_FLASH</code></td>
+<td>器件存在 <code>ext_flash_reg</code></td>
+</tr>
+<tr>
+<td><code>CLKMUX</code></td>
+<td>仅 Tesseract（源码注释：Trion clkmux has no configuration）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="set_iobank_voltage-design-py-639"><code>set_iobank_voltage</code>（<code>design.py:639</code>）</h4>
+<pre><code class="language-python">def set_iobank_voltage(self, bank_name: Union[str, Dict[str, str]], voltage=None)
+</code></pre>
+<p>它就是 <code>set_device_property(bank, "VOLTAGE", volt, "IOBANK")</code> 的<strong>语法糖</strong>（<code>design.py:639</code> 实现）——因此天然幂等、可重放：</p>
+<pre><code class="language-text">design.set_iobank_voltage(&quot;TL&quot;,&quot;3.3&quot;)
+</code></pre>
+<p>硬约束（违反 → Design Check <code>io_bank_rule_voltage_assignment</code>）：同一 bank 所有 IO 必须同电压标准；MIPI bank 必须 1.2V 且不得与 LVDS 共 bank；HSIO bank 内 GPIO/LVDS/MIPI 之间须留至少一对未分配 IO 做隔离；Ti60ES 不支持 2.5V。</p>
+<h4 id="set_gpio_unused_state-design-py-1360"><code>set_gpio_unused_state</code>（<code>design.py:1360</code>）</h4>
+<p>全局未用引脚电平设置。序列化（<code>isf_command.py:92</code>）：</p>
+<pre><code class="language-text">design.set_gpio_unused_state(&quot;value&quot;)
+</code></pre>
+<h4 id="set_mode_sel_name-design-py-754"><code>set_mode_sel_name</code>（<code>design.py:754</code>）</h4>
+<pre><code class="language-python">def set_mode_sel_name(self, bank_name, value, bonded_bank=None)
+</code></pre>
+<p>设置 bank 的 mode_sel 名称；<code>bonded_bank</code> 处理非满 bonded 封装的 bank 对应关系。per-IO 电压标准（<code>iostd</code>）与 <code>mode_sel_name</code> 最终都落在 peri.xml 的 <code>efxpt:iobank</code> 元素上（<code>helloworld.peri.xml</code> 可证）。</p>
+<h4 id="lock_property-design-py-1936"><code>lock_property</code>（<code>design.py:1936</code>）</h4>
+<pre><code class="language-python">def lock_property(self, inst, prop, value, btype, checksum)
+</code></pre>
+<p>把属性登记进 <code>netlist_config</code>（由外围网表 checksum 锁定）。<strong>注意</strong>：<code>inst</code> 未知时<strong>静默返回 None，不报错</strong>（<code>design.py:1936</code> 实现）——ISF 里写错实例名的 lock 行不会立即暴露，排查时务必先确认实例存在。序列化（<code>isf_command.py:175</code>）：</p>
+<pre><code class="language-text">design.lock_property(&quot;inst&quot;,&quot;PROP&quot;,&quot;VALUE&quot;,&quot;TYPE&quot;,&quot;checksum&quot;)
+</code></pre>
+<h3 id="2-4-资源与引脚-可重放">2.4 资源与引脚（可重放）</h3>
+<h4 id="assign_resource-design-py-790"><code>assign_resource</code>（<code>design.py:790</code>）</h4>
+<pre><code class="language-python">def assign_resource(self, inst, res_name, block_type=&quot;GPIO&quot;, override=True)
+</code></pre>
+<p>把实例放到具体硬资源（如 PLL → <code>PLL_TL0</code>）。序列化恒 3 位置参数（<code>isf_command.py:156</code>）：</p>
+<pre><code class="language-text">design.assign_resource(&quot;pll_inst1&quot;,&quot;PLL_TL0&quot;,&quot;PLL&quot;)
+</code></pre>
+<h4 id="assign_pkg_pin-design-py-837"><code>assign_pkg_pin</code>（<code>design.py:837</code>）</h4>
+<pre><code class="language-python">def assign_pkg_pin(self, inst, pin_name, override=True)
+</code></pre>
+<p>引脚分配。总线成员写 <code>"bus[N]"</code> 格式。序列化恒 2 位置参数（<code>isf_command.py:164</code>）：</p>
+<pre><code class="language-text">design.assign_pkg_pin(&quot;rstn&quot;,&quot;J13&quot;)
+design.assign_pkg_pin(&quot;led[0]&quot;,&quot;K14&quot;)
+</code></pre>
+<blockquote>
+<p><strong>GPIO 一律用 <code>assign_pkg_pin</code> 而非 <code>assign_resource</code> 分配引脚</strong>——导出器对 GPIO 的引脚导出通道就是 assign_pkg_pin（<code>isf_exporter.py:837-853</code>）。</p>
+</blockquote>
+<h4 id="查询族-只读-无-isf-序列化">查询族（只读，无 ISF 序列化）</h4>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>行号</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_resource_used</code></td>
+<td>865</td>
+<td>资源是否已被占用</td>
+</tr>
+<tr>
+<td><code>is_pkg_pin_used</code></td>
+<td>890</td>
+<td>引脚是否已被占用</td>
+</tr>
+<tr>
+<td><code>get_resource</code></td>
+<td>904</td>
+<td>查实例当前资源</td>
+</tr>
+<tr>
+<td><code>get_pkg_pin</code></td>
+<td>928</td>
+<td>查实例当前引脚</td>
+</tr>
+<tr>
+<td><code>get_bonded_bank</code></td>
+<td>723</td>
+<td>查 bonded bank</td>
+</tr>
+</tbody>
+</table>
+<p>这些方法在 ISF 里写了也不会有序列化对应物，且对重放无贡献——<strong>不要写进 ISF</strong>。</p>
+<h3 id="2-5-删除族-api-only-无-isf-序列化-这是-isf-无-delete-的证据">2.5 删除族（API-only，无 ISF 序列化——这是"ISF 无 delete"的证据）</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>行号</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delete_block</code></td>
+<td>255</td>
+<td>API 层可删 block</td>
+</tr>
+<tr>
+<td><code>delete_gpio</code></td>
+<td>302</td>
+<td>API 层可删 GPIO</td>
+</tr>
+<tr>
+<td><code>reset_device_settings</code></td>
+<td>2404</td>
+<td>清器件设置</td>
+</tr>
+<tr>
+<td><code>clear_design</code></td>
+<td>2423</td>
+<td>清空设计</td>
+</tr>
+</tbody>
+</table>
+<p>API 里<strong>存在</strong>这些删除能力，但 <code>isf_exporter.py</code> 全部 46 个类（§5）与 <code>isf_command.py</code> 全部命令类里<strong>没有任何一个</strong>能把它们序列化成 ISF 文本。结论：<strong>ISF 命令集没有 delete/clear，也不允许发明</strong>。清库的唯一合法途径是删除 peri.xml 后重新 bootstrap（由工具/工程生命周期决定，脚本不得擅自删 peri.xml）。</p>
+<h3 id="2-6-流程族-工具侧调用">2.6 流程族（工具侧调用）</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>行号</th>
+<th>行为要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export_design</code></td>
+<td>1425</td>
+<td>导出 peri.xml 等设计数据</td>
+</tr>
+<tr>
+<td><code>import_design</code></td>
+<td>1468</td>
+<td><strong>ISF 的正式导入入口</strong>（<code>import_gpio_cli.py:104</code> 与统一流程都走它），<code>gen_issue_csv=True</code> 时同时产出 issue CSV</td>
+</tr>
+<tr>
+<td><code>setup_partial_design</code></td>
+<td>1508</td>
+<td>部分设计开始：删除外围网表中匹配（checksum 一致）的 GPIO/总线/实例，为网表重生成腾位</td>
+</tr>
+<tr>
+<td><code>finish_partial_design</code></td>
+<td>1569</td>
+<td>部分设计结束：把非锁定（volatile）设置迁移回当前设计</td>
+</tr>
+<tr>
+<td><code>convert_periphery_netlist_to_isf_commands</code></td>
+<td>1656</td>
+<td>外围网表 → ISF 命令列表；<strong>恒插入 <code>setup_partial_design</code> 于位置 0、追加 <code>finish_partial_design</code> 于末尾</strong>（<code>design.py:1686-1687</code>）</td>
+</tr>
+<tr>
+<td><code>auto_assign_resource</code></td>
+<td>1709</td>
+<td><code>DesignAutoResourcePlanner</code> 自动规划资源；set_property 类命令立即执行，返回完整命令列表（<code>design.py:1709-1723</code>）</td>
+</tr>
+<tr>
+<td><code>export_isf_commands_file</code></td>
+<td>1725</td>
+<td>命令列表 → <code>.isf</code> 文件（<code>.unified.isf</code> 的写出通道）</td>
+</tr>
+<tr>
+<td><code>export_auto_assignment_isf_file</code></td>
+<td>1735</td>
+<td>自动分配命令 → <code>.isf</code> 文件（<code>.auto_asg.isf</code> 的写出通道）</td>
+</tr>
+</tbody>
+</table>
+<p><code>setup_partial_design</code> / <code>finish_partial_design</code> 的序列化（<code>isf_command.py</code>）：</p>
+<pre><code class="language-text">design.setup_partial_design(&quot;pd&quot;)
+design.finish_partial_design(&quot;pd&quot;)
+</code></pre>
+<hr />
+<h2 id="3-重放安全契约-本仓库-isf-验收的第一判据">3. 重放安全契约（本仓库 ISF 验收的第一判据）</h2>
+<h3 id="3-1-为什么存在这个契约">3.1 为什么存在这个契约</h3>
+<p>Unified build 的固定行为：加载已持久化的 <code>&lt;design&gt;.peri.xml</code> → 逐个 import 工程 XML 引用的 ISF → <code>save()</code> 写回。<strong>每次编译都会重放</strong>（§1.5、<code>efx_run_pt_unified.py</code>）。因此 ISF 里的每条命令都必须能对"实例已存在"的数据库重复执行。</p>
+<h3 id="3-2-幂等命令白名单">3.2 幂等命令白名单</h3>
+<p>工程引用的 ISF 只允许出现这些命令（重复执行结果不变）：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>幂等性依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>design.set_property(...)</code></td>
+<td>属性覆写，<code>design.py:507</code></td>
+</tr>
+<tr>
+<td><code>design.assign_pkg_pin(...)</code></td>
+<td>带 <code>override=True</code> 重分配，<code>design.py:837</code></td>
+</tr>
+<tr>
+<td><code>design.assign_resource(...)</code></td>
+<td>带 <code>override=True</code> 重分配，<code>design.py:790</code></td>
+</tr>
+<tr>
+<td><code>design.set_device_property(...)</code></td>
+<td>器件设置覆写，<code>design.py:559</code></td>
+</tr>
+<tr>
+<td><code>design.set_iobank_voltage(...)</code></td>
+<td><code>set_device_property</code> 的糖，<code>design.py:639</code></td>
+</tr>
+<tr>
+<td><code>design.set_gpio_unused_state(...)</code> / <code>set_mode_sel_name(...)</code></td>
+<td>覆写型，<code>design.py:1360</code> / <code>754</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>lock_property</code> 亦为登记型（<code>design.py:1936</code>），但通常由工具在部分设计流程中生成，手写 ISF 不需要。</p>
+<h3 id="3-3-一次性-bootstrap-create_">3.3 一次性 bootstrap：<code>create_*</code></h3>
+<p><code>create_block</code> 与全部 <code>create_*_gpio</code> 是"创建实例"语义（<code>isf_command.py:177-181</code> 的 <code>is_creation_command</code> 正是以它们判定创建类命令）。对已含同名实例的 peri.xml 重放 → 触发 <code>already exists</code>。所以：</p>
+<ul>
+<li><code>create_*</code> 只能在 <strong>peri.xml 尚不存在（或清库重建）时执行一次</strong>；</li>
+<li>之后必须从会被重放的 ISF 中移除（注释掉）。</li>
+</ul>
+<h3 id="3-4-already-exists-报错链-二次编译必失败的机制">3.4 <code>already exists</code> 报错链（二次编译必失败的机制）</h3>
+<p>重放含 <code>create_*</code> 的 ISF 时，底层查重失败抛错，出处：</p>
+<table>
+<thead>
+<tr>
+<th>抛错点</th>
+<th>文件:行号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据库项查重</td>
+<td><code>pt\bin\design\db_item.py:792</code></td>
+</tr>
+<tr>
+<td>设计导出/导入层</td>
+<td><code>pt\bin\design\design_export_import.py:2015</code></td>
+</tr>
+<tr>
+<td>服务层</td>
+<td><code>pt\bin\design\service.py:635</code></td>
+</tr>
+</tbody>
+</table>
+<p>报错形如 <code>GPIO/PLL ... exists</code>。这是 PTException（warning 级、继续执行），但如 §1.3 所述——<strong>任何 issue 都使 import 判定失败</strong>，统一流程随即 abort。表现为"第一次编译 PASS、第二次必失败"。</p>
+<h3 id="3-5-工程侧契约-sdk-三条铁律">3.5 工程侧契约（SDK 三条铁律）</h3>
+<ol>
+<li>工程 XML 只引用<strong>重放安全</strong>的 ISF（官方即如此：§4.4）。</li>
+<li>任何构建路径（SDK / adapter / 脚本）<strong>不得删除</strong> <code>&lt;design&gt;.peri.xml</code>——它是工程源文件，删了重生成是 workaround 不是修复。</li>
+<li>ISF 与 peri.xml 一起纳入版本管理；ISF 变更必须过 <code>import_gpio.bat --dry-run</code> 自检（§6）。</li>
+</ol>
+<hr />
+<h2 id="4-官方双文件对模式-helloworld-unified-全文实录">4. 官方双文件对模式（helloworld-unified 全文实录）</h2>
+<h3 id="4-1-目录布局">4.1 目录布局</h3>
+<p><code>C:\Efinity\2026.1\examples\helloworld-unified\</code> 内含 9 个器件各一套双文件对（<code>&lt;器件&gt;_kit_manual.isf</code> + <code>&lt;器件&gt;_kit_pins.isf</code>）：</p>
+<pre><code class="language-text">T120F324  T120F576  T20F256  T8F81  Ti180J484
+Ti375C529 Ti375N1156 Ti60F225 Tz170J484
+</code></pre>
+<p>命名即语义：<code>manual</code>（手动/引导，含 create_*）+ <code>pins</code>（重放安全引脚与属性）。</p>
+<h3 id="4-2-ti60f225_kit_manual-isf-全文实录-bootstrap-用-46-行">4.2 <code>Ti60F225_kit_manual.isf</code> 全文实录（bootstrap 用，46 行）</h3>
+<pre><code class="language-python"># Efinity Interface Configuration
+# Version: 2025.1.110.4.9
+# Date: 2025-09-05 16:12
+#
+# Copyright (C) 2013 - 2025 Efinix Inc. All rights reserved.
+#
+# Device: Ti60F225
+# Package: 225-ball FBGA (final)
+# Project: new_tutorial
+# Configuration mode: active (x1)
+# Timing Model: C4 (final)
+
+
+# Create instance
+design.create_pll_input_clock_gpio(&quot;pll_refclk&quot;)
+design.create_block(&quot;pll_inst1&quot;,&quot;PLL&quot;)
+
+# Set property, non-defaults
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_EN&quot;,&quot;1&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT1_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT2_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT3_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT4_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_SOURCE&quot;,&quot;EXTERNAL&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_CONN_TYPE&quot;,&quot;gclk&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_DIV&quot;,&quot;110&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_DYNPHASE_EN&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_PHASE_STEP&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;CLKOUT0_PIN&quot;,&quot;clk&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;EXT_CLK&quot;,&quot;EXT_CLK0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;IS_CLKOUT0_INVERTED&quot;,&quot;0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;LOCKED_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;M&quot;,&quot;1&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;N&quot;,&quot;1&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;O&quot;,&quot;2&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;PHASE_SHIFT_ENA_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;PHASE_SHIFT_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;PHASE_SHIFT_SEL_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_FREQ&quot;,&quot;25.0&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;RSTN_PIN&quot;,&quot;&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;FEEDBACK_MODE&quot;,&quot;LOCAL&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;FEEDBACK_CLK&quot;,&quot;CLK0&quot;,&quot;PLL&quot;)
+
+# Set resource assignment
+design.assign_pkg_pin(&quot;pll_refclk&quot;,&quot;B2&quot;)
+design.assign_resource(&quot;pll_inst1&quot;,&quot;PLL_TL0&quot;,&quot;PLL&quot;)
+</code></pre>
+<p>要点：<code>create_*</code> 只出现一次（第 15-16 行）；PLL 参数用 <code>set_property</code> 全量非默认值覆盖（含显式写 <code>""</code> 的未接引脚属性）；资源分配在文件尾。</p>
+<h3 id="4-3-ti60f225_kit_pins-isf-全文实录-重放安全-26-行">4.3 <code>Ti60F225_kit_pins.isf</code> 全文实录（重放安全，26 行）</h3>
+<pre><code class="language-python"># Efinity Interface Configuration
+# Version: 2025.1.110.4.9
+# Date: 2025-09-05 16:12
+#
+# Copyright (C) 2013 - 2025 Efinix Inc. All rights reserved.
+#
+# Device: Ti60F225
+# Package: 225-ball FBGA (final)
+# Project: new_tutorial
+# Configuration mode: active (x1)
+# Timing Model: C4 (final)
+
+
+# Set property, non-defaults
+design.set_property(&quot;reverse&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)
+design.set_property(&quot;rstn&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)
+
+# Set resource assignment
+design.assign_pkg_pin(&quot;led[0]&quot;,&quot;K14&quot;)
+design.assign_pkg_pin(&quot;led[1]&quot;,&quot;J15&quot;)
+design.assign_pkg_pin(&quot;led[2]&quot;,&quot;H10&quot;)
+design.assign_pkg_pin(&quot;led[3]&quot;,&quot;J14&quot;)
+design.assign_pkg_pin(&quot;led[4]&quot;,&quot;H15&quot;)
+design.assign_pkg_pin(&quot;led[5]&quot;,&quot;H11&quot;)
+design.assign_pkg_pin(&quot;rstn&quot;,&quot;J13&quot;)
+design.assign_pkg_pin(&quot;reverse&quot;,&quot;K13&quot;)
+</code></pre>
+<p>要点：<strong>没有任何 <code>create_*</code></strong>——只有非默认属性（weak pullup）与引脚分配；<code>led</code> 总线成员按 <code>"led[N]"</code> 格式逐个分引脚；GPIO 全用 <code>assign_pkg_pin</code>。</p>
+<h3 id="4-4-工程-xml-只引用-pins-版">4.4 工程 XML 只引用 pins 版</h3>
+<p><code>helloworld.xml</code>（<code>xmlns:efx="http://www.efinixinc.com/enf_proj"</code>）：</p>
+<pre><code class="language-xml">&lt;!-- helloworld.xml:8 --&gt;
+&lt;efx:design_info def_veri_version=&quot;verilog_2k&quot; def_vhdl_version=&quot;vhdl_2008&quot; unified_flow=&quot;true&quot;&gt;
+...
+&lt;!-- helloworld.xml:13-17 --&gt;
+&lt;efx:constraint_info&gt;
+    &lt;efx:sdc_file name=&quot;helloworld.sdc&quot;/&gt;
+    &lt;efx:inter_file name=&quot;&quot;/&gt;
+    &lt;efx:isf_file name=&quot;Ti60F225_kit_pins.isf&quot;/&gt;
+&lt;/efx:constraint_info&gt;
+</code></pre>
+<p><strong>这就是官方对"工程引用哪个 ISF"的原始答案：引用重放安全的 pins 版</strong>。manual 版是给 GUI/工具做一次性引导用的，不进工程引用。另注：本例 <code>unified_flow="true"</code>（<code>helloworld.xml:8</code>）是统一流程的开关；<code>&lt;efx:inter_file name=""/&gt;</code> 在该 GUI 示例中为空（本仓库工程 XML 规范对 inter_file 的要求见《Efinity-XML工程文件Schema参考.md》）。</p>
+<p><code>helloworld.peri.xml</code> 头部（PT 产物特征）：</p>
+<pre><code class="language-xml">xmlns:efxpt=&quot;http://www.efinixinc.com/peri_design_db&quot;
+xsi:schemaLocation=&quot;... peri_design_db.xsd&quot;
+</code></pre>
+<p>内含 <code>efxpt:iobank</code> 元素（携带 <code>iostd</code>、<code>mode_sel_name</code>）——ISF 的 set/assign 结果最终持久化在这里。</p>
+<h3 id="4-5-bootstrap-ritual-sdk-标准引导流程">4.5 Bootstrap ritual（SDK 标准引导流程）</h3>
+<p>新工程 / 新基线的固定动作（依据：§3 + §4）：</p>
+<ol>
+<li>写好全部 <code>set_property</code> / <code>assign_*</code> 行，<strong>临时启用</strong> <code>create_*</code> 行；</li>
+<li>编译一次（PT 生成 <code>&lt;design&gt;.peri.xml</code>）→ <strong>立即注释掉全部 <code>create_*</code></strong>，旁注一行说明（何时启用）；</li>
+<li><strong>重放编译必须再次全 PASS</strong>——"引导 + 重放"两连 PASS 才算 ISF 验收通过；</li>
+<li>peri.xml 与 ISF 一起入库。</li>
+</ol>
+<p>权威模板来源永远是"拷贝改"：<code>$EFINITY_HOME/examples/</code> 与 catalog 中 bitstream 级实测通过的基线 demo，不从零发明。</p>
+<hr />
+<h2 id="5-isfbuilder-导出规则-peri-xml-isf-自动导出">5. ISFBuilder 导出规则（peri.xml → ISF 自动导出）</h2>
+<p>本章回答"工具把 peri.xml 导出成 ISF 时按什么规则生成文本"。源码：<code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_exporter.py</code>（46 个类）。</p>
+<h3 id="5-1-导出器架构">5.1 导出器架构</h3>
+<ul>
+<li>顶层 <code>DesignISFExporter</code>（<code>isf_exporter.py:94</code>），行句柄 <code>design_api_handle="design"</code>——导出的每行都以 <code>design.</code> 开头；</li>
+<li>每个 block 类型一个 <code>ISFBuilder</code> 子类，负责把该类实例转换成命令行序列；</li>
+<li>行文本由 <code>isf_command.py</code> 各命令类的 <code>format_str()</code> 生成（§5.8）。</li>
+</ul>
+<h3 id="5-2-支持的-block-类型-build_supported_block_type-isf_exporter-py-143-217">5.2 支持的 block 类型（<code>build_supported_block_type</code>，<code>isf_exporter.py:143-217</code>）</h3>
+<table>
+<thead>
+<tr>
+<th>恒支持</th>
+<th>器件相关（按器件追加）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GPIO</code> / <code>PLL</code> / <code>IOBANK</code> / <code>JTAG</code></td>
+<td><code>OSC</code>、<code>MIPI_*</code>、<code>LVDS_*</code>、<code>SEU</code>、<code>RU</code>、<code>HYPERRAM</code>、<code>SPI_FLASH</code>、<code>DDR</code>、<code>PLL_SSC</code>、<code>EXT_FLASH</code>、<code>CLKMUX</code>（仅 Tesseract）、<code>SOC</code>、<code>QUAD_PCIE</code>、<code>10GBASE_KR</code>、<code>SGMII</code>、<code>PMA_DIRECT</code>、<code>CM</code></td>
+</tr>
+</tbody>
+</table>
+<p>与 §2.3 的 5 类器件设置（<code>int_device_setting.py:79-108</code>）对照：IOBANK 恒有；SEU/RU/EXT_FLASH/CLKMUX 按器件能力出现。</p>
+<h3 id="5-3-builder-写出顺序-build_block_builder_list-isf_exporter-py-218-235">5.3 builder 写出顺序（<code>build_block_builder_list</code>，<code>isf_exporter.py:218-235</code>）</h3>
+<p>导出文本的小节顺序 = builder 注册顺序：</p>
+<pre><code class="language-text">gpio → cm → pll → osc → jtag → mipi_dphy_rx → mipi_dphy_tx
+→ lvds_rx → lvds_tx → lvds_bidir → mipi_hard_dphy_tx → mipi_hard_dphy_rx
+→ hyper_ram → spi_flash → ddr → mipi_rx → mipi_tx → pll_ssc
+→ soc → pcie → lane10g → lane1g → raw_serdes
+</code></pre>
+<h3 id="5-4-pll-builder-六变体">5.4 PLL builder 六变体</h3>
+<p>PLL 的 builder 按器件家族在六个变体中选择（<code>isf_exporter.py:299-326</code>）——不同 Titanium/Trion 世代 PLL 属性集不同，所以官方示例的 PLL set_property 清单<strong>不可跨家族照抄</strong>。</p>
+<h3 id="5-5-小节注释与文件头-导出文本的固定骨架">5.5 小节注释与文件头（导出文本的固定骨架）</h3>
+<table>
+<thead>
+<tr>
+<th>文本元素</th>
+<th>生成点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>文件头 <code># Efinity Interface Configuration</code></td>
+<td><code>ExportGPIODesign.header_title</code>，<code>isf_exporter.py:633-640</code></td>
+</tr>
+<tr>
+<td><code># Device setting</code></td>
+<td><code>isf_exporter.py:541</code></td>
+</tr>
+<tr>
+<td><code>\n# Create instance</code></td>
+<td><code>isf_exporter.py:591</code></td>
+</tr>
+<tr>
+<td><code>\n# Set property, non-defaults</code></td>
+<td><code>isf_exporter.py:605</code></td>
+</tr>
+<tr>
+<td><code>\n# Set resource assignment</code></td>
+<td><code>isf_exporter.py:619</code></td>
+</tr>
+</tbody>
+</table>
+<p>手写 ISF 时沿用这四类注释可保持与工具导出一致（§4.2/§4.3 实录即此骨架）。</p>
+<h3 id="5-6-gpioisfbuilder-细节-isf_exporter-py-664">5.6 GPIOISFBuilder 细节（<code>isf_exporter.py:664</code>）</h3>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>证据/说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>命令映射表 <code>cmd2str_map</code> 含全部 create GPIO 命令</td>
+<td><code>isf_exporter.py:695-712</code></td>
+</tr>
+<tr>
+<td>⚠️ <code>gpio_reg_ctrl</code> 条目被<strong>注释掉</strong>：<code>#CommandType.gpio_reg_ctrl: "create_regional_control_gpio"</code>——该 API <strong>不存在</strong></td>
+<td><code>isf_exporter.py:695-712</code> 内注释。不要在 ISF 里写 <code>create_regional_control_gpio</code>（AttributeError，§1.3）</td>
+</tr>
+<tr>
+<td>实例按名称排序输出</td>
+<td>同文件实现</td>
+</tr>
+<tr>
+<td>总线属性从<strong>模板成员</strong>（首成员）导出；其余成员仅在与模板不同时才单独导出行</td>
+<td>同文件实现（解释了 pins 实录中 <code>led[N]</code> 只有引脚行、没有每成员属性行）</td>
+</tr>
+<tr>
+<td><strong>GPIO 引脚分配导出为 <code>assign_pkg_pin</code></strong>（不是 assign_resource）</td>
+<td><code>isf_exporter.py:837-853</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-7-blockisfbuilder-isf_exporter-py-1247-各硬-ip-builder-的基类">5.7 BlockISFBuilder（<code>isf_exporter.py:1247</code>，各硬 IP builder 的基类）</h3>
+<ul>
+<li>命令映射：<code>create_block</code> → <code>set_property</code> → <code>assign_resource</code>；</li>
+<li>实例同样按名称排序。</li>
+</ul>
+<h3 id="5-8-文本行格式速查-isf_command-py-format_str">5.8 文本行格式速查（<code>isf_command.py</code> <code>format_str</code>）</h3>
+<table>
+<thead>
+<tr>
+<th>命令类</th>
+<th>生成文本（恒定格式）</th>
+<th>isf_command.py 行号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISFSetupPartialDesignCommand</td>
+<td><code>design.setup_partial_design("pd")</code></td>
+<td>顶部类</td>
+</tr>
+<tr>
+<td>ISFFinishPartialDesignCommand</td>
+<td><code>design.finish_partial_design("pd")</code></td>
+<td>顶部类</td>
+</tr>
+<tr>
+<td>Create GPIO（标量）</td>
+<td><code>design.create_input_gpio("name")</code></td>
+<td>45-48</td>
+</tr>
+<tr>
+<td>Create GPIO（总线）</td>
+<td><code>design.create_input_gpio("name", msb, lsb)</code></td>
+<td>45-48</td>
+</tr>
+<tr>
+<td>ISFSetGpioUnusedStateCommand</td>
+<td><code>design.set_gpio_unused_state("value")</code></td>
+<td>92</td>
+</tr>
+<tr>
+<td>ISFCreateBlockCommand</td>
+<td><code>design.create_block("name","TYPE")</code> / 带 kwargs</td>
+<td>102-108</td>
+</tr>
+<tr>
+<td>ISFSetPropertyCommand</td>
+<td><code>design.set_property("block","prop","value","type")</code>（恒 4 位置参数）</td>
+<td>147</td>
+</tr>
+<tr>
+<td>ISFAssignResourceCommand</td>
+<td><code>design.assign_resource("block","res","type")</code>（恒 3 位置参数）</td>
+<td>156</td>
+</tr>
+<tr>
+<td>ISFAssignPkgPinCommand</td>
+<td><code>design.assign_pkg_pin("block","pin")</code>（恒 2 位置参数）</td>
+<td>164</td>
+</tr>
+<tr>
+<td>ISFLockPropertyCommand</td>
+<td><code>design.lock_property("block","prop","value","type","checksum")</code></td>
+<td>175</td>
+</tr>
+</tbody>
+</table>
+<p>补充细节：</p>
+<ul>
+<li><code>from_str</code> 解析时仅 <code>prop_value</code> 允许空格与方括号：<code>[\w\s\.\[\]]*</code>（<code>isf_command.py:130</code>）；</li>
+<li><code>is_creation_command</code> = <code>ISFCreateBlockCommand</code> + <code>ISFAbstractCreateGPIOCommand</code>（<code>isf_command.py:177-181</code>）；</li>
+<li>小缺陷备忘：<code>get_gpio_type</code>（<code>isf_command.py:186-189</code>）重复检查 <code>ISFCreateOutputGPIOCommand</code>，导致 INOUT 分支不可达——影响限于解析侧类型归类，不影响写出格式。</li>
+</ul>
+<hr />
+<h2 id="6-自检流程-import_gpio-bat-dry-run">6. 自检流程：<code>import_gpio.bat --dry-run</code></h2>
+<h3 id="6-1-工具链">6.1 工具链</h3>
+<pre><code class="language-text">sdk\cli\import_gpio.bat（环境装配）
+  └─ python sdk\cli\import_gpio_cli.py（参数与退出码管理）
+       ├─ .isf → DesignAPI.import_design(&lt;path&gt;, gen_issue_csv=True)   # import_gpio_cli.py:104
+       └─ .csv → ImportGPIODesign 后端（GUI 向导同款）                  # import_gpio_cli.py:154
+</code></pre>
+<p><code>import_gpio.bat</code> 负责：定位 <code>EFINITY_HOME</code>（默认 <code>C:\Efinity\2026.1</code>）、设置 <code>PYTHONHOME</code> / <code>EFXPT_HOME</code>、找不到 Python 时 <code>exit 3</code>、透传全部参数并以 <code>exit /b %errorlevel%</code> 返回真实退出码。它明确声明 "This file is NOT a parser"——判定权完全交给 Efinity 自己的 <code>DesignAPI</code>。</p>
+<h3 id="6-2-用法">6.2 用法</h3>
+<pre><code class="language-powershell"># 干跑：只导入解析、产出报告，不写回 peri.xml
+sdk\cli\import_gpio.bat --peri &lt;project&gt;.peri.xml --input &lt;file&gt;.isf --dry-run
+</code></pre>
+<h3 id="6-3-退出码语义-import_gpio_cli-py">6.3 退出码语义（<code>import_gpio_cli.py</code>）</h3>
+<table>
+<thead>
+<tr>
+<th>退出码</th>
+<th>含义</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>导入 OK，无 issue</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>1</td>
+<td>导入错误（issue 存在，含 warning 级）</td>
+<td>必须修复</td>
+</tr>
+<tr>
+<td>2</td>
+<td>仅有警告、需要 <code>--force</code>（<strong>仅 CSV 路径</strong>）</td>
+<td>人工确认</td>
+</tr>
+<tr>
+<td>3</td>
+<td>环境/基建错误（缺 Python 等）</td>
+<td>修环境</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>与 §1.3 呼应：.isf 路径下只要 issue_reg 非空就是失败（exit 1），warning 不能被"忍过去"。</p>
+</blockquote>
+<h3 id="6-4-写回行为">6.4 写回行为</h3>
+<ul>
+<li><code>--dry-run</code>：只解析、出报告，<strong>不写回</strong> peri.xml（<code>import_gpio_cli.py:243-245</code>）；</li>
+<li>非 dry-run：写回前先备份为 <code>&lt;name&gt;.bak_pre_import</code>（<code>import_gpio_cli.py:216-217</code>）。</li>
+</ul>
+<h3 id="6-5-ci-要求-强制">6.5 CI 要求（强制）</h3>
+<ul>
+<li>每份 <code>constraints/*.isf</code> <strong>提交前必须</strong>通过 <code>--dry-run</code>（exit 0）；</li>
+<li>CI 在每次 <code>constraints/*.isf</code> 变更时自动运行；</li>
+<li>但 <code>--dry-run</code> 只验证"<strong>语法与导入合法性</strong>"，不能替代 §4.5 的"引导 + 重放两连 PASS"重放验证（dry-run 无法发现 <code>already exists</code> 的时序前提——它不模拟完整构建）。</li>
+</ul>
+<hr />
+<h2 id="7-统一流程中的-isf-产物">7. 统一流程中的 ISF 产物</h2>
+<h3 id="7-1-efx_run_pt_unified-py-流程步骤-pt-bin-efx_run_pt_unified-py">7.1 <code>efx_run_pt_unified.py</code> 流程步骤（<code>pt\bin\efx_run_pt_unified.py</code>）</h3>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>行为</th>
+<th>行号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>外围网表转 ISF 命令 → 写出 <code>{design}.unified.isf</code>，<strong>插入 peri_scripts 位置 0</strong>（最先被 import）</td>
+<td>243-247（配合 <code>design.py:1656,1686-1687</code>）</td>
+</tr>
+<tr>
+<td>2</td>
+<td>逐个 <code>import_design(script)</code> 重放工程 ISF；任一失败 → break → 整个流程 ERROR</td>
+<td>249-263</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>auto_assign_resource()</code>；若规划出分配 → 写出 <code>{design}.auto_asg.isf</code></td>
+<td>273-279（<code>design.py:1709</code>）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>design_api.save()</code> 写回合并后的 peri.xml</td>
+<td>281</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>check_design()</code> 门禁（Design Check）</td>
+<td>283-289</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>generate()</code> 产出 PT 结果供 pnr 消费</td>
+<td>291-293</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-2-design-unified-isf-的语义">7.2 <code>{design}.unified.isf</code> 的语义</h3>
+<ul>
+<li>内容：<strong>当前外围网表</strong>（综合器从 RTL 推断出的 GPIO/PLL 等）反序列化成的 ISF 命令，首尾包着 <code>setup_partial_design</code> / <code>finish_partial_design</code>；</li>
+<li>作用：先删掉网表里已有的同类实例（partial design），再从网表重建——这是"RTL 端口自动进接口数据库"的机制载体；</li>
+<li>它是<strong>工具生成物</strong>，排在导入队列最前，不要手工编辑。</li>
+</ul>
+<h3 id="7-3-design-auto_asg-isf-的语义">7.3 <code>{design}.auto_asg.isf</code> 的语义</h3>
+<ul>
+<li>内容：<code>auto_assign_resource</code> 的规划结果（未落定到 peri.xml 的自动分配），以 <code>design.set_property</code> / <code>design.assign_*</code> 行表达；</li>
+<li>消费：后续导入可用 <code>--skip-resasg</code> 跳过其中 <code>design.assign*</code> 行（<code>isf_importer.py:231-233</code>）；</li>
+<li>它同样是<strong>工具生成物</strong>。</li>
+</ul>
+<h3 id="7-4-design-peri-xml">7.4 <code>&lt;design&gt;.peri.xml</code></h3>
+<ul>
+<li>namespace <code>efxpt:design_db</code>（schema <code>peri_design_db.xsd</code>，见 §4.4 头部实录）；</li>
+<li><strong>工程源文件</strong>：构建后必须存活、纳入版本管理；只有 Efinity PT 工具/GUI 能产出；</li>
+<li>手工编辑既无 schema 保障也无重放语义保障——一律通过 ISF 表达意图。</li>
+</ul>
+<hr />
+<h2 id="8-已知陷阱-按新证据修订">8. 已知陷阱（按新证据修订）</h2>
+<h3 id="8-1-把-isf-写成-xml-自创标签-invalid-syntax">8.1 把 ISF 写成 XML / 自创标签 → "invalid syntax"</h3>
+<p>ISF 是 Python API 源码。<code>&lt;efx:gpio&gt;</code>、<code>&lt;EFX_PERI_INTERFACE&gt;</code> 之类 XML 进 <code>.isf</code> 会被当作 Python 解析，首行即 <code>SyntaxError</code> → 整文件终止（§1.3）。历史教训：46 KB 的 XML 改名 <code>.peri.isf</code> 被导入器当场拒绝，且该缺陷潜伏数月无人发现——<strong>原因就是没有任何环节真正 import 过它</strong>。对策即 §6 的强制自检。</p>
+<h3 id="8-2-重放含-create_-的-isf-gpio-pll-exists-二次编译必失败">8.2 重放含 <code>create_*</code> 的 ISF → <code>GPIO/PLL ... exists</code>，二次编译必失败</h3>
+<p>机制链：create 语义 + 每次构建重放（§3.1）→ 查重失败（<code>db_item.py:792</code>、<code>design_export_import.py:2015</code>、<code>service.py:635</code>）→ PTException（warning 级继续）→ issue 非空即 import 失败（§1.3）→ 统一流程 abort。对策：§4.5 bootstrap ritual（引导后立即注释 <code>create_*</code>，重放编译必须再 PASS）。</p>
+<h3 id="8-3-用-set_property-设资源或引脚">8.3 用 <code>set_property</code> 设资源或引脚</h3>
+<p><code>set_property</code> docstring 明确禁止（<code>design.py:507</code>）。资源和引脚有专用通道 <code>assign_resource</code> / <code>assign_pkg_pin</code>；走错通道的属性可能被 Design Check 或后续分配覆盖。</p>
+<h3 id="8-4-总线-vs-标量混淆">8.4 总线 vs 标量混淆</h3>
+<ul>
+<li><code>msb == lsb</code> 是标量、否则是总线（<code>design.py:1088-1091</code>）；</li>
+<li>总线 GPIO 用 <code>create_output_gpio("led", 5, 0)</code> 创建——<strong>不要</strong>拆成 <code>create_output_gpio("led[0]", 0, 0)</code> 逐位创建；</li>
+<li>引脚分配成员用 <code>"led[N]"</code> 格式：<code>design.assign_pkg_pin("led[0]","K14")</code>（§4.3 实录）；</li>
+<li>文本序列化层面：标量 create 行无 msb/lsb，总线 create 行带两个数字（§5.8）。</li>
+</ul>
+<h3 id="8-5-isf-实例名与-rtl-端口名不一致">8.5 ISF 实例名与 RTL 端口名不一致</h3>
+<p>Unified Flow 的 GPIO 实例名来自 RTL 顶层端口（经 <code>.unified.isf</code> 重建，§7.2）。ISF 里 set/assign 用的名字对不上端口名时，<code>set_property</code> 对未知实例会挂到错误对象或无效对象上，<code>lock_property</code> 甚至静默返回 None（<code>design.py:1936</code>）——错误可能延迟到 Design Check 才暴露。</p>
+<h3 id="8-6-warning-级-issue-也算失败">8.6 "warning 级 issue 也算失败"</h3>
+<p><code>PTException</code> 在 importer 中是 warning 且继续执行，但 <code>import_isf</code> 只看 issue 计数（§1.3）。<strong>不要</strong>把日志里有 warning 的导入当作成功；退出码/流程状态才是准绳。</p>
+<h3 id="8-7-create_regional_control_gpio-不存在">8.7 <code>create_regional_control_gpio</code> 不存在</h3>
+<p>导出器映射表里 <code>gpio_reg_ctrl</code> 条目被注释（<code>isf_exporter.py:695-712</code>），对应 API 从未提供。写它 = <code>AttributeError</code>（error 级 issue，§1.3）→ 导入失败。</p>
+<h3 id="8-8-文本-isf-的值表达能力有限">8.8 文本 ISF 的值表达能力有限</h3>
+<p><code>from_str</code> 只允许 <code>prop_value</code> 含字母/数字/下划线/空白/点/方括号（<code>isf_command.py:130</code>）。含逗号、引号等复杂值无法用文本行表达；空字符串值是合法的（§4.2 实录中 <code>LOCKED_PIN","","PLL"</code>）。</p>
+<h3 id="8-9-手写-手改-peri-xml">8.9 手写/手改 <code>.peri.xml</code></h3>
+<p><code>efxpt:design_db</code> 是工具私有数据库，只有 PT 工具/GUI 能产出（§7.4）。任何构建路径删除或重生成 peri.xml 都是违规 workaround；SDK 三条铁律见 §3.5。</p>
+<h3 id="8-10-bank-电压与-io-标准匹配-保留自旧版-ti180-实测证据">8.10 Bank 电压与 IO 标准匹配（保留自旧版，Ti180 实测证据）</h3>
+<ul>
+<li>同一 bank 的所有 IO 必须同电压标准；bank 电压用 <code>design.set_iobank_voltage("TL","3.3")</code> 声明（§2.3）；</li>
+<li>MIPI bank 必须 1.2V，且 MIPI 与 LVDS 不能共存同 bank（电压要求不同）→ 违反报 <code>io_bank_rule_voltage_assignment</code>；</li>
+<li>HSIO bank 内 GPIO/LVDS/MIPI 之间必须留至少一对未分配 IO 做隔离；</li>
+<li>Ti60ES（工程样片）不支持 2.5V，仅量产版支持；</li>
+<li>实测基线：Ti180 器件 catalog 工程工程 XML（<code>opx_333x642_b40_d20_tj180a484s.xml</code>）中 bank 电压声明与上述规则一致。</li>
+</ul>
+<h3 id="8-11-pll-只能在-isf-创建-配合-4-2-模板">8.11 PLL 只能在 ISF 创建（配合 §4.2 模板）</h3>
+<p>RTL 只声明端口（<code>pll_clk_out</code> / <code>pll_locked</code>），PLL 实例与参数全部经 ISF <code>create_block("pll_inst1","PLL")</code> + <code>set_property</code> 表达，资源用 <code>assign_resource("pll_inst1","PLL_TL0","PLL")</code>。PLL 输出分频器只能是 2 的幂次，相位仅 45° 步进（详见《Efinity优化设计.md》）。</p>
+<hr />
+<h2 id="附录-a-最小合法-isf-模板">附录 A：最小合法 ISF 模板</h2>
+<h3 id="a-1-bootstrap-模板-仅-peri-xml-不存在时启用-create_-引导后注释">A.1 bootstrap 模板（仅 peri.xml 不存在时启用 create_*，引导后注释）</h3>
+<pre><code class="language-python"># ==== bootstrap（一次性）：仅在 &lt;design&gt;.peri.xml 不存在时启用，引导后立即注释 ====
+# design.create_pll_input_clock_gpio(&quot;pll_refclk&quot;)
+# design.create_block(&quot;pll_inst1&quot;,&quot;PLL&quot;)
+
+# ==== 重放安全区（每次编译都会重放） ====
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_SOURCE&quot;,&quot;EXTERNAL&quot;,&quot;PLL&quot;)
+design.set_property(&quot;pll_inst1&quot;,&quot;REFCLK_FREQ&quot;,&quot;25.0&quot;,&quot;PLL&quot;)
+design.assign_pkg_pin(&quot;pll_refclk&quot;,&quot;B2&quot;)
+design.assign_resource(&quot;pll_inst1&quot;,&quot;PLL_TL0&quot;,&quot;PLL&quot;)
+</code></pre>
+<h3 id="a-2-pins-模板-工程-xml-引用的形态-对齐-4-3">A.2 pins 模板（工程 XML 引用的形态，对齐 §4.3）</h3>
+<pre><code class="language-python"># Set property, non-defaults
+design.set_property(&quot;rstn&quot;,&quot;PULL_OPTION&quot;,&quot;WEAK_PULLUP&quot;)
+
+# Set resource assignment
+design.assign_pkg_pin(&quot;led[0]&quot;,&quot;K14&quot;)
+design.assign_pkg_pin(&quot;rstn&quot;,&quot;J13&quot;)
+</code></pre>
+<h2 id="附录-b-证据文件索引">附录 B：证据文件索引</h2>
+<table>
+<thead>
+<tr>
+<th>证据</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DesignAPI 全部方法</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\design.py</code></td>
+</tr>
+<tr>
+<td>ISF 导入器（exec/错误分级）</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_importer.py</code></td>
+</tr>
+<tr>
+<td>ISF 导出器（46 个 builder）</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\exim\isf_exporter.py</code></td>
+</tr>
+<tr>
+<td>命令文本序列化</td>
+<td><code>C:\Efinity\2026.1\pt\bin\api_service\isf_command.py</code></td>
+</tr>
+<tr>
+<td>器件设置能力表</td>
+<td><code>C:\Efinity\2026.1\pt\bin\...\int_device_setting.py</code></td>
+</tr>
+<tr>
+<td>统一流程驱动</td>
+<td><code>C:\Efinity\2026.1\pt\bin\efx_run_pt_unified.py</code></td>
+</tr>
+<tr>
+<td>官方双 ISF + 工程 XML</td>
+<td><code>C:\Efinity\2026.1\examples\helloworld-unified\</code></td>
+</tr>
+<tr>
+<td><code>already exists</code> 抛错点</td>
+<td><code>pt\bin\design\db_item.py:792</code>、<code>design_export_import.py:2015</code>、<code>service.py:635</code></td>
+</tr>
+<tr>
+<td>SDK 自检工具</td>
+<td><code>c:\work\awesomsdk\sdk\cli\import_gpio.bat</code> / <code>import_gpio_cli.py</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="附录-c-isf-验收检查单-合并-3-4-6-的操作版">附录 C：ISF 验收检查单（合并 §3/§4/§6 的操作版）</h2>
+<ul>
+<li>[ ] 所有 <code>constraints/*.isf</code> 通过 <code>sdk\cli\import_gpio.bat --dry-run</code>（exit 0）</li>
+<li>[ ] 被工程 XML 引用的 ISF 只含幂等命令（§3.2 白名单）；<code>create_*</code> 仅存在于一次性 bootstrap 且引导后已注释</li>
+<li>[ ] 新基线完成过"引导编译 + 重放编译"两连 PASS（§4.5）</li>
+<li>[ ] <code>&lt;design&gt;.peri.xml</code> 存在、构建后存活、与 ISF 一起纳入版本管理</li>
+<li>[ ] 工程实例名与 RTL 端口/硬 IP 名精确一致（§8.5）</li>
+<li>[ ] 总线 GPIO 未被拆成标量创建；引脚分配用 <code>"bus[N]"</code> 格式（§8.4）</li>
+<li>[ ] bank 电压已声明且全部 IO 兼容；MIPI bank=1.2V 且不与 LVDS 共 bank（§8.10）</li>
+</ul></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+</body></html>

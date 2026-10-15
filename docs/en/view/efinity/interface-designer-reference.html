@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interface Designer Reference</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
+<span>Operating reference for the native interface designer.</span>
+<code>efinity/interface-designer-reference.md</code>
+<a href="../../../efinity/interface-designer-reference.md">Markdown source</a></p>
+<h1>Interface Designer Reference</h1></header>
+<main class="article"><h1 id="efinity-interface-designer-reference">Efinity Interface Designer Reference</h1>
+<blockquote>
+<p>Version: v1.0 | Based on Efinity 2026.1 (UG-TiINTF-v1.0)</p>
+</blockquote>
+<h2 id="1-overview">1. Overview</h2>
+<p>Efinity Interface Designer is the GUI tool inside the Efinity software for building the FPGA periphery. It is independent of the core logic design and focuses on configuring GPIO, LVDS, PLL, MIPI, DDR, and other hardware blocks.</p>
+<p><strong>Positioning:</strong>
+- Efinity main window → design the core logic
+- Interface Designer → design the peripheral interfaces</p>
+<p><strong>How to launch:</strong></p>
+<pre><code class="language-batch">efinity_pt.bat        # Windows
+efinity_pt.sh         # Linux
+</code></pre>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\doc\topics\hlp-id-intro.html</code></p>
+<hr />
+<h2 id="2-architecture">2. Architecture</h2>
+<p>Interface Designer is built on a Python plugin architecture:</p>
+<pre><code>pt/
+├── bin/
+│   ├── api_service/      # API service layer (design, device, resources)
+│   ├── common_device/     # Common device logic (GPIO, Quad, properties, rules)
+│   ├── common_gui/        # Common GUI components (builder, validator, viewer)
+│   ├── design/            # Design database (db.py, db_item.py, service.py)
+│   ├── device/            # Device database (clocks, io_info, package, service.py)
+│   ├── main_gui/          # Main window GUI
+│   ├── res_asg/           # Resource assigner
+│   ├── pin_browser/       # Pin browser
+│   ├── pkg_gui/           # Package planner
+│   ├── schema/            # XML Schema definitions (40+ XSD files)
+│   ├── writer/            # Output file generators (pinout, timing, periphery)
+│   ├── efx_run_pt_*.py    # CLI entry scripts
+│   └── engine.py          # Core engine
+├── db/
+│   ├── die/               # Die definitions (block_models/*.xml)
+│   └── resource/          # Device resource database (.db files)
+└── config.ini             # Configuration file
+</code></pre>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\</code></p>
+<hr />
+<h2 id="3-supported-interface-blocks">3. Supported Interface Blocks</h2>
+<h3 id="3-1-device-settings">3.1 Device Settings</h3>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration</td>
+<td>Configuration mode (Active/Passive), SPI Flash type, etc.</td>
+</tr>
+<tr>
+<td>I/O Banks</td>
+<td>I/O bank voltages, Dynamic Voltage Support</td>
+</tr>
+<tr>
+<td>Clock Networks</td>
+<td>Global/regional clock networks, dynamic clock multiplexers</td>
+</tr>
+<tr>
+<td>SEU Detection</td>
+<td>Single-event upset detection (Titanium/Topaz)</td>
+</tr>
+<tr>
+<td>User Status Pin</td>
+<td>User status pin</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-io-interfaces">3.2 IO interfaces</h3>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Supporting devices</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPIO</td>
+<td>All</td>
+<td>General-purpose IO; supports HVIO/HSIO, DDIO, Serializer/Deserializer</td>
+</tr>
+<tr>
+<td>LVDS</td>
+<td>All</td>
+<td>Low-voltage differential signaling, TX/RX, GCLK/RCLK/PHYCLK</td>
+</tr>
+<tr>
+<td>MIPI D-PHY</td>
+<td>Titanium/Topaz</td>
+<td>MIPI D-PHY TX/RX</td>
+</tr>
+<tr>
+<td>MIPI CSI-2</td>
+<td>Trion</td>
+<td>MIPI CSI-2 camera interface</td>
+</tr>
+<tr>
+<td>MIPI Lane</td>
+<td>Titanium/Topaz</td>
+<td>MIPI Lane configuration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-memory-interfaces">3.3 Memory interfaces</h3>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Supporting devices</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DDR</td>
+<td>All</td>
+<td>DDR2/DDR3/LPDDR3 DRAM</td>
+</tr>
+<tr>
+<td>HyperRAM</td>
+<td>Titanium</td>
+<td>HyperRAM memory</td>
+</tr>
+<tr>
+<td>SPI Flash</td>
+<td>Titanium/Trion</td>
+<td>SPI Flash interface</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-4-high-speed-serial-interfaces">3.4 High-speed serial interfaces</h3>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Supporting devices</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCI Express</td>
+<td>Titanium/Topaz</td>
+<td>PCIe Gen2/Gen3</td>
+</tr>
+<tr>
+<td>Ethernet SGMII</td>
+<td>Titanium/Topaz</td>
+<td>Gigabit Ethernet SGMII</td>
+</tr>
+<tr>
+<td>Ethernet XGMII</td>
+<td>Titanium/Topaz</td>
+<td>10-gigabit Ethernet XGMII</td>
+</tr>
+<tr>
+<td>PMA Direct</td>
+<td>Titanium/Topaz</td>
+<td>Direct PMA access</td>
+</tr>
+<tr>
+<td>Transceiver</td>
+<td>Titanium/Topaz</td>
+<td>General-purpose transceivers (Common Settings + PLLs)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-5-clock-and-system">3.5 Clock and system</h3>
+<table>
+<thead>
+<tr>
+<th>Block</th>
+<th>Supporting devices</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PLL</td>
+<td>All</td>
+<td>Multiple PLL/FPLL/SSC-PLL variants</td>
+</tr>
+<tr>
+<td>Oscillator</td>
+<td>All</td>
+<td>Internal oscillator</td>
+</tr>
+<tr>
+<td>JTAG User TAP</td>
+<td>All</td>
+<td>User JTAG TAP (USER1/USER2)</td>
+</tr>
+<tr>
+<td>RISC-V</td>
+<td>Titanium/Topaz</td>
+<td>Quad-core hard RISC-V processor</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\doc\topics\</code></p>
+<hr />
+<h2 id="4-gui-workflow">4. GUI Workflow</h2>
+<h3 id="4-1-designing-an-interface">4.1 Designing an interface</h3>
+<ol>
+<li>Select the device and package</li>
+<li>Create interface blocks (Create Block → choose the type)</li>
+<li>Configure block parameters (PLL frequency, GPIO direction, etc.)</li>
+<li>Assign pins (Resource Assigner or Package Planner)</li>
+<li>Run the design check (Design Check)</li>
+<li>Generate constraint files (Generate Constraint Files)</li>
+</ol>
+<h3 id="4-2-resource-assigner">4.2 Resource Assigner</h3>
+<ul>
+<li>Resource View: inspect all assigned resources</li>
+<li>Import/Export: import and export GPIO assignments (CSV format or ISF format)</li>
+<li>GPIO CSV: bulk GPIO configuration</li>
+</ul>
+<h3 id="4-3-package-planner">4.3 Package Planner</h3>
+<ul>
+<li>Visual chip package pin map</li>
+<li>Drag-and-drop pin assignment</li>
+<li>Filter by bank</li>
+<li>Exclude specific pins/banks</li>
+<li>Light/dark themes supported</li>
+</ul>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\doc\topics\efn-pkg-planner.html</code>
+<strong>Source:</strong> <code>C:\Efinity\2026.1\pt\doc\topics\hlp-id-resource-assigner.html</code></p>
+<hr />
+<h2 id="5-output-files">5. Output Files</h2>
+<p>Generated after running Generate Constraint Files:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;project&gt;.interface.csv</code></td>
+<td>FPGA design pin constraints between the core and the periphery</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.pt.rpt</code></td>
+<td>Interface information report</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.pinout.csv</code></td>
+<td>Board-level design pin assignments (CSV format)</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.pinout.rpt</code></td>
+<td>Board-level design pin assignments (formatted text)</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.pt_timing.rpt</code></td>
+<td>Titanium interface logic timing report</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;.pt.sdc</code></td>
+<td>SDC constraint template derived from the interface configuration</td>
+</tr>
+<tr>
+<td><code>&lt;project&gt;_template.v</code></td>
+<td>Verilog HDL template derived from the interface configuration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\doc\topics\id-output-files.html</code></p>
+<hr />
+<h2 id="6-isf-interface-scripting-file-vs-gui">6. ISF (Interface Scripting File) vs GUI</h2>
+<h3 id="6-1-the-gui-way-interface-designer">6.1 The GUI way (Interface Designer)</h3>
+<ul>
+<li>Graphical operation, suited to interactive design</li>
+<li>What you see is what you get</li>
+<li>Suited to designs with small to medium pin counts</li>
+<li>Drag-and-drop pin assignment supported</li>
+</ul>
+<h3 id="6-2-the-isf-scripting-way">6.2 The ISF scripting way</h3>
+<ul>
+<li>A Python script describes the interface configuration</li>
+<li>Suited to bulk operations (large numbers of GPIOs)</li>
+<li>Suited to design reuse and porting across boards</li>
+<li>Version-control friendly (text files)</li>
+<li>Can be exported → modified → re-imported</li>
+</ul>
+<p><strong>ISF format example:</strong></p>
+<pre><code class="language-python"># Efinity Interface Configuration
+# Version: 2020.M.138
+
+# Create GPIO instances
+design.create_output_gpio(&quot;Fled&quot;, 3, 0)
+design.create_inout_gpio(&quot;Sled&quot;, 3, 0)
+design.create_clockout_gpio(&quot;Oclk_out&quot;)
+design.create_pll_input_clock_gpio(&quot;pll_clkin&quot;)
+design.create_global_control_gpio(&quot;resetn&quot;)
+
+# Set properties
+design.set_property(&quot;Fled&quot;, &quot;OUT_REG&quot;, &quot;REG&quot;)
+design.set_property(&quot;Fled&quot;, &quot;OUT_CLK_PIN&quot;, &quot;Fclk&quot;)
+
+# Resource assignment
+design.assign_pkg_pin(&quot;Fled[0]&quot;, &quot;J2&quot;)
+design.assign_pkg_pin(&quot;pll_clkin&quot;, &quot;C3&quot;)
+design.assign_pkg_pin(&quot;resetn&quot;, &quot;F1&quot;)
+</code></pre>
+<p><strong>How ISF relates to the unified flow:</strong>
+- The ISF file is executed in the PT (Interface Designer) step of the unified compile flow
+- The Python code is executed line by line via <code>exec()</code>, with the <code>design</code> object injected by the framework
+- See <em>Efinity ISF Syntax Reference</em> for details</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\doc\topics\py-api-isf.html</code></p>
+<hr />
+<h2 id="7-python-api-scripting">7. Python API Scripting</h2>
+<p>Efinity ships Python 3 and provides the Interface Designer Python API for scripted control of the interface design flow:</p>
+<pre><code class="language-python"># Use cases
+# - Bulk-creating large numbers of GPIOs
+# - Porting a design to another board
+# - Exporting an interface for analysis
+</code></pre>
+<p><strong>Official PDF reference:</strong> <code>Efinity Interface Designer Python API</code> (UG-EFN-PYAPI)</p>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\doc\topics\tint-scripting.html</code></p>
+<hr />
+<h2 id="8-cli-script-entry-points">8. CLI Script Entry Points</h2>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efx_run_pt.py</code></td>
+<td>Interface Designer main entry</td>
+</tr>
+<tr>
+<td><code>efx_run_pt_gen_isf.py</code></td>
+<td>Generate an ISF file</td>
+</tr>
+<tr>
+<td><code>efx_run_pt_import_isf.py</code></td>
+<td>Import an ISF file</td>
+</tr>
+<tr>
+<td><code>efx_run_pt_auto_reasg.py</code></td>
+<td>Automatic resource assignment</td>
+</tr>
+<tr>
+<td><code>efx_run_pt_unified.py</code></td>
+<td>The PT step in the unified flow</td>
+</tr>
+<tr>
+<td><code>efx_run_pt_migrate.py</code></td>
+<td>Device migration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Source:</strong> <code>C:\Efinity\2026.1\pt\bin\</code></p>
+<hr />
+<h2 id="9-design-check">9. Design Check</h2>
+<p>Interface Designer has a built-in design rule check covering all interface blocks:</p>
+<table>
+<thead>
+<tr>
+<th>Check category</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPIO</td>
+<td>Voltage conflicts, drive strength</td>
+</tr>
+<tr>
+<td>LVDS</td>
+<td>Bank compatibility, clock configuration</td>
+</tr>
+<tr>
+<td>PLL</td>
+<td>Frequency ranges, phase alignment</td>
+</tr>
+<tr>
+<td>DDR</td>
+<td>Timing constraints, bank assignment</td>
+</tr>
+<tr>
+<td>MIPI</td>
+<td>Lane configuration, timing parameters</td>
+</tr>
+<tr>
+<td>Clock</td>
+<td>Clock domains, network driving rules</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>Configuration mode compatibility</td>
+</tr>
+<tr>
+<td>JTAG</td>
+<td>Resource conflicts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-floorplan-view">10. Floorplan View</h2>
+<p>Interface Designer provides a device floorplan view showing the physical location of each interface block:</p>
+<table>
+<thead>
+<tr>
+<th>Device family</th>
+<th>Floorplan document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Titanium</td>
+<td><code>titanium-floorplans.html</code></td>
+</tr>
+<tr>
+<td>Topaz</td>
+<td><code>topaz-floorplans.html</code></td>
+</tr>
+<tr>
+<td>Trion</td>
+<td><code>tintf-floorplan-intro.html</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-relationship-to-the-unified-compile-flow">11. Relationship to the Unified Compile Flow</h2>
+<p>In the Efinity unified compile flow (<code>efx_run --flow compile</code>):</p>
+<pre><code>RTL Design → Interface Designer (PT) → Synthesis → P&amp;R → Bitstream
+</code></pre>
+<p>During the Interface Designer stage:
+1. Read the device/package information from the project XML
+2. Load the ISF file (if specified)
+3. Validate the interface configuration
+4. Generate constraint files (.sdc, .csv, _template.v)
+5. Generate the I/O configuration file</p>
+<hr />
+<h2 id="12-related-file-index">12. Related File Index</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\</code></td>
+<td>Interface Designer installation directory</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\</code></td>
+<td>Core code and scripts</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\doc\topics\</code></td>
+<td>Interface Designer documentation</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\db\resource\</code></td>
+<td>Device resource database</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\schema\</code></td>
+<td>XML Schema files</td>
+</tr>
+<tr>
+<td><code>C:\Efinity\2026.1\pt\bin\writer\</code></td>
+<td>Output file generators</td>
+</tr>
+<tr>
+<td><code>d:\work\trae_projects\evoversesdk\docs\efinity\Efinity-ISF语法参考.md</code></td>
+<td>Detailed ISF syntax reference</td>
+</tr>
+</tbody>
+</table></main>
+<footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
+</body></html>
