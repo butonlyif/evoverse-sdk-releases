@@ -242,6 +242,13 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>An evidence chain from specification to hardware: every step either carries a PASS receipt or is explicitly marked <code>incomplete</code> / <code>fail</code> — <code>incomplete</code> is never treated as PASS.</li>
 <li>The final bitstream is produced by the Efinity native unified flow <code>efx_run --flow compile</code>; the MIPI CSI-2 output is validated against a real receiver or on-chip debug cores.</li>
 </ul>
+<h2 id="what-to-do-when-things-go-sideways">What to Do When Things Go Sideways</h2>
+<p>The prompts in this tutorial deliberately state intent only — no control-plane action names, no process steps. Driving the flow, picking actions, and checking receipts are Trae's job; you do not need to memorize them. Generation and simulation are inherently stochastic, so when things do not go smoothly, handle it by three principles:</p>
+<ol>
+<li><strong>State the goal, not the process.</strong> Describe what you want ("write the SD card data into DDR") instead of command steps. If Trae's approach disagrees with the mechanics described in this tutorial, just ask "how do you plan to proceed" and listen to the explanation before deciding.</li>
+<li><strong>When a step takes long, ask for progress — do not rush it and do not start over.</strong> Generation, simulation, and native builds all run at minutes-to-tens-of-minutes scale; stacking new instructions midway only derails the rhythm. If it feels slow, ask "which step are you on and what is left" instead of resending the prompt.</li>
+<li><strong>When the result does not match expectations, state the expectation before the problem.</strong> Spell out clearly "what I expected to see vs. what I actually saw", and let Trae return to the relevant evidence or specification and redo the flow. A simulation FAIL is not an accident — it is evidence: fix it, re-deliver, re-simulate, and the baseline stays unpolluted.</li>
+</ol>
 <p>Once you are ready, start from <a href="00-stage0-harness.html">Stage 00: Set up the project harness</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="next-stage" href="00-stage0-harness.html">Next: 00 Build the Stage0 Physical Harness →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 

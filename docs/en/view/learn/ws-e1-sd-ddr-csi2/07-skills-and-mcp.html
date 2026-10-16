@@ -123,13 +123,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Having walked through all seven stages, step back and survey every interface this path used: 11 public MCP tools, 25 control-plane actions, and 6 built-in Skills. Every step you took toward SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX on the TJ180A484S corresponds to a row in one of these tables and one piece of evidence.</p>
 </blockquote>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Based on the design-package, intent and candidate receipts, simulation evidence,
-build reports, and (if any) hardware validation receipts left by this project,
-do a pre-delivery review. Walk through the seven stages — initialization, materials,
-specification, candidates and simulation, firmware, integration, build and hardware —
-and for each stage explain which control-plane action or Skill was used, what
-evidence was left behind, and which boundaries remain unverified.
-Explain in language a customer can understand; do not just list tool names.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Walk me through a pre-delivery review: stage by stage across initialization, materials,
+specification, candidates and simulation, firmware, integration, and build and hardware,
+explain what each step did, what evidence it left behind, and which boundaries remain
+unverified. Use language a customer can follow; do not just report tool names.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
@@ -144,6 +141,29 @@ Explain in language a customer can understand; do not just list tool names.
 <li>You can state what question each of the 11 public MCP tools answers: the 3 control-plane tools handle status, next actions, and execution; <code>evoverse_health</code> handles health; the remaining 7 <code>rk3588_*</code> tools handle the RK3588 environment and project builds.</li>
 <li>Ordinary agent conversation can explain and organize, but it cannot substitute for the receipts of <code>candidate.deliver</code> and <code>verification.simulate</code>.</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The review skips a stage</td>
+<td>Check the Workbench control plane's state partitions (Baseline / intents / candidates / evidence) and fill the gaps partition by partition — never wave things through from memory.</td>
+</tr>
+<tr>
+<td>The explanation is all jargon</td>
+<td>Follow up with "what does this step ultimately mean for the image shown on the board", and have it retell it in plain language.</td>
+</tr>
+<tr>
+<td>Trae wants to skip the review and go straight to directory cleanup</td>
+<td>Not recommended. The review surfaces missing-evidence links early; discovering them only at Stage 08 means a rollback and a re-build.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li>Without looking at the docs, you can recite the full path from materials to <code>efx_run --flow compile</code> build evidence.</li>

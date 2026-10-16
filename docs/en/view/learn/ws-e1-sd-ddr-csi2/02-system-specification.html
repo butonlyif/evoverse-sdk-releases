@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>02 Freeze the Specification</h1></header>
 <main class="article tutorial-article"><h1 id="stage-02-freeze-the-specification-delta-specification-and-level-decisions">Stage 02 · Freeze the Specification (Delta Specification and Level Decisions)</h1>
 <blockquote>
-<p>The material ledger split the in-house blank area into three increments (SD input, DDR buffering, CSI-2 output). This stage explains the mechanics of two decisions — how the simulation level is chosen and how the delta specification is frozen — and walks the first increment (SD input) through <code>spec.draft</code> → <code>spec.approve</code> end to end. Until the specification is approved, the control plane allows no candidate delivery; the last two increments repeat their level and specification decisions in Stage 03.</p>
+<p>The material ledger split the in-house blank area into three increments (SD input, DDR buffering, CSI-2 output), which together cover the entire SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX display link. This stage explains the mechanics of two decisions — how the simulation level is chosen and how the delta specification is frozen — and walks the first increment (SD input) through <code>spec.draft</code> → <code>spec.approve</code> end to end. Until the specification is approved, the control plane allows no candidate delivery; the last two increments repeat their level and specification decisions in Stage 03.</p>
 </blockquote>
 <p>The specification is the contract of the reliable design flow: candidates delivered later through <code>candidate.deliver</code> are validated against its summary, and evidence from <code>verification.simulate</code> is bound to its version. The delta specification is measured against the <strong>parent baseline</strong> — the first round's parent is the Stage0 initial baseline, and the last two rounds' parents are the previous round's promotion results. Write it incompletely and every later step gets blocked back to you.</p>
 <p>The complete decision chain of the first increment looks like this:</p>
@@ -134,14 +134,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     F --&gt; G[&quot;spec.approve&lt;br&gt;freeze the specification and generate the summary digest&quot;]
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">First confirm the simulation level for the first increment (SD input): it involves SD protocol handshake and backpressure on the frame-buffer write port,
-extract the risk facts and submit them through simulation.profile.select; explain the server's recommended level and the deferred items to me, and I will choose the level.
-After the choice, draft the delta specification for the SD blank area based on design-package/material-ledger.md, and submit the draft with spec.draft.
-The overall pipeline is SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX, device TJ180A484S;
-this round freezes only the SD write path; the DDR and CSI-2 increments repeat their own level and specification decisions in Stage 03.
-Coverage: module partitioning and interfaces of the SD host and the frame-buffer write controller (AXI-Stream first), clock and reset domains,
-SD protocol parameters, the simulation Oracle and acceptance scenarios; every difference from the parent baseline (Stage0 initial baseline) must be individually identifiable.
-When behavior is ambiguous, give me 2-3 mutually exclusive options instead of deciding for me.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Start the first round of design: read from an SD card and write into a DDR frame buffer on my WS-E1 board (TJ180A484S).
+First tell me what simulation level this round needs:
+it involves SD protocol handshake and backpressure on the frame-buffer write port — walk me through the recommended level and the items whose verification will be deferred; I will decide the level myself.
+Once the level is set, draft this round's specification from the material ledger, covering only the SD write path;
+wherever behavior is ambiguous (for example, how to handle an SD card initialization timeout), give me options to choose from instead of deciding for me.
+Freeze it once I confirm.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
@@ -161,6 +159,33 @@ When behavior is ambiguous, give me 2-3 mutually exclusive options instead of de
 <li>The delta specification is measured against the parent baseline: which files are reused, added, or modified — item by item identifiable; this is the basis for the later <code>candidate.promote</code> merge.</li>
 <li>The clock scheme complies with Efinity constraints: PLLs created in the ISF, logic driven by non-divided clocks, synchronizers on asynchronous domains — these go into the specification's physical constraints section.</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The recommended level is higher than expected</td>
+<td>You may pick one level lower, but read every acceptedRisks entry before confirming — what you are signing for is "which verification gets deferred".</td>
+</tr>
+<tr>
+<td>The specification draft is sent back for revisions</td>
+<td>That is the control plane's normal protection: a vaguely written specification will block you again and again at candidate delivery and simulation — cheapest to fix now.</td>
+</tr>
+<tr>
+<td>None of the decision options fit</td>
+<td>Have Trae fill in each option's differences and consequences and draft again; you can also describe your own policy and ask it to generate fresh options.</td>
+</tr>
+<tr>
+<td>Stuck at the level decision</td>
+<td>Ask "which risk facts are still missing"; the recommendation comes from the server's fixed rules and appears naturally once the facts are in.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li>Your <code>simulation.profile.select</code> choice is visible in the control-plane state (<code>selectedBy: user</code>), and <code>spec.draft</code> is no longer blocked by <code>SIMULATION_PROFILE_REQUIRED</code>.</li>

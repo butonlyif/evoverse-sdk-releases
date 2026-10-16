@@ -242,6 +242,13 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>一条从规格到硬件的证据链：每一步要么有 PASS 回执，要么明确标记 <code>incomplete</code> / <code>fail</code>——<code>incomplete</code> 永远不会被当作 PASS。</li>
 <li>最终 bitstream 由 Efinity 原生统一流程 <code>efx_run --flow compile</code> 产生；MIPI CSI-2 输出用真实接收端或片上调试核验证。</li>
 </ul>
+<h2 id="遇到问题怎么办">遇到问题怎么办</h2>
+<p>教程里的提示词刻意只说意图，不带控制面动作名和流程步骤——推进流程、选动作、核对回执是 Trae 的工作，你不需要背。生成与仿真本身有随机性，遇到不顺利的情况按三条原则处理：</p>
+<ol>
+<li><strong>只说目标，不背流程。</strong> 描述你想要什么（"把 SD 卡数据写进 DDR"），而不是命令步骤。Trae 的做法若与教程描述的机制不一致，直接问它"你打算怎么推进"，听它解释后再决定。</li>
+<li><strong>等得久先问进度，别催也别重来。</strong> 生成、仿真、原生编译都是分钟级到几十分钟级的任务，中途叠加新指令只会打乱节奏。觉得太慢就问"现在到哪一步了、还差什么"，而不是重发一遍提示词。</li>
+<li><strong>结果不符合预期，先说期望再说问题。</strong> 把"我期望看到什么、实际看到了什么"讲清楚，让 Trae 回到对应的证据或规格重新走流程。仿真 FAIL 不是事故，是证据——修复后重新交付、重新仿真即可，基线不会被污染。</li>
+</ol>
 <p>准备就绪后，从 <a href="00-stage0-harness.html">阶段 00：建立工程 Harness</a> 开始。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="next-stage" href="00-stage0-harness.html">下一阶段：00 建立 Stage0 物理 Harness →</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 

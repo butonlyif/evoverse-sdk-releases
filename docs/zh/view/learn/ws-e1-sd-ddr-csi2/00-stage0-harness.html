@@ -138,10 +138,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>注意：<code>~/evoverse-sdk</code> 是 SDK 工作区，不是本教程的工程根。下一步打开的是一个空目录，Stage0 在那里建工程。</p>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <p>打开一个空目录作为工程根，在 Trae Chat 里说：</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 @evoverse 在当前空目录初始化一个 EvoVerse 工程。
-板卡选择 ws-e1 / ws-e1-base，参考目标为 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX。
-请先调用 project_status 和 project_next，展示当前状态与 envelope 推荐动作；
-我确认后再执行 project.initialize，并把初始化回执逐项解释给我确认。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 @evoverse 在当前空目录建一个 EvoVerse 工程。板卡选 ws-e1 / ws-e1-base，
+我的硬件是一块 WS-E1 核心模组（TJ180A484S）插在 ws-e1-base 底板上，
+目标是做一条 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的显示链路。
+动手之前，先把要写入的工程身份（板卡、载板、器件、速度等级）讲给我听；
+我确认后再初始化，并把初始化回执解释给我。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
@@ -157,6 +158,37 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>器件与速度等级：Titanium Ti60、C4。速度等级写错会在后续编译时序模型上整体偏离。</li>
 <li>工程根目录确实是空目录或只含你自己的笔记；不要把别的工程文件混进来。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>重启后没有弹出 "Set up EvoVerse SDK?"</td>
+<td>在命令面板执行 <code>evoverse.setup</code> 手动触发；仍无反应就检查三个 VSIX 是否都装上并已启用。</td>
+</tr>
+<tr>
+<td>Welcome 页没有自动打开</td>
+<td>在命令面板执行 <code>evoverse.welcome</code> 打开；目录没同步过时先别急着对话。</td>
+</tr>
+<tr>
+<td>Sync Catalog 失败或很慢</td>
+<td>多为网络原因，重试一次即可；完成后用 <code>evoverse catalog status --json</code> 确认目录版本。不要跳过同步硬选板卡。</td>
+</tr>
+<tr>
+<td>提示"工程目录非空"拒绝初始化</td>
+<td>换一个空目录，或把已有文件挪走——控制面不接管来历不明的文件。</td>
+</tr>
+<tr>
+<td>初始化半天没动静</td>
+<td>问一句"初始化到哪一步了"；不要重发提示词，重复初始化只会制造对账负担。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
 <li><code>project_status</code> 返回的 revision 非零，工程身份（board / carrier / jacket / device / timing model）与你的硬件一致。</li>

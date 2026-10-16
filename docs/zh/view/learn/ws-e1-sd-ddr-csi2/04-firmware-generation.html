@@ -134,11 +134,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     F --&gt; G[&quot;板上功能验证留待阶段 06&lt;br&gt;此前状态为 INTEGRATION_PENDING_HARDWARE&quot;]
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">为本工程的 Sapphire SoC 生成软件分区：在 soc/ 下创建裸机应用，
-按规格实现 SD 初始化与帧缓冲灌注的主循环，用 new_software 建立软件工程，
-硬件配置变更后用 regenerate_bsp 重新生成 BSP。
-软件候选完成后同样用 candidate.deliver 提交，标注 hardware-software-contract；
-host 级可测的每个强制性需求都要给出 host 或 board 测试方法。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">硬件部分齐了，接着做固件：在 soc/ 下建 Sapphire 裸机工程，
+实现 SD 卡初始化和帧缓冲灌注的主循环，生成配套的 BSP。
+编译通过后把软件候选也登记进工程，写清它和硬件的接口契约；
+host 上能测的需求都要给出测试方法。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
@@ -156,6 +155,29 @@ host 级可测的每个强制性需求都要给出 host 或 board 测试方法�
 <li>所有权交接清晰：硬件侧提供寄存器图与中断契约（OWN_P1），软件侧消费它；任何一侧变更都要重新走候选交付。</li>
 <li>没有硬件时，本阶段止步于 <code>SW_BUILT</code>，板上验证在控制面状态里保持 <code>INTEGRATION_PENDING_HARDWARE</code>。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固件编译报错</td>
+<td>先让 Trae 区分是 BSP 与硬件配置不同源，还是应用代码问题——两类修法不同，不要混着猜。</td>
+</tr>
+<tr>
+<td>编译通过但不确定功能对不对</td>
+<td>编译成功只是 <code>SW_BUILT</code>，不等于功能正确；板上验证要等阶段 06，不要提前口头放行。</td>
+</tr>
+<tr>
+<td>本机没有 Sapphire 工具链</td>
+<td>让 Trae 如实报告缺失，不要让它自行下载来源不明的工具链。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
 <li>软件候选回执在控制面状态里可见，ELF 与 BSP 摘要已登记。</li>

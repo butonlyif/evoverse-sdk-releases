@@ -123,11 +123,9 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>七个阶段走完，回头看清这条路径用到的全部接口：11 个公开 MCP 工具、25 个控制面动作、6 个内置 Skill。你在 TJ180A484S 上完成 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一步，都对应这张表里的一行和一条证据。</p>
 </blockquote>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">请根据本工程留下的 design-package、意图与候选回执、仿真证据、
-构建报告和（如有）硬件验证回执，做一次交付前回顾。
-按&quot;初始化、物料、规格、候选与仿真、固件、集成、编译与硬件&quot;七个阶段说明：
-每一步用了哪个控制面动作或哪个 Skill、留下了什么证据、哪些边界还没验证。
-用客户能理解的中文解释，不要只罗列工具名。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">带我做一次交付前回顾：按初始化、物料、规格、候选与仿真、固件、集成、
+编译与硬件七个阶段，讲清楚每一步做了什么、留下了什么证据、
+哪些边界还没验证。用客户能听懂的话讲，不要只报工具名。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
@@ -142,6 +140,29 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>你能说清 11 个公开 MCP 工具各自回答什么问题：控制面 3 个管状态、下一步、执行；<code>evoverse_health</code> 管健康；其余 7 个 <code>rk3588_*</code> 管 RK3588 环境与工程构建。</li>
 <li>普通 Agent 对话可以解释和整理，但不能替代 <code>candidate.deliver</code> 与 <code>verification.simulate</code> 的回执。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>回顾漏了某个阶段</td>
+<td>对着 Workbench 控制面的状态分区（Baseline / 意图 / 候选 / 证据）逐区核对补齐，不要凭记忆放行。</td>
+</tr>
+<tr>
+<td>解释全是术语听不懂</td>
+<td>追问"这一步对板子最终显示图像意味着什么"，让它换成人话再讲一遍。</td>
+</tr>
+<tr>
+<td>Trae 想跳过回顾直接整理目录</td>
+<td>不建议。回顾能提前暴露缺证据的环节，到阶段 08 才发现就要回滚复编译。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
 <li>你能不看文档说出工程从物料到 <code>efx_run --flow compile</code> 编译证据的完整路径。</li>

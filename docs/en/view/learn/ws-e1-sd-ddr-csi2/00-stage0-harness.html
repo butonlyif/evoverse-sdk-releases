@@ -138,10 +138,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Note: <code>~/evoverse-sdk</code> is the SDK workspace, not this tutorial's project root. The next step opens an empty directory, and Stage0 builds the project there.</p>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
 <p>Open an empty directory as the project root and say the following in Trae Chat:</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use @evoverse to initialize an EvoVerse project in the current empty directory.
-Select board ws-e1 / ws-e1-base, with the reference target SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX.
-First call project_status and project_next to show me the current state and the envelope's recommended action;
-after I confirm, execute project.initialize, then walk me through the initialization receipt item by item.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use @evoverse to create an EvoVerse project in this empty directory. Choose board ws-e1 / ws-e1-base;
+my hardware is a WS-E1 core module (TJ180A484S) seated on a ws-e1-base carrier,
+and the goal is a display link of SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX.
+Before doing anything, read me back the project identity you are about to write (board, carrier, device, speed grade);
+initialize only after I confirm, then walk me through the initialization receipt.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
@@ -157,6 +158,37 @@ after I confirm, execute project.initialize, then walk me through the initializa
 <li>Device and speed grade: Titanium Ti60, C4. A wrong speed grade skews the timing model of every later compile.</li>
 <li>The project root really is an empty directory or contains only your own notes; do not mix in files from other projects.</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No "Set up EvoVerse SDK?" dialog after the restart</td>
+<td>Trigger it manually with <code>evoverse.setup</code> from the command palette; if still nothing, check that all three VSIXes are installed and enabled.</td>
+</tr>
+<tr>
+<td>The Welcome page does not open automatically</td>
+<td>Open it with <code>evoverse.welcome</code> from the command palette; hold off on starting the conversation until the catalog has been synced at least once.</td>
+</tr>
+<tr>
+<td>Sync Catalog fails or is slow</td>
+<td>Usually network-related — retry once; afterwards confirm the catalog version with <code>evoverse catalog status --json</code>. Do not skip the sync and force-pick a board.</td>
+</tr>
+<tr>
+<td>Initialization refused with "project directory not empty"</td>
+<td>Switch to another empty directory or move the existing files away — the control plane does not take over files of unknown provenance.</td>
+</tr>
+<tr>
+<td>Initialization sits silent for a long time</td>
+<td>Ask "which step of the initialization are you on"; do not resend the prompt — repeated initialization only creates reconciliation overhead.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li>The revision returned by <code>project_status</code> is non-zero, and the project identity (board / carrier / jacket / device / timing model) matches your hardware.</li>

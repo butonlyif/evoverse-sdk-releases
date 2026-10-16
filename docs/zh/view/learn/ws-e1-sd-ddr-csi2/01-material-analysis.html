@@ -137,10 +137,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     F --&gt; G
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">继续 @evoverse 工程的物料分析。扫描 EVOVERSE_HOME 的运营 Catalog 和当前工程目录，
-列出与 SD 主机、DDR、MIPI CSI-2 TX 相关的全部材料，标注来源与许可；
-然后用 asset.observe 把观察结果登记为工程资产，把账本写到 design-package/material-ledger.md。
-目标数据链路是 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX，器件 TJ180A484S。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">继续这个工程的物料分析。我要在 TJ180A484S 上做 SD card -&gt; DDR frame buffer
+-&gt; MIPI CSI-2 TX，帮我盘点运营 Catalog 和工程目录里的相关材料：
+哪些可以直接例化、哪些要按我的规格改造、哪些只能当参考、哪些根本不能用，
+整理成一份物料清单登记进工程，每一条都注明来源、许可和理由。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
@@ -160,6 +160,33 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><code>REFERENCE_ONLY</code> 的边界：目标工程的 RTL、约束、工程文件不得进入你的工程目录，更不得成为新工程基线。</li>
 <li>账本里没有来历不明的材料：每一行都能回答"从哪来、许可能不能用在交付物里"。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>列出的材料太多看不过来</td>
+<td>让 Trae 只保留"许可与器件兼容"有依据的条目，其余标为待查；账本宁缺毋滥。</td>
+</tr>
+<tr>
+<td>找不到 SD 主机或 CSI-2 相关材料</td>
+<td>如实接受"这一环是自研空白区"——找不到不等于硬凑；空白区会按三轮增量拆进规格。</td>
+</tr>
+<tr>
+<td>Trae 想把目标 sd-ddr-csi2 工程的 RTL 复制过来</td>
+<td>拒绝。目标工程只能当参考，复制进你的工程会破坏整条证据链。</td>
+</tr>
+<tr>
+<td>账本行数很少、像模板</td>
+<td>说明扫描不充分，把板卡原理图、BOM 或 IP 手册丢给它重新盘点。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
 <li><code>asset.observe</code> 回执在控制面状态里可见，materials 区与账本一致。</li>

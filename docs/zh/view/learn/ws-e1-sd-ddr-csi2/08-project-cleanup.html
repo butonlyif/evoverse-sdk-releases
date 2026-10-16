@@ -133,19 +133,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     E --&gt; G[&quot;报告：已整理 / 受保护 /&lt;br&gt;引用更新 / 复编译结果&quot;]
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">请检查当前 WS-E1 工程，先生成一份&quot;工程目录整理预览&quot;，不要移动、重命名或删除任何文件。
-按 design-package/、rtl/、sim/、constraints/、software/、reports/、scripts/ 和 IP/ 的归属列出：
-保留位置、建议移动的位置、引用它的工程文件或脚本、以及移动后需要更新的路径。
-
-只允许整理本工程自己生成的 RTL、仿真、软件、报告和辅助脚本。
-不得移动、重命名、删除或重新生成第三方 IP、Efinity 生成物、冻结规格包、材料账本、
-已晋级基线文件与 candidate.promote 回执、工程 XML、约束和已登记的源文件。
-把不确定的文件标为&quot;需要我决定&quot;，等我确认预览后再执行。
-
-我确认后，只执行我确认的条目；完成后检查工程 XML、源文件清单和脚本路径是否仍然有效，
-再用 build.native 记录一次 efx_run --flow compile 复编译结果。
-分别报告：实际整理的文件、保留不动的受保护文件、更新过的引用、复编译结果。
-不要从 sd-ddr-csi2 或其他参考工程补充文件。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">工程做完了，帮我整理目录。先生成一份整理预览，只看不动：
+列出哪些文件建议挪、哪些受保护不能动、移动后要改哪些引用、
+哪些你拿不准需要我决定。我确认后只执行确认的条目，
+最后重新编译一次，证明整理后的工程仍能交付。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
@@ -162,6 +153,29 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>"删除"只针对你明确批准的临时文件；判定不了的保持原样，列为需要决定项。</li>
 <li>整理后工程 XML 仍引用正确的 RTL、约束、IP 和软件输入，复编译报告来自本次目录状态。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>预览里出现拿不准的条目</td>
+<td>全部标"需要我决定"，宁少动不多动——整理的收益远小于误动受保护文件的代价。</td>
+</tr>
+<tr>
+<td>复编译失败</td>
+<td>让 Trae 保留失败报告并回滚未确认动作，回到整理前的目录状态，而不是继续修补。</td>
+</tr>
+<tr>
+<td>建议动工程 XML 或第三方 IP</td>
+<td>拒绝。它们在受保护列表内；引用修正只能走同步能力，不要顺手"重命名让目录更整洁"。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="自然语言触发红线">自然语言触发红线</h2>
 <p>本章只能动本工程自己生成的 RTL / 仿真 / 软件 / 报告 / 辅助脚本。下列说法会让 Agent 越过受保护列表，破坏工程契约：</p>
 <table>

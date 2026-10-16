@@ -143,38 +143,20 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <p>第一步，完成第一轮增量（SD 输入）的完整循环：</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 intent.create 为本工程声明第一轮增量意图：实现 SD 主机控制器与帧缓冲写控制器，
-作用域限定 rtl/ 下两个叶子模块及其 sim/ 验证源。基线中已有的 DDR wrapper 与 CSI-2 TX
-例化保持只读，用 asset.adopt 纳入意图作用域；展示 project_next 里这两个动作的
-inputSchema 与前置条件后再执行。
-
-接着用 simulation.profile.select 做等级决策：展示服务端推荐等级与理由，
-我确认选择；如果低于推荐，列出 acceptedRisks 让我逐条确认。
-
-再用 spec.draft 起草本轮差量规格：只写新增两个模块及其与父基线的顶层连接，
-对照父基线文件账本标注复用 / 新增 / 修改，给我预览确认后冻结。
-
-然后用 /evoverse-rtl 按已批准差量规格生成上述两个模块，候选只写到候选区路径；
-完成后用 candidate.deliver 提交完整候选文件集（files 或 filesRoot，origin 为 generated），
-再用 verification.simulate 按所选等级记录仿真证据。
-仿真 PASS 且资格满足后用 candidate.promote 晋级，把候选与父基线合并安装为新基线。
-全程展示每一步的 MCP 回执。未冻结规格或回执缺失时立即停止。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">规格已批准，开始生成第一轮：SD 主机控制器和帧缓冲写控制器，
+基线里已有的 DDR wrapper 和 CSI-2 TX 例化保持只读。
+生成完就按这轮的等级做仿真；全部通过就把这轮结果并入基线，
+有失败就修到通过为止。把每一步的回执给我看。
 </code></pre></section>
 <p>第二步，以晋级后的基线为父基线，重复完成第二、三轮：</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">第一轮已晋级，当前基线包含 SD 输入。请按同样的循环完成第二轮增量：
-用 intent.create 声明 DDR 缓冲增量，父基线是 SD 晋级后的基线；
-simulation.profile.select 重新决策等级（不继承上一轮的选择与 acceptedRisks），
-spec.draft 起草差量规格，candidate.deliver 冻结候选，
-verification.simulate 独立仿真，PASS 后 candidate.promote 晋级。
-
-第三轮同理：用 intent.create 声明 CSI-2 输出增量，父基线是 DDR 晋级后的基线，
-走完等级决策、差量规格、候选交付、独立仿真与晋级。
-每轮都展示 baseBaselineFiles 快照回执与晋级回执；任何一轮仿真未 PASS 就停下等我决策。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">第一轮已并入基线。接着做第二轮：在基线上加 DDR 缓冲；完成后再做第三轮：
+加 CSI-2 输出封装。每一轮都按第一轮的方式走：先定仿真等级和规格，
+再生成、仿真，通过后并入基线。任何一轮仿真过不去，就停下来等我决定。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
 <li><code>project_status</code> 确认 Stage0 基线就绪；<code>project_next</code> 确认 <code>intent.create</code> 可用并展示其 inputSchema。</li>
-<li>提交 <code>intent.create</code>：控制面把本轮父基线（第一轮为 Stage0 初始基线）的资产快照进 <code>IntentRecord.baseBaselineFiles</code>，回执里能看到这份清单——它是后面"复用 / 新增 / 修改"记账的锚点。</li>
+<li>提交 <code>intent.create</code>：控制面把本轮父基线（第一轮为 Stage0 初始基线）的资产快照进 <code>IntentRecord.baseBaselineFiles</code>，回执里能看到这份清单——它是后面"复用 / 新增 / 修改"记账的锚点；保持只读的 DDR wrapper 与 CSI-2 TX 例化用 <code>asset.adopt</code> 显式连进意图作用域。</li>
 <li><code>simulation.profile.select</code> 两阶段决策：服务端按 riskFacts 给出推荐等级，你确认选择；低于推荐时 acceptedRisks 逐条落账。等级绑定在本轮迭代上，不继承、不外溢。</li>
 <li><code>spec.draft</code> 起草差量规格并冻结：只描述本轮增量及其与父基线的顶层连接，复用项对照 <code>baseBaselineFiles</code> 快照标注。</li>
 <li>调用 <code>/evoverse-rtl</code> 按规格生成候选 RTL 与测试平台到候选区路径，遵守 RTL 编码规范（异步复位同步释放、CDC 同步器、无分频时钟、组合块默认值）。</li>
@@ -332,6 +314,37 @@ verification.simulate 独立仿真，PASS 后 candidate.promote 晋级。
 <li><strong>候选改一行，重新交付重新仿真</strong>：仿真证据绑定的是已冻结候选的摘要；<code>candidate.deliver</code> 之后候选不可变，任何改动都意味着新一轮交付与仿真。</li>
 <li><strong><code>expectedRevision</code> 冲突不是事故</strong>：它只是并发提示值，冲突时控制面给出对账动作；不要为了"保险"教 Agent 依赖过期 revision。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成的 RTL 行为不符合预期</td>
+<td>不要手改候选文件。把期望行为说清楚（"SD 卡初始化超时后应该重试三次"），让 Trae 回到规格重新生成——候选改一行就意味着重新交付、重新仿真。</td>
+</tr>
+<tr>
+<td>仿真 FAIL</td>
+<td>正常现象，不是事故。让 Trae 修复后重新交付、重新仿真；基线没有被污染，可以放心试错。连续失败时先让它讲清失败场景和根因假设再动手。</td>
+</tr>
+<tr>
+<td>生成时间明显过长</td>
+<td>问"现在卡在哪个模块"。生成是分钟级任务，不要中途换指令重发；模块多时按三轮增量拆开推进，比一次生成全链路稳。</td>
+</tr>
+<tr>
+<td>Trae 想直接往正式 RTL 目录写文件</td>
+<td>拒绝。候选必须冻结、仿真、晋级后才进基线——这是整条证据链的根基。</td>
+</tr>
+<tr>
+<td>父基线快照和你认知的不一致</td>
+<td>停下来对账：可能上一轮晋级没完成或有未登记的推进。不要在错误的父基线上继续增量。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
 <li>三轮增量共 12 张回执在 <code>project_status</code> 可见：每轮的 <code>intent.create</code>、<code>candidate.deliver</code>、<code>verification.simulate</code>、<code>candidate.promote</code> 各一张。</li>

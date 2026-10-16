@@ -176,6 +176,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </blockquote>
 <p>The corresponding MCP capability: first call <code>rk3588_environment_prepare</code> to obtain a one-time <code>inspectionToken</code>, then call <code>rk3588_environment_deploy</code> with <code>acceptedLicenses: true</code>. The token is valid only for the bytes inspected at that moment; if the package contents change, re-inspection is mandatory — replaying an old token is rejected.</p>
 <p>After reading the licenses, reply explicitly: "I accept the license terms in the offline packages and confirm deployment." If the deployment is cancelled or fails, the directories, receipts, and images added by this run are rolled back; images that existed before the deployment are not deleted.</p>
+<p>Deployment is not a second-scale operation: importing the Docker image, rebuilding the BSP Git tree, and the per-file verification together can easily take ten-plus minutes. While deployment runs, keep the Agent waiting and do not send new instructions; it will re-run the full health check when finished, and only READY counts as success — "it looks like it is moving" midway is not evidence of success.</p>
 <h2 id="5-confirm-the-environment-is-ready">5. Confirm the environment is READY</h2>
 <h3 id="natural-language-prompt-6-explain-the-environment-evidence">Natural-language prompt 6: explain the environment evidence</h3>
 <blockquote>
@@ -238,6 +239,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <p>The corresponding MCP capability: <code>rk3588_project_build</code> (headless builds accept only the complete four-stage order uboot → kernel → rootfs → package, not partial stages). Each stage's commands, exit codes, and SHA-256 evidence are attributed to <code>.evoverse/output/build-report.json</code> in the project directory; that file is the authority for the final state, and chat replies are only its summary.</p>
+<p>The four-stage build is a long task; on an average machine, half an hour or more is common. While it builds, keep the Agent waiting and do not stack new tasks on top; if any stage fails, it stops and hands you diagnostics — it never passes old artifacts off as success. When you see a failure, have it explain the root cause first, then decide whether to re-run or to fix.</p>
 <h2 id="9-accept-the-minimal-system">9. Accept the minimal system</h2>
 <h3 id="natural-language-prompt-11-acceptance-evidence">Natural-language prompt 11: acceptance evidence</h3>
 <blockquote>

@@ -136,12 +136,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     G --&gt;|no| E
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Run an integration check on this project: first show me the project contract and
-confirm that the top-level module, the design source list, the ISF/SDC constraints,
-and the project XML are consistent; then synchronize the design sources into the
-Efinity project and run design verification. Organize every inconsistency you find
-into a preview list for my confirmation, and apply the changes only after I confirm.
-After synchronization completes, read project_status again and show the new revision.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Run an integration check for me: do the control plane's asset inventory, the Efinity project files,
+and the ISF/SDC constraints all point at the same set of files? Organize every inconsistency you
+find into a preview list for my confirmation, and sync the fixes only after I confirm.
+When done, tell me the new revision.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
@@ -159,6 +157,29 @@ After synchronization completes, read project_status again and show the new revi
 <li>The project XML is never hand-edited: structural changes go through the sync capability, avoiding hand-written mistakes such as an empty <code>&lt;efx:inter_file&gt;</code>.</li>
 <li>Entries in the verification report that conflict with the physical section of the specification: either fix the project files, or go back to stage 02 and revise the specification — the two sides must not talk past each other.</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The verification report conflicts with the specification's physical section</td>
+<td>Pick one: fix the project files to match the specification, or go back to Stage 02 and revise the specification — the two sides must not talk past each other.</td>
+</tr>
+<tr>
+<td>Trae wants to optimize the constraint files while it's at it</td>
+<td>Refuse. The integration stage fixes only "project files out of sync with the candidate"; no cosmetic touch-ups.</td>
+</tr>
+<tr>
+<td>The preview list is too long to review</td>
+<td>At minimum confirm three areas entry by entry: pin assignments, bank voltages, and clock definitions — they directly decide whether <code>efx_run --flow compile</code> converges.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li>The three views of the project contract agree: control-plane assets, the Efinity project XML, and the ISF/SDC constraints all point to the same set of files.</li>

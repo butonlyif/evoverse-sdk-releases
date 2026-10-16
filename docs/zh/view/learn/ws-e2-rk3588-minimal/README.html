@@ -176,6 +176,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </blockquote>
 <p>对应 MCP 能力：先用 <code>rk3588_environment_prepare</code> 获取一次性 <code>inspectionToken</code>，再以 <code>acceptedLicenses: true</code> 调用 <code>rk3588_environment_deploy</code>。token 只对检查时刻的字节有效，包内容变化后必须重新检查；重放旧 token 会被拒绝。</p>
 <p>阅读许可后明确回复：“我接受离线包中的许可条款并确认部署。”部署取消或失败时，本次新增目录、回执和镜像应回滚，部署前已有镜像不删除。</p>
+<p>部署不是秒级操作：导入 Docker 镜像、重建 BSP Git 树和逐文件校验加起来可能要十几分钟。部署期间让 Agent 保持等待，不要发新指令；它会在结束后重新跑完整健康检查，只有 READY 才算成功——中途“看起来在动”不是成功证据。</p>
 <h2 id="5-确认环境-ready">5. 确认环境 READY</h2>
 <h3 id="自然语言提示词-6-解释环境证据">自然语言提示词 6：解释环境证据</h3>
 <blockquote>
@@ -238,6 +239,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <p>对应 MCP 能力：<code>rk3588_project_build</code>（headless 构建只接受完整的四阶段顺序 uboot → kernel → rootfs → package，不接受部分阶段）。每阶段的命令、退出码和 SHA-256 证据统一归属于工程目录下 <code>.evoverse/output/build-report.json</code>，最终状态以该文件为权威，聊天回复只是它的摘要。</p>
+<p>四阶段构建是长任务，机器性能一般时半小时以上很常见。构建期间让 Agent 保持等待，不要叠加新任务；任何阶段失败它都会停下来并给出诊断，不会拿旧产物冒充成功——看到失败先让它讲根因，再决定重跑还是修复。</p>
 <h2 id="9-验收最小系统">9. 验收最小系统</h2>
 <h3 id="自然语言提示词-11-验收证据">自然语言提示词 11：验收证据</h3>
 <blockquote>

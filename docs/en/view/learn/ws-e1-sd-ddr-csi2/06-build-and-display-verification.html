@@ -134,17 +134,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     UNVERIFIED_CHANGES --&gt; NATIVE_BUILD_PENDING: restored after re-delivery and promotion
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Please run one native Efinity build of the current project (efx_run --flow compile),
-then show resource utilization, clock domains, and the timing summary, and register
-the build.native evidence with the control plane.
-
-After the build passes, if I have connected the WS-E1 core board and the JTAG
-debugger, guide me through programming: confirm the target board and device ID with
-me first, then execute hardware.program once confirmed. After programming succeeds,
-verify the display link scenario by scenario: SD card initialization, DDR
-frame-buffer read-back verification, read-side ownership handoff, CSI-2 TX output,
-and image rotation on the receiver. Register each scenario with hardware.validate
-as it passes, and report honestly any scenario that was not run.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Run a native build of the project and show me resource utilization, clock domains, and the timing summary.
+Once the build passes, if I have already connected the WS-E1 core board and the JTAG debugger, guide me through programming:
+confirm the board and device ID with me before programming; afterwards verify the display link scenario by scenario —
+SD card initialization, DDR frame-buffer read-back verification, read-side ownership handoff, CSI-2 TX output,
+and image rotation on the receiver. Without hardware attached, stop at the build evidence and honestly mark the hardware validation as pending.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
@@ -163,6 +157,37 @@ as it passes, and report honestly any scenario that was not run.
 <li>Receiver display: image rotation is a phenomenon you confirm with your own eyes, not a conclusion inferred from logs.</li>
 <li>Evidence boundaries: build evidence, timing reports, and on-board scenario evidence are saved separately; any missing item must be called out in the report.</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The build runs past ten-some minutes</td>
+<td>Normal. A native Titanium build is a long task; cancelling and re-running midway only makes it longer — just ask "are you at map, pnr, or pgm now".</td>
+</tr>
+<tr>
+<td>Timing violation (WNS &lt; 0)</td>
+<td>Do not recompile repeatedly and hope for luck. Have Trae locate the root cause with timing diagnosis, or go back to Stage 05 to check the constraints.</td>
+</tr>
+<tr>
+<td>Programming cannot find the device</td>
+<td>Check the USB cable, the JTAG connection, and the drivers first; with several boards attached, confirm which one is being programmed — do not let the tool guess for you.</td>
+</tr>
+<tr>
+<td>On-board behavior differs from expectations</td>
+<td>Have Trae show you the evidence scenario by scenario: the serial DDR read-back verification, the CSI-2 output, the receiver image — eliminate link by link instead of vaguely declaring "the link is down".</td>
+</tr>
+<tr>
+<td>No hardware attached</td>
+<td><code>INTEGRATION_PENDING_HARDWARE</code> is a legitimate terminal state; stopping at build evidence is fine — never fabricate on-board conclusions.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li><code>efx_run --flow compile</code> succeeds, and the build and timing reports are registered as <code>build.native</code> evidence.</li>

@@ -134,14 +134,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     UNVERIFIED_CHANGES --&gt; NATIVE_BUILD_PENDING: 重新交付晋级后恢复
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">请对当前工程执行一次原生 Efinity 编译（efx_run --flow compile），
-完成后展示资源占用、时钟域和时序摘要，并把 build.native 证据登记到控制面。
-
-编译通过后，如果我已连接 WS-E1 核心板和 JTAG 调试器，请引导我完成烧录：
-烧录前向我确认目标板卡和器件编号，确认无误后执行 hardware.program。
-烧录成功后按场景逐条验证显示链路：SD 卡初始化、DDR 帧缓冲读回校验、
-读端所有权交接、CSI-2 TX 输出，以及接收端图像轮换，
-每条场景通过后用 hardware.validate 登记，未执行的场景如实报告。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">对工程做一次原生编译，把资源占用、时钟域和时序摘要给我看。
+编译通过后，如果我已经接好 WS-E1 核心板和 JTAG 调试器，引导我烧录：
+烧录前跟我确认板卡和器件编号；烧录后按场景逐条验证显示链路——
+SD 卡初始化、DDR 帧缓冲读回校验、读端所有权交接、CSI-2 TX 输出、
+接收端图像轮换。没接硬件就停在编译证据，如实标记待硬件验证。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
@@ -160,6 +157,37 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>接收端显示：图像轮换是你亲眼确认的现象，不是从日志推断的结论。</li>
 <li>证据边界：编译证据、时序报告、板上场景证据分别保存；任何一项缺失都要在报告里点名。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编译超过十几分钟</td>
+<td>正常。Titanium 器件的原生编译是长任务，中途取消重跑只会更久；问"现在跑到 map、pnr 还是 pgm"即可。</td>
+</tr>
+<tr>
+<td>时序违例（WNS &lt; 0）</td>
+<td>不要反复重编译碰运气。让 Trae 用时序诊断定位根因，或回到阶段 05 检查约束。</td>
+</tr>
+<tr>
+<td>烧录找不到器件</td>
+<td>先查 USB 线、JTAG 连接和驱动；插着多块板时确认烧的是哪一块，不要让工具替你猜。</td>
+</tr>
+<tr>
+<td>板上现象和预期不符</td>
+<td>让 Trae 按场景逐条给你看证据：串口 DDR 读回校验、CSI-2 输出、接收端图像，一环一环排，不要笼统说"链路不通"。</td>
+</tr>
+<tr>
+<td>没接硬件</td>
+<td><code>INTEGRATION_PENDING_HARDWARE</code> 是合法终态，停在编译证据即可，不要伪造板上结论。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
 <li><code>efx_run --flow compile</code> 成功，构建与时序报告已作为 <code>build.native</code> 证据登记。</li>

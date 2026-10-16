@@ -137,10 +137,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     F --&gt; G
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Continue the material analysis for the @evoverse project. Scan the operations Catalog under EVOVERSE_HOME and the current project directory,
-list every material related to SD host, DDR, and MIPI CSI-2 TX, noting provenance and license;
-then register the observations as project assets with asset.observe, and write the ledger to design-package/material-ledger.md.
-The target data path is SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX, device TJ180A484S.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Continue this project's material analysis. I want to build SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX
+on the TJ180A484S; take stock of the related materials in the operations Catalog and the project directory:
+which can be instantiated as is, which need adapting to my specification, which are reference-only,
+and which cannot be used at all. Organize the findings into a material inventory registered into the project,
+each entry annotated with its source, license, and rationale.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
@@ -160,6 +161,33 @@ The target data path is SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX, devi
 <li>The boundary of <code>REFERENCE_ONLY</code>: the target project's RTL, constraints, and project files must not enter your project directory, let alone become your new project's baseline.</li>
 <li>No material of unknown provenance in the ledger: every row can answer "where it came from" and "whether the license allows use in the deliverables".</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Too many materials listed to review</td>
+<td>Have Trae keep only the entries with a defensible "license and device compatible" verdict and mark the rest as to-be-checked — a leaner ledger beats a padded one.</td>
+</tr>
+<tr>
+<td>No SD host or CSI-2 material found</td>
+<td>Accept honestly that this link is an in-house blank area — not finding one does not mean improvising one; the blank areas are split into the specification along the three increments.</td>
+</tr>
+<tr>
+<td>Trae wants to copy the target sd-ddr-csi2 project's RTL</td>
+<td>Refuse. The target project is reference-only; copying it into your project breaks the entire evidence chain.</td>
+</tr>
+<tr>
+<td>The ledger is short and looks like a template</td>
+<td>The scan was too shallow — feed it the board schematics, BOM, or IP manuals and have it take stock again.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li>The <code>asset.observe</code> receipt is visible in the control-plane state, and the materials area agrees with the ledger.</li>

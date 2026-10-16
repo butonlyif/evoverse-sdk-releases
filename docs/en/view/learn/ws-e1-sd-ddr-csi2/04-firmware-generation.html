@@ -134,13 +134,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     F --&gt; G[&quot;On-board functional verification deferred to Stage 06&lt;br&gt;status stays INTEGRATION_PENDING_HARDWARE until then&quot;]
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Generate the software partition for this project's Sapphire SoC: create a bare-metal
-application under soc/, implement the main loop for SD initialization and
-frame-buffer fill per the specification, and use new_software to set up the
-software project. After hardware configuration changes, use regenerate_bsp to
-regenerate the BSP. Submit the software candidate with candidate.deliver as well,
-tagged hardware-software-contract; every mandatory requirement that is testable at
-host level must have a host or board test method.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">The hardware side is complete — now the firmware: create a Sapphire bare-metal project under soc/,
+implement the main loop for SD card initialization and frame-buffer fill, and generate the matching BSP.
+Once it compiles, register the software candidate into the project as well, spelling out its interface contract with the hardware;
+every requirement that can be tested on the host needs a test method.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
@@ -158,6 +155,29 @@ host level must have a host or board test method.
 <li>Ownership handoff is clear: the hardware side provides the register map and interrupt contract (OWN_P1), the software side consumes it; any change on either side re-runs candidate delivery.</li>
 <li>Without hardware, this stage stops at <code>SW_BUILT</code>, and on-board verification stays <code>INTEGRATION_PENDING_HARDWARE</code> in the control-plane state.</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The firmware build reports errors</td>
+<td>First have Trae tell apart two cases: a BSP out of sync with the hardware configuration vs. an application-code problem — the fixes differ; do not guess at both at once.</td>
+</tr>
+<tr>
+<td>The build passes but correctness is unclear</td>
+<td>A successful build is only <code>SW_BUILT</code>, not functional correctness; on-board verification waits for Stage 06 — do not wave it through verbally ahead of time.</td>
+</tr>
+<tr>
+<td>No Sapphire toolchain on this machine</td>
+<td>Have Trae report the absence honestly; do not let it download a toolchain from an unknown source on its own.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li>The software candidate receipt is visible in the control-plane state, with the ELF and BSP digests registered.</li>

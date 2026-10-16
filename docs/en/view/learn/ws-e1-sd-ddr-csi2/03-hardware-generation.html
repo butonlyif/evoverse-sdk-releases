@@ -150,40 +150,20 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
 <p>First step — complete the full loop of the first round (SD input):</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use intent.create to declare the first incremental intent for this project: implement the SD host controller and the frame-buffer write
-controller, scoped to the two leaf modules under rtl/ and their sim/ verification sources. The DDR wrapper and the CSI-2 TX
-instantiation already present in the baseline stay read-only; bring them into the intent scope with asset.adopt. Show the
-inputSchema and preconditions of these two actions from project_next before executing.
-
-Next, use simulation.profile.select for the level decision: show me the server-recommended level and the reasoning,
-and I will confirm the choice; if it is below the recommendation, list the acceptedRisks for me to confirm one by one.
-
-Then use spec.draft to draft this round's delta specification: write only the two new modules and their top-level connections to
-the parent baseline, annotate reuse / added / modified against the parent baseline file ledger, and freeze it after I preview
-and confirm.
-
-Then use /evoverse-rtl to generate the two modules above against the approved delta specification; the candidate goes only to
-candidate-area paths. When done, submit the complete candidate file set with candidate.deliver (files or filesRoot, origin as
-generated), then record simulation evidence with verification.simulate at the selected level.
-After the simulation PASSes and eligibility is satisfied, promote with candidate.promote, merging the candidate with the parent
-baseline and installing it as the new baseline.
-Show the MCP receipt of every step throughout. Stop immediately if a specification is not frozen or a receipt is missing.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">The specification is approved — start generating round one: the SD host controller and the frame-buffer write controller.
+The DDR wrapper and the CSI-2 TX instantiation already in the baseline stay read-only.
+When generation finishes, simulate at this round's level; if everything passes, merge this round's results into the baseline,
+and if anything fails, keep fixing until it passes. Show me the receipt of every step.
 </code></pre></section>
 <p>Second step — with the promoted baseline as the parent, repeat for rounds two and three:</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Round one is promoted and the current baseline now includes the SD input. Complete the second increment with the same loop:
-use intent.create to declare the DDR buffering increment; the parent baseline is the SD-promoted baseline.
-simulation.profile.select decides the level again (do not inherit the previous round's choice or acceptedRisks),
-spec.draft drafts the delta specification, candidate.deliver freezes the candidate,
-verification.simulate simulates independently, and after PASS candidate.promote promotes it.
-
-Round three is the same: use intent.create to declare the CSI-2 output increment with the DDR-promoted baseline as parent,
-and go through the level decision, delta specification, candidate delivery, independent simulation, and promotion.
-Show the baseBaselineFiles snapshot receipt and the promotion receipt of every round; if any round's simulation does not PASS, stop and wait for my decision.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Round one is merged into the baseline. Next, do round two: add DDR buffering on top of the baseline; when that is done, do round three:
+add the CSI-2 output wrapper. Each round follows the same pattern as round one: settle the simulation level and the specification first,
+then generate, simulate, and merge into the baseline on a pass. If any round's simulation cannot pass, stop and wait for my decision.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
 <li><code>project_status</code> confirms the Stage0 baseline is ready; <code>project_next</code> confirms <code>intent.create</code> is available and shows its inputSchema.</li>
-<li>Submits <code>intent.create</code>: the control plane snapshots this round's parent baseline (the Stage0 initial baseline for round one) into <code>IntentRecord.baseBaselineFiles</code>; the receipt shows this list — it is the anchor for the later "reuse / added / modified" bookkeeping.</li>
+<li>Submits <code>intent.create</code>: the control plane snapshots this round's parent baseline (the Stage0 initial baseline for round one) into <code>IntentRecord.baseBaselineFiles</code>; the receipt shows this list — it is the anchor for the later "reuse / added / modified" bookkeeping. The read-only DDR wrapper and the CSI-2 TX instantiation are explicitly connected into the intent scope with <code>asset.adopt</code>.</li>
 <li><code>simulation.profile.select</code> decides in two phases: the server recommends a level from the riskFacts, you confirm the choice; below the recommendation, each acceptedRisk is recorded individually. The level binds to this iteration — not inherited, not spilled over.</li>
 <li><code>spec.draft</code> drafts and freezes the delta specification: it describes only this round's increment and its top-level connections to the parent baseline, with reused items annotated against the <code>baseBaselineFiles</code> snapshot.</li>
 <li>Invokes <code>/evoverse-rtl</code> to generate the candidate RTL and testbenches into candidate-area paths per the specification, following the RTL coding rules (async-reset sync-release, CDC synchronizers, no divided clocks, default values in combinational blocks).</li>
@@ -341,6 +321,37 @@ Show the baseBaselineFiles snapshot receipt and the promotion receipt of every r
 <li><strong>One changed line means re-delivery and re-simulation</strong>: simulation evidence binds to the frozen candidate's digest; after <code>candidate.deliver</code> the candidate is immutable, and any change means a new round of delivery and simulation.</li>
 <li><strong>An <code>expectedRevision</code> conflict is not an incident</strong>: it is just a concurrency hint; on conflict the control plane offers a reconciliation action; do not "play it safe" by teaching the Agent to rely on a stale revision.</li>
 </ul>
+<h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>How to handle it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The generated RTL behaves differently from what you expected</td>
+<td>Do not hand-edit candidate files. State the expected behavior clearly ("after an SD card initialization timeout it should retry three times") and have Trae go back to the specification and regenerate — one changed line means re-delivery and re-simulation.</td>
+</tr>
+<tr>
+<td>Simulation FAIL</td>
+<td>Normal, not an incident. Have Trae fix it, re-deliver, and re-simulate; the baseline was never polluted, so trial and error is safe. After repeated failures, have it explain the failing scenario and its root-cause hypothesis before touching anything.</td>
+</tr>
+<tr>
+<td>Generation clearly takes too long</td>
+<td>Ask "which module are you stuck on". Generation is a minutes-scale task — do not switch or resend instructions midway; with many modules, advancing by the three increments is steadier than generating the full chain in one shot.</td>
+</tr>
+<tr>
+<td>Trae wants to write files straight into the official RTL directory</td>
+<td>Refuse. Candidates must be frozen, simulated, and promoted before they enter the baseline — this is the foundation of the entire evidence chain.</td>
+</tr>
+<tr>
+<td>The parent-baseline snapshot does not match what you believe</td>
+<td>Stop and reconcile: the previous promotion may be unfinished or there may be unregistered advances. Do not keep incrementing on the wrong parent baseline.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li>All 12 receipts of the three rounds are visible in <code>project_status</code>: per round, one each for <code>intent.create</code>, <code>candidate.deliver</code>, <code>verification.simulate</code>, and <code>candidate.promote</code>.</li>

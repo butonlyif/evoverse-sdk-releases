@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>02 冻结规格</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-02-冻结规格-差量规格与等级决策">阶段 02 · 冻结规格（差量规格与等级决策）</h1>
 <blockquote>
-<p>物料账本把自研空白区拆成了三轮增量（SD 输入、DDR 缓冲、CSI-2 输出）。本阶段讲清两件事的机制：仿真等级怎么选、差量规格怎么冻结，并以第一轮增量（SD 输入）为例完整走一遍——<code>spec.draft</code> → <code>spec.approve</code>。规格未批准之前，控制面不会允许任何候选交付；后两轮增量会在阶段 03 各自重复等级与规格决策。</p>
+<p>物料账本把自研空白区拆成了三轮增量（SD 输入、DDR 缓冲、CSI-2 输出），合起来覆盖整条 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 显示链路。本阶段讲清两件事的机制：仿真等级怎么选、差量规格怎么冻结，并以第一轮增量（SD 输入）为例完整走一遍——<code>spec.draft</code> → <code>spec.approve</code>。规格未批准之前，控制面不会允许任何候选交付；后两轮增量会在阶段 03 各自重复等级与规格决策。</p>
 </blockquote>
 <p>规格是可靠设计流程的合同：后续 <code>candidate.deliver</code> 的候选会按它的摘要校验，<code>verification.simulate</code> 的证据会绑定到它的版本。差量规格的对照物是<strong>父基线</strong>——第一轮的父基线是 Stage0 初始基线，后两轮的父基线是上一轮的晋级结果。写得不完整，后面每一步都会被阻塞回来。</p>
 <p>第一轮增量的完整决策链如下：</p>
@@ -134,14 +134,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     F --&gt; G[&quot;spec.approve&lt;br&gt;冻结规格并生成摘要指纹&quot;]
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">先帮我确认第一轮增量（SD 输入）的仿真等级：它涉及 SD 协议握手与帧缓冲写端口背压，
-请提取风险事实提交 simulation.profile.select，把服务端推荐等级和延期事项讲给我听，我来选等级。
-选完再基于 design-package/material-ledger.md 的 SD 空白区起草差量规格，用 spec.draft 提交草稿。
-整体链路是 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX，器件 TJ180A484S，
-本轮只冻结 SD 写入路径；DDR 与 CSI-2 两轮增量在阶段 03 各自重复等级与规格决策。
-覆盖：SD 主机与帧缓冲写控制器的模块划分与接口（AXI-Stream 为主）、时钟与复位域、
-SD 协议参数、仿真 Oracle 与验收场景；相对父基线（Stage0 初始基线）的差异要逐条可辨认。
-有行为歧义时给我 2-3 个互斥决策选项，不要替我拍板。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">开始第一轮设计：在我的 WS-E1 板子（TJ180A484S）上做 SD 卡读入并写入 DDR 帧缓冲。
+先告诉我这一轮需要什么仿真等级：
+它涉及 SD 协议握手和帧缓冲写端口的背压，把推荐等级和会延后验证的事项讲给我听，
+等级我来定。定完之后按物料清单起草这一轮的规格，只覆盖 SD 写入路径；
+遇到行为有分歧的地方（比如 SD 卡初始化超时怎么处理）给我几个选项让我拍板，
+别替我决定。确认后冻结。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
@@ -161,6 +159,33 @@ SD 协议参数、仿真 Oracle 与验收场景；相对父基线（Stage0 初�
 <li>差量规格对照父基线：哪些文件复用、哪些新增、哪些修改，逐条可辨认——这是后面 <code>candidate.promote</code> 合并的依据。</li>
 <li>时钟方案符合 Efinity 约束：PLL 在 ISF 中创建、无分频时钟驱动逻辑、异步域有同步器——这些会写进规格的物理约束节。</li>
 </ul>
+<h2 id="如果不顺利">如果不顺利</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>怎么处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>推荐等级比预想高</td>
+<td>可以选低一档，但要把 acceptedRisks 逐条读过再确认——你签收的是"延后验证什么"。</td>
+</tr>
+<tr>
+<td>规格草稿被打回要求补充</td>
+<td>这是控制面的正常保护：写得含糊的规格会在候选交付和仿真时反复阻塞你，现在补最便宜。</td>
+</tr>
+<tr>
+<td>决策选项都不合意</td>
+<td>让 Trae 补齐每个选项的差异说明和后果再重新起草；也可以直接描述你的策略，请它生成新选项。</td>
+</tr>
+<tr>
+<td>卡在等级决策不动</td>
+<td>问"还缺哪些风险事实"；推荐来自服务端固定规则，事实齐了自然会给。</td>
+</tr>
+</tbody>
+</table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
 <li><code>simulation.profile.select</code> 的用户选择已在控制面状态里可见（<code>selectedBy: user</code>），<code>spec.draft</code> 不再被 <code>SIMULATION_PROFILE_REQUIRED</code> 阻塞。</li>
