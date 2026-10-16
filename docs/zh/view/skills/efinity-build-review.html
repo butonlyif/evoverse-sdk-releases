@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Efinity AI 工程感知编译评审</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
+<span>客户原生工程评审、证据等级、源码关联、安全建议与脱敏导出。</span>
+<code>skills/efinity-build-review.md</code>
+<a href="../../../skills/efinity-build-review.md">Markdown 源文件</a></p>
+<h1>Efinity AI 工程感知编译评审</h1></header>
+<main class="article"><h1 id="efinity-ai-工程感知编译评审">Efinity AI 工程感知编译评审</h1>
+<p><code>efinity-build-review</code> Skill 用于解释一个现有 Efinity 工程及其原生编译证据。它支持 EvoVerse 工程，也支持没有 <code>.evoverse</code>、源码位于任意目录或通过 flist/include 引用的客户原生工程。</p>
+<h2 id="使用方式">使用方式</h2>
+<p>在工程目录打开 Trae，然后输入：</p>
+<pre><code class="language-text">/efinity-build-review
+评审这个 Efinity 工程。先让我选择工程 XML，再解释工程结构、编译阶段、资源、时序、约束覆盖、产物、关键路径源码关联和下一步。
+</code></pre>
+<p>如果目录中有多个 Efinity XML，Skill 会要求明确选择，不会静默使用第一个文件。默认分析已有报告；运行新的原生编译前会说明动作并取得授权。</p>
+<h2 id="如何阅读结论">如何阅读结论</h2>
+<p>报告顶部给出六个互相独立的维度：Flow、Artifact、Timing、Resource、Constraint 和 Freshness。总状态含义如下：</p>
+<ul>
+<li><code>BLOCKED</code>：编译失败或证据不足以继续。</li>
+<li><code>BUILT_NOT_READY</code>：已有编译产物，但存在时序失败、过期证据或其他阻断。</li>
+<li><code>READY_WITH_RISK</code>：可以进入下一步验证，但仍有明确风险或只能确认报告“可能是当前的”。</li>
+<li><code>READY_FOR_VERIFICATION</code>：编译证据满足进入后续验证的条件；这不等于仿真、烧录或实板功能通过。</li>
+</ul>
+<p>mtime 兼容检查只能产生 <code>POSSIBLY_STALE</code>，不能证明 <code>CURRENT</code>。缺失值显示 <code>NOT_AVAILABLE</code> 或 <code>UNKNOWN</code>，不会显示为零。</p>
+<h2 id="源码定位与建议边界">源码定位与建议边界</h2>
+<p>关键路径定位分为 <code>EXACT</code>、<code>SYMBOL_MATCH</code>、<code>SEMANTIC_CANDIDATE</code>、<code>HEURISTIC</code> 和 <code>UNRESOLVED</code>。只有原生报告在当前工程证据闭包内给出的 <code>file:line</code> 才是 <code>EXACT</code>；重名候选会全部保留并标记歧义。</p>
+<p>增加 pipeline 的建议会检查反馈、FSM、valid/ready、包边界、Reset/CE、固定延迟、RAM/DSP、CDC、多消费者和验证资产。证据不足时结论为 <code>UNKNOWN</code>。I/O delay 需要外部器件时序和 PCB 参数；<code>false_path</code>、<code>multicycle_path</code>、<code>max_delay</code>、<code>min_delay</code> 需要结构证据、设计意图证据和用户确认。Skill 不会为消除违例编造数值或自动改写 RTL/SDC/ISF/XML。</p>
+<h2 id="报告和导出">报告和导出</h2>
+<p>本地评审生成不可覆盖的新目录，包含 <code>review.json</code>、<code>evidence.json</code>、<code>report.html</code> 和 <code>report.md</code>。IDE 页面禁用脚本并要求严格 CSP。HTML 提供可打印样式；当前 PDF 边界是 IDE/浏览器“打印为 PDF”，不是内置确定性 PDF 引擎。</p>
+<p>客户导出会删除本地绝对路径和源码正文，并扫描凭据式文本、环境变量值及路径。发现泄漏风险时导出失败关闭，必须先处理 finding，不能绕过。</p>
+<h2 id="验证边界">验证边界</h2>
+<p>Compile、Timing、Simulation、Programming 和 Hardware 是独立状态。评审可以确认原生报告记录了 map/interface/PNR/PGM 和 bitstream，但不得据此推断仿真、下载或板级功能通过。资源、WNS/TNS、阶段状态及顶层 verdict 来自确定性解析层；AI 只负责解释、风险分析和可验证建议。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+
+</body></html>
