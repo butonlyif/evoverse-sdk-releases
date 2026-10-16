@@ -122,11 +122,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </ul>
 <p>mtime 兼容检查只能产生 <code>POSSIBLY_STALE</code>，不能证明 <code>CURRENT</code>。缺失值显示 <code>NOT_AVAILABLE</code> 或 <code>UNKNOWN</code>，不会显示为零。</p>
 <h2 id="源码定位与建议边界">源码定位与建议边界</h2>
-<p>关键路径定位分为 <code>EXACT</code>、<code>SYMBOL_MATCH</code>、<code>SEMANTIC_CANDIDATE</code>、<code>HEURISTIC</code> 和 <code>UNRESOLVED</code>。只有原生报告在当前工程证据闭包内给出的 <code>file:line</code> 才是 <code>EXACT</code>；重名候选会全部保留并标记歧义。</p>
-<p>增加 pipeline 的建议会检查反馈、FSM、valid/ready、包边界、Reset/CE、固定延迟、RAM/DSP、CDC、多消费者和验证资产。证据不足时结论为 <code>UNKNOWN</code>。I/O delay 需要外部器件时序和 PCB 参数；<code>false_path</code>、<code>multicycle_path</code>、<code>max_delay</code>、<code>min_delay</code> 需要结构证据、设计意图证据和用户确认。Skill 不会为消除违例编造数值或自动改写 RTL/SDC/ISF/XML。</p>
+<p>关键路径定位分为 <code>EXACT</code>、<code>SYMBOL_MATCH</code>、<code>SEMANTIC_CANDIDATE</code>、<code>HEURISTIC</code> 和 <code>UNRESOLVED</code>。只有原生报告在当前工程证据闭包内给出的 <code>file:line</code> 才是 <code>EXACT</code>；重名候选会全部保留并标记歧义。Verilog/SystemVerilog 使用结构化 tokenizer/parser 建立 module、instance、port、parameter、process、assign、function、generate、数组、source range 与驱动—消费者图，再以数据锥辅助定位；宏与参数展开不完整、VHDL、生成或加密单元会明确降级，不伪装为完整 elaboration。</p>
+<p>增加 pipeline 的建议会检查反馈、FSM、valid/ready、包边界、Reset/CE、固定延迟、RAM/DSP、CDC、多消费者和验证资产。路径抽屉会并列显示数据锥、候选位置、pipeline 适用性、策略矩阵、功能影响和验证清单。证据不足时结论为 <code>UNKNOWN</code>。I/O delay 需要外部器件时序和 PCB 参数；<code>false_path</code>、<code>multicycle_path</code>、<code>max_delay</code>、<code>min_delay</code> 需要结构证据、设计意图证据和用户确认。Skill 不会为消除违例编造数值或自动改写 RTL/SDC/ISF/XML。</p>
 <h2 id="报告和导出">报告和导出</h2>
-<p>本地评审生成不可覆盖的新目录，包含 <code>review.json</code>、<code>evidence.json</code>、<code>report.html</code> 和 <code>report.md</code>。IDE 页面禁用脚本并要求严格 CSP。HTML 提供可打印样式；当前 PDF 边界是 IDE/浏览器“打印为 PDF”，不是内置确定性 PDF 引擎。</p>
-<p>客户导出会删除本地绝对路径和源码正文，并扫描凭据式文本、环境变量值及路径。发现泄漏风险时导出失败关闭，必须先处理 finding，不能绕过。</p>
+<p>本地评审通过临时目录原子生成不可覆盖的新目录，包含 <code>review.json</code>、<code>evidence.json</code>、<code>report.html</code> 和 <code>report.md</code>；失败或取消不会留下可误认成完成的报告。导出的 HTML 保持零脚本和严格 CSP；IDE Webview 只注入带 nonce 的本地桥，打开源码时再次按 evidence ID、文件存在性和行号校验，客户内容不能直接执行命令。HTML 提供可打印样式；当前 PDF 边界是 IDE/浏览器“打印为 PDF”，不是内置确定性 PDF 引擎。</p>
+<p>客户导出会删除本地绝对路径和源码正文，并扫描凭据式文本、环境变量值及路径。发现泄漏风险时导出失败关闭，必须先处理 finding，不能绕过。对比会先检查工程、器件和 Top 兼容性，再显示 WNS/TNS、资源、耗时、路径、约束和问题簇变化；没有新的原生 after-build evidence 时，策略不能标记为 <code>IMPROVED</code>、<code>NO_CHANGE</code> 或 <code>REGRESSED</code>。</p>
 <h2 id="验证边界">验证边界</h2>
 <p>Compile、Timing、Simulation、Programming 和 Hardware 是独立状态。评审可以确认原生报告记录了 map/interface/PNR/PGM 和 bitstream，但不得据此推断仿真、下载或板级功能通过。资源、WNS/TNS、阶段状态及顶层 verdict 来自确定性解析层；AI 只负责解释、风险分析和可验证建议。</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
