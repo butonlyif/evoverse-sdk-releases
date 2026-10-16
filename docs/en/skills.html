@@ -236,14 +236,9 @@ or delete it.</p>
 ├── docs/
 │   ├── datasheet.md              # customer-owned; optional
 │   └── generated/
-│       ├── board-overview.md
-│       ├── hardware-reference.md
-│       ├── interfaces.md
-│       ├── power-and-clock.md
-│       ├── development-guide.md
-│       ├── bring-up.md
-│       ├── sources.md
-│       └── board-manual.md
+│       └── board-manual.md       # single consolidated manual (whole-board
+│                                   architecture + all tables + bring-up +
+│                                   development guide + evidence sources)
 ├── jackets/stage0/
 ├── demos/
 ├── ips/
@@ -365,8 +360,9 @@ machine facts.</p>
 evidence boundaries. Report only boundaries actually exercised.</p>
 <h2 id="completion-gate">Completion gate</h2>
 <p>Do not call material ready unless schemas/paths, major-component evidence,
-exact-device pinouts, any declared package audit, composition, cross-chip links, Stage0 roles, and eight
-generated documents all pass. Verify <code>docs/datasheet.md</code>, <code>demos/</code>, <code>ips/</code>, and
+exact-device pinouts, any declared package audit, composition, cross-chip links, Stage0 roles, and the
+single generated <code>docs/generated/board-manual.md</code> (whole-board architecture diagram included) all pass.
+Verify <code>docs/datasheet.md</code>, <code>demos/</code>, <code>ips/</code>, and
 non-Stage0 jackets are byte-for-byte untouched, and report build/program/boot/
 hardware evidence separately.</p></div></section><section class="entry" id="skill-evoverse-design-spec" data-search="evoverse-design-spec Use when a customer asks to turn an FPGA or FPGA+software intent into a professional, directly implementable design specification and a phased implementation plan, grounded in runtime-discovered projects, boards, IP, reference designs, or Efinity evidence."><h3><code>evoverse-design-spec</code></h3><p>Use when a customer asks to turn an FPGA or FPGA+software intent into a professional, directly implementable design specification and a phased implementation plan, grounded in runtime-discovered projects, boards, IP, reference designs, or Efinity evidence.</p><div class="doc-body"><p>Create a reviewable design package from intent and existing evidence. Boards, demo projects, IP, and the Efinity installation are discovered at runtime, but material sources must follow the trusted material source hierarchy (see Boundaries, item 2): the single installed Catalog location is whatever <code>location</code> MCP <code>catalog_status</code> reports (<code>&lt;EVOVERSE_HOME&gt;/catalog</code>, default <code>~/evoverse-sdk/catalog</code>), or read the workspace pointer <code>&lt;workspace&gt;/.evoverse/catalog.json</code> in one step and use its <code>catalogRoot</code> (the SDK writes it automatically on activation and after every sync). Never locate materials by searching the whole disk, and never reference copies living in development trees or arbitrary directories.</p>
 <h2 id="boundaries">Boundaries</h2>
