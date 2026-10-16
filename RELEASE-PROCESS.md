@@ -7,7 +7,20 @@
 
 私有开发仓（下称 `awesomsdk`）的 `release/` 目录是全部资产来源。
 
-## 每版发布步骤
+## 一键发布（推荐）
+
+私有仓 `scripts\publish-public-release.ps1` 自动完成下述 1–8 步（双语打包 → 文档站重建 → 私网泄漏自查 → 快照同步 → README 刷版本 → SUMS → push → Release 创建/更新 → Pages 部署检查）：
+
+```powershell
+# 在私有仓 awesomsdk 根目录执行
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-public-release.ps1              # 全量发布
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-public-release.ps1 -DryRun      # 演练（不触公开仓）
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-public-release.ps1 -SkipPackage # 复用已有 release\*.tar.gz
+```
+
+版本号自动取自私有仓 `sdk\extension\package.json`。版本变化 → 创建新 Release（tag 由 gh 在 main HEAD 自动生成）并把双语 README 下载区刷到新版本号；版本不变 → 覆盖更新现有 Release 资产（`--clobber`）。自定义 Release 说明用 `-NotesFile <file>`。首次 Pages 开启（下述第 8 步）仍需网页操作一次。
+
+## 每版发布步骤（手动 fallback）
 
 以版本 `v<ver>` 为例，`<REL>` 指私有仓 `release\` 目录：
 
