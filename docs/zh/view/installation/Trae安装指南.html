@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -102,399 +104,257 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <code>installation/Trae安装指南.md</code>
 <a href="../../../installation/Trae安装指南.md">Markdown 源文件</a></p>
 <h1>Trae 安装与首次配置</h1></header>
-<main class="article"><h1 id="evoverse-sdk-trae-从零安装到全功能使用指南">EvoVerse SDK：Trae 从零安装到全功能使用指南</h1>
+<main class="article"><h1 id="evoverse-sdk-trae-安装指南">EvoVerse SDK：Trae 安装指南</h1>
 <blockquote>
-<p>更新日期：2026-08-15
-目标：从一台未安装开发环境的电脑开始，在 Trae（Trae CN / Trae International）中完成 RTL 编辑、规则约束、仿真、Efinity 编译、时序诊断、烧录、MCP Agent 与原生 Chat 集成。</p>
+<p>适用版本：v1.0.0　更新日期：2026-10-16　推荐宿主：Trae CN / Trae International</p>
 </blockquote>
-<h2 id="0-与-vs-code-安装的关系">0. 与 VS Code 安装的关系</h2>
-<p>EvoVerse SDK 使用<strong>同一个 VSIX</strong> 同时支持 Trae、标准 Visual Studio Code 及其它 VS Code fork。绝大多数安装步骤与 <a href="VSCode安装指南.html">VSCODE-INSTALLATION.md</a> 相同，本文档<strong>只列出 Trae 下的差异点</strong>和 Trae 独有的安装与初始化行为。</p>
-<table>
-<thead>
-<tr>
-<th>你想知道的事</th>
-<th>看这份文档</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>在 Trae 下从零安装 SDK 到全功能</td>
-<td><strong>本文</strong></td>
-</tr>
-<tr>
-<td>在标准 VS Code 下安装 SDK</td>
-<td><a href="VSCode安装指南.html">VSCODE-INSTALLATION.md</a></td>
-</tr>
-<tr>
-<td>不同宿主之间的全部差异与 Gotchas</td>
-<td>HOST-DIFFERENCES.md</td>
-</tr>
-<tr>
-<td>多宿主打包 / 发布 / 部署</td>
-<td><a href="部署指南.html">DEPLOYMENT.md</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>适用对象</strong>：
-- 已选择 Trae 作为日常开发编辑器的客户；
-- 需要在 Trae Chat 面板中使用 <code>@evoverse</code> 与 MCP 工具的客户；
-- 需要理解 Trae 专属路径 <code>~/.trae/</code> 下哪些文件由 SDK 自动管理的运维人员。</p>
-<h3 id="0-1-agent-与可靠流程入口">0.1 Agent 与可靠流程入口</h3>
-<ul>
-<li>需要规格、RTL Design Assurance 和仿真分阶段确认时，以 <code>@evoverse</code> 开始需求，例如：<code>@evoverse 我要在 ws-e1 上实现 MIPI 到 USB，中间用 DDR 缓冲</code>。SDK 会先确认工作方式：可靠设计流程或自由开发。</li>
-<li>已有工程开始新的独立设计迭代时，再次以 <code>@evoverse</code> 提出需求；已有规格书则更新，没有则新建。</li>
-<li>不带 <code>@evoverse</code> 的普通 Agent 对话保持自由开发，不自动启用可靠流程，也不会向客户工程生成专用规则文件。</li>
-<li>Build、Timing、Debug 是独立工具入口，不要求先选择可靠流程。</li>
-</ul>
-<hr />
-<h2 id="1-先确认-全功能-的边界">1. 先确认"全功能"的边界</h2>
-<p>本指南中的全功能包括：</p>
-<ul>
-<li>EvoVerse Workbench、Catalog、工程创建和健康检查；</li>
-<li>Verilog/SystemVerilog 编辑、RTL 编码规范和 Agent 工作流；</li>
-<li>Icarus Verilog 功能仿真与 VCD 波形查看；</li>
-<li>Efinity 综合、布局布线、bitstream、资源报告和时序报告；</li>
-<li>Timing Diagnosis、Build AI 和多轮 Conversation Runtime；</li>
-<li>通过 USB/JTAG 烧录 Efinix FPGA；</li>
-<li>Trae Chat 面板中通过 <code>@evoverse</code> 调用 SDK 工具；</li>
-<li>可选的 Sapphire/RISC-V 软件编译、烧录和 GDB 调试。</li>
-</ul>
-<h3 id="1-1-推荐操作系统">1.1 推荐操作系统</h3>
-<p>与 VS Code 安装一致，请使用以下之一：</p>
-<ul>
-<li><strong>Windows 10/11 64 位</strong>：客户桌面环境首选；</li>
-<li><strong>macOS 12 或更高版本</strong>：Trae 桌面版官方支持平台；</li>
-<li><strong>Ubuntu 20.04 或更高版本</strong>。</li>
-</ul>
-<blockquote>
-<p>macOS 可以使用 Trae、EvoVerse、MCP、AI 和 Icarus 仿真，但不能作为本文定义的完整 Efinity 编译/烧录工作站。Efinity 当前官方安装要求及 USB 驱动步骤见 <a href="https://www.efinixinc.com/docs/efinity-installation-v4.0.pdf">Efinity Software Installation User Guide</a>。</p>
-</blockquote>
-<h3 id="1-2-建议电脑配置">1.2 建议电脑配置</h3>
+<h2 id="上手链路总览">上手链路总览</h2>
+<p>从拿到发布包到开始第一个设计，主线是 6 步：</p>
+<pre class="mermaid">flowchart LR
+    A[获取发布包] --&gt; B[安装 3 个 VSIX]
+    B --&gt; C[重启 Trae]
+    C --&gt; D[首启引导&lt;br&gt;确认工作区]
+    D --&gt; E[Welcome 自动打开]
+    E --&gt; F[Sync Catalog]
+    F --&gt; G[&quot;@evoverse 开工&quot;]
+</pre>
+<p>每步的验证方式见对应章节。基础软件（Trae、Python、Git、Efinity、驱动、仿真器）在装 VSIX 之前备齐。</p>
+<h2 id="1-前置条件">1. 前置条件</h2>
 <table>
 <thead>
 <tr>
 <th>项目</th>
-<th style="text-align: right;">最低可启动</th>
-<th style="text-align: right;">客户全功能工作站建议</th>
+<th>要求</th>
+<th>说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>CPU</td>
-<td style="text-align: right;">64 位双核</td>
-<td style="text-align: right;">8 核或以上</td>
+<td>操作系统</td>
+<td>Windows 10/11 64 位（首选）；macOS 12+；Ubuntu 20.04+</td>
+<td>macOS 不能作为完整的 Efinity 编译/烧录工作站</td>
 </tr>
 <tr>
-<td>内存</td>
-<td style="text-align: right;">Trae + EvoVerse 约 1 GB；Efinity 设计流约 8 GB</td>
-<td style="text-align: right;">16 GB，较大工程建议 32 GB</td>
+<td>Python</td>
+<td>64 位 3.11+</td>
+<td>CLI 与 MCP Server 只用标准库，无需 pip 装包</td>
 </tr>
 <tr>
-<td>磁盘</td>
-<td style="text-align: right;">10 GB 可用空间</td>
-<td style="text-align: right;">30 GB 以上 SSD 可用空间</td>
+<td>Git</td>
+<td>在 PATH 中</td>
+<td><code>EvoVerse: Sync Catalog</code> 拉取板卡目录依赖 Git</td>
 </tr>
 <tr>
-<td>USB</td>
-<td style="text-align: right;">1 个可用 USB 端口</td>
-<td style="text-align: right;">2 个以上，避免无供电 Hub</td>
+<td>Efinity</td>
+<td>2026.1+</td>
+<td>真实编译、烧录时需要</td>
 </tr>
 <tr>
-<td>网络</td>
-<td style="text-align: right;">离线安装可选</td>
-<td style="text-align: right;">首次下载 Trae、Efinity、插件、模型和工具链时需要</td>
+<td>仿真器</td>
+<td>Icarus Verilog</td>
+<td>RTL 功能仿真；QuestaSim 也可</td>
+</tr>
+<tr>
+<td>硬件</td>
+<td>FPGA 核心板 + USB 数据线</td>
+<td>清单见 §2</td>
 </tr>
 </tbody>
 </table>
-<p>Trae 自身的最低系统要求见 <a href="https://www.trae.ai/">Trae 官方下载页</a>；Efinity 的内存与系统要求以所安装版本的官方文档为准。</p>
-<hr />
+<p>电脑配置建议：8 核 CPU、16 GB 内存（较大工程 32 GB）、30 GB 以上 SSD 可用空间、2 个以上 USB 口。</p>
 <h2 id="2-硬件准备">2. 硬件准备</h2>
-<p>与 VS Code 安装完全一致，请阅读 <a href="VSCode安装指南.html">VSCODE-INSTALLATION.md §2</a> 完成硬件清单与连接前检查。至少准备：</p>
 <ol>
-<li>EvoVerse/Efinix FPGA 核心板，例如 Catalog 中的 <code>ws-e1</code>；</li>
-<li>与核心板匹配的底板、Carrier 或客户自研板；</li>
-<li>符合板卡规格的电源；不要仅凭接口外形猜测电压和极性；</li>
-<li>可传输数据的 USB 线；只充电线不能用于 JTAG/串口；</li>
-<li>板载 FTDI 调试接口，或兼容的 FT2232H/FT4232H JTAG 模块；</li>
-<li>如需串口日志，准备板载 USB-UART 或独立 3.3 V USB-UART；</li>
-<li>如需传感器、MIPI、显示或网络功能，准备对应 Jacket、线缆和外设。</li>
+<li>EvoVerse/Efinix FPGA 核心板（例如 Catalog 中的 <code>ws-e1</code>）；</li>
+<li>匹配的底板 / Carrier / 客户自研板；</li>
+<li>符合板卡规格的电源——不要凭接口外形猜测电压和极性；</li>
+<li>可传输数据的 USB 线——只充电线不能用于 JTAG/串口；</li>
+<li>板载 FTDI 调试接口，或 FT2232H/FT4232H JTAG 模块；</li>
+<li>需要串口日志时，备板载 USB-UART 或独立 3.3 V USB-UART；</li>
+<li>传感器 / MIPI / 显示 / 网络外设按需。</li>
 </ol>
-<p>连接前阅读安装后 Catalog 中的板卡规格：</p>
-<pre><code class="language-text">${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
-${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/docs/
-${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/carriers/
+<p>连接前阅读 Catalog 中的板卡规格（装好并同步 Catalog 后可用）：</p>
+<pre><code class="language-text">~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
+~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/docs/
 </code></pre>
-<hr />
 <h2 id="3-安装基础软件">3. 安装基础软件</h2>
 <h3 id="3-1-安装-trae">3.1 安装 Trae</h3>
 <ol>
-<li>从 <a href="https://www.trae.ai/">Trae 官方下载页</a>选择平台对应版本：</li>
-<li><strong>Trae CN</strong>：面向中国大陆用户，默认连接国内模型 Provider；</li>
-<li><strong>Trae International</strong>：面向海外用户，默认连接海外模型 Provider。</li>
-<li>安装后启动 Trae，按向导完成账号注册与登录。</li>
-<li>验证：</li>
+<li>从 <a href="https://www.trae.ai/">Trae 官方下载页</a>安装 Trae CN 或 Trae International；</li>
+<li>启动并完成账号登录。</li>
 </ol>
-<pre><code class="language-powershell"># 打开命令面板执行
-Trae: Show Version
-</code></pre>
-<p>或在终端执行：</p>
-<pre><code class="language-powershell">where trae     # Windows
-which trae     # macOS / Linux
-</code></pre>
+<p>验证：命令面板执行 <code>Trae: Show Version</code> 能返回版本号。</p>
 <h3 id="3-2-安装-python-3-11">3.2 安装 Python 3.11+</h3>
-<p>EvoVerse CLI 和 MCP Server 使用 Python 标准库，不需要 <code>pip install</code> 其他包。</p>
-<p>Windows：</p>
 <ol>
 <li>从 <a href="https://www.python.org/downloads/">Python 官网</a>安装 64 位 Python 3.11 或更新版本；</li>
-<li>勾选 <strong>Add Python to PATH</strong>；</li>
-<li>验证：</li>
+<li>勾选 <strong>Add Python to PATH</strong>。</li>
 </ol>
-<pre><code class="language-powershell">py -3 --version
-python --version
+<p>验证：</p>
+<pre><code class="language-powershell">py -3 --version     # Windows
+python3 --version   # macOS / Linux
+</code></pre>
+<p>输出必须是 3.11 或更高。版本不足时首启引导会报 <code>SYSTEM_PYTHON_MISSING</code>，Python 相关能力被禁用。客户 VSIX 不需要 Node.js / npm。</p>
+<h3 id="3-3-安装-git">3.3 安装 Git</h3>
+<ol>
+<li>从 <a href="https://git-scm.com/">Git 官网</a>安装，Windows 安装时选默认选项（含 Git Credential Manager）；</li>
+<li>已装 GitHub CLI 的也可用其认证。</li>
+</ol>
+<p>验证：</p>
+<pre><code class="language-powershell">git --version
+</code></pre>
+<h3 id="3-4-安装-efinity-2026-1">3.4 安装 Efinity 2026.1+</h3>
+<ol>
+<li>从 Efinix Support Center 获取安装包，按该版本官方指南完成安装与许可证配置；</li>
+<li>记录 Efinity 根目录（例如 <code>C:\Efinity\2026.1</code>）。</li>
+</ol>
+<p>验证：根目录下存在 <code>bin/setup.bat</code>（Windows）或 <code>bin/setup.sh</code>，以及 <code>bin/efx_run.bat</code>。EvoVerse 每次运行工具时会调用 Efinity 的 setup 脚本建立子进程环境，无需永久修改 PATH。</p>
+<h3 id="3-5-安装-fpga-usb-jtag-驱动">3.5 安装 FPGA USB/JTAG 驱动</h3>
+<ul>
+<li>Windows：按板卡用户手册与 Efinity 安装指南使用 Zadig/指定驱动；不要盲目替换复合 FTDI 设备的所有接口，先确认板卡文档要求的 interface；</li>
+<li>macOS：Efinity 安装包自带驱动；</li>
+<li>Linux：断开板卡后执行 <code>sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh</code>，重载 udev 规则后重新连接板卡。</li>
+</ul>
+<h3 id="3-6-安装-icarus-verilog">3.6 安装 Icarus Verilog</h3>
+<ul>
+<li>macOS：<code>brew install icarus-verilog</code>；</li>
+<li>Linux：<code>sudo apt install iverilog</code>；</li>
+<li>Windows：安装预编译版本并加入 PATH。</li>
+</ul>
+<p>验证：<code>iverilog -V</code> 与 <code>vvp -V</code> 均能输出版本号。</p>
+<h3 id="3-7-可选-risc-v-软件工具链">3.7 可选：RISC-V 软件工具链</h3>
+<p>仅使用 Sapphire/RISC-V SoC 时需要。装好后可在 Trae 中执行 <code>EvoVerse: Download &amp; Install RISC-V Toolchain</code> 自动安装，或手动安装后设置 <code>evoverse.riscvToolchainPath</code>。</p>
+<h2 id="4-获取发布包">4. 获取发布包</h2>
+<ol>
+<li>拿到客户交付包 <code>EvoVerse-SDK-v1.0.0.tar.gz</code>；</li>
+<li>在包所在目录完整解压（Windows 10 1803+ 自带 <code>tar</code>，不会出现 zip 解压的路径过长报错）：</li>
+</ol>
+<pre><code class="language-powershell">tar -xzf EvoVerse-SDK-v*.tar.gz
+</code></pre>
+<p>验证：解压目录下能看到 <code>deploy.ps1</code> / <code>deploy.sh</code> 与 3 个 <code>.vsix</code>。<code>START-HERE.md</code> 和 <code>docs/site/customer-portal.html</code> 是入口文档。</p>
+<h2 id="5-安装-3-个-vsix">5. 安装 3 个 VSIX</h2>
+<p>v1.0.0 交付 3 个同版本扩展：</p>
+<table>
+<thead>
+<tr>
+<th>VSIX</th>
+<th>作用</th>
+<th>是否必装</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse-sdk-1.0.0.vsix</code></td>
+<td>SDK 核心：Welcome、Catalog、Workbench 外壳、CLI / MCP</td>
+<td>必装</td>
+</tr>
+<tr>
+<td><code>evoverse-efinity-adapter-1.0.0.vsix</code></td>
+<td>Efinity 编译 / 时序 / 调试 / 烧录 / IP</td>
+<td>FPGA 开发必装</td>
+</tr>
+<tr>
+<td><code>evoverse-rk3588-adapter-1.0.0.vsix</code></td>
+<td>RK3588 软件验证闭环</td>
+<td>做 RISC-V 软件时安装</td>
+</tr>
+</tbody>
+</table>
+<p>三个 VSIX 版本必须一致；混用不同版本不受支持。</p>
+<h3 id="5-1-方式-a-一键部署-推荐">5.1 方式 A：一键部署（推荐）</h3>
+<p>在解压后的包目录打开 PowerShell：</p>
+<pre><code class="language-powershell">.\deploy.ps1 -Target trae
 </code></pre>
 <p>macOS / Linux：</p>
-<pre><code class="language-bash">python3 --version
+<pre><code class="language-bash">./deploy.sh --target trae
 </code></pre>
-<p>要求输出 <code>3.10</code> 或更高版本。客户使用 VSIX 不需要安装 Node.js 或 npm；它们仅用于从源码构建扩展。</p>
-<h3 id="3-3-安装-efinity">3.3 安装 Efinity</h3>
-<p>与 VS Code 安装完全一致，请阅读 <a href="VSCode安装指南.html">VSCODE-INSTALLATION.md §3.3</a> 完成 Efinity 安装与许可证配置。完成后记录 Efinity 根目录：</p>
-<pre><code class="language-text">Windows:  C:\Efinity\2026.1
-macOS:    /Applications/efinity.app/Contents/Resources/2026.1
-Linux:    /opt/efinity/2026.1
-</code></pre>
-<p>EvoVerse 每次运行工具时会使用 Efinity 的 setup 脚本建立子进程环境，因此通常不要求永久修改系统 PATH。</p>
-<h3 id="3-4-安装-fpga-usb-jtag-驱动">3.4 安装 FPGA USB/JTAG 驱动</h3>
-<p>与 VS Code 安装一致：</p>
-<ul>
-<li>Windows：按目标板用户手册和 Efinity 安装指南使用 Zadig/指定驱动。<strong>不要</strong>盲目替换复合 FTDI 设备的所有接口；先确认板卡文档要求的 interface。</li>
-<li>macOS：Efinity 官方安装包自带驱动；如未识别按 Efinity 文档执行驱动加载。</li>
-<li>Linux：断开板卡后执行：</li>
-</ul>
-<pre><code class="language-bash">sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh
-sudo udevadm control --reload-rules
-sudo udevadm trigger
-</code></pre>
-<p>重新连接板卡。</p>
-<h3 id="3-5-安装-icarus-verilog">3.5 安装 Icarus Verilog</h3>
-<p>完整仿真功能需要 <code>iverilog</code> 和 <code>vvp</code>。</p>
-<ul>
-<li>macOS：<code>brew install icarus-verilog</code></li>
-<li>Linux：</li>
-</ul>
-<pre><code class="language-bash">sudo apt update
-sudo apt install iverilog
-</code></pre>
-<p>验证：</p>
-<pre><code class="language-bash">iverilog -V
-vvp -V
-</code></pre>
-<h3 id="3-6-可选-risc-v-软件工具链">3.6 可选：RISC-V 软件工具链</h3>
-<p>只有使用 Sapphire/RISC-V SoC 时需要，与 VS Code 安装完全一致。详见 <a href="VSCode安装指南.html">VSCODE-INSTALLATION.md §3.6</a>。</p>
-<hr />
-<h2 id="4-安装-evoverse-sdk-vsix">4. 安装 EvoVerse SDK VSIX</h2>
-<p>EvoVerse 在 Trae 与 VS Code 下共用<strong>同一个</strong> <code>evoverse-sdk-0.9.0.vsix</code>。</p>
-<h3 id="4-1-安装步骤">4.1 安装步骤</h3>
+<p>脚本按依赖顺序安装 Core、两个 Adapter 与 Skills；可选 Adapter 在包内缺失时跳过并提示。Video Sim 已内嵌于 Core VSIX，无需单独安装。</p>
+<p>验证：扩展面板中已安装的 EvoVerse 扩展均为 Enabled 状态。</p>
+<h3 id="5-2-方式-b-扩展面板手动安装">5.2 方式 B：扩展面板手动安装</h3>
 <ol>
-<li>在 Trae 中按 <code>Ctrl+Shift+X</code>（macOS: <code>Cmd+Shift+X</code>）打开扩展面板；</li>
-<li>点击右上角 <code>...</code> → <strong>Install from VSIX...</strong>；</li>
-<li>选择交付包中的 <code>evoverse-sdk-0.9.0.vsix</code>。</li>
+<li>按 <code>Ctrl+Shift+X</code>（macOS：<code>Cmd+Shift+X</code>）打开扩展面板；</li>
+<li>点右上角 <code>...</code> → <strong>Install from VSIX...</strong>；</li>
+<li>按上表顺序逐个选择 VSIX。</li>
 </ol>
-<p>或使用命令行：</p>
-<pre><code class="language-powershell"># Windows (PowerShell)
-trae --install-extension D:\packages\evoverse-sdk-0.9.0.vsix
-
-# macOS / Linux
-trae --install-extension ~/packages/evoverse-sdk-0.9.0.vsix
+<p>或用命令行：</p>
+<pre><code class="language-powershell">trae --install-extension D:\packages\evoverse-sdk-1.0.0.vsix
+trae --install-extension D:\packages\evoverse-efinity-adapter-1.0.0.vsix
+trae --install-extension D:\packages\evoverse-rk3588-adapter-1.0.0.vsix
 </code></pre>
-<h3 id="4-2-推荐同时安装的扩展">4.2 推荐同时安装的扩展</h3>
-<table>
-<thead>
-<tr>
-<th>扩展</th>
-<th>用途</th>
-<th>是否由 EvoVerse 声明为依赖</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VaporView</td>
-<td>打开仿真生成的 VCD 波形</td>
-<td>是</td>
-</tr>
-<tr>
-<td>Cortex-Debug</td>
-<td>RISC-V/MCU GDB 调试</td>
-<td>是</td>
-</tr>
-<tr>
-<td>Verilog/SystemVerilog 语言插件</td>
-<td>语法高亮、跳转和 lint</td>
-<td>否，按客户许可与团队标准选择</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>Trae 内置 Chat Agent，<strong>不需要</strong>额外安装 GitHub Copilot 即可在 Chat 面板中使用 <code>@evoverse</code>。如需使用 EvoVerse 内置 Runtime 的 OpenAI-compatible Provider，参见 §7。</p>
-</blockquote>
-<hr />
-<h2 id="5-首次启动-trae-专属的-set-up-行为">5. 首次启动：Trae 专属的 <code>Set Up</code> 行为</h2>
-<p>EvoVerse 扩展激活时如果检测到 <code>~/evoverse-sdk</code> 未就绪，会弹窗询问是否 <strong>Set Up</strong>。在 Trae 下，Set Up 会执行以下<strong>额外</strong>操作（VS Code 下不会执行）：</p>
-<h3 id="5-1-写入-trae-mcp-json">5.1 写入 <code>~/.trae/mcp.json</code></h3>
-<p>SDK 会自动将 EvoVerse MCP Server 写入 <code>~/.trae/mcp.json</code> 的 <code>mcpServers.evoverse</code> 字段：</p>
-<ul>
-<li><strong>仅合并</strong>，不会覆盖 <code>mcpServers</code> 下的其它条目；</li>
-<li>若 <code>~/.trae/mcp.json</code> 不存在则新建；</li>
-<li>若已存在 <code>mcpServers.evoverse</code>，按字节级比较：相等则跳过；不等则备份为 <code>~/.trae/mcp.json.evoverse.bak</code> 后覆盖。</li>
-</ul>
-<p>示例（仅供参考，由 SDK 自动生成）：</p>
-<pre><code class="language-json">{
-  &quot;mcpServers&quot;: {
-    &quot;evoverse&quot;: {
-      &quot;command&quot;: &quot;python&quot;,
-      &quot;args&quot;: [&quot;-m&quot;, &quot;mcp_server.server&quot;],
-      &quot;env&quot;: {}
-    }
-  }
-}
-</code></pre>
-<h3 id="5-2-写入-trae-user_rules">5.2 写入 <code>~/.trae/user_rules/</code></h3>
-<p>SDK 会自动安装两份 Agent Rules：</p>
-<ul>
-<li><code>~/.trae/user_rules/evoverse.md</code> — EvoVerse 通用规则；</li>
-<li><code>~/.trae/user_rules/evoverse-rtl-style.md</code> — RTL 编码风格专项规则。</li>
-</ul>
-<p>规则源位于 <code>~/evoverse-sdk/agent-rules/</code>，SDK 会按字节级比较后写入：</p>
-<ul>
-<li>相等 → 跳过（<code>unchanged</code>）；</li>
-<li>不等 → 备份为 <code>*.evoverse.bak</code> 后覆盖；</li>
-<li>损坏或非预期格式 → 备份并报错，不静默清空。</li>
-</ul>
-<h3 id="5-3-restart-now-提示">5.3 "Restart now" 提示</h3>
-<p><strong>仅在 Trae 下</strong>会出现 "Restart Trae now to load MCP" 提示，因为 Trae 的 MCP 由宿主固定目录加载，必须重启 Trae 后 MCP 工具才会出现在 Chat 面板中。</p>
-<blockquote>
-<p>标准 VS Code / 未知宿主<strong>不会</strong>出现该提示；如在 VS Code 下看到该提示说明宿主识别异常，应先确认 <code>vscode.env.appName</code> 是否以 <code>trae</code> 开头。</p>
-</blockquote>
-<h3 id="5-4-损坏的宿主配置处理">5.4 损坏的宿主配置处理</h3>
-<p>如果 <code>~/.trae/mcp.json</code> 或 <code>~/.trae/user_rules/*.md</code> 已损坏，SDK 会：</p>
+<h2 id="6-重启-trae-并完成首次引导">6. 重启 Trae 并完成首次引导</h2>
 <ol>
-<li>备份原文件为 <code>*.evoverse.bak</code>；</li>
-<li>返回错误信息到 UI；</li>
-<li><strong>不</strong>静默覆盖（避免客户自定义规则被无意清空）。</li>
+<li><strong>完全退出并重启 Trae</strong>，让扩展激活；</li>
+<li>首次激活时弹窗 <strong>"Set up EvoVerse SDK?"</strong>，选择 <strong>Yes, set up</strong>。引导会在默认工作区 <code>~/evoverse-sdk</code> 建立 Catalog、工程与运行时目录（可用 <code>evoverse.home</code> 修改路径），不修改系统文件；</li>
+<li>观察 Output → <strong>EvoVerse SDK</strong>，引导逐项输出，全部为 ✓ 后出现 <code>=== EvoVerse SDK ready ===</code>：</li>
+<li><code>EVOVERSE_HOME ready at …</code>——工作区就绪；</li>
+<li><code>Deployed Efinity knowledge base</code>——知识库部署；</li>
+<li><code>MCP integration: …</code>——写入 <code>~/.trae/mcp.json</code> 的 <code>mcpServers.evoverse</code>（仅合并，不覆盖其它条目；覆盖前备份为 <code>*.evoverse.bak</code>）；</li>
+<li><code>Agent rule: …</code>——写入 <code>~/.trae/user_rules/</code> 下的 <code>evoverse.md</code> 与 <code>evoverse-rtl-style.md</code>；</li>
+<li><code>CLI works: …</code>——CLI 冒烟测试；</li>
+<li>Git 不在 PATH 时会有 <code>! git not found</code> 警告，装好 Git 后 Sync Catalog 才可用；</li>
+<li>Python 缺失或版本不足时报 <code>SYSTEM_PYTHON_MISSING</code>，装好 Python 3.11+ 后重跑引导；</li>
+<li>完成后出现提示 <strong>"Restart the host to load the MCP server."</strong>，选 <strong>Restart now</strong> 再次重启。</li>
 </ol>
-<hr />
-<h2 id="6-与-vs-code-安装的差异速查">6. 与 VS Code 安装的差异速查</h2>
-<table>
-<thead>
-<tr>
-<th>维度</th>
-<th>Trae</th>
-<th>标准 VS Code</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>使用的 VSIX</td>
-<td>同一个 <code>evoverse-sdk-0.9.0.vsix</code></td>
-<td>同一个</td>
-</tr>
-<tr>
-<td><code>~/.trae/mcp.json</code> 自动写入</td>
-<td>✅（合并 <code>mcpServers.evoverse</code>）</td>
-<td>❌</td>
-</tr>
-<tr>
-<td><code>~/.trae/user_rules/*.md</code> 自动写入</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>"Restart now" 提示</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td><code>*.evoverse.bak</code> 覆盖前备份</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>原生 Chat 入口命令</td>
-<td><code>trae.chat.open</code> / <code>trae.chat.focus</code></td>
-<td><code>workbench.action.chat.open</code></td>
-</tr>
-<tr>
-<td><code>@evoverse</code> Chat participant</td>
-<td>✅（Trae Chat 面板）</td>
-<td>✅（VS Code Chat 面板）</td>
-</tr>
-<tr>
-<td>项目级 instruction</td>
-<td>走 <code>.github/copilot-instructions.md</code>（与 VS Code 一致）</td>
-<td>走 <code>.github/copilot-instructions.md</code></td>
-</tr>
-<tr>
-<td>已弃用路径</td>
-<td>❌ <strong>不要</strong>新增 <code>.trae/rules.md</code> 或 <code>CLAUDE.md</code></td>
-<td>❌ 不推荐</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>详细差异与 Gotchas 见 HOST-DIFFERENCES.md。</p>
-</blockquote>
-<hr />
-<h2 id="7-使用-openai-compatible-provider-可选">7. 使用 OpenAI-compatible Provider（可选）</h2>
-<p>若不想使用 Trae 内置模型，可在 EvoVerse Conversation Runtime 中配置 OpenAI-compatible Provider：</p>
+<p>验证：重启后 <strong>Welcome 页自动打开</strong>。没有自动打开时，命令面板执行 <code>EvoVerse: Show Welcome</code>（<code>evoverse.welcome</code>）。</p>
+<p>弹窗当时选了 <strong>Later</strong>、或需要重跑引导时，执行 <code>EvoVerse: Set Up (re-run bootstrap)</code>（<code>evoverse.setup</code>）。标准 VS Code 不会写入 <code>~/.trae</code>，宿主差异见 HOST-DIFFERENCES.md。</p>
+<h2 id="7-同步-catalog">7. 同步 Catalog</h2>
+<p>首次安装时 Catalog 为空，界面与 MCP 报 <code>CATALOG_NOT_INSTALLED</code>，这是预期状态，不是故障。</p>
 <ol>
-<li>执行 <code>EvoVerse: Set OpenAI-compatible API Key</code>，将 API Key 写入 SecretStorage；</li>
-<li>在 <code>evoverse.model.modelId</code> 中填入 Provider 提供的模型 ID；</li>
-<li>重启 Trae 以确保配置生效。</li>
+<li>运行 <code>EvoVerse: Sync Catalog</code>（<code>evoverse.syncCatalog</code>）。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号</strong>；完成后写入回执 <code>catalog-sync-receipt.json</code>；</li>
+<li>运行 <code>EvoVerse: Catalog Status</code>（<code>evoverse.catalogStatus</code>），或终端执行 <code>evoverse catalog status --json</code>，记录 <code>state</code>、<code>location</code> 与回执里的 <code>catalog_version</code>、<code>commit</code>。</li>
 </ol>
-<blockquote>
-<p><strong>不要</strong>把模型 API Key 写入 <code>~/.trae/mcp.json</code> 的 <code>env</code> 字段；SDK 会拒绝此类配置。</p>
-</blockquote>
-<hr />
-<h2 id="8-故障排查">8. 故障排查</h2>
-<h3 id="8-1-trae-chat-面板中找不到-evoverse">8.1 Trae Chat 面板中找不到 <code>@evoverse</code></h3>
-<p>按以下顺序排查：</p>
+<p>如需改用自建镜像或私有仓库，可用 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址。</p>
+<p>验证：Welcome 页 Board Catalog 面板能列出板卡（如 <code>ws-e1</code>）。同步失败不影响已有本地内容，修复网络后重新同步即可。</p>
+<h2 id="8-验证安装">8. 验证安装</h2>
+<ol>
+<li>左侧活动栏能打开 EvoVerse；</li>
+<li>Workbench 能显示已安装的 Adapter（装了 Efinity Adapter 就应有对应条目）；</li>
+<li>运行 <code>EvoVerse: Health Check</code>（<code>evoverse.sdkHealthCheck</code>），确认 Python / Efinity / MCP / 仿真器 / CLI / Adapter 各项通过（Welcome 页也有 SDK 体检面板）；</li>
+<li>设置中确认 <code>evoverse.efinityPath</code> 指向实际 Efinity 安装目录。</li>
+</ol>
+<h2 id="9-开始使用">9. 开始使用</h2>
+<ol>
+<li><strong>自然语言开工</strong>：在 Chat 面板输入 <code>@evoverse</code> 描述需求：</li>
+</ol>
+<p><code>text
+   @evoverse 我要在 ws-e1 上实现 MIPI 到 USB，中间用 DDR 缓冲</code></p>
+<p>SDK 会先确认工作方式：可靠设计流程或自由开发。不带 <code>@evoverse</code> 的普通对话保持自由开发，不自动启用可靠流程，也不向客户工程生成专用规则文件。</p>
+<ol>
+<li><strong>Workbench 选流程</strong>：也可以在 Workbench 的 Project Control 下拉中选择设计流程，对应命令 <code>EvoVerse: Select Design Flow</code>（<code>evoverse.selectDesignFlow</code>）；</li>
+<li><strong>Workbench 六个 Tab</strong>：Home / Build / Timing / Debug / SW / IP；</li>
+<li><strong>编译</strong>：Build Tab 或命令面板 <code>Toolchain: Build</code>（<code>evoverse.build</code>）。Build 由 Efinity Adapter 执行 <code>efx_run --flow compile</code>，状态栏显示 <code>Build: Ready / Running / Failed</code>；</li>
+<li><strong>时序诊断</strong>：<code>Toolchain: Diagnose Timing Violations</code>（<code>evoverse.diagnoseTiming</code>）；</li>
+<li><strong>烧板</strong>：<code>Toolchain: Program FPGA</code>（<code>evoverse.program</code>）。</li>
+</ol>
+<p>日常开发全流程见<a href="../sdk/用户使用手册.html">用户使用手册</a>。</p>
+<h2 id="10-故障排查">10. 故障排查</h2>
+<h3 id="10-1-chat-面板找不到-evoverse">10.1 Chat 面板找不到 <code>@evoverse</code></h3>
 <ol>
 <li>确认 <code>~/.trae/mcp.json</code> 中存在 <code>mcpServers.evoverse</code>；</li>
-<li>确认 SDK 提示过 <strong>Restart now</strong> 且已完成重启；</li>
-<li>打开 Trae → Settings → MCP，确认 <code>evoverse</code> Server 显示为 <code>running</code>；</li>
-<li>在 Chat 面板输入 <code>@</code>，确认下拉列表中出现 <code>evoverse</code>。</li>
+<li>确认完成过 "Restart the host to load the MCP server." 提示后的重启；</li>
+<li>Trae → Settings → MCP，确认 <code>evoverse</code> Server 状态为 <code>running</code>；</li>
+<li>Chat 面板输入 <code>@</code>，下拉列表应出现 <code>evoverse</code>。</li>
 </ol>
-<h3 id="8-2-trae-mcp-json-被破坏">8.2 <code>~/.trae/mcp.json</code> 被破坏</h3>
-<ol>
-<li>SDK 在写入前会备份为 <code>~/.trae/mcp.json.evoverse.bak</code>，从备份恢复：
-   <code>bash
-   cp ~/.trae/mcp.json.evoverse.bak ~/.trae/mcp.json</code></li>
-<li>重新执行 <code>EvoVerse: Set Up</code>。</li>
-</ol>
-<h3 id="8-3-trae-user_rules-md-与团队规则冲突">8.3 <code>~/.trae/user_rules/*.md</code> 与团队规则冲突</h3>
+<h3 id="10-2-trae-mcp-json-被破坏">10.2 <code>~/.trae/mcp.json</code> 被破坏</h3>
+<p>SDK 写入前会备份为 <code>~/.trae/mcp.json.evoverse.bak</code>。从备份恢复后重跑 <code>EvoVerse: Set Up (re-run bootstrap)</code>：</p>
+<pre><code class="language-bash">cp ~/.trae/mcp.json.evoverse.bak ~/.trae/mcp.json
+</code></pre>
+<h3 id="10-3-agent-规则与团队规则冲突">10.3 Agent 规则与团队规则冲突</h3>
 <ul>
-<li>EvoVerse 安装的规则源在 <code>~/evoverse-sdk/agent-rules/</code>，<strong>不要</strong>直接修改 <code>~/.trae/user_rules/*.md</code>；</li>
-<li>若需在项目中追加规则，改项目级 <code>.github/copilot-instructions.md</code>；</li>
-<li>若必须修改用户规则，先备份再改，并在每次 SDK 升级后人工合并。</li>
+<li>规则源在 <code>~/evoverse-sdk/agent-rules/</code>，不要直接改 <code>~/.trae/user_rules/*.md</code>；</li>
+<li>项目级规则写到 <code>.github/copilot-instructions.md</code>；</li>
+<li>确需改用户规则时先备份，并在 SDK 升级后人工合并。</li>
 </ul>
-<h3 id="8-4-宿主识别异常">8.4 宿主识别异常</h3>
-<p>打开 Trae 命令面板执行：</p>
-<pre><code class="language-powershell"># 通过 Developer Tools 查看
-Developer: Toggle Developer Tools
-</code></pre>
-<p>在 Console 中执行：</p>
-<pre><code class="language-javascript">JSON.stringify({ appName: require('vscode').env.appName })
-</code></pre>
-<p>应返回 <code>"Trae"</code>、<code>"Trae CN"</code> 或 <code>"Trae - ide"</code> 之一。若返回其它名称，参考 HOST-DIFFERENCES.md §1 确认 <code>detectHostId()</code> 的判定逻辑。</p>
-<h3 id="8-5-模型不可用导致构建-报告失败">8.5 模型不可用导致构建/报告失败</h3>
-<p>EvoVerse 的<strong>确定性能力</strong>（构建、报告、规则诊断、时序分析）在任何宿主下都应能独立工作。如果模型不可用时构建/报告也被阻断，说明 Trae 下的模型 Provider 配置影响了子进程路径，按 <a href="VSCode安装指南.html">VSCODE-INSTALLATION.md §3.3</a> 复查 Efinity setup 脚本调用。</p>
-<hr />
-<h2 id="9-下一步">9. 下一步</h2>
+<h3 id="10-4-引导报-system_python_missing">10.4 引导报 <code>SYSTEM_PYTHON_MISSING</code></h3>
+<p>安装或修正 Python 3.11+（见 §3.2），或把 <code>evoverse.pythonPath</code> 指向真实解释器后重跑 <code>EvoVerse: Set Up (re-run bootstrap)</code>。</p>
+<h3 id="10-5-其他">10.5 其他</h3>
+<p>安装类问题（Sync Catalog 失败、Health Check 不通过、找不到 Efinity）对照<a href="部署指南.html">部署指南</a>的「遇到问题」表处理。</p>
+<h2 id="11-下一步">11. 下一步</h2>
 <ul>
-<li>阅读 <a href="../sdk/用户使用手册.html">用户使用手册</a> 了解 EvoVerse SDK 的整体使用流程；</li>
-<li>阅读 <a href="../efinity/Efinity工具链参考.html">efinity-toolchain-reference.md</a> 掌握 Efinity CLI；</li>
-<li>阅读 <a href="../efinity/Efinity编码风格.html">efinity-coding-style.md</a> 了解 RTL 编码规范；</li>
-<li>详细宿主差异见 HOST-DIFFERENCES.md。</li>
+<li><a href="../sdk/用户使用手册.html">用户使用手册</a>：日常开发全流程；</li>
+<li><a href="../efinity/Efinity工具链参考.html">Efinity 工具链参考</a>：Efinity CLI 参数；</li>
+<li><a href="部署指南.html">部署指南</a>：客户包安装与验收口径；</li>
+<li>HOST-DIFFERENCES.md：多宿主差异与 Gotchas。</li>
 </ul></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

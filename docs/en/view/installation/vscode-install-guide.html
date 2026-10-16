@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -102,169 +104,176 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <code>installation/vscode-install-guide.md</code>
 <a href="../../../installation/vscode-install-guide.md">Markdown source</a></p>
 <h1>VS Code Installation Differences</h1></header>
-<main class="article"><h1 id="evoverse-sdk-visual-studio-code-from-a-bare-machine-to-full-feature-use">EvoVerse SDK: Visual Studio Code — From a Bare Machine to Full-Feature Use</h1>
+<main class="article"><h1 id="evoverse-sdk-vs-code-installation-guide">EvoVerse SDK: VS Code Installation Guide</h1>
 <blockquote>
-<p>Applicable version: v1.0.0　Updated: 2026-09-30
-Goal: starting from a computer with no development environment installed, get to RTL editing, rules and constraints, simulation, Efinity builds, timing diagnosis, programming, the MCP Agent, AI chat, and optional RISC-V software debugging.</p>
+<p>Applicable version: v1.0.0　Updated: 2026-10-16　Host: Visual Studio Code Stable</p>
 </blockquote>
-<h2 id="1-first-pin-down-the-scope-of-full-functionality">1. First pin down the scope of “full functionality”</h2>
-<p>In this guide, full functionality covers:</p>
-<ul>
-<li>The EvoVerse Workbench, Catalog, project creation, and health checks;</li>
-<li>Verilog/SystemVerilog editing, RTL coding rules, and Agent workflows;</li>
-<li>Icarus Verilog functional simulation and VCD waveform viewing;</li>
-<li>Efinity synthesis, place-and-route (PNR), bitstream generation, resource reports, and timing reports;</li>
-<li>Timing Diagnosis, Build AI, and the multi-turn Conversation Runtime;</li>
-<li>Programming Efinix FPGAs over USB/JTAG;</li>
-<li>VS Code Chat querying the Catalog, creating projects, and checking RTL/SDC through the EvoVerse MCP;</li>
-<li>Optional Sapphire/RISC-V software compilation, flashing, and GDB debugging.</li>
-</ul>
-<h3 id="1-1-recommended-operating-systems">1.1 Recommended operating systems</h3>
-<p>To get all of the capabilities above, use one of the following:</p>
-<ul>
-<li><strong>Windows 10/11, 64-bit</strong>: the first choice for customer desktop environments;</li>
-<li><strong>Ubuntu 20.04 or later</strong>;</li>
-<li><strong>RHEL 8.8 or later</strong>.</li>
-</ul>
-<p>macOS can run VS Code, EvoVerse, MCP, AI, and Icarus simulation, but it cannot serve as a complete Efinity build/programming workstation as defined in this guide. For Efinity's current official installation requirements and USB driver steps, see the <a href="https://www.efinixinc.com/docs/efinity-installation-v4.0.pdf">Efinity Software Installation User Guide</a>.</p>
-<h3 id="1-2-recommended-hardware-configuration">1.2 Recommended hardware configuration</h3>
+<h2 id="getting-started-path-at-a-glance">Getting-started path at a glance</h2>
+<p>From receiving the release package to starting your first design, the main line is 6 steps:</p>
+<pre class="mermaid">flowchart LR
+    A[Get the release package] --&gt; B[Install the 3 VSIXes]
+    B --&gt; C[Restart VS Code]
+    C --&gt; D[First-run bootstrap&lt;br&gt;confirm the workspace]
+    D --&gt; E[Welcome opens automatically]
+    E --&gt; F[Sync Catalog]
+    F --&gt; G[Start working with MCP / Workbench]
+</pre>
+<p>How to verify each step is described in the corresponding section. The difference under VS Code is the Agent ecosystem: Trae uses the built-in Chat's <code>@evoverse</code>, while VS Code uses the native Chat Agent + EvoVerse MCP (see §10).</p>
+<h2 id="1-prerequisites">1. Prerequisites</h2>
 <table>
 <thead>
 <tr>
 <th>Item</th>
-<th style="text-align: right;">Bare minimum to launch</th>
-<th style="text-align: right;">Recommended full-feature customer workstation</th>
+<th>Requirement</th>
+<th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>CPU</td>
-<td style="text-align: right;">64-bit dual-core</td>
-<td style="text-align: right;">8 cores or more</td>
+<td>Operating system</td>
+<td>Windows 10/11 64-bit (preferred); Ubuntu 20.04+; RHEL 8.8+</td>
+<td>macOS cannot serve as a complete Efinity build/programming workstation</td>
 </tr>
 <tr>
-<td>Memory</td>
-<td style="text-align: right;">VS Code 1 GB; ~8 GB for the Efinity design flow</td>
-<td style="text-align: right;">16 GB; 32 GB recommended for larger designs</td>
+<td>Python</td>
+<td>64-bit 3.11+</td>
+<td>The CLI and MCP Server use only the standard library; no pip packages needed</td>
 </tr>
 <tr>
-<td>Disk</td>
-<td style="text-align: right;">10 GB of free space</td>
-<td style="text-align: right;">30 GB or more of free SSD space</td>
+<td>Git</td>
+<td>On PATH</td>
+<td><code>EvoVerse: Sync Catalog</code> pulls the board catalog through Git</td>
 </tr>
 <tr>
-<td>USB</td>
-<td style="text-align: right;">1 free USB port</td>
-<td style="text-align: right;">2 or more; avoid unpowered hubs</td>
+<td>Efinity</td>
+<td>2026.1+</td>
+<td>Required for real builds and programming</td>
 </tr>
 <tr>
-<td>Network</td>
-<td style="text-align: right;">Optional for offline installation</td>
-<td style="text-align: right;">Required for the first download of VS Code, Efinity, extensions, models, and toolchains</td>
+<td>Simulator</td>
+<td>Icarus Verilog</td>
+<td>RTL functional simulation; QuestaSim also works</td>
+</tr>
+<tr>
+<td>Hardware</td>
+<td>FPGA core board + USB data cable</td>
+<td>See §2 for the checklist</td>
 </tr>
 </tbody>
 </table>
-<p>For VS Code's own official minimum requirements, see <a href="https://code.visualstudio.com/docs/supporting/requirements">VS Code Requirements</a>. For Efinity memory and system requirements, defer to the official documentation of the version you install.</p>
+<p>Recommended machine specs: 8-core CPU, 16 GB RAM (32 GB for larger designs), 30 GB or more of free SSD space, and at least 2 USB ports.</p>
 <h2 id="2-hardware-preparation">2. Hardware preparation</h2>
-<p>At minimum, prepare:</p>
 <ol>
-<li>An EvoVerse/Efinix FPGA core module — for example <code>ws-e1</code> in the Catalog;</li>
-<li>A carrier board matching the core module, or a customer-built board;</li>
-<li>A power supply that matches the board specification; never guess voltage and polarity from connector shape alone;</li>
-<li>A USB cable that carries data; charge-only cables cannot be used for JTAG/serial;</li>
-<li>An on-board FTDI debug interface, or a compatible FT2232H/FT4232H JTAG module;</li>
+<li>An EvoVerse/Efinix FPGA core board (for example <code>ws-e1</code> in the Catalog);</li>
+<li>A matching carrier board / Carrier / customer-built board;</li>
+<li>A power supply that matches the board specification — never guess voltage and polarity from connector shape;</li>
+<li>A USB cable that carries data — charge-only cables cannot be used for JTAG/serial;</li>
+<li>An on-board FTDI debug interface, or an FT2232H/FT4232H JTAG module;</li>
 <li>For serial logs, an on-board USB-UART or a standalone 3.3 V USB-UART adapter;</li>
-<li>For sensors, MIPI, display, or networking, the corresponding Jackets, cables, and peripherals.</li>
+<li>Sensors / MIPI / display / networking peripherals as needed.</li>
 </ol>
-<p>Before connecting anything, read the board specification in the Catalog (available after installation):</p>
-<pre><code class="language-text">${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
-${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/docs/
-${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/carriers/
+<p>Do not connect a custom board while its I/O voltage, JTAG levels, or power direction are unknown; before connecting, read the board specification in the Catalog:</p>
+<pre><code class="language-text">~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
+~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/docs/
 </code></pre>
-<p>Never connect a custom board while I/O voltage, JTAG levels, or power direction are unknown. Efinix officially notes that development boards typically use an FT232H, FT2232H, or FT4232H; for a custom board, the board schematic remains authoritative.</p>
 <h2 id="3-install-the-base-software">3. Install the base software</h2>
 <h3 id="3-1-install-visual-studio-code">3.1 Install Visual Studio Code</h3>
 <ol>
-<li>Download the Stable 64-bit build from the <a href="https://code.visualstudio.com/download">official VS Code download page</a>.</li>
-<li>On Windows, the User Installer is recommended; during installation, check “Add to PATH” and the Explorer “Open with Code” option.</li>
-<li>Launch VS Code and run:</li>
+<li>Install the Stable 64-bit build from the <a href="https://code.visualstudio.com/download">official VS Code download page</a>;</li>
+<li>On Windows, the User Installer is recommended; check "Add to PATH" and the Explorer "Open with Code" option.</li>
 </ol>
-<pre><code class="language-powershell">code --version
-</code></pre>
-<p>If the terminal cannot find <code>code</code>, reopen the terminal or reinstall with the PATH option enabled.</p>
+<p>Verify: running <code>code --version</code> in a terminal returns a version number; if <code>code</code> is not found, reopen the terminal or reinstall with PATH enabled.</p>
 <h3 id="3-2-install-python-3-11">3.2 Install Python 3.11+</h3>
-<p>The EvoVerse CLI and MCP Server use only the Python standard library; no <code>pip install</code> of other packages is required.</p>
-<p>Windows:</p>
 <ol>
 <li>Install 64-bit Python 3.11 or newer from <a href="https://www.python.org/downloads/">python.org</a>;</li>
-<li>Check <strong>Add Python to PATH</strong>;</li>
-<li>Verify:</li>
+<li>Check <strong>Add Python to PATH</strong>.</li>
 </ol>
-<pre><code class="language-powershell">py -3 --version
-python --version
+<p>Verify:</p>
+<pre><code class="language-powershell">py -3 --version     # Windows
+python3 --version   # Linux
 </code></pre>
-<p>Linux:</p>
-<pre><code class="language-bash">python3 --version
-</code></pre>
-<p>The output must show <code>3.10</code> or newer. Customers installing from the VSIX do not need Node.js or npm; those are only used to build the extension from source.</p>
-<h3 id="3-3-install-efinity">3.3 Install Efinity</h3>
+<p>The output must show 3.11 or higher. When the version is insufficient, the first-run bootstrap reports <code>SYSTEM_PYTHON_MISSING</code> and Python-related capabilities are disabled. The customer VSIX does not need Node.js / npm.</p>
+<h3 id="3-3-install-git">3.3 Install Git</h3>
+<p>Install from the <a href="https://git-scm.com/">Git website</a> (Windows default options include Git Credential Manager). Verify: <code>git --version</code> returns a version number.</p>
+<h3 id="3-4-install-efinity-2026-1">3.4 Install Efinity 2026.1+</h3>
 <ol>
-<li>Get the Efinity installer that matches your target device and license from the Efinix Support Center;</li>
-<li>Follow that version's installation guide to complete the installation and license configuration;</li>
+<li>Get the installer that matches your target device and license from the Efinix Support Center, and complete the installation and license configuration per the official guide;</li>
 <li>On Windows, install the Microsoft Visual C++ 2022 x64 Runtime; some IP Managers (for example Sapphire SoC) additionally require 64-bit Java 8 or 11;</li>
 <li>On Linux, install the GUI libraries and Java per the official requirements and make sure Java is on the <code>PATH</code>;</li>
-<li>Note the Efinity root directory, for example:</li>
+<li>Note the Efinity root directory (for example <code>C:\Efinity\2026.1</code>).</li>
 </ol>
-<pre><code class="language-text">Windows: C:\Efinity\2026.1
-Linux:   /opt/efinity/2026.1
-</code></pre>
 <p>Verify that the root directory contains:</p>
 <pre><code class="language-text">bin/setup.bat             # Windows
 bin/setup.sh              # Linux
 bin/efx_run.bat or efx_run.py
 bin/efinity.exe or bin/efinity
 </code></pre>
-<p>Every time EvoVerse runs a tool it sets up the child-process environment using Efinity's setup script, so permanent changes to the system PATH are normally not required.</p>
-<h3 id="3-4-install-the-fpga-usb-jtag-drivers">3.4 Install the FPGA USB/JTAG drivers</h3>
-<p>Windows: use Zadig or the designated driver per the target board's user manual and the Efinity installation guide. Do not blindly replace every interface of a composite FTDI device; first confirm which interface the board documentation requires.</p>
-<p>Linux: disconnect the board, then run:</p>
-<pre><code class="language-bash">sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh
-sudo udevadm control --reload-rules
-sudo udevadm trigger
-</code></pre>
-<p>Reconnect the board. For Efinity's official USB driver instructions, see the “Installing USB Drivers” section of its installation guide.</p>
-<h3 id="3-5-install-icarus-verilog">3.5 Install Icarus Verilog</h3>
-<p>Full simulation functionality requires <code>iverilog</code> and <code>vvp</code>.</p>
-<p>Prebuilt binaries are available for Windows; on Linux, for example:</p>
-<pre><code class="language-bash">sudo apt update
-sudo apt install iverilog
-</code></pre>
-<p>Verify:</p>
-<pre><code class="language-bash">iverilog -V
-vvp -V
-</code></pre>
-<h3 id="3-6-optional-the-risc-v-software-toolchain">3.6 Optional: the RISC-V software toolchain</h3>
-<p>Only needed when you use the Sapphire/RISC-V SoC:</p>
+<p>Every time EvoVerse runs a tool it invokes Efinity's setup script to build the child-process environment, so permanent PATH changes are not needed.</p>
+<h3 id="3-5-install-the-fpga-usb-jtag-drivers">3.5 Install the FPGA USB/JTAG drivers</h3>
 <ul>
-<li>xPack GNU RISC-V Embedded GCC;</li>
-<li>GDB;</li>
-<li>The board support package (BSP) generated by Efinity;</li>
-<li>The VS Code Cortex-Debug extension;</li>
-<li>The board's debugger/OpenOCD configuration.</li>
+<li>Windows: use Zadig or the designated driver per the board's user manual and the Efinity installation guide; do not blindly replace every interface of a composite FTDI device — first confirm which interface the board documentation requires;</li>
+<li>Linux: disconnect the board, run <code>sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh</code>, reload the udev rules, then reconnect the board.</li>
 </ul>
-<p>You can run <code>EvoVerse: Download &amp; Install RISC-V Toolchain</code>, or install manually and then set <code>evoverse.riscvToolchainPath</code>.</p>
-<h2 id="4-install-the-vs-code-extensions">4. Install the VS Code extensions</h2>
-<h3 id="4-1-required">4.1 Required</h3>
+<h3 id="3-6-install-icarus-verilog">3.6 Install Icarus Verilog</h3>
+<ul>
+<li>Windows: install a prebuilt build and add it to PATH;</li>
+<li>Linux: <code>sudo apt install iverilog</code>.</li>
+</ul>
+<p>Verify: both <code>iverilog -V</code> and <code>vvp -V</code> print a version number.</p>
+<h3 id="3-7-optional-the-risc-v-software-toolchain">3.7 Optional: the RISC-V software toolchain</h3>
+<p>Only needed when you use the Sapphire/RISC-V SoC: xPack GNU RISC-V Embedded GCC, GDB, the BSP generated by Efinity, the Cortex-Debug extension, and the board's debugger configuration. You can run <code>EvoVerse: Download &amp; Install RISC-V Toolchain</code> in VS Code to install automatically, or install manually and then set <code>evoverse.riscvToolchainPath</code>.</p>
+<h2 id="4-obtain-the-release-package">4. Obtain the release package</h2>
 <ol>
-<li><strong>EvoVerse SDK</strong>: install the delivered <code>evoverse-sdk-0.9.0.vsix</code>.</li>
+<li>Get the customer delivery package <code>EvoVerse-SDK-v1.0.0.tar.gz</code>;</li>
+<li>Extract it fully in the directory that contains the package (Windows 10 1803+ ships with <code>tar</code>, avoiding the path-too-long errors of zip extraction):</li>
 </ol>
-<p>A Chat Agent is not a hard dependency of the EvoVerse VSIX. The VS Code native Chat Agent is recommended; if you only use the <code>openai-compatible</code> Provider of the EvoVerse built-in Runtime, you do not need GitHub Copilot.</p>
-<p>Use only the VS Code native Chat Agent to write files and run terminal commands, so that multiple agents never auto-modify the same workspace concurrently.</p>
-<p>To install the VSIX:</p>
-<pre><code class="language-powershell">code --install-extension D:\packages\evoverse-sdk-0.9.0.vsix
+<pre><code class="language-powershell">tar -xzf EvoVerse-SDK-v*.tar.gz
 </code></pre>
-<p>You can also use Extensions → <code>...</code> → <strong>Install from VSIX...</strong>.</p>
-<h3 id="4-2-install-per-feature">4.2 Install per feature</h3>
+<p>Verify: the extracted directory contains <code>deploy.ps1</code> / <code>deploy.sh</code> and the 3 <code>.vsix</code> files. <code>START-HERE.md</code> and <code>docs/site-en/customer-portal.html</code> are the entry documents.</p>
+<h2 id="5-install-the-3-vsixes">5. Install the 3 VSIXes</h2>
+<p>v1.0.0 delivers 3 extensions of the same version:</p>
+<table>
+<thead>
+<tr>
+<th>VSIX</th>
+<th>Purpose</th>
+<th>Required?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse-sdk-1.0.0.vsix</code></td>
+<td>SDK core: Welcome, Catalog, the Workbench shell, CLI / MCP</td>
+<td>Required</td>
+</tr>
+<tr>
+<td><code>evoverse-efinity-adapter-1.0.0.vsix</code></td>
+<td>Efinity build / timing / debug / programming / IP</td>
+<td>Required for FPGA development</td>
+</tr>
+<tr>
+<td><code>evoverse-rk3588-adapter-1.0.0.vsix</code></td>
+<td>RK3588 software verification loop</td>
+<td>Install when doing RISC-V software</td>
+</tr>
+</tbody>
+</table>
+<p>The three VSIXes must be the same version; mixing versions is unsupported.</p>
+<h3 id="5-1-method-a-one-shot-deploy-recommended">5.1 Method A: one-shot deploy (recommended)</h3>
+<p>Open PowerShell in the extracted package directory:</p>
+<pre><code class="language-powershell">.\deploy.ps1 -Target vscode
+</code></pre>
+<p>macOS / Linux:</p>
+<pre><code class="language-bash">./deploy.sh --target vscode
+</code></pre>
+<p>The script installs Core, the two Adapters, and Skills in dependency order; an optional Adapter missing from the package is skipped with a notice. Video Sim is embedded in the Core VSIX and needs no separate install.</p>
+<h3 id="5-2-method-b-manual-install-via-cli-the-extensions-panel">5.2 Method B: manual install via CLI / the Extensions panel</h3>
+<pre><code class="language-powershell">code --install-extension D:\packages\evoverse-sdk-1.0.0.vsix
+code --install-extension D:\packages\evoverse-efinity-adapter-1.0.0.vsix
+code --install-extension D:\packages\evoverse-rk3588-adapter-1.0.0.vsix
+</code></pre>
+<p>Or, in the Extensions panel, click the <code>...</code> at the top right → <strong>Install from VSIX...</strong> and pick each file.</p>
+<h3 id="5-3-recommended-companion-extensions">5.3 Recommended companion extensions</h3>
 <table>
 <thead>
 <tr>
@@ -296,35 +305,46 @@ vvp -V
 </tr>
 </tbody>
 </table>
-<p>For agent conversations, MCP tool calls, and project rules, use the VS Code native Chat Agent. Without GitHub Copilot installed, the built-in EvoVerse Timing Diagnosis/Build AI still works through the OpenAI-compatible Provider described in section 10.3.</p>
-<p>Offline environments require an administrator to prepare the dependency-extension VSIX files in advance. If the Marketplace is unreachable, the main EvoVerse VSIX cannot necessarily download dependency extensions on the customer's behalf.</p>
-<h2 id="5-initialize-evoverse">5. Initialize EvoVerse</h2>
+<p>Offline environments require an administrator to prepare the dependency-extension VSIX files in advance; when the Marketplace is unreachable, the main EvoVerse VSIX will not download dependency extensions on the customer's behalf.</p>
+<h2 id="6-restart-vs-code-and-complete-the-first-run-bootstrap">6. Restart VS Code and complete the first-run bootstrap</h2>
 <ol>
-<li>Reload VS Code;</li>
-<li>Run <code>EvoVerse: Set Up (re-run bootstrap)</code>;</li>
-<li>Choose <strong>Yes, set up</strong>;</li>
-<li>Confirm that Output → <strong>EvoVerse SDK</strong> shows:</li>
+<li><strong>Reload VS Code</strong> (<code>Developer: Reload Window</code> or restart) so the extensions activate;</li>
+<li>On first activation a dialog asks <strong>"Set up EvoVerse SDK?"</strong> — choose <strong>Yes, set up</strong>. The bootstrap creates the Catalog, project, and runtime directories under the default workspace <code>~/evoverse-sdk</code> (the path can be changed with <code>evoverse.home</code>) and does not modify system files;</li>
+<li>Watch Output → <strong>EvoVerse SDK</strong>: the bootstrap prints one item at a time, and after all items show ✓ you see <code>=== EvoVerse SDK ready ===</code>:</li>
+<li><code>EVOVERSE_HOME ready at …</code> — the workspace is ready;</li>
+<li><code>Deployed Efinity knowledge base</code> — the knowledge base is deployed;</li>
+<li><code>MCP integration: …</code> — merges <code>servers.evoverse</code> into the VS Code user-level <code>mcp.json</code> (on Windows <code>%APPDATA%\Code\User\mcp.json</code>; existing entries for other servers are untouched, and a backup <code>mcp.json.evoverse.bak</code> is written before any overwrite);</li>
+<li><code>CLI works: …</code> — the CLI smoke test;</li>
+<li>If Git is not on PATH you get a <code>! git not found</code> warning; Sync Catalog becomes usable only after Git is installed;</li>
+<li>If Python is missing or too old, <code>SYSTEM_PYTHON_MISSING</code> is reported; install Python 3.11+ and rerun the bootstrap;</li>
+<li>When the completion notice appears, choose <strong>Restart now</strong> to reload the window.</li>
 </ol>
-<pre><code class="language-text">EVOVERSE_HOME ready
-Vendored CLI + MCP server
-Seeded catalog
-CLI works
-</code></pre>
-<p>After initialization, the main directories are:</p>
-<pre><code class="language-text">~/evoverse-sdk/                 Catalog, projects, CLI, MCP Server, and shared rule assets
-~/evoverse-sdk/cli/             EvoVerse CLI
-~/evoverse-sdk/mcp-server/      MCP Server
-</code></pre>
-<p>Standard VS Code never creates or writes <code>~/.trae</code>.</p>
-<h2 id="6-configure-vs-code-settings">6. Configure VS Code settings</h2>
-<p>Open Settings, search for <code>evoverse</code>, or fill in your user <code>settings.json</code>:</p>
+<p>Verify: after the restart the <strong>Welcome page opens automatically</strong>. If it does not, run <code>EvoVerse: Show Welcome</code> (<code>evoverse.welcome</code>) from the command palette.</p>
+<p>If you chose <strong>Later</strong> in the dialog, or you need to rerun the bootstrap, run <code>EvoVerse: Set Up (re-run bootstrap)</code> (<code>evoverse.setup</code>). Standard VS Code never creates or writes <code>~/.trae</code>; if an enterprise policy locks the configuration directory and MCP auto-registration fails, merge manually per §10.2.</p>
+<h2 id="7-sync-the-catalog">7. Sync the Catalog</h2>
+<p>On a fresh install the Catalog is empty and the UI and MCP report <code>CATALOG_NOT_INSTALLED</code> — this is the expected state, not a failure.</p>
+<ol>
+<li>Run <code>EvoVerse: Sync Catalog</code> (<code>evoverse.syncCatalog</code>). The sync pulls from the official public release repository (<code>evoverse-catalog-release</code>) by default—<strong>no GitHub account is required</strong>; it verifies integrity via treeDigest and then switches the local version transactionally;</li>
+<li>Run <code>EvoVerse: Catalog Status</code> (<code>evoverse.catalogStatus</code>), or run <code>evoverse catalog status --json</code> in a terminal, and record <code>catalogVersion</code>, <code>commit</code>, and <code>treeDigest</code>.</li>
+</ol>
+<p>To use a self-hosted mirror or a private repository instead, override the repository URL with <code>evoverse sync --repository &lt;URL&gt;</code> or the <code>EVOVERSE_CATALOG_REPOSITORY</code> environment variable.</p>
+<p>Verify: the Welcome page's Board Catalog panel lists boards (for example <code>ws-e1</code>). A failed sync does not affect existing local content; fix the network and sync again.</p>
+<h2 id="8-verify-the-installation">8. Verify the installation</h2>
+<ol>
+<li>The EvoVerse entry in the left activity bar opens;</li>
+<li>The Workbench shows the installed Adapters;</li>
+<li>Run <code>EvoVerse: Health Check</code> (<code>evoverse.sdkHealthCheck</code>) and confirm that Python / Efinity / MCP / simulator / CLI / Adapter all pass (the Welcome page also has an SDK health panel);</li>
+<li>Complete Settings, MCP, project rules, and model configuration per §10.</li>
+</ol>
+<h2 id="9-configure-settings-and-environment-variables">9. Configure Settings and environment variables</h2>
+<h3 id="9-1-settings">9.1 Settings</h3>
+<p>Open Settings and search for <code>evoverse</code>, or fill in the user <code>settings.json</code> (replace the paths with the real ones on the customer machine):</p>
 <pre><code class="language-jsonc">{
   &quot;evoverse.home&quot;: &quot;D:\\EvoVerse&quot;,
   &quot;evoverse.pythonPath&quot;: &quot;C:\\Users\\&lt;user&gt;\\AppData\\Local\\Programs\\Python\\Python312\\python.exe&quot;,
   &quot;evoverse.efinityPath&quot;: &quot;C:\\Efinity\\2026.1&quot;,
   &quot;evoverse.simulator&quot;: &quot;iverilog&quot;,
   &quot;evoverse.iverilogPath&quot;: &quot;C:\\iverilog\\bin&quot;,
-  &quot;evoverse.buildMode&quot;: &quot;cli&quot;,
   &quot;evoverse.build.parallelJobs&quot;: 4,
   &quot;evoverse.build.autoOpenReport&quot;: true,
   &quot;evoverse.program.defaultMode&quot;: &quot;jtag&quot;
@@ -336,21 +356,18 @@ CLI works
   &quot;evoverse.pythonPath&quot;: &quot;/usr/bin/python3&quot;,
   &quot;evoverse.efinityPath&quot;: &quot;/opt/efinity/2026.1&quot;,
   &quot;evoverse.simulator&quot;: &quot;iverilog&quot;,
-  &quot;evoverse.iverilogPath&quot;: &quot;/usr/bin&quot;,
-  &quot;evoverse.buildMode&quot;: &quot;cli&quot;
+  &quot;evoverse.iverilogPath&quot;: &quot;/usr/bin&quot;
 }
 </code></pre>
-<p>Replace the paths with the real ones on the customer machine. <code>evoverse.iverilogPath</code> must point directly at the directory that contains <code>iverilog</code> and <code>vvp</code>.</p>
-<p>To use QuestaSim:</p>
+<p><code>evoverse.iverilogPath</code> points directly at the directory containing <code>iverilog</code> and <code>vvp</code>. When using QuestaSim:</p>
 <pre><code class="language-jsonc">{
   &quot;evoverse.simulator&quot;: &quot;questa&quot;,
   &quot;evoverse.questaPath&quot;: &quot;C:\\questasim64_2024.1\\win64&quot;
 }
 </code></pre>
-<p><code>evoverse.questaPath</code> must directly contain <code>vlib</code>, <code>vlog</code>, and <code>vsim</code>. This setting only affects the ordinary <code>EvoVerse: Simulate</code>; Video Sim keeps using its own built-in Icarus automation.</p>
-<h2 id="7-environment-variables">7. Environment variables</h2>
-<h3 id="7-1-recommended-principles">7.1 Recommended principles</h3>
-<p>Prefer <code>evoverse.*</code> settings; set system environment variables only when the CLI, MCP, or an enterprise deployment needs paths shared across processes.</p>
+<p><code>evoverse.questaPath</code> must directly contain <code>vlib</code>, <code>vlog</code>, and <code>vsim</code>.</p>
+<h3 id="9-2-environment-variables">9.2 Environment variables</h3>
+<p>Prefer <code>evoverse.*</code> Settings; set system environment variables only when the CLI, MCP, or an enterprise deployment needs paths shared across processes.</p>
 <table>
 <thead>
 <tr>
@@ -383,7 +400,7 @@ CLI works
 <tr>
 <td><code>PATH</code></td>
 <td>As needed</td>
-<td>Lets terminals find Python, Icarus, Java, and the RISC-V GCC directly</td>
+<td>Lets terminals find Python, Git, Icarus, Java, and the RISC-V GCC</td>
 </tr>
 </tbody>
 </table>
@@ -391,17 +408,45 @@ CLI works
 <pre><code class="language-powershell">[Environment]::SetEnvironmentVariable('EVOVERSE_HOME', &quot;$HOME\evoverse-sdk&quot;, 'User')
 [Environment]::SetEnvironmentVariable('PYTHONUTF8', '1', 'User')
 </code></pre>
-<p>Linux shell example:</p>
-<pre><code class="language-bash">export EVOVERSE_HOME=&quot;$HOME/evoverse-sdk&quot;
-export PYTHONUTF8=1
-</code></pre>
-<p>If you write these into a shell profile, reopen VS Code after the change so the MCP child process inherits the new environment.</p>
-<h2 id="8-configure-the-evoverse-mcp-in-vs-code">8. Configure the EvoVerse MCP in VS Code</h2>
-<h3 id="8-0-automatic-registration-recommended">8.0 Automatic registration (recommended)</h3>
-<p>Since v0.9.0, running <code>EvoVerse: Set Up</code> automatically merges <code>servers.evoverse</code> into the VS Code user-level <code>mcp.json</code> (on Windows, <code>%APPDATA%\Code\User\mcp.json</code>; it automatically backs up <code>mcp.json.evoverse.bak</code> before writing, and existing entries for other servers are left untouched). Reload VS Code and confirm with <strong>MCP: List Servers</strong> — no manual JSON editing required.</p>
-<p>If automatic registration does not take effect (for example, an enterprise policy locks the configuration directory), merge manually per 8.1/8.2.</p>
-<h3 id="8-1-windows-user-level-configuration-manual-fallback">8.1 Windows user-level configuration (manual fallback)</h3>
-<p>First confirm Python and the file paths (note: the CLI and MCP Server are actually installed under <code>~/evoverse-sdk/</code>):</p>
+<p>After writing to a shell profile you must reopen VS Code so the MCP child process inherits the new environment.</p>
+<h2 id="10-configure-how-the-agent-works">10. Configure how the Agent works</h2>
+<h3 id="10-1-two-q-a-entry-points">10.1 Two Q&amp;A entry points</h3>
+<p>The VS Code native Chat Agent and the EvoVerse built-in Conversation Runtime are two independent sessions:</p>
+<table>
+<thead>
+<tr>
+<th>Entry point</th>
+<th>Model configuration</th>
+<th>Source of EvoVerse tools</th>
+<th>Shared session history?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS Code native Chat Agent</td>
+<td>VS Code Chat model picker</td>
+<td>The EvoVerse MCP configured in VS Code</td>
+<td>No</td>
+</tr>
+<tr>
+<td>EvoVerse Timing Diagnosis / Build AI</td>
+<td><code>evoverse.model.*</code></td>
+<td>Extension-internal context and toolchain</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Prefer the native Chat Agent for writing files and running terminal commands, so multiple agents never auto-modify the same workspace concurrently. The native Chat Agent cannot act directly as <code>evoverse.model.provider</code>; to have both entry points use the same host model, select the model in native Chat and configure the built-in Runtime as <code>vscode-lm</code>.</p>
+<h3 id="10-2-evoverse-mcp">10.2 EvoVerse MCP</h3>
+<p>The first-run bootstrap in §6 has already registered the MCP; this section is the verification method and the manual fallback.</p>
+<p>Verify: after reloading, run <strong>MCP: List Servers</strong>:</p>
+<ol>
+<li><code>evoverse</code> shows as Running;</li>
+<li>The tools list shows <code>list_boards</code>, <code>validate_manifest</code>, <code>check_rtl_code_style</code>, and so on;</li>
+<li>In Chat Agent mode, ask "Use the EvoVerse tools to list the available boards" — the result must come from the actual Catalog, not from model memory;</li>
+<li>If MCP reports errors, inspect the logs via <strong>MCP: List Servers → evoverse → Show Output</strong>.</li>
+</ol>
+<p>Manual fallback (when auto-registration did not take effect): first confirm the paths —</p>
 <pre><code class="language-powershell">py -3 --version
 Test-Path &quot;$HOME\evoverse-sdk\mcp-server\server.py&quot;
 Test-Path &quot;$HOME\evoverse-sdk\cli\evoverse&quot;
@@ -424,8 +469,7 @@ Test-Path &quot;$HOME\evoverse-sdk\cli\evoverse&quot;
   }
 }
 </code></pre>
-<p>If the machine has no <code>py</code> launcher, set <code>command</code> to the absolute path of <code>python.exe</code> and remove <code>-3</code> from <code>args</code>.</p>
-<h3 id="8-2-linux-user-level-configuration">8.2 Linux user-level configuration</h3>
+<p>If the machine has no <code>py</code> launcher, set <code>command</code> to the absolute path of <code>python.exe</code> and remove <code>-3</code> from <code>args</code>. Linux example:</p>
 <pre><code class="language-json">{
   &quot;servers&quot;: {
     &quot;evoverse&quot;: {
@@ -442,37 +486,14 @@ Test-Path &quot;$HOME\evoverse-sdk\cli\evoverse&quot;
   }
 }
 </code></pre>
-<h3 id="8-3-user-level-or-workspace-level">8.3 User-level or workspace-level</h3>
-<ul>
-<li>User-level: the server is available in every workspace — a good fit for a dedicated development workstation;</li>
-<li>Workspace-level: saved as <code>&lt;project&gt;/.vscode/mcp.json</code> — good for team sharing, but never commit customer usernames or absolute paths;</li>
-<li>Remote/SSH/WSL: the MCP runs in the environment where the configuration lives; you must use remote paths and the remote Python.</li>
-</ul>
-<p>On first launch, check the configuration and accept the VS Code MCP Trust dialog. Then run <strong>MCP: List Servers</strong>:</p>
-<ol>
-<li>The <code>evoverse</code> server shows as Running;</li>
-<li>The tools list shows <code>list_boards</code>, <code>validate_manifest</code>, <code>check_rtl_code_style</code>, and so on;</li>
-<li>In Chat Agent mode, ask: “Use the EvoVerse tools to list the available boards”;</li>
-<li>If MCP reports errors, inspect the logs via <strong>MCP: List Servers → evoverse → Show Output</strong>.</li>
-</ol>
-<p>Never write a model API key into <code>mcp.json</code>.</p>
-<h3 id="8-4-recommended-setup-use-the-evoverse-mcp-in-the-vs-code-native-chat-agent">8.4 Recommended setup: use the EvoVerse MCP in the VS Code native Chat Agent</h3>
-<p>After completing 8.1 or 8.2, run <strong>MCP: List Servers</strong> in VS Code and confirm that <code>evoverse</code> is running with its tool list visible. Then open native Chat, switch to Agent mode, and allow it to use the EvoVerse MCP tools.</p>
-<p>With that configured, run the following acceptance question in the VS Code native Chat Agent:</p>
-<pre><code class="language-text">Use EvoVerse's list_boards tool to list the available boards, and state that the result comes from the tool rather than model memory.
-</code></pre>
-<p>If the native Chat Agent can see <code>list_boards</code>, <code>validate_manifest</code>, and <code>check_rtl_code_style</code>, you can ask questions about your project and invoke EvoVerse tools. The customer should still approve the first tool call or terminal command; do not enable unrestricted auto-approval.</p>
-<h2 id="9-install-project-rules-rtl-coding-rules-and-workflows">9. Install project rules, RTL coding rules, and workflows</h2>
-<p>This step is mandatory for a full-featured VS Code installation, not an optional nicety.</p>
-<h3 id="9-1-create-an-evoverse-project">9.1 Create an EvoVerse project</h3>
-<p>Describe the new or take-over target in natural language in Chat; the Agent shows the current action via the <code>project_next</code> envelope of Workbench Control and executes after you confirm. When the project is created, VS Code instructions are generated from the following authoritative rule assets:</p>
+<p>Scope choice: user-level (available in every workspace — a good fit for a dedicated workstation) or workspace-level (<code>&lt;project&gt;/.vscode/mcp.json</code> — good for team sharing, but never commit usernames or absolute paths). Under Remote/SSH/WSL the MCP runs in the environment where the configuration lives; use remote paths and the remote Python. Never write a model API key into <code>mcp.json</code>. The customer confirms authorization on first tool use; do not enable unrestricted auto-approval.</p>
+<h3 id="10-3-project-rules-and-engineering-instructions">10.3 Project rules and engineering instructions</h3>
+<p>Describe the new or take-over project in natural language in Chat; the Agent shows the current action via the <code>project_next</code> envelope of Workbench Control and executes after you confirm. When the project is created, VS Code instructions are generated from the official rule assets:</p>
 <pre><code class="language-text">~/evoverse-sdk/agent-rules/rules.md
 ~/evoverse-sdk/agent-rules/rules-rtl-style.md
 </code></pre>
-<p>This generates <code>.github/copilot-instructions.md</code> and <code>.github/instructions/rtl.instructions.md</code>. The former carries the general engineering workflow; the latter carries the full RTL, CDC, reset, Efinity-format, and verification rules. On both Trae and VS Code, the generated content comes from the SDK's host-independent authoritative <code>agent-rules/</code> sources — it does not depend on <code>.trae</code> or the deprecated <code>CLAUDE.md</code>. VS Code officially supports <code>.github/copilot-instructions.md</code>, a root <code>AGENTS.md</code>, and <code>.github/instructions/*.instructions.md</code>; see <a href="https://code.visualstudio.com/docs/agent-customization/custom-instructions">Use custom instructions in VS Code</a>.</p>
-<h3 id="9-2-existing-projects">9.2 Existing projects</h3>
-<p>Build the VS Code instructions from the shared rule assets produced by initialization:</p>
-<p>Windows:</p>
+<p>It generates <code>.github/copilot-instructions.md</code> and <code>.github/instructions/rtl.instructions.md</code>. VS Code officially supports these three file kinds (<code>copilot-instructions.md</code>, a root <code>AGENTS.md</code>, and <code>instructions/*.instructions.md</code>); see <a href="https://code.visualstudio.com/docs/agent-customization/custom-instructions">Use custom instructions in VS Code</a>.</p>
+<p>Existing projects (not going through the new-project flow) can generate them manually:</p>
 <pre><code class="language-powershell">New-Item -ItemType Directory -Force &quot;.github\instructions&quot; | Out-Null
 Copy-Item &quot;$HOME\evoverse-sdk\agent-rules\rules.md&quot; &quot;.github\copilot-instructions.md&quot;
 $header = &quot;---`nname: EvoVerse RTL rules`ndescription: Mandatory RTL, CDC, reset and verification rules`napplyTo: `&quot;**/*.{v,sv,vh,sdc}`&quot;`n---`n`n&quot;
@@ -484,42 +505,8 @@ cp &quot;$HOME/evoverse-sdk/agent-rules/rules.md&quot; .github/copilot-instructi
 printf '%s\n' '---' 'name: EvoVerse RTL rules' 'description: Mandatory RTL, CDC, reset and verification rules' 'applyTo: &quot;**/*.{v,sv,vh,sdc}&quot;' '---' '' &gt; .github/instructions/rtl.instructions.md
 cat &quot;$HOME/evoverse-sdk/agent-rules/rules-rtl-style.md&quot; &gt;&gt; .github/instructions/rtl.instructions.md
 </code></pre>
-<p>The generated <code>.github/copilot-instructions.md</code> comes from the authoritative general rules; do not create or maintain a <code>CLAUDE.md</code> as well. Its key approval boundaries include:</p>
-<pre><code class="language-markdown"># EvoVerse project instructions
-
-- Before changing RTL, inspect `evoverse-project.md`, constraints and relevant board/IP manifests.
-- Follow the naming, reset, CDC, handshake, synthesis and timing rules in the RTL instruction file.
-- Run RTL style checks and simulation before build.
-- Do not claim timing closure without a successful Efinity build and timing report.
-- Do not program hardware or apply an optimization candidate without explicit user approval.
-</code></pre>
-<p>Teams may also let other agents read the root <code>AGENTS.md</code>, but do not duplicate and maintain full rule sets that contradict each other; the authoritative sources are always <code>agent-rules/rules.md</code> and <code>agent-rules/rules-rtl-style.md</code> in the SDK repository, and project files are generated by the CLI in the matching host format.</p>
-<h3 id="9-3-verify-the-native-chat-agent-s-project-rules">9.3 Verify the native Chat Agent's project rules</h3>
-<p>The VS Code native Chat Agent uses <code>.github/copilot-instructions.md</code> and <code>.github/instructions/*.instructions.md</code> from the project. EvoVerse generates these files automatically for new projects; for existing projects, create them per section 9.2:</p>
-<pre><code class="language-text">.github/copilot-instructions.md
-.github/instructions/rtl.instructions.md
-</code></pre>
-<p>The authoritative sources of the two files, after initialization, are respectively:</p>
-<pre><code class="language-text">~/evoverse-sdk/agent-rules/rules.md
-~/evoverse-sdk/agent-rules/rules-rtl-style.md
-</code></pre>
-<p>Do not copy rules from the deprecated <code>CLAUDE.md</code>. Open Customizations/Diagnostics in VS Code Chat and confirm that both the general rules and the dedicated RTL rules are loaded.</p>
-<h3 id="9-4-recommended-dedicated-rtl-instructions">9.4 Recommended dedicated RTL instructions</h3>
-<p>Create <code>.github/instructions/rtl.instructions.md</code>:</p>
-<pre><code class="language-markdown">---
-name: EvoVerse RTL rules
-description: Mandatory RTL, CDC, reset and verification rules
-applyTo: &quot;**/*.{v,sv,vh,sdc}&quot;
----
-
-Before proposing or editing RTL:
-1. identify clock/reset domains and interface latency;
-2. preserve explicit port connections and the project's naming rules;
-3. treat CDC and constraints as deterministic verification items;
-4. run `EvoVerse: Check This File's RTL Code Style` and the relevant simulation;
-5. never treat model output as proof of functional or timing correctness.
-</code></pre>
-<p>Confirm in VS Code Settings:</p>
+<p>The key approval boundaries after generation include: inspect <code>evoverse-project.md</code>, the constraints, and the board/IP manifests before changing RTL; never claim timing closure before the build and simulation pass; never program the board or apply an optimization candidate without explicit approval. Model output cannot serve as proof of functional or timing correctness.</p>
+<p>Confirm in Settings:</p>
 <pre><code class="language-jsonc">{
   &quot;chat.useAgentsMdFile&quot;: true,
   &quot;chat.instructionsFilesLocations&quot;: {
@@ -527,62 +514,10 @@ Before proposing or editing RTL:
   }
 }
 </code></pre>
-<p>Open Customizations/Diagnostics in Chat and confirm that <code>copilot-instructions.md</code> and the RTL instruction are loaded. Custom instructions influence Chat/Agent behavior but are not guaranteed to influence verbatim inline completion in the editor, so the EvoVerse deterministic checks must still be run in the end.</p>
-<h2 id="10-configure-the-model">10. Configure the model</h2>
-<h3 id="10-1-how-the-two-q-a-entry-points-relate">10.1 How the two Q&amp;A entry points relate</h3>
-<p>Both the VS Code native Chat Agent and the EvoVerse built-in Conversation Runtime can answer project questions, but they are currently two independent sessions:</p>
-<table>
-<thead>
-<tr>
-<th>Entry point</th>
-<th>Model configuration</th>
-<th>Source of EvoVerse tools</th>
-<th>Shared session history?</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VS Code native Chat Agent</td>
-<td>VS Code Chat model picker</td>
-<td>EvoVerse MCP configured in VS Code</td>
-<td>No</td>
-</tr>
-<tr>
-<td>EvoVerse Timing Diagnosis / Build AI</td>
-<td><code>evoverse.model.*</code></td>
-<td>Extension-internal context and toolchain</td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
-<p>The VS Code native Chat Agent cannot act directly as <code>evoverse.model.provider</code>. If you want both entry points to use the same host model, select the target model in native Chat and configure the EvoVerse built-in Runtime as <code>vscode-lm</code>; the built-in Runtime can also use <code>openai-compatible</code> on its own. Credentials belong in each side's secure storage and must not be shared through project files.</p>
-<h3 id="10-2-vs-code-host-models">10.2 VS Code host models</h3>
-<p>This fits customers who already use GitHub Copilot / the VS Code Language Model API and whose required model already appears in the VS Code model picker. Configuration steps:</p>
-<ol>
-<li>Install and sign in to GitHub Copilot;</li>
-<li>Confirm in VS Code Chat that the target model is available and complete the authorization the model provider requires;</li>
-<li>Set <code>evoverse.model.provider</code> to <code>vscode-lm</code> in user Settings;</li>
-<li>Run <strong>EvoVerse: Select AI Model</strong> and pick from the models the host actually returns; the command saves the exact Model ID;</li>
-<li>Reload the VS Code window, or wait for the configuration to refresh automatically.</li>
-</ol>
-<p>You can also set it manually:</p>
-<pre><code class="language-jsonc">{
-  &quot;evoverse.model.provider&quot;: &quot;vscode-lm&quot;,
-  &quot;evoverse.model.modelId&quot;: &quot;&lt;exact model id exposed by VS Code&gt;&quot;
-}
-</code></pre>
-<p>EvoVerse never silently picks the first model in the list. If you do not know the exact ID, first check the available models in the host model picker, or use the OpenAI-compatible Provider.</p>
-<p>The model list here is determined by your VS Code/Copilot account, license, region, and current service. Only models actually exposed by the VS Code Language Model API appear in the <code>vscode-lm</code> list.</p>
-<h3 id="10-3-openai-compatible-provider">10.3 OpenAI-compatible Provider</h3>
-<p>This fits customers who bring their own OpenAI, DeepSeek, Zhipu, MiniMax, or corporate model-gateway API key. The current implementation calls the standard <code>POST &lt;baseUrl&gt;/chat/completions</code> and requires the service to support the OpenAI Chat Completions format; tool calling and structured output further depend on how compatible the specific model is.</p>
-<p>Configuration steps:</p>
-<ol>
-<li>Obtain the API key, Base URL, and exact Model ID from your model provider;</li>
-<li>Fill the following three values into user Settings;</li>
-<li>Run <strong>EvoVerse: Set OpenAI-compatible API Key</strong> to store the key in VS Code SecretStorage;</li>
-<li>Run <strong>Developer: Reload Window</strong>;</li>
-<li>On the first question, review the outgoing-size prompt and choose <strong>Send</strong>.</li>
-</ol>
+<p>In Chat's Customizations/Diagnostics, confirm that both instruction files are loaded. Custom instructions influence Chat/Agent behavior but are not guaranteed to influence verbatim inline completion; the final authority remains EvoVerse's deterministic checks.</p>
+<h3 id="10-4-model-configuration-timing-diagnosis-build-ai">10.4 Model configuration (Timing Diagnosis / Build AI)</h3>
+<p><strong>Host model (<code>vscode-lm</code>)</strong>: install and sign in to GitHub Copilot → confirm in VS Code Chat that the target model is available → set <code>"evoverse.model.provider": "vscode-lm"</code> in Settings → run <code>EvoVerse: Select AI Model</code> and pick from the list the host actually returns (the exact Model ID is saved) → reload the window. EvoVerse never silently picks the first model; if you do not know the exact ID, confirm it with the picker first, or switch to OpenAI-compatible.</p>
+<p><strong>Bring your own API key (<code>openai-compatible</code>)</strong>: fits OpenAI, DeepSeek, Zhipu, MiniMax, or corporate gateways. The service must support the OpenAI Chat Completions format:</p>
 <pre><code class="language-jsonc">{
   &quot;evoverse.model.provider&quot;: &quot;openai-compatible&quot;,
   &quot;evoverse.model.modelId&quot;: &quot;&lt;endpoint-model-id&gt;&quot;,
@@ -590,114 +525,108 @@ Before proposing or editing RTL:
   &quot;evoverse.model.allowLocalHttp&quot;: false
 }
 </code></pre>
-<p>Run <strong>EvoVerse: Set OpenAI-compatible API Key</strong> and enter the key. The key is stored in VS Code SecretStorage — do not put it into settings, MCP, prompts, or the project repository. Before any remote request, EvoVerse shows the message count and character size and asks for confirmation.</p>
-<p>A local development endpoint can use HTTP only when the address is a localhost/loopback address and <code>evoverse.model.allowLocalHttp</code> is explicitly enabled.</p>
-<p>Examples of common services (model names must follow the list actually enabled for the customer account):</p>
+<p>Configuration steps:</p>
+<ol>
+<li>Obtain the API key, Base URL, and exact Model ID from your provider;</li>
+<li>Fill in the three values above;</li>
+<li>Run <code>EvoVerse: Set OpenAI-compatible API Key</code> — the key is stored in VS Code SecretStorage;</li>
+<li>Run <code>Developer: Reload Window</code>;</li>
+<li>On the first question, review the outgoing-size prompt and choose <strong>Send</strong>.</li>
+</ol>
+<p><code>baseUrl</code> takes only the API root path; EvoVerse appends <code>chat/completions</code> itself. Never put the key into settings, MCP, or the project repository. Local endpoints are limited to localhost/loopback addresses with <code>allowLocalHttp</code> explicitly enabled. Common services:</p>
 <table>
 <thead>
 <tr>
 <th>Service</th>
 <th><code>evoverse.model.baseUrl</code></th>
-<th>Example <code>evoverse.model.modelId</code></th>
-<th>Notes</th>
+<th>Example <code>modelId</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>OpenAI API</td>
 <td><code>https://api.openai.com/v1/</code></td>
-<td>OpenAI model IDs actually available to the account</td>
-<td>Uses an OpenAI API key; not the same as automatically reusing a Codex subscription</td>
+<td>An OpenAI model ID actually available to the account</td>
 </tr>
 <tr>
 <td>DeepSeek</td>
 <td><code>https://api.deepseek.com/v1/</code></td>
 <td><code>deepseek-chat</code></td>
-<td>Uses a DeepSeek API key</td>
 </tr>
 <tr>
 <td>Zhipu BigModel</td>
 <td><code>https://open.bigmodel.cn/api/paas/v4/</code></td>
-<td>GLM model IDs actually available to the account</td>
-<td>Zhipu offers an OpenAI-compatible API; coding plans may use a dedicated endpoint</td>
+<td>A GLM model ID actually available to the account</td>
 </tr>
 <tr>
 <td>MiniMax</td>
 <td><code>https://api.minimaxi.com/v1/</code></td>
-<td>MiniMax model IDs actually available to the account</td>
-<td>MiniMax offers an OpenAI-compatible API</td>
+<td>A MiniMax model ID actually available to the account</td>
 </tr>
 <tr>
 <td>Corporate aggregation gateway</td>
-<td>The HTTPS <code>/v1/</code> or compatible root URL provided by the company</td>
-<td>Model IDs published by the gateway</td>
-<td>Can forward models such as Claude, but Chat Completions compatibility must be confirmed</td>
+<td>The HTTPS <code>/v1/</code>-compatible root URL provided by the company</td>
+<td>The model ID published by the gateway</td>
 </tr>
 </tbody>
 </table>
-<p>The built-in Runtime currently has <strong>no native Anthropic Messages API Provider</strong>. There are two workable routes to Claude: select a Claude model actually exposed by VS Code under <code>vscode-lm</code>, or use a gateway with OpenAI-compatible Chat Completions offered by your company, OpenRouter, or similar. Do not paste an Anthropic-native Base URL directly into this section's configuration.</p>
-<h3 id="10-4-verify-timing-diagnosis-and-build-ai">10.4 Verify Timing Diagnosis and Build AI</h3>
-<p>After configuring either Provider, verify in this order:</p>
+<p>The built-in Runtime currently has no native Anthropic Messages API Provider. To use Claude: select a Claude model actually exposed by VS Code under <code>vscode-lm</code>, or go through a gateway that offers OpenAI-compatible Chat Completions; do not paste an Anthropic-native Base URL into this section's configuration.</p>
+<p><strong>Verify</strong>: open a project that has built successfully and contains a timing report → <code>Toolchain: Diagnose Timing Violations</code> → click <strong>Ask AI</strong> and confirm the streaming reply → ask a follow-up question to confirm multi-turn context → in the Build Report click <strong>Ask AI Agent</strong> and confirm you receive an answer with a build summary. The answer should cite the current report's WNS/TNS, clock domains, or critical paths; model suggestions are for analysis only and cannot replace simulation, CDC checks, and the Efinity timing report.</p>
+<h2 id="11-start-using">11. Start using</h2>
 <ol>
-<li>Open an EvoVerse project that has already built successfully and contains a timing report;</li>
-<li>Run <strong>Toolchain: Diagnose Timing Violations</strong>;</li>
-<li>On the Timing Diagnose page, click <strong>Ask AI</strong>; confirm that the send-confirmation dialog appears and that the analysis streams back once you approve;</li>
-<li>Ask one follow-up question in the input box and confirm that the Conversation Runtime keeps the multi-turn context of this entry point;</li>
-<li>Open the Build Report, click <strong>Ask AI Agent</strong>, and confirm you receive an answer with a build summary;</li>
-<li>Check whether the answer cites WNS/TNS, clock domains, or critical paths from the current report. Model suggestions are for analysis only and cannot replace actual simulation, CDC checks, and the Efinity timing report.</li>
+<li><strong>Start in natural language</strong>: describe the requirement in the VS Code native Chat (Agent mode); the Agent proceeds step by step through the <code>project_next</code> envelope with confirmation. Without a native Chat Agent, use the Workbench's Project Control dropdown to pick the design flow (<code>EvoVerse: Select Design Flow</code>, <code>evoverse.selectDesignFlow</code>);</li>
+<li><strong>The Workbench's six tabs</strong>: Home / Build / Timing / Debug / SW / IP;</li>
+<li><strong>Build</strong>: the Build tab or <code>Toolchain: Build</code> (<code>evoverse.build</code>). The build is executed by the Efinity Adapter via <code>efx_run --flow compile</code>, and the status bar shows <code>Build: Ready / Running / Failed</code>;</li>
+<li><strong>Simulate</strong>: <code>Toolchain: Simulate</code> (<code>evoverse.sim</code>); open VCDs with VaporView;</li>
+<li><strong>Timing diagnosis</strong>: <code>Toolchain: Diagnose Timing Violations</code> (<code>evoverse.diagnoseTiming</code>);</li>
+<li><strong>Program</strong>: <code>Toolchain: Program FPGA</code> (<code>evoverse.program</code>).</li>
 </ol>
-<p>If it fails, check Output → <strong>EvoVerse SDK</strong> first, then verify: the Provider name, the Model ID, whether the Base URL already contains <code>chat/completions</code>, API key permissions, account balance, and any corporate proxy. Put only the API root path in <code>baseUrl</code>; EvoVerse appends <code>chat/completions</code> itself.</p>
-<h2 id="11-first-project-and-step-by-step-acceptance">11. First project and step-by-step acceptance</h2>
-<p>Do not jump straight to programming the board. Work in order and continue only after each step passes.</p>
-<h3 id="11-1-basics-and-the-catalog">11.1 Basics and the Catalog</h3>
+<p>For the full daily development workflow, see the <a href="../sdk/user-manual.html">User Manual</a>.</p>
+<h2 id="12-step-by-step-acceptance">12. Step-by-step acceptance</h2>
+<p>Do not jump straight to programming; pass each step in order before continuing.</p>
+<h3 id="12-1-basics-and-the-catalog">12.1 Basics and the Catalog</h3>
 <ol>
-<li>Open the EvoVerse Activity Bar;</li>
-<li>Confirm that <code>ws-e1</code> appears in the Board Catalog;</li>
-<li>Run <code>EvoVerse: Show Knowledge Base</code>;</li>
+<li>Open the EvoVerse Activity Bar and confirm that <code>ws-e1</code> exists in the Board Catalog;</li>
+<li>Run <code>EvoVerse: Show Knowledge Base</code> and confirm the knowledge base opens;</li>
 <li>Describe a minimal project goal in Chat, confirm the <code>project_next</code> envelope, and create the project;</li>
 <li>Confirm the project contains <code>evoverse-project.md</code>, <code>.github/copilot-instructions.md</code>, and <code>.github/instructions/rtl.instructions.md</code>.</li>
 </ol>
-<h3 id="11-2-rules-and-mcp">11.2 Rules and MCP</h3>
+<h3 id="12-2-rules-and-mcp">12.2 Rules and MCP</h3>
 <ol>
-<li>Open an RTL file;</li>
-<li>Run <code>Toolchain: Check This File's Code Style</code>;</li>
-<li>In VS Code Chat's Customizations/Diagnostics, confirm the rule files are loaded;</li>
-<li>Run <strong>MCP: List Servers</strong> and confirm <code>evoverse</code> is Running;</li>
-<li>Have the Agent call <code>list_boards</code>; the result must come from the actual Catalog, not from model memory.</li>
+<li>Open an RTL file and run <code>Toolchain: Check This File's Code Style</code>;</li>
+<li>In Chat's Customizations/Diagnostics, confirm the rule files are loaded;</li>
+<li>Run <strong>MCP: List Servers</strong>, confirm <code>evoverse</code> is Running, and that <code>list_boards</code> results come from the actual Catalog.</li>
 </ol>
-<h3 id="11-3-simulation">11.3 Simulation</h3>
+<h3 id="12-3-simulation">12.3 Simulation</h3>
 <ol>
 <li>The project contains a testbench;</li>
-<li>Run <code>EvoVerse: Simulate</code>;</li>
-<li><code>iverilog</code> and <code>vvp</code> report success in Output;</li>
-<li>When a VCD is produced, open it with VaporView and check the clock, reset, and output behavior.</li>
+<li>Run <code>Toolchain: Simulate</code>; <code>iverilog</code> and <code>vvp</code> report success in Output;</li>
+<li>When a VCD is produced, open it with VaporView and confirm the clock, reset, and output behavior.</li>
 </ol>
-<h3 id="11-4-efinity-build-and-timing">11.4 Efinity build and timing</h3>
+<h3 id="12-4-efinity-build-and-timing">12.4 Efinity build and timing</h3>
 <ol>
-<li>Run <code>Toolchain: Project Health Check</code>;</li>
-<li>Fix any missing SDC, device, or source-file issues;</li>
+<li>Run <code>Toolchain: Project Health Check</code> and fix missing SDC, device, or source-file issues;</li>
 <li>Run <code>Toolchain: Build (Full Flow)</code>;</li>
 <li>In the Build Report, confirm that Resources, I/O/Clock, Timing, and Critical Paths are readable;</li>
-<li>Run <code>Toolchain: Diagnose Timing Violations</code>;</li>
-<li>Treat AI suggestions as hypotheses only; WNS/TNS, CDC, simulation, and build results are the verification evidence.</li>
+<li>Run <code>Toolchain: Diagnose Timing Violations</code>; treat AI suggestions as inference only — WNS/TNS, CDC, simulation, and build results are the verification evidence.</li>
 </ol>
-<h3 id="11-5-programming">11.5 Programming</h3>
+<h3 id="12-5-programming">12.5 Programming</h3>
 <ol>
-<li>While the board is powered off, confirm jumpers, voltages, JTAG, and boot mode;</li>
+<li>With the board powered off, confirm jumpers, voltages, JTAG, and boot mode;</li>
 <li>Connect power and the USB data cable;</li>
 <li>In the Efinity Programmer, first confirm the target device enumerates;</li>
 <li>Return to VS Code and run <code>Toolchain: Program FPGA</code>;</li>
-<li>If you see “no FTDI device”, check the data cable, drivers, permissions, hubs, and board power.</li>
+<li>If you see "no FTDI device", check the data cable, drivers, permissions, hubs, and board power.</li>
 </ol>
-<h3 id="11-6-optional-risc-v">11.6 Optional RISC-V</h3>
+<h3 id="12-6-optional-risc-v">12.6 Optional RISC-V</h3>
 <ol>
 <li>Configure the Sapphire SoC IP and sync it from Efinity;</li>
 <li>Run <code>Software: Sync BSP from SoC IP</code>;</li>
-<li>Run <code>Software: Build App</code>;</li>
-<li>Run <code>Software: Program FPGA</code>;</li>
-<li>After confirming the Cortex-Debug, GDB, and debugger paths, run <code>Software: Debug App</code>.</li>
+<li>Run <code>Software: Build App…</code>;</li>
+<li>Run <code>Software: Program FPGA…</code>;</li>
+<li>After confirming Cortex-Debug, GDB, and the debugger paths, run <code>Software: Debug App…</code>.</li>
 </ol>
-<h2 id="12-troubleshooting">12. Troubleshooting</h2>
+<h2 id="13-troubleshooting">13. Troubleshooting</h2>
 <table>
 <thead>
 <tr>
@@ -707,8 +636,8 @@ Before proposing or editing RTL:
 </thead>
 <tbody>
 <tr>
-<td>Set Up cannot find Python</td>
-<td>Set <code>evoverse.pythonPath</code> to the interpreter's absolute path, reload the window, and rerun Set Up</td>
+<td>Set Up reports <code>SYSTEM_PYTHON_MISSING</code></td>
+<td>Install Python 3.11+, or point <code>evoverse.pythonPath</code> at the interpreter's absolute path, reload, and rerun Set Up</td>
 </tr>
 <tr>
 <td>MCP exits immediately on start</td>
@@ -723,6 +652,10 @@ Before proposing or editing RTL:
 <td>Check <code>.github/copilot-instructions.md</code>, the RTL instruction, Customizations/Diagnostics, and the <code>applyTo</code> glob</td>
 </tr>
 <tr>
+<td>Sync Catalog fails</td>
+<td>Confirm Git is on PATH and the network is reachable; the default public repository needs no GitHub account; see the <a href="deployment-guide.html">Deployment Guide</a></td>
+</tr>
+<tr>
 <td>Build cannot find Efinity</td>
 <td>Check that <code>evoverse.efinityPath</code> points at the installation root rather than <code>bin</code>, and that the setup script exists</td>
 </tr>
@@ -732,7 +665,7 @@ Before proposing or editing RTL:
 </tr>
 <tr>
 <td>Simulation cannot find executables</td>
-<td>Check <code>evoverse.simulator</code> and point the matching path directly at the directory containing <code>iverilog</code>/<code>vvp</code> or <code>vlib</code>/<code>vlog</code>/<code>vsim</code></td>
+<td>Check <code>evoverse.simulator</code>; point the path directly at the directory containing <code>iverilog</code>/<code>vvp</code> or <code>vlib</code>/<code>vlog</code>/<code>vsim</code></td>
 </tr>
 <tr>
 <td>FPGA/FTDI not found</td>
@@ -748,26 +681,25 @@ Before proposing or editing RTL:
 </tr>
 </tbody>
 </table>
-<h2 id="13-customer-delivery-acceptance-checklist">13. Customer delivery acceptance checklist</h2>
+<h2 id="14-delivery-acceptance-checklist">14. Delivery acceptance checklist</h2>
 <ul>
 <li>[ ] VS Code Stable 64-bit launches;</li>
-<li>[ ] The EvoVerse VSIX and the required dependency extensions are installed;</li>
-<li>[ ] Python 3.11+ is executable;</li>
-<li>[ ] Set Up and the CLI smoke test succeed;</li>
+<li>[ ] The 3 EvoVerse VSIXes (same version 1.0.0) and the required dependency extensions are installed and Enabled;</li>
+<li>[ ] Python 3.11+ and Git are executable;</li>
+<li>[ ] The first-run bootstrap completed, <code>=== EvoVerse SDK ready ===</code>, and the CLI smoke test passed;</li>
+<li>[ ] The Welcome page opened automatically and the Board Catalog lists boards after Sync Catalog;</li>
 <li>[ ] Efinity, the license, Java, and the USB drivers are done;</li>
 <li>[ ] Icarus <code>iverilog</code>/<code>vvp</code> are executable;</li>
-<li>[ ] <code>evoverse.*</code> paths point at the real installation locations;</li>
 <li>[ ] The EvoVerse MCP is Running and its tools are callable;</li>
-<li>[ ] Both VS Code custom instruction files — general and RTL — are loaded;</li>
-<li>[ ] The RTL style check passes;</li>
+<li>[ ] Both the general and RTL custom instructions are loaded;</li>
 <li>[ ] The minimal simulation passes and waveforms can be viewed;</li>
-<li>[ ] The full build succeeds and produces resource/timing reports;</li>
+<li>[ ] The Full Build succeeds and produces resource/timing reports;</li>
 <li>[ ] Timing Diagnosis opens;</li>
-<li>[ ] Efinity enumerates the FPGA and EvoVerse programming succeeds;</li>
+<li>[ ] Efinity enumerates the FPGA and programming succeeds;</li>
 <li>[ ] If RISC-V is needed, the full BSP, GCC, GDB, and Cortex-Debug chain passes;</li>
-<li>[ ] The customer understands that model inference cannot replace simulation, STA, CDC, and hardware verification.</li>
-</ul>
-<p>Only after every box is checked may the workstation be considered to have reached the “full-feature use” defined in this guide.</p></main>
+<li>[ ] The team understands that model inference cannot replace simulation, STA, CDC, and hardware verification.</li>
+</ul></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

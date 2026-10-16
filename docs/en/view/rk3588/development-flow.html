@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -109,7 +111,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </blockquote>
 <p>This document describes the environment deployment, project generation, and minimal-system build chain that EvoVerse actually supports today. For your first hands-on run, go straight to the <a href="../learn/ws-e2-rk3588-minimal/README.html">WS-E2 RK3588J Minimal System natural-language tutorial</a>.</p>
 <h2 id="1-four-states-that-must-not-be-confused">1. Four States That Must Not Be Confused</h2>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
   A[Install the three VSIXes] --&gt; B[Sync the Catalog]
   B --&gt; C[Deploy the two offline packages]
   C --&gt; D[Environment READY]
@@ -118,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
   F --&gt; G[Preflight + four-stage build]
   G --&gt; H[Project BUILD_READY]
   H --&gt; I[Flash and hardware verification NOT_RUN]
-</code></pre>
+</pre>
 <ul>
 <li><strong>Environment <code>READY</code></strong>: Docker, the pinned toolchain, the WS-E2 BSP, receipts, and per-file identities all passed their checks.</li>
 <li><strong>Project <code>PROFILE_READY</code></strong>: the project skeleton has been generated, but binding or preflight has not fully closed yet.</li>
@@ -151,33 +153,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <h3 id="the-two-offline-packages">The Two Offline Packages</h3>
-<p>Large BSPs do not go into Git or the customer installation package. Customers obtain them from EvoVerse:</p>
-<table>
-<thead>
-<tr>
-<th>File</th>
-<th style="text-align: right;">Bytes</th>
-<th>SHA-256</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>rk3588-toolchain-2026.09.evopkg</code></td>
-<td style="text-align: right;">256,584,627</td>
-<td><code>d05eaff178a72f6764e75f52418ee3e642a74cb15ca182c93a03cdc005fc28f2</code></td>
-</tr>
-<tr>
-<td><code>ws-e2-rk3588-bsp-b8f5dda5.evopkg</code></td>
-<td style="text-align: right;">344,225,733</td>
-<td><code>b3107d7bfeabc1fc29bf013bbc980d3d6b883d7ce4e5ef97881b42d2fc43f118</code></td>
-</tr>
-</tbody>
-</table>
+<p>Large BSPs do not go into Git or the customer installation package. From EvoVerse you obtain the two offline packages
+<code>rk3588-toolchain-2026.09.evopkg</code> and <code>ws-e2-rk3588-bsp-b8f5dda5.evopkg</code>.
+The authoritative byte counts and SHA-256 values are in the "The Two Files to Obtain" table of the <a href="offline-environment-deployment.html">RK3588 Offline Environment Deployment Guide</a>.</p>
 <p>The Catalog also locks the internal manifest, the minimum Adapter version, board bindings, and the licensing policy. The hard deployment threshold is <strong>8,300,000,000 bytes</strong>; keep at least 9 GiB free.</p>
 <h2 id="3-setting-up-the-environment">3. Setting Up the Environment</h2>
 <ol>
 <li>Install the three VSIXes and Docker Desktop, and switch to Linux containers.</li>
-<li>Sync the private Catalog.</li>
+<li>Sync the Catalog (<code>EvoVerse: Sync Catalog</code> — the default public repository needs no GitHub account).</li>
 <li>Run the Adapter environment health check.</li>
 <li>Place the two offline packages in <code>&lt;EVOVERSE_HOME&gt;/downloads/rk3588/</code>, or select them one by one.</li>
 <li>The Adapter verifies the outer size/SHA, the internal manifest, and the per-file checksums, then issues a one-time <strong>inspection token</strong>.</li>
@@ -207,7 +190,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </ul>
 <p>When material is incomplete, the project stays <code>PROFILE_READY</code> and returns <code>BSP_BINDING_REQUIRED</code>; a template state must never be passed off as buildable.</p>
 <h2 id="6-preflight-and-the-four-stage-build">6. Preflight and the Four-Stage Build</h2>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
   P[Preflight] --&gt;|identity matches| U[U-Boot]
   P --&gt;|mismatch| X[Blocked, with the corrective action stated]
   U --&gt; K[Kernel + DTB]
@@ -215,7 +198,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
   R --&gt; F[Firmware package]
   F --&gt; E[Receipts + Build Identity]
   E --&gt; B[BUILD_READY]
-</code></pre>
+</pre>
 <p>Preflight re-checks the BSP Git status, the pinned commit, submodules, loader/partition SHAs, the container digest, the toolchain, and the DTS manifest. If tracked files have changed, it returns <code>BSP_SOURCE_DIRTY</code> or <code>BSP_QUALIFICATION_STALE</code>; a historical PASS is never inherited.</p>
 <table>
 <thead>
@@ -299,4 +282,5 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p><a href="../learn/ws-e2-rk3588-minimal/README.html">Natural-language tutorial</a> · <a href="offline-environment-deployment.html">Offline Environment Deployment Guide</a> · <a href="../adapters/rk3588-adapter-guide.html">Adapter Guide</a> · <a href="adapter-design.html">Adapter Design Document</a></p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

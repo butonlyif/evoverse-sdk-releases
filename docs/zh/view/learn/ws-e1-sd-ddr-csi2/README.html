@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -121,13 +123,30 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>适用版本：v1.0.0　目标器件：TJ180A484S（Titanium Ti60，C4 timing model）　默认宿主：Trae</p>
 </blockquote>
 <p>本教程带你从空目录开始，在 EvoVerse SDK 的可靠设计流程中重建一个完整工程：<strong>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX</strong>。你用自然语言描述目标，由 Project Control Plane 决定每一步是否允许推进；每一段结论都有证据回执。</p>
-<p>这不是一份"照抄参考设计"的教程。<strong>不得把目标 <code>sd-ddr-csi2</code> 工程的 RTL、约束或工程文件复制为新工程的基线</strong>——目标工程只用于物料分析和结论比对。你要得到的是一个由你自己的规格、你自己的候选 RTL 和你自己的证据链支撑的工程。</p>
+<p>先讲清一条红线：<strong>不得把目标 <code>sd-ddr-csi2</code> 工程的 RTL、约束或工程文件复制为新工程的基线</strong>——目标工程只用于物料分析和结论比对。你要得到的是一个由你自己的规格、你自己的候选 RTL 和你自己的证据链支撑的工程，不是参考设计的副本。</p>
 <h2 id="开始前">开始前</h2>
+<p>环境准备按顺序走一遍，全程约 10 分钟：</p>
+<ol>
+<li><strong>安装三个 VSIX</strong>（同版本 1.0.0）：<code>evoverse-sdk</code>、<code>evoverse-efinity-adapter</code>、<code>evoverse-rk3588-adapter</code>。在 Extensions 视图选 "Install from VSIX…" 逐个安装，步骤见 <a href="../../installation/Trae安装指南.html">Trae 安装指南</a>。</li>
+<li><strong>重启 IDE</strong>，让三个扩展全部激活。</li>
+<li><strong>首次引导</strong>：重启后弹窗 "Set up EvoVerse SDK?"，确认工作区位置（默认 <code>~/evoverse-sdk</code>）。</li>
+<li><strong>Welcome 页自动打开</strong>。点 <strong>Sync Catalog</strong> 同步板卡目录，等同步完成——后面的 <code>ws-e1 / ws-e1-base</code> 板卡选择就来自这份目录。</li>
+<li><strong>开始对话</strong>：在 Trae 聊天框输入 <code>@evoverse</code>，用自然语言驱动 SDK；Workbench（Project Control 下拉，命令 <code>evoverse.selectDesignFlow</code>）是同一个控制面的图形入口。</li>
+</ol>
+<p>再确认两项：</p>
 <ul>
-<li>已按 <a href="../../installation/Trae安装指南.html">Trae 安装指南</a> 安装 SDK 与 Efinity Adapter，<code>EvoVerse: Sync Catalog</code> 已完成。</li>
-<li>已确认 Efinity 2026.1+ 可用；功能仿真需要 Icarus Verilog（或 QuestaSim）。</li>
+<li>Efinity 2026.1+ 可用；功能仿真需要 Icarus Verilog（或 QuestaSim）。</li>
 <li>有一块 WS-E1 核心模组（TJ180A484S）加底板更佳；没有硬件也能完成到编译为止的全部阶段，硬件验证阶段会如实标记为待执行。</li>
 </ul>
+<p>上手链路：</p>
+<pre class="mermaid">flowchart LR
+  A[&quot;安装三个 VSIX&quot;] --&gt; B[&quot;重启 IDE&quot;]
+  B --&gt; C[&quot;首启弹窗确认工作区&lt;br&gt;~/evoverse-sdk&quot;]
+  C --&gt; D[&quot;Welcome 页自动打开&quot;]
+  D --&gt; E[&quot;Sync Catalog 同步板卡目录&quot;]
+  E --&gt; F[&quot;@evoverse 自然语言开发&quot;]
+  F --&gt; G[&quot;Workbench 六 Tab&lt;br&gt;Home/Build/Timing/Debug/SW/IP&quot;]
+</pre>
 <h2 id="可靠设计流程-五步控制循环">可靠设计流程：五步控制循环</h2>
 <p>v1.0.0 中，SDK 的所有可靠能力都由一个控制面（Project Control Plane）统一裁决。Agent、Workbench、CLI 都通过同一组接口推进：</p>
 <ol>
@@ -137,7 +156,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><strong>执行</strong> — 你确认后，用 <code>project_execute</code> 提交 <code>{actionId, expectedRevision, inputs}</code>。</li>
 <li><strong>处理决策并重读 revision</strong> — 遇到结构化决策（DecisionRequest）时由你选择；动作完成后重新 <code>project_status</code>，绝不复用旧 revision。</li>
 </ol>
-<p>每一次状态推进都产生证据（规格摘要、候选摘要、仿真回执、构建回执、硬件回执），这些证据绑定在工程状态里，无法由对话口头伪造。</p>
+<p>每一次状态推进都产生证据（规格摘要、候选摘要、仿真回执、构建回执、硬件回执）。证据绑定在工程状态里，对话口头伪造不了。</p>
 <h2 id="八个阶段">八个阶段</h2>
 <table>
 <thead>
@@ -195,12 +214,28 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
-<p>阶段之间有依赖：规格未批准时无法交付候选；候选未冻结时无法记录仿真证据；仿真未 PASS 时无法晋级；上一轮未晋级，下一轮增量就没有新父基线。构建证据与硬件证据相互独立，不会互相替代。每一阶段结束后控制面会暂停，等你确认再继续。</p>
+<p>阶段之间有依赖：规格未批准时无法交付候选；候选未冻结时无法记录仿真证据；仿真未 PASS 时无法晋级；上一轮未晋级，下一轮增量就没有新父基线。构建证据与硬件证据相互独立，不互相替代。每一阶段结束后控制面会暂停，等你确认再继续。</p>
 <h2 id="三轮增量-每一轮都以晋级收尾">三轮增量：每一轮都以晋级收尾</h2>
-<p>本教程的主线不是"一次生成全链路"，而是三轮增量迭代：</p>
+<p>教程主线不是"一次生成全链路"，而是三轮增量迭代：</p>
 <p><strong>Stage0 基线 → SD 输入增量 → 晋级 → DDR 缓冲增量 → 晋级 → CSI-2 输出增量 → 晋级 → Efinity 原生编译 → 实板验证</strong></p>
-<p>每一轮增量都走同一个循环：<code>intent.create</code> 声明意图时，控制面把当时的基线资产快照进 <code>IntentRecord.baseBaselineFiles</code>——这就是本轮的父基线；<code>candidate.deliver</code> 只冻结候选并执行 Design Assurance，基线保持不变；<code>verification.simulate</code> 对已冻结候选独立取证；只有仿真 PASS 且晋级资格满足后，<code>candidate.promote</code> 才把候选与父基线合并安装为新基线。下一轮增量的父基线，就是上一轮的晋级结果。</p>
-<p>提交动作时携带的 <code>expectedRevision</code> 只是并发提示值：控制面始终按最新 revision 追加事实，不会让过期 revision 变成安全边界。</p>
+<p>每一轮增量走同一个循环：</p>
+<ol>
+<li><code>intent.create</code> 声明意图时，控制面把当时的基线资产快照进 <code>IntentRecord.baseBaselineFiles</code>——这就是本轮的父基线。</li>
+<li><code>candidate.deliver</code> 只冻结候选并执行 Design Assurance，基线保持不变。</li>
+<li><code>verification.simulate</code> 对已冻结候选独立取证。</li>
+<li>仿真 PASS 且晋级资格满足后，<code>candidate.promote</code> 把候选与父基线合并安装为新基线——它就是下一轮增量的父基线。</li>
+</ol>
+<p>对应到教程阶段：</p>
+<pre class="mermaid">flowchart LR
+  S[&quot;Stage0 工程初始化&quot;] --&gt; M[&quot;物料分析&quot;]
+  M --&gt; P[&quot;系统规格&lt;br&gt;等级先于规格&quot;]
+  P --&gt; G[&quot;硬件生成&lt;br&gt;候选 仿真 晋级&quot;]
+  G --&gt; Q{&quot;三轮增量&lt;br&gt;全部晋级?&quot;}
+  Q -- &quot;下一轮增量&quot; --&gt; P
+  Q -- &quot;是&quot; --&gt; I[&quot;固件与 SDK 集成&quot;]
+  I --&gt; B[&quot;构建与显示验证&quot;]
+</pre>
+<p>提交动作时携带的 <code>expectedRevision</code> 只是并发提示值：控制面始终按最新 revision 追加事实，过期 revision 不会变成安全边界。</p>
 <h2 id="你将得到什么">你将得到什么</h2>
 <ul>
 <li>一个受管工程：工程身份、规格、候选、证据都在控制面状态里可追溯。</li>
@@ -210,4 +245,5 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>准备就绪后，从 <a href="00-stage0-harness.html">阶段 00：建立工程 Harness</a> 开始。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="next-stage" href="00-stage0-harness.html">下一阶段：00 建立 Stage0 物理 Harness →</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

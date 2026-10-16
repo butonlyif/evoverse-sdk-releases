@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -108,14 +110,6 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <strong>适用平台</strong>：Trae IDE（推荐）/ VS Code 1.80+ · Windows</p>
 </blockquote>
 <p>本文是 EvoVerse SDK 的产品级说明：它是什么、由哪些组件构成、能做哪些事、各能力之间如何衔接。操作步骤请配合<a href="用户使用手册.html">用户使用手册</a>、<a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD 到 CSI-2 工程教程</a>和两篇受控 Skill 文档使用。</p>
-<h3 id="设计迭代控制-2026-09-13">设计迭代控制（2026-09-13）</h3>
-<p>SDK 以服务端设计迭代作为可靠性授权源。Trae 自然语言与 Workbench Control 读取同一个 <code>project_next</code> current-action envelope；新对话从 envelope 恢复 revision、当前迭代、推荐动作、用户决策、证据边界与 receipt，不保存一份独立聊天流程。</p>
-<p>设计、系统集成和工程生成链使用可注册的恢复合同。合同在服务调用时强制校验；非终态必须存在真实可规划的完成或隔离出口。若控制面检测到受管 Intent/Integration 尚未终结但没有可执行动作，<code>project_next</code> 返回 revision-bound descriptor 与唯一 <code>recovery.open</code>；descriptor 原样落盘后只暴露 <code>recovery.quarantine</code> 等恢复出口，普通业务动作保持冻结。恢复状态与尝试追加到事实历史，隔离保留可信 baseline、事实和失败证据，不等于成功。自然语言只选择恢复目标，服务端 descriptor 明确 <code>keep/replace/discard/steps/successChecks</code>。初始系统设计放弃直接关闭 Intent 与对应 integration，不伪造 worktree execution。</p>
-<p>系统集成采用 commit-ahead-of-facts Saga。每个延期 feature merge 在 commit 前持久化请求、分支头与验证摘要，commit 后绑定精确 HEAD/tree；baseline 在隔离 staging 中完整构造并通过单一 pointer 发布，promotion/integration/execution facts 以一个 batch marker 提交。若进程在 commit 后中断，下一次状态读取只在 Git 和 journal 身份完全一致时补齐 facts，不会再次 merge；事实已提交但队列未更新时也会自动收敛 registry。</p>
-<p>自由开发保持可用，普通 Build 不受可靠门禁限制；一旦受控资产改变，当前迭代显示 <code>UNVERIFIED_CHANGES</code>。纳管时由服务冻结变更集合、计算精确 DAG 影响、隔离候选，并依次要求 <code>rtl.task.qualify</code> 测试资产资格化、Design Assurance、六层仿真与 promotion。资格化身份和判定由 Verification Service 持有，宿主只提交执行输入；旧 baseline 不覆盖，始终保留审计回执。</p>
-<p>可靠外部调用只走 MCP。一次传输故障允许自动恢复一次，随后必须验证所需工具并对账 iteration/task/state/candidate/spec 摘要；只读、幂等或确认未执行的请求才能安全重放。无法对账或再次断线时 fail closed，不使用 CLI 业务回退。自动化夹具、真实 RTL 仿真、Efinity Native Build、烧录和物理硬件分别构成独立证据边界。</p>
-<p>Icarus/Questa 的 discovery 不以“exe 存在/版本可读”作为可用结论：同一 provider command contract 会执行最小编译、运行和事件解析 smoke。已选工具链失败时写入 <code>TOOLCHAIN_INVALID</code> 停止回执，<code>project_next</code> 返回 <code>WAITING_FOR_USER</code> 与 <code>toolchain.reprobe</code> / <code>toolchain.reselect</code>，不静默 fallback，也不产生仿真证据。</p>
-<hr />
 <h2 id="1-sdk-是什么">1. SDK 是什么</h2>
 <p>EvoVerse SDK 是一套运行在 Trae / VS Code 内的 FPGA 与 SoC 开发工作台，围绕 Efinix Titanium FPGA（WS E1/E3 板卡）提供从<strong>工程创建 → RTL 编写与仿真 → 编译与报告 → 时序收敛 → 烧录调试 → RISC-V 软件</strong>的完整闭环，并通过 CLI 与 MCP 把同一套流程开放给命令行和 AI Agent。</p>
 <p>它解决三个问题：</p>
@@ -220,6 +214,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>用户请求（如 Build）由核心路由到对应 Adapter，Adapter 调用真实工具链（如 <code>efx_run --flow compile</code>），结构化结果回传 Workbench 展示</li>
 <li>Adapter 拥有自己的 Workbench Tab 内容；核心负责加载、资源注入与统一外观</li>
 </ul>
+<pre class="mermaid">flowchart LR
+    WD[workspaceDocument&lt;br&gt;HTML 解析与资源注入] --&gt; WB[&quot;Workbench 外壳&lt;br&gt;（六 Tab / System 根）&quot;]
+    WB --&gt;|能力请求| AR[AdapterRegistry]
+    AR &lt;--&gt;|headless adapter 协议| EF[efinity-adapter]
+    AR &lt;--&gt;|headless adapter 协议| RK[rk3588-adapter]
+    EF --&gt;|build / timing / debug / program&lt;br&gt;software / IP / designApi| RUN[&quot;efx_run --flow compile&quot;]
+    RK --&gt; BSP[&quot;BSP Profile 校验&lt;br&gt;四阶段交叉编译&quot;]
+</pre>
 <h2 id="4-能力总览">4. 能力总览</h2>
 <table>
 <thead>
@@ -232,48 +234,48 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td>工程创建与接管</td>
-<td>Trae 自然语言 / Workbench Control</td>
+<td>Trae 自然语言 / Workbench Control（<code>evoverse.selectDesignFlow</code>，EvoVerse: Select Design Flow）</td>
 <td>由 <code>project_next</code> envelope 给出当前唯一推荐动作；每次执行后重新读取 revision，也可接管已有文件夹或归档</td>
 </tr>
 <tr>
 <td>板卡向导</td>
-<td><code>EvoVerse: New Board</code></td>
+<td><code>evoverse.newBoard</code>（EvoVerse: New Board…）</td>
 <td>从原理图 PDF / pinout 数据创建新板卡定义并入库</td>
 </tr>
 <tr>
 <td>Catalog 物料</td>
-<td><code>EvoVerse: Sync Catalog</code></td>
-<td>从私有 Catalog 同步板卡 / 底板 / Jacket / IP；教程中的物料只能作为带证据的来源，不能替代新工程规格</td>
+<td><code>evoverse.syncCatalog</code>（EvoVerse: Sync Catalog）</td>
+<td>从官方公开发布 Catalog 同步板卡 / 底板 / Jacket / IP；教程中的物料只能作为带证据的来源，不能替代新工程规格</td>
 </tr>
 <tr>
 <td>RTL 编辑</td>
 <td>原生编辑器</td>
-<td>Verilog / SystemVerilog 语法、代码片段、<code>(* mark_debug *)</code> 右键标记</td>
+<td>Verilog / SystemVerilog 语法、代码片段、<code>(* mark_debug *)</code> 右键标记（<code>efinity.debug.addSelectedSignal</code>，Add Signal to Efinity Debug）</td>
 </tr>
 <tr>
 <td>仿真</td>
-<td><code>EvoVerse: Simulate</code></td>
-<td>Icarus Verilog / QuestaSim 一键运行，VCD 波形自动打开；支持回归与 ISP 图像仿真</td>
+<td><code>evoverse.sim</code>（Toolchain: Simulate）</td>
+<td>Icarus Verilog / QuestaSim 一键运行，VCD 波形自动打开；ISP 图像仿真用 <code>evoverse.simIsp</code>（Toolchain: Simulate ISP (Video Sim)）</td>
 </tr>
 <tr>
 <td>代码风格检查</td>
-<td><code>EvoVerse: Check Code Style</code></td>
+<td><code>evoverse.codeCheck</code>（Toolchain: Check RTL Code Style）</td>
 <td>编译前发现确定性 RTL 问题（复位、CDC、命名等）</td>
 </tr>
 <tr>
 <td>编译</td>
-<td>Build Tab / <code>EvoVerse: Build</code></td>
-<td>调用 Efinity 原生 unified flow（PT → map → pnr → pgm），实时输出、可取消</td>
+<td>Build Tab / <code>evoverse.build</code>（Toolchain: Build）</td>
+<td>调用 Efinity 原生 unified flow（PT → map → pnr → pgm），实时输出、可取消；完整流程用 <code>evoverse.buildFull</code>（Toolchain: Build (Full Flow)）</td>
 </tr>
 <tr>
 <td>构建报告</td>
-<td>Build Tab / <code>EvoVerse: Open Report</code></td>
+<td>Build Tab / <code>evoverse.openReport</code>（Toolchain: Open Build Report）</td>
 <td>资源占用、时钟域、I/O、时序摘要结构化展示</td>
 </tr>
 <tr>
 <td>时序诊断</td>
-<td><code>EvoVerse: Diagnose Timing</code></td>
-<td>12 规则引擎逐违例端点给出原因与置信度；数据路径追踪、流水线深度分析、Tcl 控制台</td>
+<td><code>evoverse.diagnoseTiming</code>（Toolchain: Diagnose Timing Violations）</td>
+<td>六类指纹根因分类引擎逐违例端点给出原因与置信度；数据路径追踪、流水线深度分析、Tcl 控制台</td>
 </tr>
 <tr>
 <td>片上调试</td>
@@ -282,13 +284,13 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>烧录</td>
-<td><code>EvoVerse: Program FPGA</code></td>
+<td><code>evoverse.program</code>（Toolchain: Program FPGA）</td>
 <td>efx_pgm 调用，FTDI/JTAG 下载 bitstream</td>
 </tr>
 <tr>
 <td>RISC-V 软件</td>
-<td>SW Tab / <code>EvoVerse: New RISC-V Project</code></td>
-<td>Sapphire SoC 应用创建、BSP 生成、构建、下载、GDB 调试</td>
+<td>SW Tab / <code>evoverse.newRiscvProject</code>（EvoVerse: New RISC-V Project…）</td>
+<td>Sapphire SoC 应用创建、BSP 生成（<code>evoverse.generateBsp</code>，Software: Generate BSP Headers）、构建、下载、GDB 调试</td>
 </tr>
 <tr>
 <td>IP 管理</td>
@@ -297,12 +299,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>接口设计（DesignAPI）</td>
-<td><code>EvoVerse: Open Design</code></td>
+<td><code>evoverse.openDesign</code>（Efinity: Open Native Design）</td>
 <td>事务式修改 ISF 接口约束：预览 → 确认 → 应用 → DRC</td>
 </tr>
 <tr>
 <td>知识库</td>
-<td><code>EvoVerse: Knowledge Base</code></td>
+<td><code>evoverse.knowledgeBase</code>（EvoVerse: Show Knowledge Base）</td>
 <td>沉淀验证过的工具链现象与解法，供人和 Agent 查询</td>
 </tr>
 <tr>
@@ -318,7 +320,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tr>
 <td>受控 RTL</td>
 <td><code>/evoverse-rtl</code></td>
-<td>对一个封闭 RTL 任务执行候选、Assurance、仿真、隔离和提升；普通 Build 不受阻塞</td>
+<td>对一个封闭 RTL 任务执行候选、Assurance、仿真、隔离和提升；普通 Build 与自由开发路径不受门禁阻塞</td>
 </tr>
 <tr>
 <td>CLI</td>
@@ -328,12 +330,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tr>
 <td>MCP</td>
 <td>MCP Server</td>
-<td>Agent 的 Catalog、工程、验证、构建、调试与证据入口；97 个工具按域分组、逐工具参数说明见文档门户「MCP 工具参考」页</td>
-</tr>
-<tr>
-<td>可靠软件任务</td>
-<td>MCP <code>software_task_*</code></td>
-<td>RISC-V 软件的受控闭环：BSP 绑定、主机测试、交叉构建、板级测试全部以回执为门禁，禁止注入 PASS</td>
+<td>Agent 的工程控制面入口；公开工具共 11 个：<code>project_status</code> / <code>project_next</code> / <code>project_execute</code> + <code>evoverse_health</code> + 7 个 <code>rk3588_*</code>（环境 status / prepare / deploy，工程 generate / preflight / build / status）</td>
 </tr>
 </tbody>
 </table>
@@ -358,7 +355,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td><strong>Timing</strong></td>
-<td>时序报告、12 规则诊断、数据路径与 Pipeline 分析、Tcl 控制台</td>
+<td>时序报告、六类指纹根因诊断、数据路径与 Pipeline 分析、Tcl 控制台</td>
 </tr>
 <tr>
 <td><strong>Debug</strong></td>
@@ -381,7 +378,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </code></pre>
 <p>首次完整体验使用 <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD 到 CSI-2 工程教程</a>：先发现物料、冻结规格，再生成并验证 RTL，最后集成和编译。全程无需离开 IDE。</p>
 <h3 id="6-2-时序收敛闭环">6.2 时序收敛闭环</h3>
-<pre><code>Build → Diagnose Timing（12 规则给出原因与置信度）
+<pre><code>Build → Diagnose Timing（六类指纹根因分类引擎给出原因与置信度）
 → 数据路径追踪 / Pipeline 分析定位瓶颈
 → 调整编译策略或修改 RTL → 重新 Build 验证 WNS/TNS
 </code></pre>
@@ -473,7 +470,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <h2 id="9-升级-卸载与常见问题">9. 升级、卸载与常见问题</h2>
 <ul>
-<li><strong>升级</strong>：核心与已安装 Adapter 保持同版本号（如均为 0.9.0）；升级核心时建议同步升级 Adapter。</li>
+<li><strong>升级</strong>：核心与已安装 Adapter 保持同版本号（如均为 1.0.0）；升级核心时建议同步升级 Adapter。</li>
 <li><strong>卸载 Adapter</strong>：核心仍可用；对应 Workspace Tab 消失，其余功能不受影响。</li>
 </ul>
 <p><strong>Q：只做 FPGA 开发，需要装 RK3588 Adapter 吗？</strong>
@@ -493,4 +490,5 @@ Adapter 版本与 Efinity 版本独立；个别 Efinity 大版本变化可能需
 </ul></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

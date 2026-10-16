@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -102,399 +104,257 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <code>installation/trae-install-guide.md</code>
 <a href="../../../installation/trae-install-guide.md">Markdown source</a></p>
 <h1>Trae Installation and First-Time Setup</h1></header>
-<main class="article"><h1 id="evoverse-sdk-trae-from-a-bare-machine-to-full-feature-use">EvoVerse SDK: Trae — From a Bare Machine to Full-Feature Use</h1>
+<main class="article"><h1 id="evoverse-sdk-trae-installation-guide">EvoVerse SDK: Trae Installation Guide</h1>
 <blockquote>
-<p>Updated: 2026-08-15
-Goal: starting from a computer with no development environment installed, get to RTL editing, rules and constraints, simulation, Efinity builds, timing diagnosis, programming, the MCP Agent, and native Chat integration in Trae (Trae CN / Trae International).</p>
+<p>Applies to: v1.0.0　Updated: 2026-10-16　Recommended hosts: Trae CN / Trae International</p>
 </blockquote>
-<h2 id="0-relationship-to-the-vs-code-installation">0. Relationship to the VS Code installation</h2>
-<p>The EvoVerse SDK supports Trae, standard Visual Studio Code, and other VS Code forks with the <strong>same VSIX</strong>. The vast majority of installation steps are identical to <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md</a>; this document <strong>covers only the differences under Trae</strong> plus installation and initialization behavior unique to Trae.</p>
-<table>
-<thead>
-<tr>
-<th>What you want to know</th>
-<th>Read this</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Install the SDK from scratch to full functionality under Trae</td>
-<td><strong>This document</strong></td>
-</tr>
-<tr>
-<td>Install the SDK under standard VS Code</td>
-<td><a href="vscode-install-guide.html">VSCODE-INSTALLATION.md</a></td>
-</tr>
-<tr>
-<td>All differences and gotchas between hosts</td>
-<td>HOST-DIFFERENCES.md</td>
-</tr>
-<tr>
-<td>Multi-host packaging / release / deployment</td>
-<td><a href="deployment-guide.html">DEPLOYMENT.md</a></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Intended audience</strong>:
-- Customers who have chosen Trae as their daily development editor;
-- Customers who need <code>@evoverse</code> and MCP tools in the Trae Chat panel;
-- Operations staff who need to understand which files under the Trae-specific path <code>~/.trae/</code> are managed automatically by the SDK.</p>
-<h3 id="0-1-agent-and-the-reliable-flow-entry-point">0.1 Agent and the reliable-flow entry point</h3>
-<ul>
-<li>When you need a specification, RTL Design Assurance, and stage-by-stage simulation confirmation, start the requirement with <code>@evoverse</code>, for example: <code>@evoverse I want to implement MIPI to USB on ws-e1, with DDR buffering in between</code>. The SDK first confirms the working mode with you: the reliable design flow or free-form development.</li>
-<li>When starting a new, independent design iteration in an existing project, raise the requirement with <code>@evoverse</code> again; the SDK updates the existing specification, or creates one if none exists.</li>
-<li>Ordinary Agent conversations without <code>@evoverse</code> remain free-form development: the reliable flow is not enabled automatically, and no dedicated rule files are generated into customer projects.</li>
-<li>Build, Timing, and Debug are standalone tool entry points; they do not require selecting the reliable flow first.</li>
-</ul>
-<hr />
-<h2 id="1-first-pin-down-the-scope-of-full-functionality">1. First pin down the scope of "full functionality"</h2>
-<p>In this guide, full functionality covers:</p>
-<ul>
-<li>The EvoVerse Workbench, Catalog, project creation, and health checks;</li>
-<li>Verilog/SystemVerilog editing, RTL coding rules, and Agent workflows;</li>
-<li>Icarus Verilog functional simulation and VCD waveform viewing;</li>
-<li>Efinity synthesis, place-and-route (PNR), bitstream generation, resource reports, and timing reports;</li>
-<li>Timing Diagnosis, Build AI, and the multi-turn Conversation Runtime;</li>
-<li>Programming Efinix FPGAs over USB/JTAG;</li>
-<li>Invoking SDK tools through <code>@evoverse</code> in the Trae Chat panel;</li>
-<li>Optional Sapphire/RISC-V software compilation, flashing, and GDB debugging.</li>
-</ul>
-<h3 id="1-1-recommended-operating-systems">1.1 Recommended operating systems</h3>
-<p>As with the VS Code installation, use one of the following:</p>
-<ul>
-<li><strong>Windows 10/11, 64-bit</strong>: the first choice for customer desktop environments;</li>
-<li><strong>macOS 12 or later</strong>: an officially supported platform for the Trae desktop app;</li>
-<li><strong>Ubuntu 20.04 or later</strong>.</li>
-</ul>
-<blockquote>
-<p>macOS can run Trae, EvoVerse, MCP, AI, and Icarus simulation, but it cannot serve as a complete Efinity build/programming workstation as defined in this guide. For Efinity's current official installation requirements and USB driver steps, see the <a href="https://www.efinixinc.com/docs/efinity-installation-v4.0.pdf">Efinity Software Installation User Guide</a>.</p>
-</blockquote>
-<h3 id="1-2-recommended-hardware-configuration">1.2 Recommended hardware configuration</h3>
+<h2 id="getting-started-path-at-a-glance">Getting-started path at a glance</h2>
+<p>From receiving the release package to starting your first design, the main line is 6 steps:</p>
+<pre class="mermaid">flowchart LR
+    A[Get the release package] --&gt; B[Install the 3 VSIXes]
+    B --&gt; C[Restart Trae]
+    C --&gt; D[First-launch bootstrap&lt;br&gt;confirm the workspace]
+    D --&gt; E[Welcome opens automatically]
+    E --&gt; F[Sync Catalog]
+    F --&gt; G[&quot;@evoverse and start working&quot;]
+</pre>
+<p>Verification for each step is described in the corresponding section. Prepare the base software (Trae, Python, Git, Efinity, drivers, simulator) before installing the VSIXes.</p>
+<h2 id="1-prerequisites">1. Prerequisites</h2>
 <table>
 <thead>
 <tr>
 <th>Item</th>
-<th style="text-align: right;">Bare minimum to launch</th>
-<th style="text-align: right;">Recommended full-feature customer workstation</th>
+<th>Requirement</th>
+<th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>CPU</td>
-<td style="text-align: right;">64-bit dual-core</td>
-<td style="text-align: right;">8 cores or more</td>
+<td>Operating system</td>
+<td>Windows 10/11 64-bit (preferred); macOS 12+; Ubuntu 20.04+</td>
+<td>macOS cannot serve as a complete Efinity build/programming workstation</td>
 </tr>
 <tr>
-<td>Memory</td>
-<td style="text-align: right;">~1 GB for Trae + EvoVerse; ~8 GB for the Efinity design flow</td>
-<td style="text-align: right;">16 GB; 32 GB recommended for larger designs</td>
+<td>Python</td>
+<td>64-bit 3.11+</td>
+<td>The CLI and MCP Server use only the standard library; no pip packages needed</td>
 </tr>
 <tr>
-<td>Disk</td>
-<td style="text-align: right;">10 GB of free space</td>
-<td style="text-align: right;">30 GB or more of free SSD space</td>
+<td>Git</td>
+<td>On PATH</td>
+<td><code>EvoVerse: Sync Catalog</code> pulls the board catalog over Git</td>
 </tr>
 <tr>
-<td>USB</td>
-<td style="text-align: right;">1 free USB port</td>
-<td style="text-align: right;">2 or more; avoid unpowered hubs</td>
+<td>Efinity</td>
+<td>2026.1+</td>
+<td>Required for real builds and programming</td>
 </tr>
 <tr>
-<td>Network</td>
-<td style="text-align: right;">Optional for offline installation</td>
-<td style="text-align: right;">Required for the first download of Trae, Efinity, extensions, models, and toolchains</td>
+<td>Simulator</td>
+<td>Icarus Verilog</td>
+<td>RTL functional simulation; QuestaSim also works</td>
+</tr>
+<tr>
+<td>Hardware</td>
+<td>FPGA core board + USB data cable</td>
+<td>Checklist in §2</td>
 </tr>
 </tbody>
 </table>
-<p>For Trae's own minimum system requirements, see the <a href="https://www.trae.ai/">official Trae download page</a>; for Efinity memory and system requirements, defer to the official documentation of the version you install.</p>
-<hr />
+<p>Recommended machine: 8-core CPU, 16 GB RAM (32 GB for larger designs), 30 GB or more of free SSD space, and at least 2 USB ports.</p>
 <h2 id="2-hardware-preparation">2. Hardware preparation</h2>
-<p>This is exactly the same as the VS Code installation: read <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §2</a> for the hardware checklist and pre-connection checks. At minimum, prepare:</p>
 <ol>
-<li>An EvoVerse/Efinix FPGA core module — for example <code>ws-e1</code> in the Catalog;</li>
-<li>A carrier board matching the core module, or a customer-built board;</li>
-<li>A power supply that matches the board specification; never guess voltage and polarity from connector shape alone;</li>
-<li>A USB cable that carries data; charge-only cables cannot be used for JTAG/serial;</li>
-<li>An on-board FTDI debug interface, or a compatible FT2232H/FT4232H JTAG module;</li>
+<li>An EvoVerse/Efinix FPGA core board (for example <code>ws-e1</code> in the Catalog);</li>
+<li>A matching carrier board / carrier / customer-built board;</li>
+<li>A power supply that matches the board specification — never guess voltage and polarity from connector shape;</li>
+<li>A USB cable that carries data — charge-only cables cannot be used for JTAG/serial;</li>
+<li>An on-board FTDI debug interface, or an FT2232H/FT4232H JTAG module;</li>
 <li>For serial logs, an on-board USB-UART or a standalone 3.3 V USB-UART adapter;</li>
-<li>For sensors, MIPI, display, or networking, the corresponding Jackets, cables, and peripherals.</li>
+<li>Sensors / MIPI / display / networking peripherals as needed.</li>
 </ol>
-<p>Before connecting anything, read the board specification in the Catalog (available after installation):</p>
-<pre><code class="language-text">${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
-${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/docs/
-${EVOVERSE_HOME}/catalog/boards/&lt;board-id&gt;/carriers/
+<p>Before connecting anything, read the board specification in the Catalog (available after the Catalog is installed and synced):</p>
+<pre><code class="language-text">~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
+~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/docs/
 </code></pre>
-<hr />
 <h2 id="3-install-the-base-software">3. Install the base software</h2>
 <h3 id="3-1-install-trae">3.1 Install Trae</h3>
 <ol>
-<li>Download the build for your platform from the <a href="https://www.trae.ai/">official Trae download page</a>:</li>
-<li><strong>Trae CN</strong>: for users in mainland China; connects to domestic model providers by default;</li>
-<li><strong>Trae International</strong>: for users outside mainland China; connects to international model providers by default.</li>
-<li>Launch Trae after installation and complete account registration and sign-in as the wizard guides you.</li>
-<li>Verify:</li>
+<li>Install Trae CN or Trae International from the <a href="https://www.trae.ai/">official Trae download page</a>;</li>
+<li>Launch it and complete account sign-in.</li>
 </ol>
-<pre><code class="language-powershell"># Run from the command palette
-Trae: Show Version
-</code></pre>
-<p>Or from a terminal:</p>
-<pre><code class="language-powershell">where trae     # Windows
-which trae     # macOS / Linux
-</code></pre>
+<p>Verify: running <code>Trae: Show Version</code> from the command palette returns the version number.</p>
 <h3 id="3-2-install-python-3-11">3.2 Install Python 3.11+</h3>
-<p>The EvoVerse CLI and MCP Server use only the Python standard library; no <code>pip install</code> of other packages is required.</p>
-<p>Windows:</p>
 <ol>
-<li>Install 64-bit Python 3.11 or newer from <a href="https://www.python.org/downloads/">python.org</a>;</li>
-<li>Check <strong>Add Python to PATH</strong>;</li>
-<li>Verify:</li>
+<li>Install 64-bit Python 3.11 or newer from the <a href="https://www.python.org/downloads/">Python website</a>;</li>
+<li>Check <strong>Add Python to PATH</strong>.</li>
 </ol>
-<pre><code class="language-powershell">py -3 --version
-python --version
+<p>Verify:</p>
+<pre><code class="language-powershell">py -3 --version     # Windows
+python3 --version   # macOS / Linux
+</code></pre>
+<p>The output must show 3.11 or newer. With an insufficient version, the first-launch bootstrap reports <code>SYSTEM_PYTHON_MISSING</code> and Python-related capabilities are disabled. The customer VSIX does not need Node.js / npm.</p>
+<h3 id="3-3-install-git">3.3 Install Git</h3>
+<ol>
+<li>Install from the <a href="https://git-scm.com/">Git website</a>; on Windows keep the default options (Git Credential Manager is included);</li>
+<li>If the GitHub CLI is already installed, its authentication also works.</li>
+</ol>
+<p>Verify:</p>
+<pre><code class="language-powershell">git --version
+</code></pre>
+<h3 id="3-4-install-efinity-2026-1">3.4 Install Efinity 2026.1+</h3>
+<ol>
+<li>Get the installer from the Efinix Support Center and complete installation and license configuration following the official guide for that version;</li>
+<li>Note the Efinity root directory (for example <code>C:\Efinity\2026.1</code>).</li>
+</ol>
+<p>Verify: <code>bin/setup.bat</code> (Windows) or <code>bin/setup.sh</code> and <code>bin/efx_run.bat</code> exist under the root directory. Each time EvoVerse runs a tool it invokes Efinity's setup script to establish the child-process environment, so no permanent PATH changes are needed.</p>
+<h3 id="3-5-install-the-fpga-usb-jtag-drivers">3.5 Install the FPGA USB/JTAG drivers</h3>
+<ul>
+<li>Windows: use Zadig or the designated driver per the board user manual and the Efinity installation guide; do not blindly replace every interface of a composite FTDI device — first confirm the interface required by the board documentation;</li>
+<li>macOS: the Efinity installer bundles the drivers;</li>
+<li>Linux: disconnect the board, run <code>sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh</code>, reload the udev rules, then reconnect the board.</li>
+</ul>
+<h3 id="3-6-install-icarus-verilog">3.6 Install Icarus Verilog</h3>
+<ul>
+<li>macOS: <code>brew install icarus-verilog</code>;</li>
+<li>Linux: <code>sudo apt install iverilog</code>;</li>
+<li>Windows: install a prebuilt distribution and add it to PATH.</li>
+</ul>
+<p>Verify: both <code>iverilog -V</code> and <code>vvp -V</code> print a version number.</p>
+<h3 id="3-7-optional-the-risc-v-software-toolchain">3.7 Optional: the RISC-V software toolchain</h3>
+<p>Only needed when you use the Sapphire/RISC-V SoC. After installation you can run <code>EvoVerse: Download &amp; Install RISC-V Toolchain</code> in Trae to install it automatically, or install it manually and then set <code>evoverse.riscvToolchainPath</code>.</p>
+<h2 id="4-get-the-release-package">4. Get the release package</h2>
+<ol>
+<li>Obtain the customer delivery package <code>EvoVerse-SDK-v1.0.0.tar.gz</code>;</li>
+<li>Fully extract it in the directory containing the package (Windows 10 1803+ ships with <code>tar</code>, so the long-path errors of zip extraction do not occur):</li>
+</ol>
+<pre><code class="language-powershell">tar -xzf EvoVerse-SDK-v*.tar.gz
+</code></pre>
+<p>Verify: the extracted directory contains <code>deploy.ps1</code> / <code>deploy.sh</code> and the 3 <code>.vsix</code> files. <code>START-HERE.md</code> and <code>docs/site/customer-portal.html</code> are the entry documents.</p>
+<h2 id="5-install-the-3-vsixes">5. Install the 3 VSIXes</h2>
+<p>v1.0.0 ships 3 extensions of the same version:</p>
+<table>
+<thead>
+<tr>
+<th>VSIX</th>
+<th>Purpose</th>
+<th>Required?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse-sdk-1.0.0.vsix</code></td>
+<td>SDK core: Welcome, Catalog, Workbench shell, CLI / MCP</td>
+<td>Required</td>
+</tr>
+<tr>
+<td><code>evoverse-efinity-adapter-1.0.0.vsix</code></td>
+<td>Efinity build / timing / debug / programming / IP</td>
+<td>Required for FPGA development</td>
+</tr>
+<tr>
+<td><code>evoverse-rk3588-adapter-1.0.0.vsix</code></td>
+<td>RK3588 software verification loop</td>
+<td>Install when doing RISC-V software</td>
+</tr>
+</tbody>
+</table>
+<p>All three VSIX versions must match; mixing different versions is unsupported.</p>
+<h3 id="5-1-option-a-one-shot-deployment-recommended">5.1 Option A: one-shot deployment (recommended)</h3>
+<p>Open PowerShell in the extracted package directory:</p>
+<pre><code class="language-powershell">.\deploy.ps1 -Target trae
 </code></pre>
 <p>macOS / Linux:</p>
-<pre><code class="language-bash">python3 --version
+<pre><code class="language-bash">./deploy.sh --target trae
 </code></pre>
-<p>The output must show <code>3.10</code> or newer. Customers installing from the VSIX do not need Node.js or npm; those are only used to build the extension from source.</p>
-<h3 id="3-3-install-efinity">3.3 Install Efinity</h3>
-<p>This is exactly the same as the VS Code installation: follow <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §3.3</a> to install Efinity and configure the license. When finished, note the Efinity root directory:</p>
-<pre><code class="language-text">Windows:  C:\Efinity\2026.1
-macOS:    /Applications/efinity.app/Contents/Resources/2026.1
-Linux:    /opt/efinity/2026.1
-</code></pre>
-<p>Every time EvoVerse runs a tool it sets up the child-process environment using Efinity's setup script, so permanent changes to the system PATH are normally not required.</p>
-<h3 id="3-4-install-the-fpga-usb-jtag-drivers">3.4 Install the FPGA USB/JTAG drivers</h3>
-<p>Identical to the VS Code installation:</p>
-<ul>
-<li>Windows: use Zadig or the designated driver per the target board's user manual and the Efinity installation guide. Do <strong>not</strong> blindly replace every interface of a composite FTDI device; first confirm which interface the board documentation requires.</li>
-<li>macOS: the official Efinity installer bundles the drivers; if a device is not recognized, follow the Efinity documentation to load them.</li>
-<li>Linux: disconnect the board, then run:</li>
-</ul>
-<pre><code class="language-bash">sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh
-sudo udevadm control --reload-rules
-sudo udevadm trigger
-</code></pre>
-<p>Reconnect the board.</p>
-<h3 id="3-5-install-icarus-verilog">3.5 Install Icarus Verilog</h3>
-<p>Full simulation functionality requires <code>iverilog</code> and <code>vvp</code>.</p>
-<ul>
-<li>macOS: <code>brew install icarus-verilog</code></li>
-<li>Linux:</li>
-</ul>
-<pre><code class="language-bash">sudo apt update
-sudo apt install iverilog
-</code></pre>
-<p>Verify:</p>
-<pre><code class="language-bash">iverilog -V
-vvp -V
-</code></pre>
-<h3 id="3-6-optional-the-risc-v-software-toolchain">3.6 Optional: the RISC-V software toolchain</h3>
-<p>Only needed when you use the Sapphire/RISC-V SoC; identical to the VS Code installation. See <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §3.6</a>.</p>
-<hr />
-<h2 id="4-install-the-evoverse-sdk-vsix">4. Install the EvoVerse SDK VSIX</h2>
-<p>Trae and VS Code share the <strong>same</strong> <code>evoverse-sdk-0.9.0.vsix</code> for EvoVerse.</p>
-<h3 id="4-1-installation-steps">4.1 Installation steps</h3>
+<p>The script installs Core, the two Adapters, and Skills in dependency order; optional Adapters missing from the package are skipped with a notice. Video Sim is embedded in the Core VSIX and needs no separate installation.</p>
+<p>Verify: all installed EvoVerse extensions show as Enabled in the Extensions panel.</p>
+<h3 id="5-2-option-b-manual-installation-from-the-extensions-panel">5.2 Option B: manual installation from the Extensions panel</h3>
 <ol>
-<li>In Trae, press <code>Ctrl+Shift+X</code> (macOS: <code>Cmd+Shift+X</code>) to open the Extensions panel;</li>
+<li>Press <code>Ctrl+Shift+X</code> (macOS: <code>Cmd+Shift+X</code>) to open the Extensions panel;</li>
 <li>Click <code>...</code> in the top-right corner → <strong>Install from VSIX...</strong>;</li>
-<li>Select <code>evoverse-sdk-0.9.0.vsix</code> from the delivery package.</li>
+<li>Select the VSIXes one by one in the order of the table above.</li>
 </ol>
-<p>Or use the command line:</p>
-<pre><code class="language-powershell"># Windows (PowerShell)
-trae --install-extension D:\packages\evoverse-sdk-0.9.0.vsix
-
-# macOS / Linux
-trae --install-extension ~/packages/evoverse-sdk-0.9.0.vsix
+<p>Or from the command line:</p>
+<pre><code class="language-powershell">trae --install-extension D:\packages\evoverse-sdk-1.0.0.vsix
+trae --install-extension D:\packages\evoverse-efinity-adapter-1.0.0.vsix
+trae --install-extension D:\packages\evoverse-rk3588-adapter-1.0.0.vsix
 </code></pre>
-<h3 id="4-2-recommended-companion-extensions">4.2 Recommended companion extensions</h3>
-<table>
-<thead>
-<tr>
-<th>Extension</th>
-<th>Purpose</th>
-<th>Declared as an EvoVerse dependency</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VaporView</td>
-<td>Opens VCD waveforms produced by simulation</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Cortex-Debug</td>
-<td>RISC-V/MCU GDB debugging</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Verilog/SystemVerilog language plugin</td>
-<td>Syntax highlighting, navigation, and lint</td>
-<td>No; choose per your license and team standards</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>Trae ships with a built-in Chat Agent; you do <strong>not</strong> need to install GitHub Copilot separately to use <code>@evoverse</code> in the Chat panel. To use the OpenAI-compatible Provider of the EvoVerse built-in Runtime, see §7.</p>
-</blockquote>
-<hr />
-<h2 id="5-first-launch-trae-specific-set-up-behavior">5. First launch: Trae-specific <code>Set Up</code> behavior</h2>
-<p>If the EvoVerse extension detects that <code>~/evoverse-sdk</code> is not ready when it activates, it prompts you to <strong>Set Up</strong>. Under Trae, Set Up additionally performs the following operations (not performed under VS Code):</p>
-<h3 id="5-1-writing-trae-mcp-json">5.1 Writing <code>~/.trae/mcp.json</code></h3>
-<p>The SDK automatically writes the EvoVerse MCP Server into the <code>mcpServers.evoverse</code> field of <code>~/.trae/mcp.json</code>:</p>
-<ul>
-<li>It <strong>merges only</strong> and never overwrites other entries under <code>mcpServers</code>;</li>
-<li>It creates <code>~/.trae/mcp.json</code> if the file does not exist;</li>
-<li>If <code>mcpServers.evoverse</code> already exists, it compares byte-for-byte: equal means skip; otherwise it backs the file up as <code>~/.trae/mcp.json.evoverse.bak</code> and then overwrites.</li>
-</ul>
-<p>Example (for reference only; generated by the SDK):</p>
-<pre><code class="language-json">{
-  &quot;mcpServers&quot;: {
-    &quot;evoverse&quot;: {
-      &quot;command&quot;: &quot;python&quot;,
-      &quot;args&quot;: [&quot;-m&quot;, &quot;mcp_server.server&quot;],
-      &quot;env&quot;: {}
-    }
-  }
-}
-</code></pre>
-<h3 id="5-2-writing-trae-user_rules">5.2 Writing <code>~/.trae/user_rules/</code></h3>
-<p>The SDK automatically installs two Agent Rules files:</p>
-<ul>
-<li><code>~/.trae/user_rules/evoverse.md</code> — general EvoVerse rules;</li>
-<li><code>~/.trae/user_rules/evoverse-rtl-style.md</code> — dedicated RTL coding-style rules.</li>
-</ul>
-<p>The rule sources live in <code>~/evoverse-sdk/agent-rules/</code>; the SDK compares byte-for-byte before writing:</p>
-<ul>
-<li>Equal → skip (<code>unchanged</code>);</li>
-<li>Different → back up as <code>*.evoverse.bak</code>, then overwrite;</li>
-<li>Corrupted or unexpected format → back up and report an error; never silently wipe.</li>
-</ul>
-<h3 id="5-3-the-restart-now-prompt">5.3 The "Restart now" prompt</h3>
-<p><strong>Only under Trae</strong> will you see the "Restart Trae now to load MCP" prompt. Trae loads MCP from a host-fixed directory, so MCP tools appear in the Chat panel only after Trae restarts.</p>
-<blockquote>
-<p>Standard VS Code and unknown hosts <strong>never</strong> show this prompt; if you see it under VS Code, host detection is off — first check whether <code>vscode.env.appName</code> starts with <code>trae</code>.</p>
-</blockquote>
-<h3 id="5-4-handling-corrupted-host-configuration">5.4 Handling corrupted host configuration</h3>
-<p>If <code>~/.trae/mcp.json</code> or <code>~/.trae/user_rules/*.md</code> is already corrupted, the SDK will:</p>
+<h2 id="6-restart-trae-and-complete-the-first-launch-bootstrap">6. Restart Trae and complete the first-launch bootstrap</h2>
 <ol>
-<li>Back up the original file as <code>*.evoverse.bak</code>;</li>
-<li>Surface an error message in the UI;</li>
-<li><strong>Not</strong> silently overwrite (so customer-defined rules are never wiped unintentionally).</li>
+<li><strong>Fully quit and restart Trae</strong> so the extensions activate;</li>
+<li>On first activation a dialog asks <strong>"Set up EvoVerse SDK?"</strong> — choose <strong>Yes, set up</strong>. The bootstrap creates the Catalog, project, and runtime directories under the default workspace <code>~/evoverse-sdk</code> (change the path with <code>evoverse.home</code>) and does not modify system files;</li>
+<li>Watch Output → <strong>EvoVerse SDK</strong>; the bootstrap prints each item, and once all show ✓ you see <code>=== EvoVerse SDK ready ===</code>:</li>
+<li><code>EVOVERSE_HOME ready at …</code> — workspace ready;</li>
+<li><code>Deployed Efinity knowledge base</code> — knowledge base deployed;</li>
+<li><code>MCP integration: …</code> — writes <code>mcpServers.evoverse</code> into <code>~/.trae/mcp.json</code> (merge-only, other entries untouched; a <code>*.evoverse.bak</code> backup is made before overwriting);</li>
+<li><code>Agent rule: …</code> — writes <code>evoverse.md</code> and <code>evoverse-rtl-style.md</code> under <code>~/.trae/user_rules/</code>;</li>
+<li><code>CLI works: …</code> — CLI smoke test;</li>
+<li>If Git is not on PATH you get a <code>! git not found</code> warning; Sync Catalog only works after Git is installed;</li>
+<li>If Python is missing or too old the bootstrap reports <code>SYSTEM_PYTHON_MISSING</code>; re-run it after installing Python 3.11+;</li>
+<li>When finished you are prompted <strong>"Restart the host to load the MCP server."</strong> — choose <strong>Restart now</strong> to restart again.</li>
 </ol>
-<hr />
-<h2 id="6-quick-reference-differences-from-the-vs-code-installation">6. Quick reference: differences from the VS Code installation</h2>
-<table>
-<thead>
-<tr>
-<th>Dimension</th>
-<th>Trae</th>
-<th>Standard VS Code</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VSIX used</td>
-<td>The same <code>evoverse-sdk-0.9.0.vsix</code></td>
-<td>The same</td>
-</tr>
-<tr>
-<td>Auto-write <code>~/.trae/mcp.json</code></td>
-<td>✅ (merges <code>mcpServers.evoverse</code>)</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>Auto-write <code>~/.trae/user_rules/*.md</code></td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>"Restart now" prompt</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td><code>*.evoverse.bak</code> backup before overwrite</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>Native Chat open commands</td>
-<td><code>trae.chat.open</code> / <code>trae.chat.focus</code></td>
-<td><code>workbench.action.chat.open</code></td>
-</tr>
-<tr>
-<td><code>@evoverse</code> Chat participant</td>
-<td>✅ (Trae Chat panel)</td>
-<td>✅ (VS Code Chat panel)</td>
-</tr>
-<tr>
-<td>Project-level instructions</td>
-<td>Via <code>.github/copilot-instructions.md</code> (same as VS Code)</td>
-<td>Via <code>.github/copilot-instructions.md</code></td>
-</tr>
-<tr>
-<td>Deprecated paths</td>
-<td>❌ Do <strong>not</strong> add <code>.trae/rules.md</code> or <code>CLAUDE.md</code></td>
-<td>❌ Not recommended</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>For detailed differences and gotchas, see HOST-DIFFERENCES.md.</p>
-</blockquote>
-<hr />
-<h2 id="7-using-an-openai-compatible-provider-optional">7. Using an OpenAI-compatible Provider (optional)</h2>
-<p>If you prefer not to use Trae's built-in models, configure an OpenAI-compatible Provider in the EvoVerse Conversation Runtime:</p>
+<p>Verify: after the restart the <strong>Welcome page opens automatically</strong>. If it does not, run <code>EvoVerse: Show Welcome</code> (<code>evoverse.welcome</code>) from the command palette.</p>
+<p>If you chose <strong>Later</strong> in the dialog, or need to re-run the bootstrap, run <code>EvoVerse: Set Up (re-run bootstrap)</code> (<code>evoverse.setup</code>). Standard VS Code never writes <code>~/.trae</code>; for host differences see HOST-DIFFERENCES.md.</p>
+<h2 id="7-sync-the-catalog">7. Sync the Catalog</h2>
+<p>On a fresh install the Catalog is empty and the UI and MCP report <code>CATALOG_NOT_INSTALLED</code>. This is the expected state, not a failure.</p>
 <ol>
-<li>Run <code>EvoVerse: Set OpenAI-compatible API Key</code> to store the API key in SecretStorage;</li>
-<li>Fill in the model ID from your provider under <code>evoverse.model.modelId</code>;</li>
-<li>Restart Trae to make sure the configuration takes effect.</li>
+<li>Run <code>EvoVerse: Sync Catalog</code> (<code>evoverse.syncCatalog</code>). The sync pulls from the official public release repository (<code>evoverse-catalog-release</code>) by default—<strong>no GitHub account is required</strong>—and writes the receipt <code>catalog-sync-receipt.json</code> when it finishes;</li>
+<li>Run <code>EvoVerse: Catalog Status</code> (<code>evoverse.catalogStatus</code>), or run <code>evoverse catalog status --json</code> in a terminal, and record the <code>state</code>, <code>location</code>, and the receipt's <code>catalog_version</code> and <code>commit</code>.</li>
 </ol>
-<blockquote>
-<p><strong>Never</strong> write a model API key into the <code>env</code> field of <code>~/.trae/mcp.json</code>; the SDK rejects such configurations.</p>
-</blockquote>
-<hr />
-<h2 id="8-troubleshooting">8. Troubleshooting</h2>
-<h3 id="8-1-evoverse-is-missing-from-the-trae-chat-panel">8.1 <code>@evoverse</code> is missing from the Trae Chat panel</h3>
-<p>Work through the following in order:</p>
+<p>To use a self-hosted mirror or a private repository instead, override the repository URL with <code>evoverse sync --repository &lt;URL&gt;</code> or the <code>EVOVERSE_CATALOG_REPOSITORY</code> environment variable.</p>
+<p>Verify: the Welcome page Board Catalog panel lists boards (such as <code>ws-e1</code>). A failed sync does not affect existing local content; fix the network and sync again.</p>
+<h2 id="8-verify-the-installation">8. Verify the installation</h2>
+<ol>
+<li>The EvoVerse view opens from the left activity bar;</li>
+<li>The Workbench shows the installed Adapters (if the Efinity Adapter is installed, its entry should appear);</li>
+<li>Run <code>EvoVerse: Health Check</code> (<code>evoverse.sdkHealthCheck</code>) and confirm Python / Efinity / MCP / simulator / CLI / Adapter all pass (the Welcome page also has an SDK health panel);</li>
+<li>In Settings, confirm <code>evoverse.efinityPath</code> points to the real Efinity installation directory.</li>
+</ol>
+<h2 id="9-start-using">9. Start using</h2>
+<ol>
+<li><strong>Start with natural language</strong>: type <code>@evoverse</code> in the Chat panel and describe your requirement:</li>
+</ol>
+<p><code>text
+   @evoverse I want to implement MIPI to USB on ws-e1, with DDR buffering in between</code></p>
+<p>The SDK first confirms the working mode with you: the reliable design flow or free-form development. Ordinary conversations without <code>@evoverse</code> stay in free-form development; the reliable flow is never enabled automatically and no dedicated rule files are generated into customer projects.</p>
+<ol>
+<li><strong>Pick the flow in the Workbench</strong>: you can also choose the design flow in the Workbench Project Control dropdown, command <code>EvoVerse: Select Design Flow</code> (<code>evoverse.selectDesignFlow</code>);</li>
+<li><strong>The six Workbench tabs</strong>: Home / Build / Timing / Debug / SW / IP;</li>
+<li><strong>Build</strong>: the Build tab or the command palette <code>Toolchain: Build</code> (<code>evoverse.build</code>). The build is executed by the Efinity Adapter with <code>efx_run --flow compile</code>, and the status bar shows <code>Build: Ready / Running / Failed</code>;</li>
+<li><strong>Timing diagnosis</strong>: <code>Toolchain: Diagnose Timing Violations</code> (<code>evoverse.diagnoseTiming</code>);</li>
+<li><strong>Program the board</strong>: <code>Toolchain: Program FPGA</code> (<code>evoverse.program</code>).</li>
+</ol>
+<p>For the full daily development workflow, see the <a href="../sdk/user-manual.html">User Manual</a>.</p>
+<h2 id="10-troubleshooting">10. Troubleshooting</h2>
+<h3 id="10-1-evoverse-is-missing-from-the-chat-panel">10.1 <code>@evoverse</code> is missing from the Chat panel</h3>
 <ol>
 <li>Confirm that <code>~/.trae/mcp.json</code> contains <code>mcpServers.evoverse</code>;</li>
-<li>Confirm that the SDK showed the <strong>Restart now</strong> prompt and that the restart has completed;</li>
-<li>Open Trae → Settings → MCP and confirm the <code>evoverse</code> server shows as <code>running</code>;</li>
-<li>Type <code>@</code> in the Chat panel and confirm <code>evoverse</code> appears in the dropdown.</li>
+<li>Confirm that you completed the restart after the "Restart the host to load the MCP server." prompt;</li>
+<li>Trae → Settings → MCP: confirm the <code>evoverse</code> server shows <code>running</code>;</li>
+<li>Type <code>@</code> in the Chat panel; <code>evoverse</code> should appear in the dropdown.</li>
 </ol>
-<h3 id="8-2-trae-mcp-json-is-corrupted">8.2 <code>~/.trae/mcp.json</code> is corrupted</h3>
-<ol>
-<li>Before writing, the SDK backs the file up as <code>~/.trae/mcp.json.evoverse.bak</code>; restore from that backup:
-   <code>bash
-   cp ~/.trae/mcp.json.evoverse.bak ~/.trae/mcp.json</code></li>
-<li>Run <code>EvoVerse: Set Up</code> again.</li>
-</ol>
-<h3 id="8-3-trae-user_rules-md-conflicts-with-team-rules">8.3 <code>~/.trae/user_rules/*.md</code> conflicts with team rules</h3>
+<h3 id="10-2-trae-mcp-json-is-corrupted">10.2 <code>~/.trae/mcp.json</code> is corrupted</h3>
+<p>The SDK backs the file up as <code>~/.trae/mcp.json.evoverse.bak</code> before writing. Restore from the backup and re-run <code>EvoVerse: Set Up (re-run bootstrap)</code>:</p>
+<pre><code class="language-bash">cp ~/.trae/mcp.json.evoverse.bak ~/.trae/mcp.json
+</code></pre>
+<h3 id="10-3-agent-rules-conflict-with-team-rules">10.3 Agent rules conflict with team rules</h3>
 <ul>
-<li>The rule sources EvoVerse installs live in <code>~/evoverse-sdk/agent-rules/</code>; do <strong>not</strong> edit <code>~/.trae/user_rules/*.md</code> directly;</li>
-<li>To add rules for a project, edit the project-level <code>.github/copilot-instructions.md</code>;</li>
-<li>If you must change user rules, back them up first and re-merge manually after every SDK upgrade.</li>
+<li>The rule sources live in <code>~/evoverse-sdk/agent-rules/</code>; do not edit <code>~/.trae/user_rules/*.md</code> directly;</li>
+<li>Write project-level rules to <code>.github/copilot-instructions.md</code>;</li>
+<li>If you must change user rules, back them up first and merge manually after each SDK upgrade.</li>
 </ul>
-<h3 id="8-4-host-detection-is-wrong">8.4 Host detection is wrong</h3>
-<p>Open the Trae command palette and run:</p>
-<pre><code class="language-powershell"># Inspect via Developer Tools
-Developer: Toggle Developer Tools
-</code></pre>
-<p>In the Console, run:</p>
-<pre><code class="language-javascript">JSON.stringify({ appName: require('vscode').env.appName })
-</code></pre>
-<p>It should return one of <code>"Trae"</code>, <code>"Trae CN"</code>, or <code>"Trae - ide"</code>. If it returns something else, see HOST-DIFFERENCES.md §1 for the <code>detectHostId()</code> decision logic.</p>
-<h3 id="8-5-model-unavailability-breaks-build-report-generation">8.5 Model unavailability breaks build/report generation</h3>
-<p>EvoVerse's <strong>deterministic capabilities</strong> (build, reporting, rule diagnostics, timing analysis) must work independently on every host. If builds or reports are also blocked while the model is unavailable, the model provider configuration under Trae has leaked into the child-process environment; re-check the Efinity setup script invocation per <a href="vscode-install-guide.html">VSCODE-INSTALLATION.md §3.3</a>.</p>
-<hr />
-<h2 id="9-next-steps">9. Next steps</h2>
+<h3 id="10-4-the-bootstrap-reports-system_python_missing">10.4 The bootstrap reports <code>SYSTEM_PYTHON_MISSING</code></h3>
+<p>Install or fix Python 3.11+ (see §3.2), or point <code>evoverse.pythonPath</code> at the real interpreter and re-run <code>EvoVerse: Set Up (re-run bootstrap)</code>.</p>
+<h3 id="10-5-other">10.5 Other</h3>
+<p>For installation issues (Sync Catalog failures, Health Check failures, Efinity not found), follow the "Troubleshooting" table in the <a href="deployment-guide.html">Deployment Guide</a>.</p>
+<h2 id="11-next-steps">11. Next steps</h2>
 <ul>
-<li>Read the <a href="../sdk/user-manual.html">user manual</a> for the overall EvoVerse SDK workflow;</li>
-<li>Read <a href="../efinity/toolchain-reference.html">efinity-toolchain-reference.md</a> to master the Efinity CLI;</li>
-<li>Read <a href="../efinity/rtl-coding-style.html">efinity-coding-style.md</a> for the RTL coding rules;</li>
-<li>For detailed host differences, see HOST-DIFFERENCES.md.</li>
+<li><a href="../sdk/user-manual.html">User Manual</a>: the full daily development workflow;</li>
+<li><a href="../efinity/toolchain-reference.html">Efinity Toolchain Reference</a>: Efinity CLI parameters;</li>
+<li><a href="deployment-guide.html">Deployment Guide</a>: customer package installation and acceptance;</li>
+<li>HOST-DIFFERENCES.md: multi-host differences and gotchas.</li>
 </ul></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

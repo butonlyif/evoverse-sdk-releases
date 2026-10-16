@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -121,6 +123,19 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>目标器件：WS-E1 核心模组 TJ180A484S，C4 timing model。本阶段把一个空目录变成控制面管辖的受管工程，作为后续所有阶段的物理与流程基线——它也是第一轮增量意图（SD 输入）的父基线。</p>
 </blockquote>
 <p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 这条数据链路的每一环，最终都要落到 TJ180A484S 的物理引脚和时钟资源上。所以第一步不是写 RTL，而是声明工程身份：板卡、载板、夹克、器件与速度等级。这一步在控制面里对应 <code>project.initialize</code> 动作。</p>
+<h2 id="准备环境">准备环境</h2>
+<p>先装 IDE，再开工程。三步：</p>
+<ol>
+<li>安装三个 VSIX：<code>evoverse-sdk</code>、<code>evoverse-efinity-adapter</code>、<code>evoverse-rk3588-adapter</code>（版本一致，当前为 1.0.0），装完重启 IDE。</li>
+<li>首次启动会弹出 "Set up EvoVerse SDK?"，确认 SDK 工作区（默认 <code>~/evoverse-sdk</code>）；确认后 Welcome 页自动打开。</li>
+<li>在 Welcome 页点一次 Sync Catalog 同步板卡目录，然后在 Trae 聊天里输入 <code>@evoverse</code>（或用 Workbench 的 Project Control 下拉，命令 <code>evoverse.selectDesignFlow</code>）开始对话。</li>
+</ol>
+<pre class="mermaid">flowchart LR
+    A[&quot;安装三个 VSIX&lt;br&gt;SDK + Efinity/RK3588 Adapter&quot;] --&gt; B[&quot;重启 IDE&lt;br&gt;确认工作区 ~/evoverse-sdk&quot;]
+    B --&gt; C[&quot;Welcome 页&lt;br&gt;Sync Catalog&quot;]
+    C --&gt; D[&quot;@evoverse 开始对话&quot;]
+</pre>
+<p>注意：<code>~/evoverse-sdk</code> 是 SDK 工作区，不是本教程的工程根。下一步打开的是一个空目录，Stage0 在那里建工程。</p>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <p>打开一个空目录作为工程根，在 Trae Chat 里说：</p>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 @evoverse 在当前空目录初始化一个 EvoVerse 工程。
@@ -178,4 +193,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

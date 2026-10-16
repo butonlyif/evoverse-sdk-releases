@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -118,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>07 Skills 与 MCP</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-07-skill-与-mcp-工具速查">阶段 07 · Skill 与 MCP 工具速查</h1>
 <blockquote>
-<p>七个阶段走完，回头看清这条路径用到的全部接口：4 个公开 MCP 工具、14 个控制面动作、4 个内置 Skill。你在 TJ180A484S 上完成 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一步，都对应这张表里的一行和一条证据。</p>
+<p>七个阶段走完，回头看清这条路径用到的全部接口：11 个公开 MCP 工具、25 个控制面动作、6 个内置 Skill。你在 TJ180A484S 上完成 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一步，都对应这张表里的一行和一条证据。</p>
 </blockquote>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">请根据本工程留下的 design-package、意图与候选回执、仿真证据、
@@ -137,7 +139,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="你需要确认什么">你需要确认什么</h2>
 <ul>
 <li>每个阶段的结论都有回执或文件支撑，"没做过"和"没验证"没有被写成"通过"。</li>
-<li>你能说清四个公开 MCP 工具各自回答什么问题（状态、动作、执行、健康）。</li>
+<li>你能说清 11 个公开 MCP 工具各自回答什么问题：控制面 3 个管状态、下一步、执行；<code>evoverse_health</code> 管健康；其余 7 个 <code>rk3588_*</code> 管 RK3588 环境与工程构建。</li>
 <li>普通 Agent 对话可以解释和整理，但不能替代 <code>candidate.deliver</code> 与 <code>verification.simulate</code> 的回执。</li>
 </ul>
 <h2 id="通过条件">通过条件</h2>
@@ -146,7 +148,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>你能指出每个动作回执在 <code>project_status</code> 输出里的位置。</li>
 <li>你能判断当前工程停在哪个阶段、下一步允许动作是什么（<code>project_next</code> 的答案，不是猜测）。</li>
 </ul>
-<h2 id="速查-公开-mcp-工具-4-个">速查：公开 MCP 工具（4 个）</h2>
+<h2 id="速查-公开-mcp-工具-11-个">速查：公开 MCP 工具（11 个）</h2>
 <table>
 <thead>
 <tr>
@@ -171,13 +173,42 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <td><code>evoverse_health</code></td>
 <td>SDK 与工具链是否健康可用</td>
 </tr>
+<tr>
+<td><code>rk3588_environment_status</code></td>
+<td>RK3588 环境只读体检：工具链、BSP 各装到哪一步</td>
+</tr>
+<tr>
+<td><code>rk3588_environment_prepare</code></td>
+<td>准备 RK3588 环境，返回 inspectionToken 供后续检查</td>
+</tr>
+<tr>
+<td><code>rk3588_environment_deploy</code></td>
+<td>部署 RK3588 工具链 / BSP（<code>acceptedLicenses</code> 授权）</td>
+</tr>
+<tr>
+<td><code>rk3588_project_generate</code></td>
+<td>受控生成 RK3588 工程（产出 PROFILE_READY）</td>
+</tr>
+<tr>
+<td><code>rk3588_project_preflight</code></td>
+<td>构建前只读资格化检查</td>
+</tr>
+<tr>
+<td><code>rk3588_project_build</code></td>
+<td>四阶段构建：uboot → kernel → rootfs → package</td>
+</tr>
+<tr>
+<td><code>rk3588_project_status</code></td>
+<td>读取 <code>.evoverse/output/build-report.json</code> 构建报告</td>
+</tr>
 </tbody>
 </table>
-<p>其他能力（固件创建、BSP 再生、JTAG 观测、工程合同检查等）由扩展的 provider 工具面提供，通过 Skill 与自然语言调用，不在模型可见的公开 MCP 面中。</p>
-<h2 id="速查-控制面动作-14-个">速查：控制面动作（14 个）</h2>
+<p>其余能力（JTAG 观测、DesignAPI / IP 管理、工程合同检查等）由扩展的 provider 工具面提供，通过 Skill 与自然语言调用，不在模型可见的公开 MCP 面中。</p>
+<h2 id="速查-控制面动作-25-个">速查：控制面动作（25 个）</h2>
 <table>
 <thead>
 <tr>
+<th>分组</th>
 <th>动作</th>
 <th>语义</th>
 <th>对应阶段</th>
@@ -185,78 +216,158 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </thead>
 <tbody>
 <tr>
+<td>项目</td>
 <td><code>project.initialize</code></td>
 <td>声明工程身份（板卡 / 载板 / 夹克 / 器件）</td>
 <td>00</td>
 </tr>
 <tr>
+<td>意图</td>
 <td><code>intent.create</code></td>
 <td>声明一次有目标、有作用域的增量意图（父基线快照进 <code>baseBaselineFiles</code>）</td>
 <td>03</td>
 </tr>
 <tr>
-<td><code>asset.observe</code></td>
-<td>观察工作树与材料</td>
-<td>01</td>
-</tr>
-<tr>
-<td><code>asset.adopt</code></td>
-<td>把复用资产显式连到意图作用域</td>
-<td>01 / 03</td>
-</tr>
-<tr>
-<td><code>intent.abandon</code></td>
-<td>放弃当前意图</td>
+<td>意图</td>
+<td><code>intent.rebase</code></td>
+<td>父基线变化后把意图挂到新基线上（REBASE_REQUIRED 时使用）</td>
 <td>按需</td>
 </tr>
 <tr>
-<td><code>simulation.profile.select</code></td>
-<td>两阶段等级决策：服务端按 riskFacts 推荐，用户选择；低于推荐记 acceptedRisks</td>
-<td>02 / 03</td>
+<td>意图</td>
+<td><code>intent.abandon</code></td>
+<td>放弃当前意图（SUPERSEDED 终态）</td>
+<td>按需</td>
 </tr>
 <tr>
+<td>意图</td>
+<td><code>intent.purge</code></td>
+<td>清除已终结意图的记录（墓碑）</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>规格</td>
 <td><code>spec.draft</code></td>
 <td>起草差量规格</td>
 <td>02</td>
 </tr>
 <tr>
+<td>规格</td>
 <td><code>spec.approve</code></td>
 <td>批准并冻结规格</td>
 <td>02</td>
 </tr>
 <tr>
+<td>等级</td>
+<td><code>simulation.profile.select</code></td>
+<td>两阶段等级决策：服务端按 riskFacts 推荐，用户选择；低于推荐记 acceptedRisks</td>
+<td>02 / 03</td>
+</tr>
+<tr>
+<td>资产</td>
+<td><code>asset.observe</code></td>
+<td>观察工作树与材料</td>
+<td>01</td>
+</tr>
+<tr>
+<td>资产</td>
+<td><code>asset.adopt</code></td>
+<td>把复用资产显式连到意图作用域</td>
+<td>01 / 03</td>
+</tr>
+<tr>
+<td>契约</td>
+<td><code>contract.qualify</code></td>
+<td>用户批准确定性渲染的 <code>CONTRACT.md</code>，模块契约资格化（CONTRACT_QUALIFIED）</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>候选</td>
 <td><code>candidate.deliver</code></td>
 <td>冻结候选并执行 Design Assurance，基线保持不变</td>
 <td>03 / 04</td>
 </tr>
 <tr>
-<td><code>verification.simulate</code></td>
-<td>记录仿真证据（iverilog / questa），独立取证</td>
-<td>03 / 04</td>
+<td>候选</td>
+<td><code>candidate.repair</code></td>
+<td>修复未通过的模块候选（按 moduleId 与契约 digest 重新交付）</td>
+<td>按需</td>
 </tr>
 <tr>
+<td>候选</td>
 <td><code>candidate.promote</code></td>
 <td>仿真 PASS 且资格满足后，把候选与父基线合并安装为新基线</td>
 <td>03</td>
 </tr>
 <tr>
+<td>验证</td>
+<td><code>verification.simulate</code></td>
+<td>记录仿真证据（iverilog / questa），独立取证</td>
+<td>03 / 04</td>
+</tr>
+<tr>
+<td>构建</td>
 <td><code>build.native</code></td>
 <td>记录 <code>efx_run --flow compile</code> 构建证据</td>
 <td>06</td>
 </tr>
 <tr>
+<td>硬件</td>
 <td><code>hardware.program</code></td>
 <td>记录烧录证据（器件身份显式 + 操作者确认）</td>
 <td>06</td>
 </tr>
 <tr>
+<td>硬件</td>
 <td><code>hardware.validate</code></td>
 <td>按 scenarios 逐条记录板上验证证据</td>
 <td>06</td>
 </tr>
+<tr>
+<td>集成</td>
+<td><code>integration.process</code></td>
+<td><code>candidate.promote</code> 之后关闭系统集成（mainline 合入收尾）</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>恢复</td>
+<td><code>recovery.open</code></td>
+<td>非终态无可用动作时建立持久恢复记录（inputPreview 原样提交）</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>恢复</td>
+<td><code>recovery.quarantine</code></td>
+<td>恢复期间的幂等安全出口：保留可信基线与失败证据，隔离故障范围</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>诊断</td>
+<td><code>diagnostic.options.propose</code></td>
+<td>提出诊断选项</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>诊断</td>
+<td><code>diagnostic.choice.select</code></td>
+<td>从诊断选项中选定一条</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>诊断</td>
+<td><code>diagnostic.finding.record</code></td>
+<td>记录诊断发现</td>
+<td>按需</td>
+</tr>
+<tr>
+<td>诊断</td>
+<td><code>diagnostic.repair.record</code></td>
+<td>记录修复结果</td>
+<td>按需</td>
+</tr>
 </tbody>
 </table>
-<h2 id="速查-内置-skill-4-个">速查：内置 Skill（4 个）</h2>
+<h2 id="速查-内置-skill-6-个">速查：内置 Skill（6 个）</h2>
 <table>
 <thead>
 <tr>
@@ -270,12 +381,20 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <td>Efinity 工具链、ISF、SDC、优化问题查证</td>
 </tr>
 <tr>
+<td><code>/efinity-project</code></td>
+<td>创建 Efinity 工程或调整器件、源文件、约束、IP、构建设置</td>
+</tr>
+<tr>
 <td><code>/evoverse-design-spec</code></td>
 <td>起草可执行设计规格包与决策选项</td>
 </tr>
 <tr>
 <td><code>/evoverse-rtl</code></td>
 <td>按已批准规格生成候选 RTL 与测试平台</td>
+</tr>
+<tr>
+<td><code>/evoverse-board-create</code></td>
+<td>从原理图 / BOM / 器件资料重建板卡材料</td>
 </tr>
 <tr>
 <td><code>/evoverse-project-review</code></td>
@@ -311,4 +430,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+
 </body></html>

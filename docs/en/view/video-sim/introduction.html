@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -106,16 +108,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <blockquote>
 <p>EvoVerse SDK v1.0.0 · Video Sim v1.0.1 · 2026-09-30</p>
 </blockquote>
-<h2 id="one-sentence-definition">One-sentence definition</h2>
-<p><strong>Video Sim</strong> (also known as the <strong>VIP simulation and verification platform</strong>) is EvoVerse's <strong>video IP sub-product</strong>:
-feed an image in, pass it through your RTL module, get an image out, and be told how well the processing worked.</p>
-<h2 id="the-problems-it-solves">The problems it solves</h2>
-<p>Video IP development has four recurring pain points:</p>
+<h2 id="positioning">Positioning</h2>
+<p><strong>Video Sim</strong> (also known as the <strong>VIP simulation and verification platform</strong>) is EvoVerse's video IP sub-product:
+feed an image in, pass it through your RTL module, get an image out, and be told how well the processing worked.
+It runs on PC simulation (iverilog)—no board programming, no synthesis—and handles algorithm- and image-level verification; board-level verification is left to the EvoVerse SDK.</p>
+<p>Video IP development has four recurring pain points, each with a matching answer:</p>
 <table>
 <thead>
 <tr>
 <th>Pain point</th>
-<th>How Video Sim answers it</th>
+<th>Answer</th>
 </tr>
 </thead>
 <tbody>
@@ -124,7 +126,7 @@ feed an image in, pass it through your RTL module, get an image out, and be told
 <td><strong>Image/video → simulation stimulus</strong> is fully automatic; the output is hex that <code>$readmemh</code> can read</td>
 </tr>
 <tr>
-<td>When the simulation finishes you can only stare at waveforms, with no intuitive way to judge image quality</td>
+<td>After the simulation finishes you can only stare at waveforms, with no intuitive way to judge image quality</td>
 <td><strong>Result restoration</strong>: hex is converted back to PNG/MP4 automatically, so you see the effect directly</td>
 </tr>
 <tr>
@@ -137,13 +139,36 @@ feed an image in, pass it through your RTL module, get an image out, and be told
 </tr>
 </tbody>
 </table>
-<h2 id="who-it-is-for">Who it is for</h2>
+<p>Who it is for:</p>
 <ul>
 <li><strong>FPGA verification engineers</strong> — image-level PASS/FAIL verdicts for video IPs</li>
 <li><strong>Research students</strong> — learning video-processing algorithms and verifying RTL implementations</li>
 <li><strong>IP developers</strong> — chaining algorithm → RTL → simulation → golden reference → regression testing into one complete loop</li>
 </ul>
-<h2 id="the-workflow-in-one-glance">The workflow in one glance</h2>
+<h2 id="platform-composition">Platform composition</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simulation template</td>
+<td>Example IP (passthrough), AXI-Stream BFM + Testbench, Python toolchain (orchestrated by <code>scripts/sim.py</code>)</td>
+</tr>
+<tr>
+<td>IDE extension</td>
+<td>Graphical console for Trae / VS Code: create a project, run simulations, view analysis panels—no command line needed</td>
+</tr>
+<tr>
+<td>Golden reference and analysis</td>
+<td>Bit-for-bit comparison by a Python reference model + 6-part quality analysis (PSNR · sharpness · white balance · histogram · difference heatmap · Gamma curve)</td>
+</tr>
+</tbody>
+</table>
+<p>The complete workflow:</p>
 <pre><code>┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
 │ Real     │ → │ Sim      │ → │ Your RTL │ → │ Sim      │
 │ image /  │   │ stimulus │   │ IP       │   │ output   │
@@ -158,45 +183,94 @@ feed an image in, pass it through your RTL module, get an image out, and be told
                              │ analysis │
                              └──────────┘
 </code></pre>
-<h2 id="relationship-to-the-evoverse-sdk">Relationship to the EvoVerse SDK</h2>
-<table>
-<thead>
-<tr>
-<th>Scenario</th>
-<th>Recommended tool</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>FPGA board-level verification</strong> (programming, timing, debug)</td>
-<td>Use <strong>EvoVerse SDK</strong> (the evoverse-sdk VSIX)</td>
-</tr>
-<tr>
-<td><strong>Algorithm / image-level verification</strong> (no board, no synthesis)</td>
-<td>Use <strong>Video Sim</strong> (embedded in the evoverse-sdk VSIX)</td>
-</tr>
-</tbody>
-</table>
-<p>The EvoVerse SDK already <strong>embeds</strong> the same Video Sim functionality (entry command <code>evoverse.simIsp</code>); installing the SDK is all it takes—no separate installation is needed.</p>
-<h2 id="core-capabilities">Core capabilities</h2>
+<p>Core capabilities:</p>
 <ul>
 <li><strong>Image/video → simulation stimulus</strong> — automatic conversion to Verilog <code>$readmemh</code> hex</li>
 <li><strong>One-click simulation</strong> — iverilog compile + run + result collection, fully automatic</li>
 <li><strong>Result restoration</strong> — simulation output hex restored automatically to PNG/MP4</li>
 <li><strong>Golden-reference comparison</strong> — bit-for-bit reproduction by a Python reference model, with an automatic PASS / FAIL verdict</li>
-<li><strong>6-part quality analysis</strong> — PSNR · sharpness · white balance · histogram · difference heatmap · Gamma curve</li>
 <li><strong>9 test patterns</strong> — ramps / color blocks / checkerboards / noise / dead pixels and more, for systematic verification</li>
 <li><strong>DDR frame buffer</strong> — AXI4 DDR model + ping-pong double slots (VIP08)</li>
 <li><strong>Vibe Coding</strong> — describe it in natural language → RTL + golden model + TB + regdef generated automatically (VIP09)</li>
 <li><strong>Regression testing</strong> — <code>make regression</code> runs every snapshot in one shot (VIP10)</li>
 </ul>
-<h2 id="toolchain">Toolchain</h2>
-<pre><code>iverilog + Python 3.11+ + Pillow / NumPy / OpenCV
-</code></pre>
-<p>Consistent across platforms: macOS / Linux / Windows all work; on Windows GNU Make is not needed—the pure-Python <code>scripts/sim.py</code> orchestrates everything.</p>
-<h2 id="quick-start">Quick start</h2>
-<p>Enter through the Video Sim task on the offline customer documentation portal; the retired VIP01–VIP10 tutorial tree is no longer the current entry point.</p>
-<h2 id="documentation">Documentation</h2>
+<p>Toolchain: iverilog + Python 3.11+ + Pillow / NumPy / OpenCV.
+Consistent across platforms; on Windows GNU Make is not needed:</p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Install the simulator</th>
+<th>Build method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>macOS</td>
+<td><code>brew install icarus-verilog</code></td>
+<td><code>make</code> or <code>python scripts/sim.py</code></td>
+</tr>
+<tr>
+<td>Linux</td>
+<td><code>sudo apt install iverilog</code></td>
+<td><code>make</code> or <code>python scripts/sim.py</code></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td><code>scoop install icarus-verilog</code></td>
+<td><code>python scripts/sim.py</code> (no make needed)</td>
+</tr>
+</tbody>
+</table>
+<p>Optionally install GTKWave (<code>brew install gtkwave</code> / <code>scoop install gtkwave</code> / <code>sudo apt install gtkwave</code>) or the VS Code extension VaporView (search <code>lramseyer.vaporview</code> in the extension marketplace) to view waveforms. The Python image dependencies (opencv/numpy/pillow) need no manual installation—creating a new project automatically creates a <code>.venv</code> and installs them.</p>
+<h2 id="entry-point">Entry point</h2>
+<p>Enter through the Video Sim task on the <a href="../../../site-en/customer-portal.html">offline customer documentation portal</a>. The historical VIP01–VIP10 tutorial tree has left the current working directory and is no longer an entry point.</p>
+<p>Getting started (details in the <a href="user-guide.html">User Guide</a>):</p>
+<ol>
+<li>Install the evoverse-sdk VSIX. Video Sim is embedded in it; no separate installation is needed:</li>
+</ol>
+<p><code>bash
+   code --install-extension evoverse-sdk-&lt;version&gt;.vsix</code></p>
+<p>You can also install from inside the IDE: Extensions panel → <code>···</code> → <code>Install from VSIX</code> → pick <code>evoverse-sdk-&lt;version&gt;.vsix</code> from the root of the customer delivery package.
+   After installing, reload the window: <code>Ctrl+Shift+P</code> (Windows) / <code>Cmd+Shift+P</code> (Mac) → <code>Developer: Reload Window</code>.</p>
+<ol>
+<li>
+<p>Click 「新建仿真项目」 (New Simulation Project) in the console; the extension copies the toolkit and creates the Python virtual environment automatically.</p>
+</li>
+<li>
+<p>Develop your IP and run simulations:</p>
+</li>
+</ol>
+<p>```bash
+   # 方式一：Spec 驱动（推荐，RTL + 金标准同时生成）
+   python scripts/gen_ip_spec.py --spec specs/my_filter.yaml</p>
+<p># 方式二：AI 生成（Vibe Coding）
+   # 在 Trae 中描述需求，按 .trae/rules/project_rules.md 自动生成</p>
+<p># 命令行跑仿真；或在控制台点击「运行仿真」
+   python scripts/sim.py all IP=passthrough WIDTH=64 HEIGHT=48
+   ```</p>
+<h2 id="usage-boundaries">Usage boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>What to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FPGA board-level verification</strong> (programming, timing, debug)</td>
+<td>EvoVerse SDK (the evoverse-sdk VSIX)</td>
+</tr>
+<tr>
+<td><strong>Algorithm / image-level verification</strong> (no board programming, no synthesis)</td>
+<td>Video Sim (embedded in the evoverse-sdk VSIX)</td>
+</tr>
+</tbody>
+</table>
+<p>Video Sim covers PC simulation only—no board programming, timing analysis, or hardware debugging.
+The current version is v1.0.1; see the release notes for the change list.</p>
+<h2 id="relationship-to-other-documents">Relationship to other documents</h2>
 <table>
 <thead>
 <tr>
@@ -206,16 +280,12 @@ feed an image in, pass it through your RTL module, get an image out, and be told
 </thead>
 <tbody>
 <tr>
-<td><a href="platform-overview.html">Platform Overview</a></td>
-<td>Platform entry points and tutorial index</td>
-</tr>
-<tr>
 <td><a href="user-guide.html">User Guide</a></td>
-<td>Installation, the console, 7 scenarios, the 6 analyses in depth, FAQ</td>
+<td>Installation, the console, the 7 scenarios, the 6 analyses in depth, FAQ</td>
 </tr>
 <tr>
 <td>Design Specification</td>
-<td>System architecture, Python toolchain, Verilog BFMs, file formats</td>
+<td>System architecture, the Python toolchain, Verilog BFMs, file formats</td>
 </tr>
 <tr>
 <td>Extension Design Specification</td>
@@ -223,10 +293,11 @@ feed an image in, pass it through your RTL module, get an image out, and be told
 </tr>
 <tr>
 <td><a href="video-ip-design-guide.html">Video IP Design Guide</a></td>
-<td>Video IP design rules + SDK code-generation contract v1.0</td>
+<td>Video IP design rules + the SDK code-generation contract v1.0</td>
 </tr>
 </tbody>
 </table></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
 
 </body></html>

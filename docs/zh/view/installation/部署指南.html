@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -114,6 +116,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <ul>
 <li>Trae；标准 VS Code 也支持，但首次使用优先按 Trae 路线操作。</li>
 <li>64 位 Python 3.11+。</li>
+<li>Git 在 PATH 中（<code>EvoVerse: Sync Catalog</code> 依赖普通 Git 同步）。</li>
 <li>需要真实 FPGA 编译、烧录时安装 Efinity 2026.1+。</li>
 <li>普通 RTL 仿真需要 Icarus Verilog 或 QuestaSim。</li>
 </ul>
@@ -127,7 +130,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>在客户包目录打开 PowerShell：</p>
 <pre><code class="language-powershell">.\deploy.ps1 -Target trae
 </code></pre>
-<p>脚本按依赖顺序安装 Core、Efinity Adapter、RK3588 Adapter 和 Skills（两个 Adapter 为可选组件，包内缺失时跳过并提示）。Video Sim 已内嵌于 Core VSIX，无需单独安装。若客户策略禁止脚本安装，可在 Trae 的扩展面板按相同顺序选择 <strong>Install from VSIX…</strong>。</p>
+<p>脚本按依赖顺序安装 3 个 VSIX（Core、Efinity Adapter、RK3588 Adapter）和 Skills（两个 Adapter 为可选组件，包内缺失时跳过并提示）。Video Sim 已内嵌于 Core VSIX，无需单独安装。若客户策略禁止脚本安装，可在 Trae 的扩展面板按相同顺序选择 <strong>Install from VSIX…</strong>。</p>
 <h3 id="3-首次设置">3. 首次设置</h3>
 <ol>
 <li>在命令面板运行 <code>EvoVerse: Set Up (re-run bootstrap)</code>。</li>
@@ -135,14 +138,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>Trae 提示重启时完全重启宿主，使 MCP 配置生效。</li>
 <li>在设置中确认 <code>evoverse.efinityPath</code> 指向实际 Efinity 安装目录。</li>
 </ol>
-<h3 id="3-1-获取私有-catalog">3.1 获取私有 Catalog</h3>
+<h3 id="3-1-同步-catalog">3.1 同步 Catalog</h3>
 <ol>
-<li>把自己的 GitHub 账户告知 EvoVerse 运营人员，等待 <code>evoverse-catalog</code> 私有仓库邀请。</li>
-<li>接受邀请；仓库 URL 会随 VSIX 客户端可见，但没有 GitHub 授权仍无法读取内容。</li>
-<li>使用 Git Credential Manager 或 GitHub CLI 在本机完成该账户认证。不要索取或使用团队共享 PAT。</li>
-<li>运行 <code>EvoVerse: Sync Catalog</code>。同步会先验证签名与完整性，再事务化切换本地版本。</li>
-<li>运行 <code>evoverse catalog status --json</code>，记录 <code>catalogVersion</code>、<code>commit</code> 和 <code>treeDigest</code>。</li>
-<li>网络或鉴权失败时修复后重试；新版本不可用但已有版本健康时，可运行 <code>EvoVerse: Roll Back Catalog</code> 离线回退。</li>
+<li>运行 <code>EvoVerse: Sync Catalog</code>。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号</strong>；完成后写入回执 <code>catalog-sync-receipt.json</code>，记录 <code>catalog_version</code> 与 <code>commit</code>。</li>
+<li>运行 <code>evoverse catalog status --json</code>，记录 <code>state</code>、<code>location</code> 与回执里的 <code>catalog_version</code>、<code>commit</code>。</li>
+<li>网络失败时修复后重试；同步失败不影响本地现有 Catalog（官方条目才被覆盖，本地内容不动）。本地 catalog 目录损坏时，重新运行 <code>EvoVerse: Sync Catalog</code> 重建即可；工作区 <code>.evoverse/catalog.json</code> 指针文件记录受信物料根目录（<code>catalogRoot</code>）。</li>
+<li>如需改用自建镜像或私有仓库，可通过命令 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址。</li>
 </ol>
 <h3 id="4-验证安装">4. 验证安装</h3>
 <ol>
@@ -186,7 +187,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>Catalog 为空 / <code>CATALOG_NOT_INSTALLED</code></td>
-<td>接受私有仓库邀请并完成本机 GitHub 认证，然后运行 <code>EvoVerse: Sync Catalog</code></td>
+<td>运行 <code>EvoVerse: Sync Catalog</code>（默认走公开发布仓库，无需 GitHub 账号）</td>
 </tr>
 <tr>
 <td>Trae Agent 看不到 MCP</td>
@@ -205,5 +206,6 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="卸载">卸载</h2>
 <p>在 Extensions 中卸载所装 VSIX。卸载扩展不会自动删除客户工程和 <code>evoverse.home</code> 下的数据；确认不再需要后再手工处理用户数据。</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
 
 </body></html>

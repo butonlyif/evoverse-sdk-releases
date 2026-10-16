@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -122,6 +124,17 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </blockquote>
 <p>工程合同（project contract）定义了控制面看到的工程结构与 Efinity 工具链看到的工程文件之间的对应关系。SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的引脚、时钟、bank 电压都在这一步落到 TJ180A484S 的物理约束上。</p>
 <p>三类验证在此分界：<code>verification.simulate</code> 的 PASS 只证明候选在所选等级的仿真场景下正确，不证明原生编译收敛，更不证明板上运转——后者分别由阶段 06 的 <code>build.native</code> 与 <code>hardware.validate</code> 取证。</p>
+<p>本阶段的所有检查都围绕工程合同展开，目标是让三视图指向同一套文件：</p>
+<pre class="mermaid">flowchart TD
+    A[&quot;控制面资产清单&lt;br&gt;project_status&quot;] --- B{&quot;工程合同&lt;br&gt;project contract&quot;}
+    C[&quot;Efinity 工程 XML&lt;br&gt;设计源清单&quot;] --- B
+    D[&quot;ISF / SDC 约束&quot;] --- B
+    B --&gt; E[&quot;同步设计源&lt;br&gt;预览 → 确认 → 应用&quot;]
+    E --&gt; F[&quot;设计验证&lt;br&gt;引脚 / bank 电压 / 时钟&quot;]
+    F --&gt; G{&quot;三视图一致？&quot;}
+    G --&gt;|是| H[&quot;revision 更新&lt;br&gt;满足编译输入条件&quot;]
+    G --&gt;|否| E
+</pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">对本工程做集成检查：先展示工程合同（project contract），确认顶层模块、
 设计源清单、ISF/SDC 约束与工程 XML 一致；然后同步设计源到 Efinity 工程，
@@ -179,4 +192,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -106,44 +108,67 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <blockquote>
 <p>EvoVerse SDK v1.0.0 · Video Sim v1.0.1 · 2026-09-30</p>
 </blockquote>
-<h2 id="一句话定义">一句话定义</h2>
-<p><strong>Video Sim</strong>（又称 <strong>VIP 仿真验证平台</strong>）是 EvoVerse 的<strong>视频 IP 子产品</strong>：
-给一张图进去，经过你的 RTL 模块，拿到一张图出来，最后告诉你处理得好不好。</p>
-<h2 id="解决什么问题">解决什么问题</h2>
-<p>视频 IP 开发有四个反复出现的痛点：</p>
+<h2 id="定位">定位</h2>
+<p><strong>Video Sim</strong>（又称 <strong>VIP 仿真验证平台</strong>）是 EvoVerse 的视频 IP 子产品：
+给一张图进去，经过你的 RTL 模块，拿到一张图出来，最后告诉你处理得好不好。
+它跑在 PC 仿真（iverilog）上，不烧板、不综合，负责算法与图像级验证；板级验证交给 EvoVerse SDK。</p>
+<p>视频 IP 开发有四个反复出现的痛点，各有对应解法：</p>
 <table>
 <thead>
 <tr>
 <th>痛点</th>
-<th>Video Sim 的解法</th>
+<th>解法</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>把真实图像塞进 RTL 仿真要写一堆 hex 转换脚本</td>
-<td><strong>图像/视频 → 仿真激励</strong>自动完成，输出 <code>$readmemh</code> 可读 hex</td>
+<td>图像/视频 → 仿真激励自动完成，输出 <code>$readmemh</code> 可读 hex</td>
 </tr>
 <tr>
 <td>仿真跑完只能看波形，无法直观判断画质</td>
-<td><strong>结果还原</strong>：hex 自动转回 PNG/MP4，直接看效果</td>
+<td>结果还原：hex 自动转回 PNG/MP4，直接看效果</td>
 </tr>
 <tr>
 <td>RTL 实现对不对，没有客观判定</td>
-<td><strong>金标准比对</strong>：Python 参考模型按位复现 RTL 定点运算，自动 PASS / FAIL</td>
+<td>金标准比对：Python 参考模型按位复现 RTL 定点运算，自动 PASS / FAIL</td>
 </tr>
 <tr>
 <td>调一个参数不知道影响多大</td>
-<td><strong>多维度质量分析</strong>：锐度、白平衡、PSNR、直方图、Gamma 曲线，弹出独立面板</td>
+<td>多维度质量分析：锐度、白平衡、PSNR、直方图、Gamma 曲线，弹出独立面板</td>
 </tr>
 </tbody>
 </table>
-<h2 id="适合谁">适合谁</h2>
+<p>适合谁：</p>
 <ul>
 <li><strong>FPGA 验证工程师</strong> — 视频 IP 的图像级 PASS/FAIL 判定</li>
 <li><strong>课题学生</strong> — 学习视频处理算法并验证 RTL 实现</li>
-<li><strong>IP 开发者</strong> — 把算法 → RTL → 仿真 → 金标准 → 回归测试 完整串起来</li>
+<li><strong>IP 开发者</strong> — 把算法 → RTL → 仿真 → 金标准 → 回归测试完整串起来</li>
 </ul>
-<h2 id="一句话工作流">一句话工作流</h2>
+<h2 id="平台组成">平台组成</h2>
+<table>
+<thead>
+<tr>
+<th>组成</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>仿真模板</td>
+<td>示例 IP（passthrough）、AXI-Stream BFM + Testbench、Python 工具链（<code>scripts/sim.py</code> 编排）</td>
+</tr>
+<tr>
+<td>IDE 扩展</td>
+<td>Trae / VS Code 图形控制台：新建项目、运行仿真、查看分析面板，无需命令行</td>
+</tr>
+<tr>
+<td>金标准与分析</td>
+<td>Python 参考模型按位比对 + 6 项质量分析（PSNR · 锐度 · 白平衡 · 直方图 · 差异热力图 · Gamma 曲线）</td>
+</tr>
+</tbody>
+</table>
+<p>完整工作流：</p>
 <pre><code>┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
 │ 真实图像  │ → │ 仿真激励  │ → │ 你的 RTL │ → │ 仿真输出  │
 │ / 视频   │   │ (hex)    │   │ IP 模块   │   │ (hex)    │
@@ -155,45 +180,95 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
               └──────────┘   │ 质量分析  │   └──────────┘
                              └──────────┘
 </code></pre>
-<h2 id="与-evoverse-sdk-的关系">与 EvoVerse SDK 的关系</h2>
-<table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐工具</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>FPGA 板级验证</strong>（烧录、时序、调试）</td>
-<td>用 <strong>EvoVerse SDK</strong>（即 evoverse-sdk VSIX）</td>
-</tr>
-<tr>
-<td><strong>算法 / 图像级验证</strong>（不烧板、不综合）</td>
-<td>用 <strong>Video Sim</strong>（内嵌于 evoverse-sdk VSIX）</td>
-</tr>
-</tbody>
-</table>
-<p>EvoVerse SDK 已<strong>内嵌</strong>同一套 Video Sim 功能（<code>evoverse.simIsp</code> 命令入口），安装 SDK 即可用，无需单独安装。</p>
-<h2 id="核心能力">核心能力</h2>
+<p>核心能力：</p>
 <ul>
 <li><strong>图像/视频 → 仿真激励</strong> — 自动转换为 Verilog <code>$readmemh</code> hex</li>
 <li><strong>一键仿真</strong> — iverilog 编译 + 运行 + 结果采集全自动</li>
 <li><strong>结果还原</strong> — 仿真输出 hex 自动还原为 PNG/MP4</li>
 <li><strong>金标准比对</strong> — Python 参考模型按位复现，自动判定 PASS / FAIL</li>
-<li><strong>6 项质量分析</strong> — PSNR · 锐度 · 白平衡 · 直方图 · 差异热力图 · Gamma 曲线</li>
 <li><strong>9 种图卡</strong> — 渐变 / 色块 / 棋盘格 / 噪声 / 坏点等，用于系统化验证</li>
 <li><strong>DDR 帧缓冲</strong> — AXI4 DDR 模型 + ping-pong 双槽（VIP08）</li>
 <li><strong>Vibe Coding</strong> — 自然语言描述 → 自动生成 RTL + golden + TB + regdef（VIP09）</li>
 <li><strong>回归测试</strong> — <code>make regression</code> 一键跑全部 snapshot（VIP10）</li>
 </ul>
-<h2 id="工具链">工具链</h2>
-<pre><code>iverilog + Python 3.11+ + Pillow / NumPy / OpenCV
-</code></pre>
-<p>跨平台一致：macOS / Linux / Windows 都能跑；Windows 上不需要 GNU Make，纯 Python 的 <code>scripts/sim.py</code> 编排。</p>
-<h2 id="快速开始">快速开始</h2>
-<p>从 <a href="../../../site/customer-portal.html">离线客户文档门户</a> 选择 Video Sim 任务进入；已退休的 VIP01-VIP10 教程树不再作为当前入口。</p>
-<h2 id="文档">文档</h2>
+<p>工具链：iverilog + Python 3.11+ + Pillow / NumPy / OpenCV。
+跨平台一致，Windows 上不需要 GNU Make：</p>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>安装仿真器</th>
+<th>构建方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>macOS</td>
+<td><code>brew install icarus-verilog</code></td>
+<td><code>make</code> 或 <code>python scripts/sim.py</code></td>
+</tr>
+<tr>
+<td>Linux</td>
+<td><code>sudo apt install iverilog</code></td>
+<td><code>make</code> 或 <code>python scripts/sim.py</code></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td><code>scoop install icarus-verilog</code></td>
+<td><code>python scripts/sim.py</code>（无需 make）</td>
+</tr>
+</tbody>
+</table>
+<p>可选装 GTKWave（<code>brew install gtkwave</code> / <code>scoop install gtkwave</code> / <code>sudo apt install gtkwave</code>）或 VS Code 扩展 VaporView（扩展市场搜 <code>lramseyer.vaporview</code>）看波形。Python 图像依赖（opencv/numpy/pillow）无需手动安装，新建项目时自动创建 <code>.venv</code> 并装好。</p>
+<h2 id="入口">入口</h2>
+<p>从 <a href="../../../site/customer-portal.html">离线客户文档门户</a> 的 Video Sim 任务进入。
+历史 VIP01-VIP10 教程树已退出当前工作目录，不再作为入口。</p>
+<p>上手步骤（细节见<a href="用户使用说明书.html">用户使用说明书</a>）：</p>
+<ol>
+<li>安装 evoverse-sdk VSIX。Video Sim 内嵌其中，无需单独安装：</li>
+</ol>
+<p><code>bash
+   code --install-extension evoverse-sdk-&lt;版本&gt;.vsix</code></p>
+<p>也可在 IDE 内安装：扩展面板 → <code>···</code> → <code>Install from VSIX</code> → 选择客户交付包根目录中的 <code>evoverse-sdk-&lt;版本&gt;.vsix</code>。
+   装完重新加载窗口：<code>Ctrl+Shift+P</code> (Windows) / <code>Cmd+Shift+P</code> (Mac) → <code>Developer: Reload Window</code>。</p>
+<ol>
+<li>
+<p>控制台点击「新建仿真项目」，扩展自动复制工具包并创建 Python 虚拟环境。</p>
+</li>
+<li>
+<p>开发 IP 并运行仿真：</p>
+</li>
+</ol>
+<p>```bash
+   # 方式一：Spec 驱动（推荐，RTL + 金标准同时生成）
+   python scripts/gen_ip_spec.py --spec specs/my_filter.yaml</p>
+<p># 方式二：AI 生成（Vibe Coding）
+   # 在 Trae 中描述需求，按 .trae/rules/project_rules.md 自动生成</p>
+<p># 命令行跑仿真；或在控制台点击「运行仿真」
+   python scripts/sim.py all IP=passthrough WIDTH=64 HEIGHT=48
+   ```</p>
+<h2 id="使用边界">使用边界</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>用什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FPGA 板级验证</strong>（烧录、时序、调试）</td>
+<td>EvoVerse SDK（即 evoverse-sdk VSIX）</td>
+</tr>
+<tr>
+<td><strong>算法 / 图像级验证</strong>（不烧板、不综合）</td>
+<td>Video Sim（内嵌于 evoverse-sdk VSIX）</td>
+</tr>
+</tbody>
+</table>
+<p>Video Sim 只覆盖 PC 仿真，不含板级烧录、时序分析和硬件调试。
+当前版本 v1.0.1，变更清单见发布说明。</p>
+<h2 id="与其他文档的关系">与其他文档的关系</h2>
 <table>
 <thead>
 <tr>
@@ -202,10 +277,6 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><a href="平台说明.html">平台说明</a></td>
-<td>平台入口与教程索引</td>
-</tr>
 <tr>
 <td><a href="用户使用说明书.html">用户使用说明书</a></td>
 <td>安装、控制台、7 场景、6 项分析详解、FAQ</td>
@@ -225,5 +296,6 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
 
 </body></html>

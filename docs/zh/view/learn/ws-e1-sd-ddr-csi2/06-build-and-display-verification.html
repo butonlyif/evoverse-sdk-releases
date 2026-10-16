@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -122,6 +124,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </blockquote>
 <p>三类证据互不替代：编译通过 ≠ 时序收敛，时序收敛 ≠ 功能正确，烧录成功 ≠ 板上验证通过。没有硬件时，本阶段允许停在编译证据上，并把集成状态如实标记为 <code>INTEGRATION_PENDING_HARDWARE</code>——这与阶段 04 固件章节的边界一致。</p>
 <p>基线状态决定本阶段的入口。基线就绪但从未原生编译时，工程停在 <code>NATIVE_BUILD_PENDING</code>；编译通过但未上板时，停在 <code>BOARD_VALIDATION_REQUIRED</code>。若受控基线资产被自由模式改动过，状态会显示 <code>UNVERIFIED_CHANGES</code>——此时不得把旧基线的 PASS 证据贴到自由改动上，先回到可靠流程重新交付与晋级，或明确接受自由改动并重新编译取证。反过来，可靠仿真也不是通用前置：自由模式普通 Build 始终可用。</p>
+<p>这几个状态的流转关系如下：</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; NATIVE_BUILD_PENDING: 基线就绪，尚未原生编译
+    NATIVE_BUILD_PENDING --&gt; BOARD_VALIDATION_REQUIRED: build.native 编译通过
+    BOARD_VALIDATION_REQUIRED --&gt; [*]: hardware.program + hardware.validate
+    NATIVE_BUILD_PENDING --&gt; UNVERIFIED_CHANGES: 自由模式改动基线资产
+    BOARD_VALIDATION_REQUIRED --&gt; UNVERIFIED_CHANGES: 自由模式改动基线资产
+    UNVERIFIED_CHANGES --&gt; NATIVE_BUILD_PENDING: 重新交付晋级后恢复
+</pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">请对当前工程执行一次原生 Efinity 编译（efx_run --flow compile），
 完成后展示资源占用、时钟域和时序摘要，并把 build.native 证据登记到控制面。
@@ -184,4 +195,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

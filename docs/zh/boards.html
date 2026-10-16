@@ -91,7 +91,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>适用版本：v1.0.0　适用对象：拿到客户交付包的全部用户</p>
 </blockquote>
 <h2 id="这页讲什么">这页讲什么</h2>
-<p>EvoVerse SDK 的板卡、参考设计与 IP 物料<strong>不随安装包分发</strong>。它们集中存放在唯一的私有 Catalog 仓库中，安装扩展后按授权同步到本地。本页说明 Catalog 里有什么、如何获得访问权限、如何同步；具体板卡的规格与 datasheet 不在本页展开，同步后随物料一起提供。</p>
+<p>EvoVerse SDK 的板卡、参考设计与 IP 物料<strong>不随安装包分发</strong>。它们集中存放在官方 Catalog 发布仓库中，安装扩展后同步到本地，<strong>无需 GitHub 账号</strong>。本页说明 Catalog 里有什么、如何同步；具体板卡的规格与 datasheet 不在本页展开，同步后随物料一起提供。</p>
 <h2 id="catalog-里有什么">Catalog 里有什么</h2>
 <table>
 <thead>
@@ -130,19 +130,18 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>当前提供哪些板卡、Jacket 与 IP，以同步后的 Catalog 实际内容为准，不在交付包中静态罗列。</p>
 <h2 id="获取流程">获取流程</h2>
 <ol>
-<li>把自己的 <strong>GitHub 用户名</strong>（不是邮箱）告知 EvoVerse 运营人员，等待 <code>evoverse-catalog</code> 私有仓库的只读邀请。</li>
-<li>在邮箱中接受邀请。仓库地址对扩展可见，但没有 GitHub 授权仍无法读取内容。</li>
-<li>用 Git Credential Manager 或 GitHub CLI 在本机完成该账户认证。<strong>不要索取或使用团队共享 PAT。</strong></li>
 <li>在 Trae / VS Code 左侧打开「Board Catalog」视图点刷新，或运行命令 <code>EvoVerse: Sync Catalog</code>。</li>
+<li>同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号、无需任何仓库邀请</strong>。</li>
 <li>同步完成后，Welcome 与 Trae 自然语言工程流程即可看到全部板卡、Demo 与 IP。</li>
 </ol>
+<p>如需改用自建镜像或私有仓库，可通过命令 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址（优先级：<code>--repository</code> &gt; 环境变量 &gt; 默认公开仓库）。旧版本同步过的本机缓存若指向旧地址，重新 Sync 时会自动重建，无需手工清理。</p>
 <h2 id="同步后物料在哪里">同步后物料在哪里</h2>
 <p>物料安装到 <code>evoverse.home</code>（默认 <code>~/evoverse-sdk</code>）下的 <code>catalog/</code> 目录：</p>
 <ul>
 <li><code>catalog/boards/&lt;板卡&gt;/</code> — 板卡数据与随板维护的文档（规格、datasheet、参考设计说明）</li>
-<li>上一版本会保留为 <code>catalog.previous/</code>，供离线回退</li>
+<li>每轮同步写入回执 <code>catalog-sync-receipt.json</code>，记录 <code>catalog_version</code> 与 <code>commit</code>，可核对本轮同步内容</li>
 </ul>
-<p>可用 <code>evoverse catalog status --json</code> 查看当前 <code>catalogVersion</code>、<code>commit</code> 与 <code>treeDigest</code>。</p>
+<p>可用 <code>evoverse catalog status --json</code> 查看当前 <code>catalogVersion</code>、<code>commit</code> 与 <code>treeDigest</code>。工作区 <code>.evoverse/catalog.json</code> 指针文件记录受信物料根目录（<code>catalogRoot</code>），随每次同步刷新。</p>
 <h2 id="常见状态与问题">常见状态与问题</h2>
 <table>
 <thead>
@@ -157,12 +156,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <td>尚未同步，属预期状态；完成上述获取流程后 Sync 即可</td>
 </tr>
 <tr>
-<td>同步失败（网络/鉴权）</td>
-<td>修复网络或 GitHub 认证后重试；已有版本不受影响</td>
+<td>同步失败（网络）</td>
+<td>修复网络后重试；已有版本不受影响。默认公开仓库无需 GitHub 认证</td>
 </tr>
 <tr>
 <td>新版本同步失败但本地版本健康</td>
-<td>可运行 <code>EvoVerse: Roll Back Catalog</code> 离线回退到 <code>catalog.previous</code></td>
+<td>同步失败不影响本地现有 Catalog（官方条目才被覆盖，本地内容不动）；排查网络后重新运行 <code>EvoVerse: Sync Catalog</code> 即可</td>
+</tr>
+<tr>
+<td>本地 catalog 目录损坏</td>
+<td>重新运行 <code>EvoVerse: Sync Catalog</code> 重建即可</td>
 </tr>
 <tr>
 <td>物料更新</td>
@@ -171,7 +174,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <h2 id="设计说明">设计说明</h2>
-<p>物料不打进安装包是刻意的访问控制设计：Catalog 通过 GitHub 只读授权按客户发放，扩展安装时会主动校验 VSIX 内不含 Catalog 物料。板卡文档与板卡数据在同一仓库中同版本演进，因此文档也随物料同步，而不是随安装包静态分发。</p></div></main>
+<p>物料不打进安装包是刻意的解耦设计：Catalog 版本与扩展版本独立演进，通过同步获取最新物料（含 treeDigest 门禁校验）。Catalog 默认从官方公开发布仓库同步，无需 GitHub 账号；如需自建镜像或私有仓库，可用 <code>--repository</code> 参数或 <code>EVOVERSE_CATALOG_REPOSITORY</code> 环境变量覆盖。板卡文档与板卡数据在同一仓库中同版本演进，因此文档也随物料同步，而不是随安装包静态分发。</p></div></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 <script>
 const input=document.getElementById('search');input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();document.querySelectorAll('[data-search]').forEach(e=>e.classList.toggle('hidden',q&&!e.dataset.search.toLowerCase().includes(q)));});

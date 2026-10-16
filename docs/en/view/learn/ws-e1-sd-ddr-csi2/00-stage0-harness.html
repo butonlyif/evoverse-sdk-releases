@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -121,6 +123,19 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Target device: WS-E1 core module TJ180A484S, C4 timing model. This stage turns an empty directory into a managed project under the control plane's jurisdiction — the physical and process baseline for all later stages, and the parent baseline of the first increment intent (SD input).</p>
 </blockquote>
 <p>Every link in the SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX data path ultimately lands on the physical pins and clock resources of the TJ180A484S. So the first step is not writing RTL but declaring the project identity: board, carrier, jacket, device, and speed grade. In the control plane this corresponds to the <code>project.initialize</code> action.</p>
+<h2 id="prepare-the-environment">Prepare the environment</h2>
+<p>Install the IDE first, then open the project. Three steps:</p>
+<ol>
+<li>Install the three VSIXes: <code>evoverse-sdk</code>, <code>evoverse-efinity-adapter</code>, <code>evoverse-rk3588-adapter</code> (same version, currently 1.0.0), and restart the IDE afterwards.</li>
+<li>On first launch a "Set up EvoVerse SDK?" dialog pops up; confirm the SDK workspace (default <code>~/evoverse-sdk</code>); after confirmation the Welcome page opens automatically.</li>
+<li>On the Welcome page click Sync Catalog once to sync the board catalog, then type <code>@evoverse</code> in the Trae chat (or use the Workbench Project Control dropdown, command <code>evoverse.selectDesignFlow</code>) to start the conversation.</li>
+</ol>
+<pre class="mermaid">flowchart LR
+    A[&quot;Install the three VSIXes&lt;br&gt;SDK + Efinity/RK3588 Adapter&quot;] --&gt; B[&quot;Restart the IDE&lt;br&gt;confirm workspace ~/evoverse-sdk&quot;]
+    B --&gt; C[&quot;Welcome page&lt;br&gt;Sync Catalog&quot;]
+    C --&gt; D[&quot;@evoverse start the conversation&quot;]
+</pre>
+<p>Note: <code>~/evoverse-sdk</code> is the SDK workspace, not this tutorial's project root. The next step opens an empty directory, and Stage0 builds the project there.</p>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
 <p>Open an empty directory as the project root and say the following in Trae Chat:</p>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use @evoverse to initialize an EvoVerse project in the current empty directory.
@@ -178,4 +193,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

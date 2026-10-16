@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -167,7 +169,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>初始化</td>
-<td><code>EvoVerse: Set Up</code></td>
+<td><code>EvoVerse: Set Up (re-run bootstrap)</code>（首启自动弹出）</td>
 <td>2 min</td>
 </tr>
 <tr>
@@ -182,17 +184,17 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>仿真</td>
-<td><code>EvoVerse: Simulate</code></td>
+<td><code>Toolchain: Simulate</code></td>
 <td>3 min</td>
 </tr>
 <tr>
 <td>编译</td>
-<td><code>EvoVerse: Build</code></td>
+<td><code>Toolchain: Build</code></td>
 <td>5 min</td>
 </tr>
 <tr>
 <td>烧录</td>
-<td><code>EvoVerse: Program FPGA</code></td>
+<td><code>Toolchain: Program FPGA</code></td>
 <td>2 min</td>
 </tr>
 <tr>
@@ -206,62 +208,72 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>先从 <a href="../START-HERE.html">客户文档入口</a> 进入线性入门路径；完整项目实践请使用 <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD 到 CSI-2 教程</a>。传统设计与受控 RTL 流程可以组合使用，但候选 RTL 的提升必须以规格、规则和仿真证据为准。</p>
 <hr />
 <h2 id="2-系统架构">2. 系统架构</h2>
-<h3 id="2-1-四层模型">2.1 四层模型</h3>
-<p>EvoVerse SDK 采用四层架构，将 FPGA 开发工具链分层抽象：</p>
-<pre><code>┌─────────────────────────────────────────────────────┐
-│  L4: AI Intelligence                               │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐           │
-│  │ AI 诊断  │ │ Copilot  │ │ NL→RTL   │           │
-│  │ 引擎     │ │ 上下文   │ │ 生成器   │           │
-│  └──────────┘ └──────────┘ └──────────┘           │
-├─────────────────────────────────────────────────────┤
-│  L3: System Orchestration                          │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌───────┐│
-│  │BuildRunner│ │TimingAna-│ │CodeStyle │ │Health ││
-│  │          │ │ lyzer    │ │ Checker  │ │Checker ││
-│  └──────────┘ └──────────┘ └──────────┘ └───────┘│
-├─────────────────────────────────────────────────────┤
-│  L2: Vendor Adapter                                │
-│  ┌──────────────────┐ ┌──────────────────┐        │
-│  │ EfinixAdapter    │ │ VendorAdapter    │        │
-│  │ (Efinity 专用)   │ │ (通用接口)       │        │
-│  └──────────────────┘ └──────────────────┘        │
-├─────────────────────────────────────────────────────┤
-│  L1: Vendor Tools                                  │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐           │
-│  │ Efinity  │ │ Icarus   │ │ xPack    │           │
-│  │ (编译)   │ │ Verilog  │ │ RISC-V   │           │
-│  └──────────┘ └──────────┘ └──────────┘           │
-└─────────────────────────────────────────────────────┘
-</code></pre>
+<h3 id="2-1-分层架构">2.1 分层架构</h3>
+<p>EvoVerse SDK v1.0.0 采用 <strong>SDK 外壳 + Adapter</strong> 分层架构。SDK 保留 Workbench 外壳与 System 根；厂商专属能力由独立 Adapter 扩展提供，经 trusted headless adapter 协议接入：</p>
+<pre class="mermaid">flowchart LR
+    subgraph host[&quot;宿主（Trae / VS Code）&quot;]
+        nl[&quot;自然语言 / @evoverse&quot;]
+        wb[&quot;Workbench 外壳（六 Tab）&quot;]
+    end
+    subgraph sdk[&quot;EvoVerse SDK 核心&quot;]
+        sys[&quot;System 根 / 工程控制面&quot;]
+        cli[&quot;CLI&quot;]
+        mcp[&quot;MCP Server&quot;]
+        reg[&quot;AdapterRegistry&quot;]
+    end
+    subgraph efa[&quot;efinity-adapter&quot;]
+        ecap[&quot;build / timing / debug / program / software / IP&quot;]
+    end
+    subgraph rka[&quot;rk3588-adapter&quot;]
+        rcap[&quot;环境 / 工程 / 构建 / 部署&quot;]
+    end
+    subgraph vendor[&quot;厂商工具&quot;]
+        ef[&quot;Efinity（efx_run）&quot;]
+        sim[&quot;Icarus / Questa&quot;]
+        gcc[&quot;xPack RISC-V GCC&quot;]
+    end
+    nl --&gt; mcp
+    wb --&gt; reg
+    reg --&gt; ecap
+    reg --&gt; rcap
+    mcp --&gt; sys
+    ecap --&gt; ef
+    ecap --&gt; sim
+    rcap --&gt; gcc
+</pre>
 <table>
 <thead>
 <tr>
-<th>层级</th>
+<th>模块</th>
 <th>职责</th>
 <th>用户感知</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>L1 厂商工具</strong></td>
-<td>Efinity 编译/烧录、Icarus 仿真、RISC-V GCC</td>
-<td>需要安装这些工具</td>
+<td><strong>宿主集成</strong></td>
+<td>自然语言 / <code>@evoverse</code> 对话、Workbench UI、MCP 注册</td>
+<td>对话与 IDE 界面</td>
 </tr>
 <tr>
-<td><strong>L2 适配层</strong></td>
-<td>将厂商工具统一为标准接口；当前支持 Efinix Titanium/Trion 系列</td>
-<td>自动选择，无需关心</td>
+<td><strong>SDK 核心</strong></td>
+<td>System 根、工程控制面、CLI、MCP Server、AdapterRegistry</td>
+<td>命令面板与 Workbench 外壳</td>
 </tr>
 <tr>
-<td><strong>L3 编排层</strong></td>
-<td>构建流程编排、时序分析、代码风格检查、健康检查</td>
-<td>通过 IDE 命令和 Webview 使用</td>
+<td><strong>efinity-adapter</strong></td>
+<td>build / timing / debug / program / software / IP 六能力，驱动 <code>efx_run --flow compile</code></td>
+<td>Workbench 中的 Efinity 工作区（六 Tab）</td>
 </tr>
 <tr>
-<td><strong>L4 智能层</strong></td>
-<td>AI 诊断错误指纹、Copilot 上下文构建、自然语言生成 RTL</td>
-<td>在诊断面板和 Agent 中自动触发</td>
+<td><strong>rk3588-adapter</strong></td>
+<td>RK3588 环境、工程、构建、部署四阶段</td>
+<td>Workbench 中的 RK3588 工作区</td>
+</tr>
+<tr>
+<td><strong>厂商工具</strong></td>
+<td>Efinity 工具链、Icarus / Questa 仿真器、xPack RISC-V GCC</td>
+<td>需安装，Adapter 可引导</td>
 </tr>
 </tbody>
 </table>
@@ -294,12 +306,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="3-安装与配置">3. 安装与配置</h2>
 <h3 id="3-1-安装扩展">3.1 安装扩展</h3>
 <ol>
-<li>获取 <code>evoverse-sdk-0.9.0.vsix</code></li>
+<li>获取 3 个 v1.0.0 VSIX：<code>evoverse-sdk-1.0.0.vsix</code>、<code>evoverse-efinity-adapter-1.0.0.vsix</code>、<code>evoverse-rk3588-adapter-1.0.0.vsix</code></li>
 <li>Trae IDE 或 Visual Studio Code → 左侧 <code>Extensions</code> 图标 → 右上角 <code>...</code> → <code>Install from VSIX...</code></li>
-<li>选择 vsix 文件</li>
+<li>按顺序安装：先 <code>evoverse-sdk</code>，再装两个 Adapter（使用交付包时可运行 <code>scripts/deploy.ps1</code> 一键安装，见 <a href="../installation/部署指南.html">部署指南</a>）</li>
 <li><strong>Reload Window</strong>（弹窗提示时点击）</li>
 </ol>
-<p>Trae、标准 VS Code 和其他 VS Code fork 使用<strong>同一个 VSIX</strong>，无需分别编译。扩展激活后才检测宿主并选择对应 Adapter。</p>
+<p>Trae、标准 VS Code 和其他 VS Code fork 使用<strong>同一组 VSIX</strong>，无需分别编译。扩展激活后才检测宿主并选择对应集成方式。</p>
 <h3 id="3-1-1-workbench-adapter-插件-v0-8-0">3.1.1 Workbench Adapter 插件（v0.8.0+）</h3>
 <p>从 v0.8.0 起，EvoVerse SDK 采用<strong>核心 + 可选 Adapter</strong>的插件架构：</p>
 <table>
@@ -339,28 +351,27 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 - <a href="../adapters/Efinity-Adapter使用指南.html">Efinity Adapter 使用指南</a>
 - <a href="../adapters/RK3588-Adapter使用指南.html">RK3588 Adapter 使用指南</a></p>
 <h3 id="3-2-首次初始化-set-up">3.2 首次初始化（Set Up）</h3>
-<p>安装后首次打开或执行 <code>EvoVerse: Set Up</code>，弹出引导对话框：</p>
+<p>安装后首次打开自动弹出引导对话框（按钮 <strong>Yes, set up</strong> / <strong>Later</strong>）：</p>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
-│  EvoVerse SDK — 初始化                                       │
-│                                                             │
-│  将在以下位置创建运行环境：                                   │
-│    ~/evoverse-sdk/          ← Catalog + 工程根目录             │
-│    ~/.evoverse/runtime/     ← CLI + MCP Server               │
-│    %APPDATA%\Trae CN\User\mcp.json  ← 仅 Trae CN：MCP 注册   │
-│    ~/.trae/user_rules/    ← 仅 Trae：通用 + RTL Agent 规则  │
-│                                                             │
-│  [Yes, set up]  [Cancel]                                   │
+│  Set up EvoVerse SDK?                                        │
+│                                                              │
+│  This will create ~/evoverse-sdk for your catalog and        │
+│  integrate the EvoVerse Agent with supported host features.  │
+│  No system files are modified.                               │
+│                                                              │
+│  [Yes, set up]  [Later]                                      │
 └─────────────────────────────────────────────────────────────┘
 </code></pre>
-<p>点击 <strong>Yes, set up</strong> 后自动完成：
-- 复制 CLI、MCP Server 到本地运行时目录
-- Trae：注册 MCP Server，并部署 <code>evoverse.md</code> 与 <code>evoverse-rtl-style.md</code>
-- 标准 VS Code/未知宿主：不创建 <code>.trae</code>，宿主私有集成安全降级
-- 部署样例 Catalog（含 TJ180 核心板等）
-- 检测 Python 版本（需 3.11+）</p>
+<p>点击 <strong>Yes, set up</strong> 后自动完成（Output 面板输出 <code>=== EvoVerse SDK bootstrap ===</code>）：
+- 创建 <code>~/evoverse-sdk</code>：Catalog、projects、CLI、MCP Server、verification runtime 共用这一根目录（运行时以链接方式指向扩展自带副本）
+- Trae：写入 <code>~/.trae/mcp.json</code> 注册 MCP Server，并部署 <code>~/.trae/user_rules/</code> 下的通用 + RTL Agent 规则
+- 标准 VS Code：合并用户级 <code>mcp.json</code> 的 <code>servers.evoverse</code>；其他宿主安全降级，不写宿主私有配置
+- 检测 Python 版本（需 3.11+）
+- 完成后输出 <code>=== EvoVerse SDK ready ===</code></p>
 <blockquote>
-<p>如果引导未自动弹出，手动执行：<code>Ctrl+Shift+P</code> → <code>EvoVerse: Set Up</code></p>
+<p>引导未自动弹出或需要重跑时：<code>Ctrl+Shift+P</code> → <code>EvoVerse: Set Up (re-run bootstrap)</code></p>
 </blockquote>
+<p><strong>Catalog 不随 Set Up 部署。</strong> 首次打开 Welcome 时 Catalog 为空（状态 <code>CATALOG_NOT_INSTALLED</code>），运行 <code>EvoVerse: Sync Catalog</code> 从公开发布仓库同步板卡物料（无需 GitHub 账号），见第 6 章。</p>
 <h3 id="3-3-配置工具链路径">3.3 配置工具链路径</h3>
 <p><code>Ctrl/Cmd + ,</code> 打开设置，搜索 <code>evoverse</code>：</p>
 <table>
@@ -581,24 +592,24 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <thead>
 <tr>
 <th>Workspace</th>
-<th>入口命令</th>
+<th>提供方</th>
 <th>说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><strong>System</strong></td>
-<td><code>EvoVerse: Open System Workspace</code></td>
+<td>SDK（<code>EvoVerse: Open System Workspace</code>）</td>
 <td>多芯片拓扑、桥接、联合构建</td>
 </tr>
 <tr>
 <td><strong>Efinity</strong></td>
-<td><code>EvoVerse: Open Efinity Workspace</code></td>
+<td>efinity-adapter</td>
 <td>FPGA 工程（6 Tab）</td>
 </tr>
 <tr>
 <td><strong>RK3588</strong></td>
-<td><code>EvoVerse: Open RK3588 Workspace</code></td>
+<td>rk3588-adapter</td>
 <td>SoC 工程（8 Tab）</td>
 </tr>
 </tbody>
@@ -1098,8 +1109,8 @@ evoverse sync-sources --dir rtl --dir my_ip_dir  # 指定扫描目录
 </table>
 <h3 id="6-2-同步-catalog">6.2 同步 Catalog</h3>
 <p><strong>命令</strong>：<code>EvoVerse: Sync Catalog</code></p>
-<p>首次安装时 Catalog 为空，CLI、MCP 与界面会明确返回 <code>CATALOG_NOT_INSTALLED</code>。客户须先接受统一私有 Catalog 仓库的本人 GitHub 账户只读邀请，并通过 Git Credential Manager 或 GitHub CLI 完成本机认证。仓库 URL 对 VSIX 用户可见，但内容仍由 GitHub 授权保护；禁止使用团队共享 PAT。</p>
-<p>同步拉取远端最新 <code>catalog-v*</code> 正式 tag，并把官方内容镜像覆盖到本地 <code>catalog/</code>（官方同名条目以远端为准）；网络或权限失败不会影响现有本地内容。</p>
+<p>首次安装时 Catalog 为空，CLI、MCP 与界面会明确返回 <code>CATALOG_NOT_INSTALLED</code>。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号或仓库邀请</strong>；如需自建镜像或私有仓库，可在 CLI 用 <code>--repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址。</p>
+<p>同步拉取远端最新 <code>catalog-v*</code> 正式 tag，并以 treeDigest 校验内容完整性，再把官方内容镜像覆盖到本地 <code>catalog/</code>（官方同名条目以远端为准）；网络失败不会影响现有本地内容。</p>
 <p>客户可在 <code>evoverse.home/catalog/</code> 下新增自己的 Board、IP、Carrier、Jacket 或 Demo；CLI、MCP 和工作台会从这个唯一根目录一起发现它们。Sync 不会删除本地多出的条目——任何层级上官方发布没有的目录或文件（例如 <code>catalog/boards/customer-board/</code>、<code>catalog/ips/customer-ip/</code>）都会原样保留。注意：若客户物料与官方条目同名同路径，同步时会被官方版本覆盖，请为客户物料使用独立目录和 ID。</p>
 <p><strong>CLI 等效</strong>：</p>
 <pre><code class="language-bash">evoverse sync --json
@@ -1201,36 +1212,27 @@ evoverse tree ws-e1          # 指定板卡
 </table>
 <h3 id="7-3-编译流程详解">7.3 编译流程详解</h3>
 <blockquote>
-<p><strong>v0.7.1 行为变更（详见 <a href="#a1-编译与健康检查行为变更v071">附录 A.A1</a>）</strong>：SDK 不再自动 sanitize 工程 XML，也不再在 build 前自动运行结构健康检查；HDL 文件监视器也不再自动 <code>sync-sources</code>。所有源文件同步与健康检查均改为手动触发（见 §5.4 与 §10.6）。AI 诊断结果不再自动应用，需用户确认。</p>
+<p>SDK 不自动 sanitize 工程 XML，不在 build 前自动运行结构健康检查；HDL 文件监视器不自动 <code>sync-sources</code>。源文件同步与健康检查均手动触发（见 §5.4 与 §10.6）。AI 诊断结果不自动应用，需用户确认。（历史变更见 <a href="#a1-编译与健康检查行为变更v071">附录 A.A1</a>）</p>
 </blockquote>
-<p>CLI 模式下，SDK 按以下步骤执行：</p>
-<pre><code>1. 预处理 (Pre-PT)
-   ├─ 解析 project XML
-   └─ 将 base.peri.isf → &lt;design&gt;.peri.xml（PT 转换）
+<p>CLI 模式下，Build 请求由 SDK 路由到 efinity-adapter，adapter 通过 <code>build.compile</code> 能力执行 <code>efx_run --flow compile</code>（Efinity 原生统一流程）：</p>
+<pre><code>1. 工程定位
+   └─ 定位工程 XML，收集流程选项（§7.6 参数面板）
 
-2. 综合 (Synthesis) — efx_map
-   ├─ 读取设计文件列表 (&lt;efx:design_file&gt;)
-   ├─ 运行 Verilog/SystemVerilog 综合
-   └─ 生成映射网表到 work_syn/
+2. 统一流程 — efx_run --flow compile
+   ├─ map — Verilog/SystemVerilog 综合（efx_map）
+   ├─ PT  — 接口约束导入（把工程引用的 ISF 重放到持久化的 &lt;design&gt;.peri.xml）
+   ├─ pnr — 布局布线（efx_pnr）
+   └─ pgm — 比特流生成（efx_pgm）
 
-3. 布局布线 (Place &amp; Route) — efx_pnr
-   ├─ 导入映射网表
-   ├─ 布置逻辑单元
-   └─ 布线连接
-
-4. 比特流生成 (Bitstream) — efx_pgm
-   ├─ 生成 .bit 文件
-   └─ 生成 .hex 文件
-
-5. 后处理
+3. 报告解析
    ├─ 解析 outflow/ 报告
-   ├─ 解析为内存中的 BuildSummary 并更新报告视图
+   ├─ 生成 BuildSummary 并更新报告视图
    └─ 更新状态栏（重新打开工程时从原生报告恢复）
 </code></pre>
 <h3 id="7-4-并行编译">7.4 并行编译</h3>
 <p>默认构建不覆盖 Efinity 工程参数。只有显式启用 <code>evoverse.build.parallelJobs</code> 时，SDK 才通过命令行覆盖综合/PNR 的并行线程数。</p>
 <h3 id="7-5-sdc-预检">7.5 SDC 预检</h3>
-<p>SDC 缺失/为空、时钟覆盖等检查已并入 <a href="#106-项目健康检查">§10.6 项目健康检查</a>，<strong>仅在手动触发时运行</strong>，不再阻塞编译（v0.7.1 行为变更，详见 <a href="#a1-编译与健康检查行为变更v071">附录 A.A1</a>）：</p>
+<p>SDC 缺失/为空、时钟覆盖等检查已并入 <a href="#106-项目健康检查">§10.6 项目健康检查</a>，<strong>仅在手动触发时运行</strong>，不阻塞编译（历史变更见 <a href="#a1-编译与健康检查行为变更v071">附录 A.A1</a>）：</p>
 <ul>
 <li><code>sdc-missing-or-empty</code>（SDC 缺失/为空）</li>
 <li><code>sdc-clock-coverage</code>（时钟约束覆盖）</li>
@@ -1503,7 +1505,7 @@ vvp sim_test.vvp
 <li>在 VIP 控制台/欢迎页可新建或导入 VIP 工程：<code>gen_stimulus.py</code> 生成图像激励，仿真后与 <code>golden.py</code> 金标准按位比对，<code>compare.py</code> 输出差异与质量报告</li>
 <li>若在设置 <code>evoverse.simIspWorkspace</code> 中配置了 VIP 工程目录，命令会在新窗口打开该工程</li>
 </ol>
-<p>当前入口见 <a href="../video-sim/平台说明.html">Video Sim 平台说明</a> 和离线客户文档门户；已退休的 VIP01-VIP10 教程树不再随 SDK 工作目录分发。</p>
+<p>当前入口见 <a href="../video-sim/介绍.html">Video Sim 平台介绍</a> 和离线客户文档门户；已退休的 VIP01-VIP10 教程树不再随 SDK 工作目录分发。</p>
 <hr />
 <h2 id="10-时序分析与优化">10. 时序分析与优化</h2>
 <h3 id="10-1-时序诊断">10.1 时序诊断</h3>
@@ -1708,7 +1710,7 @@ report_timing -from [get_ports clk] -to * # 从 clk 出发的路径
 <h3 id="10-6-项目健康检查">10.6 项目健康检查</h3>
 <p><strong>命令</strong>：<code>Toolchain: Project Health Check</code></p>
 <blockquote>
-<p><strong>v0.7.1 行为变更（详见 <a href="#a1-编译与健康检查行为变更v071">附录 A.A1</a>）</strong>：项目健康检查从"build 前自动运行"改为<strong>手动触发、信息性、只读</strong>——不阻塞编译，也不修改工程文件（不自动同步源文件、不自动 sanitize XML）。</p>
+<p>项目健康检查为<strong>手动触发、信息性、只读</strong>——不阻塞编译，也不修改工程文件（不自动同步源文件、不自动 sanitize XML）。历史变更见 <a href="#a1-编译与健康检查行为变更v071">附录 A.A1</a>。</p>
 </blockquote>
 <p>信息性的工程结构体检，检查项包括：</p>
 <table>
@@ -1866,7 +1868,7 @@ report_timing -from [get_ports clk] -to * # 从 clk 出发的路径
 <p>扫描工程中所有 <code>.v</code> / <code>.sv</code> / <code>.vh</code> / <code>.sdc</code> 文件，基于当前实现中的 <strong>21 个启用规则 ID</strong>进行检查。</p>
 <h3 id="12-2-单文件检查">12.2 单文件检查</h3>
 <p><strong>方式一</strong>：命令面板 → <code>Toolchain: Check This File's Code Style</code></p>
-<p><strong>方式二</strong>：编辑器中右键 RTL 或 SDC 文件 → <code>EvoVerse: Check This File's Code Style</code></p>
+<p><strong>方式二</strong>：编辑器中右键 RTL 或 SDC 文件 → <code>Toolchain: Check This File's Code Style</code></p>
 <h3 id="12-3-检查结果">12.3 检查结果</h3>
 <p>结果显示在 VS Code 原生 <strong>Problems</strong> 面板（<code>Ctrl+Shift+M</code>）：</p>
 <ul>
@@ -1951,7 +1953,7 @@ evoverse assurance rules --format text
 <p><code>rtl-baseline@1</code> 只分析可综合子集；testbench 文件（initial/$task/#delay/@event 等）属域外，自动发现默认按 <code>**/sim/**</code>、<code>**/testbench/**</code>、<code>**/tb/**</code>、<code>tb_*.*</code>、<code>*_tb.*</code>、<code>sim_*</code>、<code>test_*</code> 跳过；scanner 内部把 <code>initial ... end</code> 整块当 testbench 跳过（记 info，不入 unverified）。MCP <code>assurance_check</code> 同步支持 <code>include_testbench</code> / <code>include_glob</code> / <code>exclude_glob</code> 三个入参。</p>
 <p>退出码：0=pass、1=fail、2=incomplete、64=用法/配置错误。详细契约（请求 JSON、证据、例外）见 <code>docs/design-assurance/README.md</code>。</p>
 <h4 id="规则管理器-rule-manager-ui">规则管理器（Rule Manager UI）</h4>
-<p><strong>入口</strong>：Welcome 页 → <strong>Assure</strong> 卡片 → <strong>Rule Manager</strong>（或命令 <code>EvoVerse: Assurance Rules</code>）。</p>
+<p><strong>入口</strong>：Welcome 页 → <strong>Assure</strong> 卡片 → <strong>Rule Manager</strong>（或命令 <code>EvoVerse: Open Assurance Rules</code>）。</p>
 <p>管理所有 assurance 规则的开关，作用于每一次检查（CLI / MCP 同样生效）：</p>
 <table>
 <thead>
@@ -2309,8 +2311,8 @@ evoverse gen-bsp ~/evoverse-sdk/projects/my-project
 #define MY_DMA_CTRL_BIT (1u &lt;&lt; 0)
 </code></pre>
 <hr />
-<h2 id="15-5-rk3588-soc-workspace-v0-8-0">15.5 RK3588 SoC Workspace（v0.8.0+）</h2>
-<p>安装 RK3588 Adapter 后，通过 <code>EvoVerse: Open RK3588 Workspace</code> 打开独立面板，包含 8 个 Tab：</p>
+<h3 id="15-6-rk3588-soc-workspace-v0-8-0">15.6 RK3588 SoC Workspace（v0.8.0+）</h3>
+<p>安装 RK3588 Adapter 后，Workbench 中出现独立的 RK3588 工作区，包含 8 个 Tab：</p>
 <table>
 <thead>
 <tr>
@@ -2382,7 +2384,7 @@ build-report.json + 产物 SHA-256
 3. <code>&lt;workspace&gt;/profile.json</code>（需 schemaVersion='1'）</p>
 <h3 id="flash-debug-说明">Flash/Debug 说明</h3>
 <p>RK3588 首版<strong>不支持 Flash 和 Debug</strong>（串口/ADB/SSH/HIL 均未启用）。相关 Tab 只显示原因说明，不提供可执行按钮。</p>
-<h2 id="15-6-system-workspace-多芯片拓扑">15.6 System Workspace（多芯片拓扑）</h2>
+<h3 id="15-7-system-workspace-多芯片拓扑">15.7 System Workspace（多芯片拓扑）</h3>
 <p>安装两个及以上 Adapter 时，System Workspace 自动出现。用于管理多芯片工程（FPGA + SoC 等）。</p>
 <h3 id="功能">功能</h3>
 <table>
@@ -2445,8 +2447,8 @@ bridges:
     width: 32
 ---
 </code></pre>
-<h3 id="15-7-规格驱动-risc-v-软件验证闭环-v0-9-x-分支开发中">15.7 规格驱动 RISC-V 软件验证闭环（v0.9.x 分支开发中）</h3>
-<p>与 15.1–15.6 的自由软件开发不同，本闭环由<strong>冻结的可执行规格包</strong>驱动：软件候选、BSP 绑定、主机测试、交叉编译、晋升与板上测试全部回执化，任何一步绑定不到同一 <code>specPackageDigest</code> 都会被拒绝。</p>
+<h3 id="15-8-规格驱动-risc-v-软件验证闭环-v1-0-0">15.8 规格驱动 RISC-V 软件验证闭环（v1.0.0）</h3>
+<p>与 15.1–15.7 的自由软件开发不同，本闭环由<strong>冻结的可执行规格包</strong>驱动：软件候选、BSP 绑定、主机测试、交叉编译、晋升与板上测试全部回执化，任何一步绑定不到同一 <code>specPackageDigest</code> 都会被拒绝。</p>
 <p><strong>命令链（源 CLI）</strong>：旧软件链输入中的 <code>expectedStateDigest</code> 仅作为历史兼容别名读取；新控制面写操作统一使用 <code>expectedRevision</code>。</p>
 <pre><code class="language-bash"># 封装与注册（Skills 脚本 seal 后注册，得到 specPackageDigest）
 evoverse verification fpga-start --project &lt;abs&gt; --input payload.json --json
@@ -2464,9 +2466,47 @@ evoverse verification software-task-board-test ...  # PASS 或 HARDWARE_UNAVAILA
 evoverse verification fpga-milestone ...          # REVIEW_READY（review.md 证据尾注）
 evoverse verification next / build-eligibility ...
 </code></pre>
+<p><strong>里程碑链</strong>（FPGA milestone 与软件任务交替推进，全部绑定同一 <code>specPackageDigest</code>）：</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; MATERIALS_READY: 规格包注册
+    MATERIALS_READY --&gt; SCAFFOLD_READY: fpga-milestone
+    SCAFFOLD_READY --&gt; SPEC_APPROVED: fpga-milestone
+    SPEC_APPROVED --&gt; IP_READY: fpga-milestone
+    IP_READY --&gt; SOFTWARE_TASK: software-task-start（用户选择）
+    SOFTWARE_TASK --&gt; INTEGRATION_READY: software-task-promote
+    SOFTWARE_TASK --&gt; VENDOR_TOOL_UNAVAILABLE: 构建缺厂商工具
+    INTEGRATION_READY --&gt; BUILD_COMPLETE: fpga-milestone
+    BUILD_COMPLETE --&gt; REVIEW_READY: board-test PASS
+    BUILD_COMPLETE --&gt; BOARD_VALIDATION_REQUIRED: HARDWARE_UNAVAILABLE
+    BOARD_VALIDATION_REQUIRED --&gt; REVIEW_READY: 补齐板上证据
+    REVIEW_READY --&gt; [*]: 证据尾注覆盖全部已录里程碑
+</pre>
 <p><strong>MCP 工具</strong>：<code>software_task_start / status / bind_bsp / prepare / check_interface / test_host / build / promote / board_test</code> 共 9 个工具，与 CLI 派发到同一引擎，回执与 next action 绑定同一规格包。</p>
 <p><strong>工件</strong>：<code>.evoverse/verification/scoped-software/runs/&lt;taskId&gt;/</code> 下的 <code>candidate / bsp-binding / host-test / interface / build / promotion / board-test</code> JSON 回执；主机/板测 <code>requiredTestIds</code>、期望 ELF class、内存区均由服务端从冻结规格派生，调用方不能自报。</p>
 <p><strong>状态</strong>：<code>BUILD_COMPLETE</code>（下一步 <code>RUN_PROJECT_REVIEW</code>）→ <code>REVIEW_READY</code>（证据尾注 <code>hardwareStatus ∈ {NOT_RUN, PASS, FAIL, INCOMPLETE}</code> 且 evidence 覆盖全部已录里程碑）。</p>
+<p><strong>运行态呈现</strong>（适用于所有经 adapter 的 Build，<code>build.compile</code> = <code>efx_run --flow compile</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>通道</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workbench 事件流（<code>WorkbenchEventKind</code>，九种）</td>
+<td><code>queued</code> / <code>running</code> / <code>output</code> / <code>diagnostic</code> / <code>artifact</code> / <code>completed</code> / <code>failed</code> / <code>cancelled</code> / <code>timed-out</code></td>
+</tr>
+<tr>
+<td>状态栏（三态）</td>
+<td><code>ready</code> / <code>running</code> / <code>failed</code></td>
+</tr>
+<tr>
+<td>adapter 错误码（<code>AdapterErrorCode</code>，八种）</td>
+<td><code>ADAPTER_MISSING</code> / <code>API_INCOMPATIBLE</code> / <code>CAPABILITY_UNAVAILABLE</code> / <code>INVALID_REQUEST</code> / <code>CANCELLED</code> / <code>VENDOR_TOOL_UNAVAILABLE</code> / <code>VENDOR_TOOL_FAILED</code> / <code>ADAPTER_INTERNAL</code></td>
+</tr>
+</tbody>
+</table>
 <p><strong>边界与断言规则</strong>（开发机实测，2026-09-12）：</p>
 <table>
 <thead>
@@ -3232,7 +3272,7 @@ evoverse --help           # 显示 CLI 版本标识与当前可用子命令
 <hr />
 <h2 id="22-常见问题">22. 常见问题</h2>
 <h3 id="q1-安装后看不到-evoverse-图标">Q1: 安装后看不到 EvoVerse 图标？</h3>
-<p><strong>A</strong>: 点击 <code>Ctrl+Shift+P</code> → 输入 <code>EvoVerse: Set Up</code> → 确认初始化。如果仍不显示，按 <code>Ctrl+Shift+P</code> → <code>Developer: Reload Window</code>。</p>
+<p><strong>A</strong>: 点击 <code>Ctrl+Shift+P</code> → 输入 <code>EvoVerse: Set Up (re-run bootstrap)</code> → 确认初始化。如果仍不显示，按 <code>Ctrl+Shift+P</code> → <code>Developer: Reload Window</code>。</p>
 <h3 id="q2-编译报-efinity-not-found">Q2: 编译报 "Efinity not found"？</h3>
 <p><strong>A</strong>: 打开设置（<code>Ctrl/Cmd + ,</code>），搜索 <code>evoverse.efinityPath</code>，填入 Efinity 的安装路径，如：
 - Windows: <code>C:\Efinity\2026.1</code>
@@ -3256,12 +3296,12 @@ evoverse --help           # 显示 CLI 版本标识与当前可用子命令
 <h3 id="q9-macos-上能做什么">Q9: macOS 上能做什么？</h3>
 <p><strong>A</strong>: macOS 支持开发（代码编写）、Icarus 仿真、AI 协作、CLI 查询、Catalog 管理、文档查看。Icarus 的 <code>iverilog</code> / <code>vvp</code> 通过参数数组直接执行；带空格路径和非 UTF-8 工具输出均按 macOS/POSIX 语义处理，不依赖 <code>cmd.exe</code>。宿主与部署已跨平台（客户包同时提供 <code>deploy.ps1</code> 与 <code>deploy.sh</code>，扩展为同一组 VSIX）；完整 Efinity 编译/烧录仍需 Windows 或 Linux 环境。</p>
 <h3 id="q10-多人协作如何同步-catalog">Q10: 多人协作如何同步 Catalog？</h3>
-<p><strong>A</strong>: 不要把运行时 <code>catalog/</code> 目录重新纳入 SDK 或客户工程版本管理。每位成员使用自己的 GitHub 身份取得统一私有 Catalog 的只读权限，完成本机认证后执行 <code>EvoVerse: Sync Catalog</code>；用 <code>evoverse catalog status --json</code> 对齐版本、commit 与 tree digest。</p>
+<p><strong>A</strong>: 不要把运行时 <code>catalog/</code> 目录重新纳入 SDK 或客户工程版本管理。每位成员执行 <code>EvoVerse: Sync Catalog</code> 即可从官方公开发布仓库同步（无需 GitHub 账号）；用 <code>evoverse catalog status --json</code> 对齐版本、commit 与 tree digest。</p>
 <h3 id="q11-可以同时推进多个-intent-吗">Q11: 可以同时推进多个 Intent 吗？</h3>
 <p><strong>A</strong>: 可以，但第一次设计本身是主线上的 <code>INITIAL_DESIGN</code> 系统集成 Intent，没有 feature worktree；它完成完整规格、生成、系统仿真和文档确认并建立首个基线前，不允许开启第二个 Intent。之后最多同时有 4 个 feature Intent，每个使用独立分支和 worktree，本地验证通过只显示“Module verified, waiting for system integration”。主线 Workbench 分为 <strong>Feature Intents</strong> 与 <strong>System Integration</strong>：系统集成按 FIFO 一次吸收一个分支，重新确认组合规格、系统仿真和文档后才晋升基线。冲突或系统验证失败会 abort 合并并保留分支/worktree；进入某个 Intent worktree 后，<strong>Current Intent</strong> 仍只显示该 Intent。</p>
 <hr />
 <h2 id="附录-a-版本演进历史">附录 A：版本演进历史</h2>
-<p>记录手册描述中提到的关键行为变更及其引入版本，供版本升级时查阅。当前章节所有"行为变更"标注均对应本附录。</p>
+<p>记录手册描述中提到的关键行为变更及其引入版本，供版本升级时查阅。正文中的"历史变更"注记均指向本附录。</p>
 <h3 id="a1-编译与健康检查行为变更-v0-7-1">A1. 编译与健康检查行为变更（v0.7.1）</h3>
 <p>v0.7.1（2026-07-15 主发行，2026-07-18 重新打包）对编译流程与项目健康检查做了四项重大调整，目的是减少 SDK 在后台对用户工程的隐式修改：</p>
 <table>
@@ -3344,4 +3384,5 @@ evoverse --help           # 显示 CLI 版本标识与当前可用子命令
 </blockquote></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

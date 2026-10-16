@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -126,6 +128,26 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><strong>Parent baseline snapshot</strong>: <code>intent.create</code> snapshots this round's parent-baseline assets into <code>IntentRecord.baseBaselineFiles</code> (round one = the Stage0 initial baseline; rounds two and three = the previous round's promoted baseline). The delta-specification comparison, candidate validation, and the promotion merge all anchor on this snapshot.</li>
 <li><strong><code>expectedRevision</code> is a concurrency hint</strong>: the control plane always appends facts at the latest revision; a revision conflict at submission only yields a reconciliation action, never an overwrite. It is a collaboration hint, not a security boundary — the real boundaries are the receipts and the eligibility checks.</li>
 </ol>
+<p>The loop, drawn out. Every round walks through it; a FAIL does not discard the candidate — fix it, re-freeze, and re-simulate:</p>
+<pre class="mermaid">stateDiagram-v2
+    state &quot;Declare intent&quot; as s1
+    state &quot;Level decision&quot; as s2
+    state &quot;Delta specification&quot; as s3
+    state &quot;Freeze candidate&quot; as s4
+    state &quot;Independent simulation&quot; as s5
+    state &quot;Promotion&quot; as s6
+    state &quot;Next increment&quot; as s7
+    [*] --&gt; s1: intent.create
+    s1 --&gt; s2: simulation.profile.select
+    s2 --&gt; s3: spec.draft
+    s3 --&gt; s4: candidate.deliver
+    s4 --&gt; s5: verification.simulate
+    s5 --&gt; s6: PASS and eligibility satisfied
+    s5 --&gt; s4: FAIL, fix and re-deliver
+    s6 --&gt; s7: candidate.promote
+    s7 --&gt; s1: increments remaining
+    s7 --&gt; [*]: all three rounds promoted
+</pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
 <p>First step — complete the full loop of the first round (SD input):</p>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use intent.create to declare the first incremental intent for this project: implement the SD host controller and the frame-buffer write
@@ -171,35 +193,146 @@ Show the baseBaselineFiles snapshot receipt and the promotion receipt of every r
 </ol>
 <h2 id="the-increment-ledger-of-the-three-rounds">The increment ledger of the three rounds</h2>
 <h3 id="increment-1-sd-input-parent-baseline-stage0-initial-baseline">Increment 1: SD input (parent baseline: Stage0 initial baseline)</h3>
-<ul>
-<li>Intent and snapshot: <code>intent.create</code> declares the SD host controller and frame-buffer write controller increment; the control plane snapshots the Stage0 initial baseline into <code>baseBaselineFiles</code>.</li>
-<li>File ledger: against the parent baseline — reused (the DDR wrapper and the CSI-2 TX instantiation stay read-only), added (the two leaf modules), modified (top-level connections).</li>
-<li>Level and choice: <code>simulation.profile.select</code> — the server recommends starting at FPGA_FUNCTIONAL; going below requires acceptedRisks.</li>
-<li>Delta specification: <code>spec.draft</code> writes only the new modules' interfaces, widths, clock domains, Oracles, and top-level connections; <code>/evoverse-rtl</code> starts only after it is frozen.</li>
-<li>Candidate and Design Assurance: <code>candidate.deliver</code> freezes the candidate file set and runs Design Assurance; the baseline stays untouched.</li>
-<li>Independent simulation: <code>verification.simulate</code> takes evidence on the frozen candidate at the selected level; <code>incomplete</code> does not count as PASS.</li>
-<li>Promotion: <code>candidate.promote</code> merges the candidate with the parent baseline and installs the new baseline — the next round's parent is born here.</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Action / tool</th>
+<th>Key points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intent and snapshot</td>
+<td><code>intent.create</code></td>
+<td>Declare the SD host controller and frame-buffer write controller increment; the Stage0 initial parent baseline is snapshotted into <code>baseBaselineFiles</code></td>
+</tr>
+<tr>
+<td>File ledger</td>
+<td>annotated against the snapshot</td>
+<td>Reuse: the DDR wrapper and the CSI-2 TX instantiation stay read-only; added: the two leaf modules; modified: top-level connections</td>
+</tr>
+<tr>
+<td>Level decision</td>
+<td><code>simulation.profile.select</code></td>
+<td>The server recommends starting at FPGA_FUNCTIONAL; going below requires confirming acceptedRisks item by item</td>
+</tr>
+<tr>
+<td>Delta specification</td>
+<td><code>spec.draft</code></td>
+<td>Write only the new modules' interfaces, widths, clock domains, Oracles, and top-level connections; <code>/evoverse-rtl</code> starts only after it is frozen</td>
+</tr>
+<tr>
+<td>Freeze candidate</td>
+<td><code>candidate.deliver</code></td>
+<td>Freeze the candidate file set and run Design Assurance; the baseline stays untouched</td>
+</tr>
+<tr>
+<td>Independent simulation</td>
+<td><code>verification.simulate</code></td>
+<td>Take evidence on the frozen candidate at the selected level; <code>incomplete</code> does not count as PASS</td>
+</tr>
+<tr>
+<td>Promotion</td>
+<td><code>candidate.promote</code></td>
+<td>Merge the candidate with the parent baseline and install it as the new baseline; the next round's parent baseline is born here</td>
+</tr>
+</tbody>
+</table>
 <h3 id="increment-2-ddr-buffering-parent-baseline-sd-promoted-baseline">Increment 2: DDR buffering (parent baseline: SD-promoted baseline)</h3>
-<ul>
-<li>Intent and snapshot: <code>intent.create</code> declares the DDR buffering increment; this round's parent is the SD-promoted baseline, snapshotted into <code>baseBaselineFiles</code>.</li>
-<li>File ledger: reuse the two SD input modules (already in the baseline), add the DDR buffering module, modify top-level connections.</li>
-<li>Level and choice: <code>simulation.profile.select</code> decides again — nothing inherited from round one's choice or acceptedRisks.</li>
-<li>Delta specification: <code>spec.draft</code> describes the buffer depth, the read/write ports, and the handshake with the parent baseline — no re-copying of the whole-project specification.</li>
-<li>Candidate and Design Assurance: <code>candidate.deliver</code> freezes the candidate; the baseline stays untouched.</li>
-<li>Independent simulation: <code>verification.simulate</code> takes evidence with a fresh combination of scenarios; old evidence from the parent baseline does not carry over.</li>
-<li>Promotion: after <code>candidate.promote</code> succeeds, the current baseline advances to the DDR-promoted baseline.</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Action / tool</th>
+<th>Key points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intent and snapshot</td>
+<td><code>intent.create</code></td>
+<td>Declare the DDR buffering increment; the parent baseline is the SD-promoted baseline, snapshotted into <code>baseBaselineFiles</code></td>
+</tr>
+<tr>
+<td>File ledger</td>
+<td>annotated against the snapshot</td>
+<td>Reuse the two SD input modules (already in the baseline); add the DDR buffering module; modify top-level connections</td>
+</tr>
+<tr>
+<td>Level decision</td>
+<td><code>simulation.profile.select</code></td>
+<td>Decide again — do not inherit round one's choice or acceptedRisks</td>
+</tr>
+<tr>
+<td>Delta specification</td>
+<td><code>spec.draft</code></td>
+<td>Describe the buffer depth, the read/write ports, and the handshake with the parent baseline — do not re-copy the whole-project specification</td>
+</tr>
+<tr>
+<td>Freeze candidate</td>
+<td><code>candidate.deliver</code></td>
+<td>Freeze the candidate and run Design Assurance; the baseline stays untouched</td>
+</tr>
+<tr>
+<td>Independent simulation</td>
+<td><code>verification.simulate</code></td>
+<td>Take evidence with a fresh combination of scenarios; old evidence from the parent baseline does not carry over</td>
+</tr>
+<tr>
+<td>Promotion</td>
+<td><code>candidate.promote</code></td>
+<td>After passing, the current baseline advances to the DDR-promoted baseline</td>
+</tr>
+</tbody>
+</table>
 <h3 id="increment-3-csi-2-output-parent-baseline-ddr-promoted-baseline">Increment 3: CSI-2 output (parent baseline: DDR-promoted baseline)</h3>
-<ul>
-<li>Intent and snapshot: <code>intent.create</code> declares the CSI-2 TX output increment; this round's parent is the DDR-promoted baseline, snapshotted into <code>baseBaselineFiles</code>.</li>
-<li>File ledger: reuse the SD and DDR modules, add the CSI-2 output wrapper, modify top-level connections.</li>
-<li>Level and choice: <code>simulation.profile.select</code> decides independently for the third time; the output chain involves an external protocol — run at the recommended level.</li>
-<li>Delta specification: <code>spec.draft</code> locks the lanes, resolution, and frame-rate parameters, plus the clock relationship to the parent baseline.</li>
-<li>Candidate and Design Assurance: <code>candidate.deliver</code> freezes the candidate; the baseline stays untouched.</li>
-<li>Independent simulation: <code>verification.simulate</code> covers output timing and protocol scenarios; only a PASS earns promotion eligibility.</li>
-<li>Promotion: once <code>candidate.promote</code> completes, the baseline contains the full-chain modules and the flow moves on to Stage 04 / 05.</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Action / tool</th>
+<th>Key points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intent and snapshot</td>
+<td><code>intent.create</code></td>
+<td>Declare the CSI-2 TX output increment; the parent baseline is the DDR-promoted baseline, snapshotted into <code>baseBaselineFiles</code></td>
+</tr>
+<tr>
+<td>File ledger</td>
+<td>annotated against the snapshot</td>
+<td>Reuse the SD and DDR modules; add the CSI-2 output wrapper; modify top-level connections</td>
+</tr>
+<tr>
+<td>Level decision</td>
+<td><code>simulation.profile.select</code></td>
+<td>A third independent decision; the output chain involves an external protocol — run at the recommended level</td>
+</tr>
+<tr>
+<td>Delta specification</td>
+<td><code>spec.draft</code></td>
+<td>Lock the lanes, resolution, and frame-rate parameters, plus the clock relationship to the parent baseline</td>
+</tr>
+<tr>
+<td>Freeze candidate</td>
+<td><code>candidate.deliver</code></td>
+<td>Freeze the candidate and run Design Assurance; the baseline stays untouched</td>
+</tr>
+<tr>
+<td>Independent simulation</td>
+<td><code>verification.simulate</code></td>
+<td>Cover output timing and protocol scenarios; only a PASS earns promotion eligibility</td>
+</tr>
+<tr>
+<td>Promotion</td>
+<td><code>candidate.promote</code></td>
+<td>Once done, the baseline contains the full-chain modules and the flow moves on to Stage 04 / 05</td>
+</tr>
+</tbody>
+</table>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
 <li><strong>No generation before the specification is frozen</strong>: if <code>/evoverse-rtl</code> finds ambiguity in interfaces, widths, clock domains, or Oracles, it stops at the specification decisions — that is a normal guard; go back to Stage 02 to settle them, do not bypass it.</li>
@@ -245,4 +378,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

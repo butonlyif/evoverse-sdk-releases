@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -121,6 +123,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>显示链路验证完成后，不要让临时草稿、候选文件和报告散落在工程根目录。本章让 Trae 先生成整理预览，由你逐条确认后再执行，最后用一次 <code>efx_run --flow compile</code> 复编译证明工程仍可交付。</p>
 </blockquote>
 <p>整理的目标是让下一位工程师容易找到文件，不是重写一个已经能用的工程。冻结的规格包（<code>design-package/</code>）、三轮增量晋级形成的基线（含各轮 <code>candidate.promote</code> 回执）、已交付候选与全部证据回执都是受保护文件——它们是这条 TJ180A484S 上 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路的证据链，不参与整理。</p>
+<p>整理的执行顺序如下图，预览先行、确认驱动、复编译收尾：</p>
+<pre class="mermaid">flowchart TD
+    A[&quot;生成整理预览&lt;br&gt;reports/project-cleanup-preview.md&quot;] --&gt; B[&quot;你逐条确认&lt;br&gt;不确定项标为需要决定&quot;]
+    B --&gt; C[&quot;只执行确认条目&lt;br&gt;同步修正引用路径&quot;]
+    C --&gt; D{&quot;工程 XML 与&lt;br&gt;脚本路径仍有效？&quot;}
+    D --&gt;|是| E[&quot;build.native 复编译&lt;br&gt;efx_run --flow compile&quot;]
+    D --&gt;|否| F[&quot;停在问题处&lt;br&gt;回滚未确认动作&quot;]
+    E --&gt; G[&quot;报告：已整理 / 受保护 /&lt;br&gt;引用更新 / 复编译结果&quot;]
+</pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">请检查当前 WS-E1 工程，先生成一份&quot;工程目录整理预览&quot;，不要移动、重命名或删除任何文件。
 按 design-package/、rtl/、sim/、constraints/、software/、reports/、scripts/ 和 IP/ 的归属列出：
@@ -219,4 +230,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

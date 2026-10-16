@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -131,7 +133,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <hr />
 <h2 id="当前学习入口">当前学习入口</h2>
-<p>从 <a href="../../../site/customer-portal.html">离线客户文档门户</a> 的 Video Sim 任务进入。本手册和同目录的 <a href="平台说明.html">平台说明</a>、<a href="视频IP设计指南.html">视频 IP 设计指南</a> 是当前参考；已退休的 VIP01-VIP10 教程树不再随 SDK 工作目录分发。</p>
+<p>从 <a href="../../../site/customer-portal.html">离线客户文档门户</a> 的 Video Sim 任务进入。本手册和同目录的 <a href="介绍.html">平台介绍</a>、<a href="视频IP设计指南.html">视频 IP 设计指南</a> 是当前参考；已退休的 VIP01-VIP10 教程树不再随 SDK 工作目录分发。</p>
 <hr />
 <h2 id="一-产品简介">一、产品简介</h2>
 <p>VIP 仿真验证平台是一套<strong>端到端视频 IP 仿真环境</strong>，以 Trae / VS Code 扩展形式交付，提供图形化控制台与命令行双入口。核心能力：</p>
@@ -208,7 +210,7 @@ iverilog: Icarus Verilog version 12.0 (stable)
 </blockquote>
 <hr />
 <h2 id="三-系统架构">三、系统架构</h2>
-<pre><code class="language-mermaid">flowchart TB
+<pre class="mermaid">flowchart TB
     subgraph GUI[&quot;Trae IDE — VIP Sim 控制台&quot;]
         PARAM[&quot;⚙ 仿真参数&lt;br/&gt;IP / 分辨率 / 帧数&quot;]
         REG[&quot;📋 寄存器编辑&lt;br/&gt;regdef.json → 表单&quot;]
@@ -241,7 +243,7 @@ iverilog: Icarus Verilog version 12.0 (stable)
     REGB --&gt; DUT
     SNK --&gt;|result.hex| Python
     Python -- &quot;output.png / report.json&quot; --&gt; GUI
-</code></pre>
+</pre>
 <h3 id="3-1-数据桥接">3.1 数据桥接</h3>
 <p>Python 与 Verilog 之间通过 <strong>hex 文本文件</strong> 桥接：</p>
 <table>
@@ -315,13 +317,13 @@ iverilog: Icarus Verilog version 12.0 (stable)
 <li><strong>已是仿真项目</strong> → 直接载入控制台，自动识别该项目的 IP / 寄存器 / 输入输出（无需手动导入）。打开一个仿真项目文件夹时，控制台还会<strong>自动弹出</strong>。</li>
 <li><strong>不是仿真项目（或未打开文件夹）</strong> → 控制台显示「开始使用」引导页，点击 <strong>➕ 新建仿真项目</strong> 即可在同一界面内创建项目，无需另跑命令。</li>
 </ul>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
   A[打开仿真控制台] --&gt; B{当前是仿真项目?}
   B -- 是 --&gt; C[载入控制台&lt;br/&gt;自动导入项目]
   B -- 否 --&gt; D[开始使用引导页]
   D -- 点击新建 --&gt; E[选位置/起名 → 复制模板 → 建 venv]
   E --&gt; F[打开项目] --&gt; C
-</code></pre>
+</pre>
 <p>新建项目时扩展自动完成：
 1. 复制完整仿真环境到新目录（Python 脚本 / Verilog BFM / Makefile / 示例 DUT）
 2. 创建项目内 Python 虚拟环境 <code>.venv</code>，安装 opencv/numpy/pillow
@@ -545,14 +547,14 @@ python scripts/import_project.py --src /path/to/your/project --json
 <li>刷新控制台 → 导入图像 → 运行仿真</li>
 </ol>
 <p><strong>开发迭代循环</strong>：</p>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
     A[&quot;AI 描述需求&quot;] --&gt; B[&quot;gen_ip_spec.py 生成\nRTL + TB + regdef + golden&quot;]
     B --&gt; C[&quot;make verify IP=&amp;lt;ip&amp;gt;&quot;]
     C --&gt; D{&quot;金标准 PASS?&quot;}
     D -- 否 --&gt; E[&quot;修正 RTL / golden.py&lt;br/&gt;查看分析面板 / 波形&quot;]
     E --&gt; C
     D -- 是 --&gt; F[&quot;换大图验证 / 跑回归测试&quot;]
-</code></pre>
+</pre>
 <p><strong>关于金标准的修正</strong>：自动生成的金标准是算法模板，RTL 细节（定点位宽、截断时机、饱和逻辑）需要人工核对。核对方法：</p>
 <pre><code class="language-bash"># 对比 RTL 定点运算与 golden.py 的 Python 运算
 make verify IP=my_filter WIDTH=64 HEIGHT=48
@@ -1004,4 +1006,5 @@ make verify IP=my_filter WIDTH=64 HEIGHT=48
 <strong>最后更新</strong>：2026-06-24</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

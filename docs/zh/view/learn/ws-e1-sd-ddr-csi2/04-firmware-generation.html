@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -118,9 +120,19 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>04 Sapphire 固件</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-04-sapphire-固件">阶段 04 · Sapphire 固件</h1>
 <blockquote>
-<p>SoC 里的 RISC-V 需要固件才有生命。本阶段在 Sapphire 裸机环境生成软件工程与 BSP，把软件候选送进同一个控制面，并明确硬件/软件契约的交接边界。</p>
+<p>SoC 里的 RISC-V 要跑起来，得先有固件。本阶段在 Sapphire 裸机环境生成软件工程与 BSP，把软件候选送进同一个控制面，并明确硬件/软件契约的交接边界。</p>
 </blockquote>
 <p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路跑在 TJ180A484S 上，固件负责 SD 卡初始化、FAT 读取与帧缓冲灌注的调度。它编译在 Sapphire SoC 上，但它的证据和 RTL 一样进控制面：<strong>编译成功只是 <code>SW_BUILT</code>，不等于功能正确</strong>。</p>
+<p>固件的证据边界如下图——<code>SW_BUILT</code> 之后的每一步都换一种证据，不能互相顶替：</p>
+<pre class="mermaid">flowchart TD
+    A[&quot;三轮增量全部&lt;br&gt;candidate.promote 晋级&quot;] --&gt; B[&quot;soc/ 建裸机工程&lt;br&gt;启动代码 / 链接脚本 / BSP&quot;]
+    B --&gt; C[&quot;构建软件&lt;br&gt;保存完整日志&quot;]
+    C --&gt; D{&quot;产物可校验？&quot;}
+    D --&gt;|是| E[&quot;SW_BUILT&lt;br&gt;ELF / BSP 摘要登记&quot;]
+    D --&gt;|否| C
+    E --&gt; F[&quot;candidate.deliver&lt;br&gt;hardware-software-contract&quot;]
+    F --&gt; G[&quot;板上功能验证留待阶段 06&lt;br&gt;此前状态为 INTEGRATION_PENDING_HARDWARE&quot;]
+</pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">为本工程的 Sapphire SoC 生成软件分区：在 soc/ 下创建裸机应用，
 按规格实现 SD 初始化与帧缓冲灌注的主循环，用 new_software 建立软件工程，
@@ -179,4 +191,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

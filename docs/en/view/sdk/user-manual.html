@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -147,7 +149,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="1-quick-start">1. Quick start</h2>
 <h3 id="1-1-the-fastest-path-30-minutes">1.1 The fastest path (30 minutes)</h3>
 <blockquote>
-<p><strong>If this is your first contact with the SDK</strong>, after completing 1.1 please walk the six-stage "Get Started" flow on the customer documentation portal end to end — 1.1 only verifies that "the toolchain is in place" and does not replace the engineering-contract awareness the tutorials build. The <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD→DDR→CSI-2 tutorial</a> is the hands-on part of the "walk through a complete tutorial" stage of that flow.</p>
+<p><strong>If this is your first contact with the SDK</strong>, after completing 1.1 please walk the six-stage "Get Started" flow on the <a href="../../../site-en/customer-portal.html">customer documentation portal</a> end to end — 1.1 only verifies that "the toolchain is in place" and does not replace the engineering-contract awareness the tutorials build. The <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD→DDR→CSI-2 tutorial</a> is the hands-on part of the "walk through a complete tutorial" stage of that flow.</p>
 </blockquote>
 <pre><code>Install the extensions → Set Up → describe the goal in Trae natural language → confirm the Control action → write RTL → Sim → Build → Program
 </code></pre>
@@ -167,7 +169,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>Initialize</td>
-<td><code>EvoVerse: Set Up</code></td>
+<td><code>EvoVerse: Set Up (re-run bootstrap)</code> (auto-opens on first launch)</td>
 <td>2 min</td>
 </tr>
 <tr>
@@ -182,17 +184,17 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>Simulate</td>
-<td><code>EvoVerse: Simulate</code></td>
+<td><code>Toolchain: Simulate</code></td>
 <td>3 min</td>
 </tr>
 <tr>
 <td>Build</td>
-<td><code>EvoVerse: Build</code></td>
+<td><code>Toolchain: Build</code></td>
 <td>5 min</td>
 </tr>
 <tr>
 <td>Program</td>
-<td><code>EvoVerse: Program FPGA</code></td>
+<td><code>Toolchain: Program FPGA</code></td>
 <td>2 min</td>
 </tr>
 <tr>
@@ -206,62 +208,72 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Start with the linear onboarding path from the <a href="../START-HERE.html">customer documentation entry</a>; for a complete hands-on project, use the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 tutorial</a>. Traditional design and the controlled RTL flow can be combined, but promoting candidate RTL must always rest on the specification, the rules, and simulation evidence.</p>
 <hr />
 <h2 id="2-system-architecture">2. System architecture</h2>
-<h3 id="2-1-the-four-layer-model">2.1 The four-layer model</h3>
-<p>The EvoVerse SDK uses a four-layer architecture that abstracts the FPGA development toolchain into layers:</p>
-<pre><code>┌────────────────────────────────────────────────────────────────────┐
-│  L4: AI Intelligence                                                          │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐     │
-│  │ AI diagnosis    │  │ Copilot context │  │ NL→RTL generator│     │
-│  │ engine          │  │                 │  │                 │     │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘     │
-├────────────────────────────────────────────────────────────────────┤
-│  L3: System Orchestration                                                     │
-│  ┌───────────┐ ┌──────────────┐ ┌────────────────┐ ┌─────────────┐ │
-│  │BuildRunner│ │TimingAnalyzer│ │CodeStyle Checker│ │HealthChecker│ │
-│  │           │ │              │ │                 │ │             │ │
-│  └───────────┘ └──────────────┘ └────────────────┘ └─────────────┘ │
-├────────────────────────────────────────────────────────────────────┤
-│  L2: Vendor Adapter                                                           │
-│  ┌───────────────────┐  ┌───────────────────┐                        │
-│  │ EfinixAdapter     │  │ VendorAdapter     │                        │
-│  │ (Efinity-specific)│  │ (generic)         │                        │
-│  └───────────────────┘  └───────────────────┘                        │
-├────────────────────────────────────────────────────────────────────┤
-│  L1: Vendor Tools                                                             │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐                                  │
-│  │ Efinity  │  │ Icarus   │  │ xPack    │                                  │
-│  │ (build)  │  │ Verilog  │  │ RISC-V   │                                  │
-│  └──────────┘  └──────────┘  └──────────┘                                  │
-└────────────────────────────────────────────────────────────────────┘
-</code></pre>
+<h3 id="2-1-layered-architecture">2.1 Layered architecture</h3>
+<p>EvoVerse SDK v1.0.0 adopts a layered <strong>SDK shell + Adapter</strong> architecture. The SDK keeps the Workbench shell and the System root; vendor-specific capabilities are provided by separate Adapter extensions, connected through the trusted headless adapter protocol:</p>
+<pre class="mermaid">flowchart LR
+    subgraph host[&quot;Host (Trae / VS Code)&quot;]
+        nl[&quot;Natural language / @evoverse&quot;]
+        wb[&quot;Workbench shell (six tabs)&quot;]
+    end
+    subgraph sdk[&quot;EvoVerse SDK core&quot;]
+        sys[&quot;System root / project control plane&quot;]
+        cli[&quot;CLI&quot;]
+        mcp[&quot;MCP Server&quot;]
+        reg[&quot;AdapterRegistry&quot;]
+    end
+    subgraph efa[&quot;efinity-adapter&quot;]
+        ecap[&quot;build / timing / debug / program / software / IP&quot;]
+    end
+    subgraph rka[&quot;rk3588-adapter&quot;]
+        rcap[&quot;Environment / project / build / deploy&quot;]
+    end
+    subgraph vendor[&quot;Vendor tools&quot;]
+        ef[&quot;Efinity (efx_run)&quot;]
+        sim[&quot;Icarus / Questa&quot;]
+        gcc[&quot;xPack RISC-V GCC&quot;]
+    end
+    nl --&gt; mcp
+    wb --&gt; reg
+    reg --&gt; ecap
+    reg --&gt; rcap
+    mcp --&gt; sys
+    ecap --&gt; ef
+    ecap --&gt; sim
+    rcap --&gt; gcc
+</pre>
 <table>
 <thead>
 <tr>
-<th>Layer</th>
+<th>Module</th>
 <th>Responsibility</th>
 <th>User-facing effect</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>L1 Vendor tools</strong></td>
-<td>Efinity build/programming, Icarus simulation, RISC-V GCC</td>
-<td>You need these tools installed</td>
+<td><strong>Host integration</strong></td>
+<td>Natural language / <code>@evoverse</code> chat, Workbench UI, MCP registration</td>
+<td>Chat and IDE UI</td>
 </tr>
 <tr>
-<td><strong>L2 Adapter layer</strong></td>
-<td>Unifies vendor tools behind standard interfaces; currently supports the Efinix Titanium/Trion families</td>
-<td>Selected automatically; nothing to worry about</td>
+<td><strong>SDK core</strong></td>
+<td>System root, project control plane, CLI, MCP Server, AdapterRegistry</td>
+<td>Command palette and Workbench shell</td>
 </tr>
 <tr>
-<td><strong>L3 Orchestration layer</strong></td>
-<td>Build-flow orchestration, timing analysis, code style checks, health checks</td>
-<td>Used through IDE commands and webviews</td>
+<td><strong>efinity-adapter</strong></td>
+<td>Six capabilities (build / timing / debug / program / software / IP), driving <code>efx_run --flow compile</code></td>
+<td>The Efinity Workspace in the Workbench (six tabs)</td>
 </tr>
 <tr>
-<td><strong>L4 Intelligence layer</strong></td>
-<td>AI error-fingerprint diagnosis, Copilot context building, natural-language RTL generation</td>
-<td>Triggered automatically in the diagnosis panel and the Agent</td>
+<td><strong>rk3588-adapter</strong></td>
+<td>Four stages of RK3588 environment, project, build, and deployment</td>
+<td>The RK3588 Workspace in the Workbench</td>
+</tr>
+<tr>
+<td><strong>Vendor tools</strong></td>
+<td>Efinity toolchain, Icarus / Questa simulators, xPack RISC-V GCC</td>
+<td>Must be installed; Adapters can guide the setup</td>
 </tr>
 </tbody>
 </table>
@@ -294,12 +306,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="3-installation-and-configuration">3. Installation and configuration</h2>
 <h3 id="3-1-install-the-extensions">3.1 Install the extensions</h3>
 <ol>
-<li>Obtain <code>evoverse-sdk-0.9.0.vsix</code></li>
+<li>Obtain the 3 v1.0.0 VSIXes: <code>evoverse-sdk-1.0.0.vsix</code>, <code>evoverse-efinity-adapter-1.0.0.vsix</code>, <code>evoverse-rk3588-adapter-1.0.0.vsix</code></li>
 <li>Trae IDE or Visual Studio Code → the <code>Extensions</code> icon on the left → <code>...</code> at the top right → <code>Install from VSIX...</code></li>
-<li>Select the VSIX file</li>
+<li>Install in order: <code>evoverse-sdk</code> first, then the two Adapters (with the delivery package you can run <code>scripts/deploy.ps1</code> for one-click install — see the <a href="../installation/deployment-guide.html">Deployment Guide</a>)</li>
 <li><strong>Reload Window</strong> (click it when the prompt appears)</li>
 </ol>
-<p>Trae, standard VS Code, and other VS Code forks use <strong>the same VSIX</strong>—no separate builds are needed. The host is detected only after the extension activates, and the matching Adapter is then selected.</p>
+<p>Trae, standard VS Code, and other VS Code forks use <strong>the same set of VSIXes</strong>—no separate builds are needed. The host is detected only after the extension activates, and the corresponding integration mode is then selected.</p>
 <h3 id="3-1-1-workbench-adapter-plug-ins-v0-8-0">3.1.1 Workbench Adapter plug-ins (v0.8.0+)</h3>
 <p>Since v0.8.0, the EvoVerse SDK has used a <strong>core + optional Adapters</strong> plug-in architecture:</p>
 <table>
@@ -339,28 +351,27 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 - <a href="../adapters/efinity-adapter-guide.html">Efinity Adapter Guide</a>
 - <a href="../adapters/rk3588-adapter-guide.html">RK3588 Adapter Guide</a></p>
 <h3 id="3-2-first-time-initialization-set-up">3.2 First-time initialization (Set Up)</h3>
-<p>On the first launch after installation, or when you run <code>EvoVerse: Set Up</code>, a wizard dialog appears:</p>
-<pre><code>┌───────────────────────────────────────────────────────────────┐
-│  EvoVerse SDK — Set up                                        │
-│                                                               │
-│  The runtime environment will be created at:                  │
-│    ~/evoverse-sdk/          ← Catalog + project root          │
-│    ~/.evoverse/runtime/     ← CLI + MCP Server                │
-│    %APPDATA%\Trae CN\User\mcp.json  ← Trae CN only: MCP registration │
-│    ~/.trae/user_rules/      ← Trae only: general + RTL Agent rules │
-│                                                               │
-│  [Yes, set up]  [Cancel]                                      │
-└───────────────────────────────────────────────────────────────┘
+<p>The setup dialog opens automatically on the first launch after installation (buttons <strong>Yes, set up</strong> / <strong>Later</strong>):</p>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│  Set up EvoVerse SDK?                                        │
+│                                                              │
+│  This will create ~/evoverse-sdk for your catalog and        │
+│  integrate the EvoVerse Agent with supported host features.  │
+│  No system files are modified.                               │
+│                                                              │
+│  [Yes, set up]  [Later]                                      │
+└─────────────────────────────────────────────────────────────┘
 </code></pre>
-<p>Clicking <strong>Yes, set up</strong> automatically:
-- Copies the CLI and MCP Server to the local runtime directory
-- Trae: registers the MCP Server and deploys <code>evoverse.md</code> and <code>evoverse-rtl-style.md</code>
-- Standard VS Code / unknown hosts: no <code>.trae</code> is created; host-specific integrations degrade safely
-- Deploys the sample Catalog (including the TJ180 core board)
-- Detects the Python version (3.11+ required)</p>
+<p>After clicking <strong>Yes, set up</strong>, the following completes automatically (the Output panel prints <code>=== EvoVerse SDK bootstrap ===</code>):
+- Creates <code>~/evoverse-sdk</code>: the Catalog, projects, CLI, MCP Server, and verification runtime all share this root directory (the runtime links to the copies bundled with the extension)
+- Trae: writes <code>~/.trae/mcp.json</code> to register the MCP Server and deploys the general + RTL Agent rules under <code>~/.trae/user_rules/</code>
+- Standard VS Code: merges <code>servers.evoverse</code> into the user-level <code>mcp.json</code>; other hosts degrade safely without writing host-private configuration
+- Detects the Python version (3.11+ required)
+- Prints <code>=== EvoVerse SDK ready ===</code> when done</p>
 <blockquote>
-<p>If the wizard does not appear automatically, run it manually: <code>Ctrl+Shift+P</code> → <code>EvoVerse: Set Up</code></p>
+<p>If the setup dialog does not appear automatically or you need to re-run it: <code>Ctrl+Shift+P</code> → <code>EvoVerse: Set Up (re-run bootstrap)</code></p>
 </blockquote>
+<p><strong>The Catalog is not deployed during Set Up.</strong> The first time Welcome opens, the Catalog is empty (status <code>CATALOG_NOT_INSTALLED</code>); run <code>EvoVerse: Sync Catalog</code> to sync board materials from the public release repository (no GitHub account required) — see chapter 6.</p>
 <h3 id="3-3-configure-toolchain-paths">3.3 Configure toolchain paths</h3>
 <p><code>Ctrl/Cmd + ,</code> opens Settings; search for <code>evoverse</code>:</p>
 <table>
@@ -1098,8 +1109,8 @@ evoverse sync-sources --dir rtl --dir my_ip_dir  # specify scan directories
 </table>
 <h3 id="6-2-sync-the-catalog">6.2 Sync the Catalog</h3>
 <p><strong>Command</strong>: <code>EvoVerse: Sync Catalog</code></p>
-<p>On first install the Catalog is empty and the CLI, MCP, and UI all clearly return <code>CATALOG_NOT_INSTALLED</code>. The customer must first accept the personal-GitHub-account read-only invitation to the unified private Catalog repository and complete local authentication via Git Credential Manager or the GitHub CLI. The repository URL is visible to VSIX users, but the content remains protected by GitHub authorization; team-shared PATs are forbidden.</p>
-<p>Sync pulls the latest official <code>catalog-v*</code> tag from the remote and mirrors the official content over the local <code>catalog/</code> (for same-named official entries, the remote version wins); a network or permission failure never affects existing local content.</p>
+<p>On first install the Catalog is empty and the CLI, MCP, and UI all clearly return <code>CATALOG_NOT_INSTALLED</code>. The sync pulls from the official public release repository (<code>evoverse-catalog-release</code>) by default—<strong>no GitHub account or repository invitation is required</strong>; to use a self-hosted mirror or a private repository, override the repository URL with <code>--repository &lt;URL&gt;</code> on the CLI or the <code>EVOVERSE_CATALOG_REPOSITORY</code> environment variable.</p>
+<p>Sync pulls the latest official <code>catalog-v*</code> tag from the remote, verifies content integrity via treeDigest, and mirrors the official content over the local <code>catalog/</code> (for same-named official entries, the remote version wins); a network failure never affects existing local content.</p>
 <p>Customers may add their own Boards, IPs, Carriers, Jackets, or Demos under <code>evoverse.home/catalog/</code>; the CLI, MCP, and the workbench discover them all from this single root. Sync never deletes local-only entries—any directory or file at any layer that the official release does not have (for example <code>catalog/boards/customer-board/</code> or <code>catalog/ips/customer-ip/</code>) is kept as-is. Note: if a customer material has the same name and path as an official entry, the official version overwrites it during sync, so use a separate directory and ID for customer materials.</p>
 <p><strong>CLI equivalent</strong>:</p>
 <pre><code class="language-bash">evoverse sync --json
@@ -1201,30 +1212,21 @@ evoverse tree ws-e1          # a specific board
 </table>
 <h3 id="7-3-build-flow-details">7.3 Build flow details</h3>
 <blockquote>
-<p><strong>v0.7.1 behavior change (see <a href="#a1-build-and-health-check-behavior-changes-v071">Appendix A.A1</a>)</strong>: the SDK no longer sanitizes the project XML automatically and no longer runs the structural health check automatically before a build; the HDL file watcher no longer auto-runs <code>sync-sources</code>. All source syncing and health checks are now manual (see §5.4 and §10.6). AI diagnosis results are no longer applied automatically; user confirmation is required.</p>
+<p>The SDK does not sanitize the project XML automatically and does not run the structural health check automatically before a build; the HDL file watcher does not auto-run <code>sync-sources</code>. Source syncing and health checks are manual (see §5.4 and §10.6). AI diagnosis results are not applied automatically; user confirmation is required. (History: <a href="#a1-build-and-health-check-behavior-changes-v071">Appendix A.A1</a>)</p>
 </blockquote>
-<p>In CLI mode the SDK executes the following steps:</p>
-<pre><code>1. Preprocessing (Pre-PT)
-   ├─ Parse the project XML
-   └─ Convert base.peri.isf → &lt;design&gt;.peri.xml (PT conversion)
+<p>In CLI mode, Build requests are routed by the SDK to the efinity-adapter; the adapter runs <code>efx_run --flow compile</code> (Efinity's native unified flow) through its <code>build.compile</code> capability:</p>
+<pre><code>1. Project location
+   └─ Locate the project XML and collect flow options (§7.6 parameter panel)
 
-2. Synthesis — efx_map
-   ├─ Read the design file list (&lt;efx:design_file&gt;)
-   ├─ Run Verilog/SystemVerilog synthesis
-   └─ Write the mapped netlist to work_syn/
+2. Unified flow — efx_run --flow compile
+   ├─ map — Verilog/SystemVerilog synthesis (efx_map)
+   ├─ PT  — interface constraint import (replays the project-referenced ISFs onto the persisted &lt;design&gt;.peri.xml)
+   ├─ pnr — place &amp; route (efx_pnr)
+   └─ pgm — bitstream generation (efx_pgm)
 
-3. Place &amp; Route — efx_pnr
-   ├─ Import the mapped netlist
-   ├─ Place logic cells
-   └─ Route connections
-
-4. Bitstream generation — efx_pgm
-   ├─ Generate the .bit file
-   └─ Generate the .hex file
-
-5. Post-processing
+3. Report parsing
    ├─ Parse the outflow/ reports
-   ├─ Parse into an in-memory BuildSummary and update the report view
+   ├─ Produce a BuildSummary and update the report view
    └─ Update the status bar (restored from native reports when the project is reopened)
 </code></pre>
 <h3 id="7-4-parallel-builds">7.4 Parallel builds</h3>
@@ -1503,7 +1505,7 @@ vvp sim_test.vvp
 <li>From the VIP console/welcome page you can create or import a VIP project: <code>gen_stimulus.py</code> generates image stimuli, the simulation is compared bit-by-bit against the <code>golden.py</code> golden reference, and <code>compare.py</code> outputs the differences and a quality report</li>
 <li>If a VIP project directory is configured in the <code>evoverse.simIspWorkspace</code> setting, the command opens that project in a new window</li>
 </ol>
-<p>See the <a href="../video-sim/platform-overview.html">Video Sim Platform Overview</a> and the offline customer documentation portal for the current entries; the retired VIP01–VIP10 tutorial tree is no longer distributed with the SDK working directory.</p>
+<p>See the <a href="../video-sim/introduction.html">Video Sim Platform Introduction</a> and the offline customer documentation portal for the current entries; the retired VIP01–VIP10 tutorial tree is no longer distributed with the SDK working directory.</p>
 <hr />
 <h2 id="10-timing-analysis-and-optimization">10. Timing analysis and optimization</h2>
 <h3 id="10-1-timing-diagnosis">10.1 Timing diagnosis</h3>
@@ -1866,7 +1868,7 @@ report_timing -from [get_ports clk] -to * # paths starting from clk
 <p>Scans all <code>.v</code> / <code>.sv</code> / <code>.vh</code> / <code>.sdc</code> files in the project and checks them against the <strong>21 enabled rule IDs</strong> in the current implementation.</p>
 <h3 id="12-2-single-file-check">12.2 Single-file check</h3>
 <p><strong>Option 1</strong>: command palette → <code>Toolchain: Check This File's Code Style</code></p>
-<p><strong>Option 2</strong>: right-click an RTL or SDC file in the editor → <code>EvoVerse: Check This File's Code Style</code></p>
+<p><strong>Option 2</strong>: right-click an RTL or SDC file in the editor → <code>Toolchain: Check This File's Code Style</code></p>
 <h3 id="12-3-check-results">12.3 Check results</h3>
 <p>Results appear in the VS Code-native <strong>Problems</strong> panel (<code>Ctrl+Shift+M</code>):</p>
 <ul>
@@ -2309,7 +2311,7 @@ evoverse gen-bsp ~/evoverse-sdk/projects/my-project
 #define MY_DMA_CTRL_BIT (1u &lt;&lt; 0)
 </code></pre>
 <hr />
-<h2 id="15-5-rk3588-soc-workspace-v0-8-0">15.5 RK3588 SoC Workspace (v0.8.0+)</h2>
+<h3 id="15-6-rk3588-soc-workspace-v0-8-0">15.6 RK3588 SoC Workspace (v0.8.0+)</h3>
 <p>After installing the RK3588 Adapter, <code>EvoVerse: Open RK3588 Workspace</code> opens a dedicated panel with 8 tabs:</p>
 <table>
 <thead>
@@ -2382,7 +2384,7 @@ build-report.json + artifact SHA-256
 3. <code>&lt;workspace&gt;/profile.json</code> (requires schemaVersion='1')</p>
 <h3 id="flash-debug-notes">Flash/Debug notes</h3>
 <p>The first RK3588 release <strong>does not support Flash or Debug</strong> (serial/ADB/SSH/HIL are all disabled). The related tabs only show the reason and provide no actionable buttons.</p>
-<h2 id="15-6-system-workspace-multi-chip-topologies">15.6 System Workspace (multi-chip topologies)</h2>
+<h3 id="15-7-system-workspace-multi-chip-topologies">15.7 System Workspace (multi-chip topologies)</h3>
 <p>With two or more Adapters installed, the System Workspace appears automatically. It manages multi-chip projects (FPGA + SoC, etc.).</p>
 <h3 id="functions">Functions</h3>
 <table>
@@ -2445,8 +2447,8 @@ bridges:
     width: 32
 ---
 </code></pre>
-<h3 id="15-7-specification-driven-risc-v-software-verification-loop-in-development-on-the-v0-9-x-branch">15.7 Specification-driven RISC-V software verification loop (in development on the v0.9.x branch)</h3>
-<p>Unlike the free-form software development of 15.1–15.6, this loop is driven by a <strong>frozen executable specification package</strong>: software candidates, BSP binding, host tests, cross-compilation, promotion, and board tests are all receipt-based; any step that cannot be bound to the same <code>specPackageDigest</code> is rejected.</p>
+<h3 id="15-8-specification-driven-risc-v-software-verification-loop-v1-0-0">15.8 Specification-driven RISC-V software verification loop (v1.0.0)</h3>
+<p>Unlike the free-form software development of 15.1–15.7, this loop is driven by a <strong>frozen executable specification package</strong>: software candidates, BSP binding, host tests, cross-compilation, promotion, and board tests are all receipt-based; any step that cannot be bound to the same <code>specPackageDigest</code> is rejected.</p>
 <p><strong>Command chain (source CLI)</strong>: the <code>expectedStateDigest</code> in the legacy software-chain input is read only as a historical compatibility alias; new control-plane write operations uniformly use <code>expectedRevision</code>.</p>
 <pre><code class="language-bash"># Seal and register (registered after the Skills script seals, yielding specPackageDigest)
 evoverse verification fpga-start --project &lt;abs&gt; --input payload.json --json
@@ -2464,9 +2466,47 @@ evoverse verification software-task-board-test ...  # PASS or HARDWARE_UNAVAILAB
 evoverse verification fpga-milestone ...          # REVIEW_READY (review.md evidence footer)
 evoverse verification next / build-eligibility ...
 </code></pre>
+<p><strong>Milestone chain</strong> (FPGA milestones and software tasks alternate; all bind to the same <code>specPackageDigest</code>):</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; MATERIALS_READY: specification package registered
+    MATERIALS_READY --&gt; SCAFFOLD_READY: fpga-milestone
+    SCAFFOLD_READY --&gt; SPEC_APPROVED: fpga-milestone
+    SPEC_APPROVED --&gt; IP_READY: fpga-milestone
+    IP_READY --&gt; SOFTWARE_TASK: software-task-start (user choice)
+    SOFTWARE_TASK --&gt; INTEGRATION_READY: software-task-promote
+    SOFTWARE_TASK --&gt; VENDOR_TOOL_UNAVAILABLE: vendor tool missing at build
+    INTEGRATION_READY --&gt; BUILD_COMPLETE: fpga-milestone
+    BUILD_COMPLETE --&gt; REVIEW_READY: board-test PASS
+    BUILD_COMPLETE --&gt; BOARD_VALIDATION_REQUIRED: HARDWARE_UNAVAILABLE
+    BOARD_VALIDATION_REQUIRED --&gt; REVIEW_READY: on-board evidence completed
+    REVIEW_READY --&gt; [*]: evidence footer covers all recorded milestones
+</pre>
 <p><strong>MCP tools</strong>: <code>software_task_start / status / bind_bsp / prepare / check_interface / test_host / build / promote / board_test</code>—9 tools in total, dispatched to the same engine as the CLI; receipts and the next action bind to the same specification package.</p>
 <p><strong>Artifacts</strong>: the <code>candidate / bsp-binding / host-test / interface / build / promotion / board-test</code> JSON receipts under <code>.evoverse/verification/scoped-software/runs/&lt;taskId&gt;/</code>; host/board-test <code>requiredTestIds</code>, the expected ELF class, and memory regions are all derived server-side from the frozen specification—the caller cannot self-report them.</p>
 <p><strong>States</strong>: <code>BUILD_COMPLETE</code> (next step <code>RUN_PROJECT_REVIEW</code>) → <code>REVIEW_READY</code> (evidence footer <code>hardwareStatus ∈ {NOT_RUN, PASS, FAIL, INCOMPLETE}</code> with evidence covering every recorded milestone).</p>
+<p><strong>Runtime presentation</strong> (applies to every adapter-routed Build; <code>build.compile</code> = <code>efx_run --flow compile</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workbench event stream (<code>WorkbenchEventKind</code>, nine kinds)</td>
+<td><code>queued</code> / <code>running</code> / <code>output</code> / <code>diagnostic</code> / <code>artifact</code> / <code>completed</code> / <code>failed</code> / <code>cancelled</code> / <code>timed-out</code></td>
+</tr>
+<tr>
+<td>Status bar (three states)</td>
+<td><code>ready</code> / <code>running</code> / <code>failed</code></td>
+</tr>
+<tr>
+<td>Adapter error codes (<code>AdapterErrorCode</code>, eight kinds)</td>
+<td><code>ADAPTER_MISSING</code> / <code>API_INCOMPATIBLE</code> / <code>CAPABILITY_UNAVAILABLE</code> / <code>INVALID_REQUEST</code> / <code>CANCELLED</code> / <code>VENDOR_TOOL_UNAVAILABLE</code> / <code>VENDOR_TOOL_FAILED</code> / <code>ADAPTER_INTERNAL</code></td>
+</tr>
+</tbody>
+</table>
 <p><strong>Boundaries and assertion rules</strong> (measured on the development machine, 2026-09-12):</p>
 <table>
 <thead>
@@ -3227,7 +3267,7 @@ evoverse --help           # shows the CLI version banner and the currently avail
 <hr />
 <h2 id="22-faq">22. FAQ</h2>
 <h3 id="q1-no-evoverse-icon-after-installation">Q1: No EvoVerse icon after installation?</h3>
-<p><strong>A</strong>: Press <code>Ctrl+Shift+P</code> → type <code>EvoVerse: Set Up</code> → confirm the initialization. If it still does not appear, press <code>Ctrl+Shift+P</code> → <code>Developer: Reload Window</code>.</p>
+<p><strong>A</strong>: Press <code>Ctrl+Shift+P</code> → type <code>EvoVerse: Set Up (re-run bootstrap)</code> → confirm the initialization. If it still does not appear, press <code>Ctrl+Shift+P</code> → <code>Developer: Reload Window</code>.</p>
 <h3 id="q2-the-build-reports-efinity-not-found">Q2: The build reports "Efinity not found"?</h3>
 <p><strong>A</strong>: Open Settings (<code>Ctrl/Cmd + ,</code>), search for <code>evoverse.efinityPath</code>, and enter the Efinity installation path, for example:
 - Windows: <code>C:\Efinity\2026.1</code>
@@ -3251,7 +3291,7 @@ evoverse --help           # shows the CLI version banner and the currently avail
 <h3 id="q9-what-works-on-macos">Q9: What works on macOS?</h3>
 <p><strong>A</strong>: macOS supports development (code authoring), Icarus simulation, AI collaboration, CLI queries, Catalog management, and document viewing. Icarus <code>iverilog</code> / <code>vvp</code> are executed directly through argument arrays; paths with spaces and non-UTF-8 tool output are handled with macOS/POSIX semantics, with no <code>cmd.exe</code> dependency. The host and deployment are cross-platform (the customer package ships both <code>deploy.ps1</code> and <code>deploy.sh</code>, and the extensions are the same set of VSIXes); full Efinity build/programming still requires a Windows or Linux environment.</p>
 <h3 id="q10-how-does-a-team-sync-the-catalog">Q10: How does a team sync the Catalog?</h3>
-<p><strong>A</strong>: Do not put the runtime <code>catalog/</code> directory back under version control in the SDK or customer projects. Each member obtains read-only access to the unified private Catalog with their own GitHub identity, completes local authentication, then runs <code>EvoVerse: Sync Catalog</code>; use <code>evoverse catalog status --json</code> to align the version, commit, and tree digest.</p>
+<p><strong>A</strong>: Do not put the runtime <code>catalog/</code> directory back under version control in the SDK or customer projects. Each member runs <code>EvoVerse: Sync Catalog</code> to sync from the official public release repository (no GitHub account required); use <code>evoverse catalog status --json</code> to align the version, commit, and tree digest.</p>
 <h3 id="q11-can-multiple-intents-advance-at-the-same-time">Q11: Can multiple Intents advance at the same time?</h3>
 <p><strong>A</strong>: Yes, but the first design is itself the <code>INITIAL_DESIGN</code> system-integration Intent on the mainline, with no feature worktree; no second Intent may open until it completes the full specification, generation, system simulation, and document confirmation and establishes the first baseline. Afterwards at most 4 feature Intents run concurrently, each with its own branch and worktree; passing local verification only shows "Module verified, waiting for system integration". The mainline Workbench splits into <strong>Feature Intents</strong> and <strong>System Integration</strong>: system integration absorbs one branch at a time in FIFO order, and promotes the baseline only after re-confirming the composite specification, system simulation, and documents. A conflict or failed system validation aborts the merge and keeps the branch/worktree; after entering some Intent's worktree, <strong>Current Intent</strong> still shows only that Intent.</p>
 <hr />
@@ -3339,4 +3379,5 @@ Choose the current tutorial or reference material you need from the <a href="../
 </blockquote></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

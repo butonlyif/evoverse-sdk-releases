@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -126,6 +128,19 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><strong>父基线快照</strong>：<code>intent.create</code> 会把本轮父基线的资产快照进 <code>IntentRecord.baseBaselineFiles</code>（第一轮 = Stage0 初始基线；第二、三轮 = 上一轮晋级基线）。差量规格的对照、候选校验、晋级合并都以这份快照为准。</li>
 <li><strong><code>expectedRevision</code> 是并发提示值</strong>：控制面始终按最新 revision 追加事实；提交时的 revision 冲突只会得到对账动作，不会造成覆盖。它是协作提示，不是安全边界——真正的边界是回执与资格检查。</li>
 </ol>
+<p>把这个循环画出来。每一轮都走一遍；仿真 FAIL 不丢弃候选——修复后重新冻结、重新仿真：</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; 声明意图: intent.create
+    声明意图 --&gt; 等级决策: simulation.profile.select
+    等级决策 --&gt; 差量规格: spec.draft
+    差量规格 --&gt; 冻结候选: candidate.deliver
+    冻结候选 --&gt; 独立仿真: verification.simulate
+    独立仿真 --&gt; 晋级: PASS 且资格满足
+    独立仿真 --&gt; 冻结候选: FAIL，修复后重新交付
+    晋级 --&gt; 下一增量: candidate.promote
+    下一增量 --&gt; 声明意图: 还有剩余增量
+    下一增量 --&gt; [*]: 三轮全部晋级
+</pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <p>第一步，完成第一轮增量（SD 输入）的完整循环：</p>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 intent.create 为本工程声明第一轮增量意图：实现 SD 主机控制器与帧缓冲写控制器，
@@ -169,35 +184,146 @@ verification.simulate 独立仿真，PASS 后 candidate.promote 晋级。
 </ol>
 <h2 id="三轮增量的增量账本">三轮增量的增量账本</h2>
 <h3 id="增量-1-sd-输入-父基线-stage0-初始基线">增量 1：SD 输入（父基线：Stage0 初始基线）</h3>
-<ul>
-<li>意图与快照：<code>intent.create</code> 声明 SD 主机控制器与帧缓冲写控制器增量，控制面把 Stage0 初始基线快照进 <code>baseBaselineFiles</code>。</li>
-<li>文件账本：对照父基线标注复用（DDR wrapper、CSI-2 TX 例化保持只读）、新增（两个叶子模块）、修改（顶层连接）。</li>
-<li>等级与选择：<code>simulation.profile.select</code> 服务端推荐 FPGA_FUNCTIONAL 起步，低于推荐需 acceptedRisks。</li>
-<li>差量规格：<code>spec.draft</code> 只写新增模块接口、位宽、时钟域、Oracle 与顶层连接，冻结后 <code>/evoverse-rtl</code> 才开工。</li>
-<li>候选与 Design Assurance：<code>candidate.deliver</code> 冻结候选文件集并执行 Design Assurance，基线保持不变。</li>
-<li>独立仿真：<code>verification.simulate</code> 按所选等级对已冻结候选取证，<code>incomplete</code> 不算 PASS。</li>
-<li>晋级：<code>candidate.promote</code> 把候选与父基线合并安装为新基线，下一轮的父基线由此产生。</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>动作 / 工具</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>意图与快照</td>
+<td><code>intent.create</code></td>
+<td>声明 SD 主机控制器与帧缓冲写控制器增量；Stage0 初始父基线快照进 <code>baseBaselineFiles</code></td>
+</tr>
+<tr>
+<td>文件账本</td>
+<td>对照快照标注</td>
+<td>复用：DDR wrapper 与 CSI-2 TX 例化保持只读；新增：两个叶子模块；修改：顶层连接</td>
+</tr>
+<tr>
+<td>等级决策</td>
+<td><code>simulation.profile.select</code></td>
+<td>服务端推荐 FPGA_FUNCTIONAL 起步；低于推荐需逐条确认 acceptedRisks</td>
+</tr>
+<tr>
+<td>差量规格</td>
+<td><code>spec.draft</code></td>
+<td>只写新增模块接口、位宽、时钟域、Oracle 与顶层连接；冻结后 <code>/evoverse-rtl</code> 才开工</td>
+</tr>
+<tr>
+<td>冻结候选</td>
+<td><code>candidate.deliver</code></td>
+<td>冻结候选文件集并执行 Design Assurance，基线保持不变</td>
+</tr>
+<tr>
+<td>独立仿真</td>
+<td><code>verification.simulate</code></td>
+<td>按所选等级对已冻结候选取证，<code>incomplete</code> 不算 PASS</td>
+</tr>
+<tr>
+<td>晋级</td>
+<td><code>candidate.promote</code></td>
+<td>把候选与父基线合并安装为新基线；下一轮的父基线由此产生</td>
+</tr>
+</tbody>
+</table>
 <h3 id="增量-2-ddr-缓冲-父基线-sd-晋级基线">增量 2：DDR 缓冲（父基线：SD 晋级基线）</h3>
-<ul>
-<li>意图与快照：<code>intent.create</code> 声明 DDR 缓冲增量，本轮父基线是 SD 晋级后的基线，快照进 <code>baseBaselineFiles</code>。</li>
-<li>文件账本：复用 SD 输入两个模块（已在基线）、新增 DDR 缓冲模块、修改顶层连接。</li>
-<li>等级与选择：<code>simulation.profile.select</code> 重新决策，不继承第一轮的选择或 acceptedRisks。</li>
-<li>差量规格：<code>spec.draft</code> 描述缓冲深度、读写端口与父基线的握手，避免整工程规格重抄。</li>
-<li>候选与 Design Assurance：<code>candidate.deliver</code> 冻结候选，基线保持不变。</li>
-<li>独立仿真：<code>verification.simulate</code> 用新的场景组合取证，父基线的旧证据不迁移。</li>
-<li>晋级：<code>candidate.promote</code> 通过后，当前基线推进为 DDR 晋级基线。</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>动作 / 工具</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>意图与快照</td>
+<td><code>intent.create</code></td>
+<td>声明 DDR 缓冲增量；父基线是 SD 晋级基线，快照进 <code>baseBaselineFiles</code></td>
+</tr>
+<tr>
+<td>文件账本</td>
+<td>对照快照标注</td>
+<td>复用 SD 输入两个模块（已在基线）；新增 DDR 缓冲模块；修改顶层连接</td>
+</tr>
+<tr>
+<td>等级决策</td>
+<td><code>simulation.profile.select</code></td>
+<td>重新决策，不继承第一轮的选择或 acceptedRisks</td>
+</tr>
+<tr>
+<td>差量规格</td>
+<td><code>spec.draft</code></td>
+<td>写缓冲深度、读写端口与父基线的握手，不重抄整工程规格</td>
+</tr>
+<tr>
+<td>冻结候选</td>
+<td><code>candidate.deliver</code></td>
+<td>冻结候选并执行 Design Assurance，基线保持不变</td>
+</tr>
+<tr>
+<td>独立仿真</td>
+<td><code>verification.simulate</code></td>
+<td>用新的场景组合取证；父基线的旧证据不迁移</td>
+</tr>
+<tr>
+<td>晋级</td>
+<td><code>candidate.promote</code></td>
+<td>通过后当前基线推进为 DDR 晋级基线</td>
+</tr>
+</tbody>
+</table>
 <h3 id="增量-3-csi-2-输出-父基线-ddr-晋级基线">增量 3：CSI-2 输出（父基线：DDR 晋级基线）</h3>
-<ul>
-<li>意图与快照：<code>intent.create</code> 声明 CSI-2 TX 输出增量，本轮父基线是 DDR 晋级后的基线，快照进 <code>baseBaselineFiles</code>。</li>
-<li>文件账本：复用 SD 与 DDR 模块、新增 CSI-2 输出封装、修改顶层连接。</li>
-<li>等级与选择：<code>simulation.profile.select</code> 第三次独立决策；输出链路涉及外部协议，按推荐等级执行。</li>
-<li>差量规格：<code>spec.draft</code> 锁定 lanes、分辨率与帧率参数，以及与父基线的时钟关系。</li>
-<li>候选与 Design Assurance：<code>candidate.deliver</code> 冻结候选，基线保持不变。</li>
-<li>独立仿真：<code>verification.simulate</code> 覆盖输出时序与协议场景，PASS 才有资格晋级。</li>
-<li>晋级：<code>candidate.promote</code> 完成后，基线包含全链路模块，进入阶段 04 / 05。</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>动作 / 工具</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>意图与快照</td>
+<td><code>intent.create</code></td>
+<td>声明 CSI-2 TX 输出增量；父基线是 DDR 晋级基线，快照进 <code>baseBaselineFiles</code></td>
+</tr>
+<tr>
+<td>文件账本</td>
+<td>对照快照标注</td>
+<td>复用 SD 与 DDR 模块；新增 CSI-2 输出封装；修改顶层连接</td>
+</tr>
+<tr>
+<td>等级决策</td>
+<td><code>simulation.profile.select</code></td>
+<td>第三次独立决策；输出链路涉及外部协议，按推荐等级执行</td>
+</tr>
+<tr>
+<td>差量规格</td>
+<td><code>spec.draft</code></td>
+<td>锁定 lanes、分辨率与帧率参数，以及与父基线的时钟关系</td>
+</tr>
+<tr>
+<td>冻结候选</td>
+<td><code>candidate.deliver</code></td>
+<td>冻结候选并执行 Design Assurance，基线保持不变</td>
+</tr>
+<tr>
+<td>独立仿真</td>
+<td><code>verification.simulate</code></td>
+<td>覆盖输出时序与协议场景，PASS 才有资格晋级</td>
+</tr>
+<tr>
+<td>晋级</td>
+<td><code>candidate.promote</code></td>
+<td>完成后基线包含全链路模块，进入阶段 04 / 05</td>
+</tr>
+</tbody>
+</table>
 <h2 id="你需要确认什么">你需要确认什么</h2>
 <ul>
 <li><strong>未冻结规格不能开始生成</strong>：如果 <code>/evoverse-rtl</code> 发现接口、位宽、时钟域或 Oracle 有歧义，它会停在规格决策上——这是正常保护，回到阶段 02 补决策，不要绕过。</li>
@@ -243,4 +369,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

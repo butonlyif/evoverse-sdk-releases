@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -129,7 +131,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="1-architecture-positioning">1. Architecture Positioning</h2>
 <h3 id="1-1-position-in-the-sdk-four-layer-architecture">1.1 Position in the SDK Four-Layer Architecture</h3>
 <p>The RK3588 Adapter sits in <strong>Layer 2: Vendor Adapter</strong>, the adaptation layer between the SDK and the Rockchip toolchain:</p>
-<pre><code class="language-mermaid">block-beta
+<pre class="mermaid">block-beta
     columns 1
     block:L4
         L4Title[&quot;&lt;b&gt;Layer 4: AI Intelligence&lt;/b&gt; (vendor-neutral)&lt;br/&gt;timing diagnosis / code generation / build strategy / result analysis&quot;]
@@ -153,7 +155,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     block:L1
         L1Title[&quot;&lt;b&gt;Layer 1: Vendor Tools&lt;/b&gt; (never touched, only invoked)&lt;br/&gt;Efinity / arm-gcc / U-Boot / TF-A / Buildroot / rkdeveloptool&quot;]
     end
-</code></pre>
+</pre>
 <h3 id="1-2-relationship-with-the-efinix-adapter">1.2 Relationship with the Efinix Adapter</h3>
 <table>
 <thead>
@@ -202,7 +204,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <p><strong>Key data flows</strong>:</p>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     SDK[&quot;SDK Project Model&quot;]
     SDK --&gt; RK[&quot;&lt;b&gt;RK3588 Adapter&lt;/b&gt;&quot;]
     RK --&gt; UBoot[&quot;generateProject → configs / patches / build plan&quot;]
@@ -211,10 +213,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     RK --&gt; Rootfs[&quot;build → Rootfs&quot;]
     RK --&gt; UpdateImg[&quot;package → deployable firmware package&quot;]
     RK --&gt; Report[&quot;Build Report&lt;br/&gt;(vendor-neutral model)&quot;]
-</code></pre>
+</pre>
 <h3 id="1-3-soc-side-implementation-of-the-bridge-spec">1.3 SoC-Side Implementation of the Bridge Spec</h3>
 <p>When the RK3588 acts as the SoC in a system-level design together with an Efinix FPGA, the Bridge Spec defines the cross-chip interfaces. The FPGA and the RK3588 interconnect over the following four physical interfaces:</p>
-<pre><code class="language-mermaid">block-beta
+<pre class="mermaid">block-beta
     columns 3
     block:FPGA:1
         columns 1
@@ -258,7 +260,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
         space
         S4[&quot;Any free GPIO bank\npinctrl subsystem&quot;]
     end
-</code></pre>
+</pre>
 <h4 id="1-3-1-bridge-physical-interface-overview">1.3.1 Bridge Physical Interface Overview</h4>
 <table>
 <thead>
@@ -768,7 +770,7 @@ parseBuildrootError(line: string): BuildError {
 <p><a id="ch3"></a></p>
 <h2 id="3-build-flow-design">3. Build Flow Design</h2>
 <h3 id="3-1-overall-build-flow">3.1 Overall Build Flow</h3>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
     UBoot[&quot;&lt;b&gt;U-Boot&lt;/b&gt;&lt;br/&gt;v2024.x&quot;] --&gt; TFA[&quot;&lt;b&gt;TF-A&lt;/b&gt;&lt;br/&gt;(ATF)&quot;]
     TFA --&gt; Kernel[&quot;&lt;b&gt;Kernel&lt;/b&gt;&lt;br/&gt;v6.x&quot;]
     Kernel --&gt; Rootfs[&quot;&lt;b&gt;Buildroot&lt;/b&gt;&lt;br/&gt;Rootfs&quot;]
@@ -784,7 +786,7 @@ parseBuildrootError(line: string): BuildError {
     squashfs --&gt; merge
 
     merge --&gt; firmware[&quot;&lt;b&gt;firmwarepack&lt;/b&gt;&lt;br/&gt;(update.img)&quot;]
-</code></pre>
+</pre>
 <h3 id="3-2-u-boot-build-flow">3.2 U-Boot Build Flow</h3>
 <pre><code class="language-typescript">// rk3588Build.ts
 
@@ -1051,7 +1053,7 @@ MAGIC: 0x4F524B50
 <p><a id="ch4"></a></p>
 <h2 id="4-device-tree-generation-design">4. Device Tree Generation Design</h2>
 <h3 id="4-1-device-tree-architecture">4.1 Device Tree Architecture</h3>
-<pre><code class="language-mermaid">graph TD
+<pre class="mermaid">graph TD
     DT[&quot;&lt;b&gt;Device Tree (RK3588)&lt;/b&gt;&quot;]
 
     DT --&gt; Base[&quot;&lt;b&gt;Base DTS&lt;/b&gt;&lt;br/&gt;rockchip/rk3588-evb*.dtsi&quot;]
@@ -1069,7 +1071,7 @@ MAGIC: 0x4F524B50
     Overlay --&gt; O1[&quot;Bridge Spec mapping&quot;]
     Overlay --&gt; O2[&quot;FPGA register space&quot;]
     Overlay --&gt; O3[&quot;Customer-specific peripherals&quot;]
-</code></pre>
+</pre>
 <h3 id="4-2-device-tree-generator-implementation">4.2 Device Tree Generator Implementation</h3>
 <pre><code class="language-typescript">// deviceTreeGenerator.ts
 
@@ -1792,13 +1794,13 @@ export class RK3588ResourceAllocator {
 <p><a id="ch5"></a></p>
 <h2 id="5-flashing-flow-design">5. Flashing Flow Design</h2>
 <h3 id="5-1-flashing-flow-overview">5.1 Flashing Flow Overview</h3>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     Maskrom[&quot;&lt;b&gt;Maskrom Detection&lt;/b&gt;&lt;br/&gt;device enters Maskrom mode&lt;br/&gt;(hold the MASKROM button at power-on, or short the pins)&quot;]
     Maskrom --&gt; Loader[&quot;&lt;b&gt;LOADER Download&lt;/b&gt;&lt;br/&gt;download the MiniLoader&lt;br/&gt;(rk3588_loader_v*.bin)&lt;br/&gt;rkdeveloptool dnl&quot;]
     Loader --&gt; Parameter[&quot;&lt;b&gt;Parameter Write&lt;/b&gt;&lt;br/&gt;write the partition table&lt;br/&gt;(parameter.txt)&lt;br/&gt;rkdeveloptool down&quot;]
     Parameter --&gt; Firmware[&quot;&lt;b&gt;Firmware Download&lt;/b&gt;&lt;br/&gt;write the firmware&lt;br/&gt;(idbloader/trust/uboot/boot/rootfs)&lt;br/&gt;rkdeveloptool up&quot;]
     Firmware --&gt; Verify[&quot;&lt;b&gt;Verify &amp; Reboot&lt;/b&gt;&lt;br/&gt;verify checksums&lt;br/&gt;reboot the device&quot;]
-</code></pre>
+</pre>
 <h3 id="5-2-flash-implementation">5.2 Flash Implementation</h3>
 <pre><code class="language-typescript">// rk3588Flash.ts
 
@@ -2032,7 +2034,7 @@ export function generateParameterTxt(
 <p><a id="ch6"></a></p>
 <h2 id="6-debug-support">6. Debug Support</h2>
 <h3 id="6-1-debug-architecture">6.1 Debug Architecture</h3>
-<pre><code class="language-mermaid">flowchart TD
+<pre class="mermaid">flowchart TD
     Serial[&quot;&lt;b&gt;Serial Console&lt;/b&gt;&quot;]
     ADB[&quot;&lt;b&gt;ADB Access&lt;/b&gt;&quot;]
     Panic[&quot;&lt;b&gt;Kernel Panic&lt;/b&gt;&quot;]
@@ -2042,7 +2044,7 @@ export function generateParameterTxt(
     Panic --&gt; Aggregator
 
     Aggregator --&gt; AI[&quot;&lt;b&gt;AI Analysis&lt;/b&gt; (L4 Intelligence)&lt;br/&gt;- TimingDiagnoser&lt;br/&gt;- BuildStrategyAdvisor&lt;br/&gt;- CopilotContext&quot;]
-</code></pre>
+</pre>
 <h3 id="6-2-serial-log-capture">6.2 Serial Log Capture</h3>
 <pre><code class="language-typescript">// serialDebug.ts
 
@@ -2574,7 +2576,7 @@ evoverse rk3588 debug --adb
 evoverse rk3588 diagnose --logs dmesg.txt
 </code></pre>
 <h3 id="7-5-priority-matrix">7.5 Priority Matrix</h3>
-<pre><code class="language-mermaid">quadrantChart
+<pre class="mermaid">quadrantChart
     title Priority Matrix
     x-axis &quot;Importance low&quot; --&gt; &quot;Importance high&quot;
     y-axis &quot;Efficiency low&quot; --&gt; &quot;Efficiency high&quot;
@@ -2588,7 +2590,7 @@ evoverse rk3588 diagnose --logs dmesg.txt
     &quot;P1.4 Rootfs&quot;: [0.3, 0.2]
     &quot;P3.1 Flash&quot;: [0.6, 0.3]
     &quot;P4.2 ADB&quot;: [0.5, 0.25]
-</code></pre>
+</pre>
 <p><strong>Recommended execution order</strong>:
 1. Phase 1.3 Kernel build (highest value, most verification)
 2. Phase 1.1-1.4 the complete build flow
@@ -3453,4 +3455,5 @@ interface VendorAdapterV2 {
 </blockquote></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

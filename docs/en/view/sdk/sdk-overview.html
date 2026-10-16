@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -108,14 +110,6 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <strong>Supported platforms</strong>: Trae IDE (recommended) / VS Code 1.80+ · Windows</p>
 </blockquote>
 <p>This document is the product-level description of the EvoVerse SDK: what it is, which components it consists of, what it can do, and how its capabilities connect. For step-by-step procedures, use it together with the <a href="user-manual.html">User Manual</a>, the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 project tutorial</a>, and the two controlled Skill documents.</p>
-<h3 id="design-iteration-control-2026-09-13">Design iteration control (2026-09-13)</h3>
-<p>The SDK uses server-side design iteration as the authorization source for reliability. Trae natural language and Workbench Control read the same <code>project_next</code> current-action envelope; a new conversation restores the revision, the current iteration, the recommended action, user decisions, evidence boundaries, and the receipt from the envelope instead of keeping a separate chat-state copy.</p>
-<p>The design, system-integration, and project-generation chains use registrable recovery contracts. Contracts are enforced at service-call time; any non-terminal state must expose a real, plannable completion or quarantine exit. If the control plane detects a managed Intent/Integration that has not terminated but has no executable action, <code>project_next</code> returns a revision-bound descriptor with a single <code>recovery.open</code>; once that descriptor is persisted verbatim, only recovery exits such as <code>recovery.quarantine</code> are exposed while normal business actions stay frozen. Recovery states and attempts are appended to the fact history, and quarantine preserves the trusted baseline, the facts, and the failure evidence—it does not count as success. Natural language only selects the recovery target; the server-side descriptor spells out <code>keep/replace/discard/steps/successChecks</code>. Abandoning the initial system design closes the Intent and the corresponding integration directly, without fabricating a worktree execution.</p>
-<p>System integration follows a commit-ahead-of-facts Saga. Every deferred feature merge persists the request, the branch head, and the verification summary before the commit, and binds the exact HEAD/tree after it; the baseline is fully constructed in quarantined staging and published through a single pointer, with the promotion/integration/execution facts committed under one batch marker. If the process is interrupted after the commit, the next state read completes the facts only when the Git and journal identities match exactly—the merge is never repeated; if the facts are committed but the queue is not yet updated, the registry converges automatically.</p>
-<p>Free-form development remains available and ordinary Builds are not constrained by reliability gates; as soon as a controlled asset changes, the current iteration shows <code>UNVERIFIED_CHANGES</code>. Bringing the change under management freezes the change set, computes the exact DAG impact, quarantines the candidate, and then requires <code>rtl.task.qualify</code> test-asset qualification, Design Assurance, six-layer simulation, and promotion in that order. Qualification identities and verdicts are held by the Verification Service—the host only submits execution inputs—and the previous baseline is never overwritten; audit receipts are always kept.</p>
-<p>Reliable external calls go through MCP only. One transport failure allows exactly one automatic recovery; after that, the required tools must be verified and the iteration/task/state/candidate/spec digests reconciled. Only read-only, idempotent, or confirmed-not-executed requests may be replayed safely. When reconciliation is impossible or the connection drops again, the flow fails closed—there is no CLI business fallback. Automated fixtures, real RTL simulation, Efinity Native Build, programming, and physical hardware each constitute an independent evidence boundary.</p>
-<p>Discovery for Icarus/Questa does not conclude availability from "the exe exists / the version string is readable": the same provider command contract runs a minimal compile, execute, and event-parse smoke test. When a selected toolchain fails, a <code>TOOLCHAIN_INVALID</code> stop receipt is written and <code>project_next</code> returns <code>WAITING_FOR_USER</code> with <code>toolchain.reprobe</code> / <code>toolchain.reselect</code>—no silent fallback, and no simulation evidence is produced.</p>
-<hr />
 <h2 id="1-what-the-sdk-is">1. What the SDK is</h2>
 <p>The EvoVerse SDK is an FPGA and SoC development workbench running inside Trae / VS Code. Built around Efinix Titanium FPGAs (WS E1/E3 boards), it provides a complete closed loop from <strong>project creation → RTL authoring and simulation → build and reports → timing closure → programming and debug → RISC-V software</strong>, and opens the same flow to the command line and AI agents through its CLI and MCP.</p>
 <p>It solves three problems:</p>
@@ -220,6 +214,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>A user request (such as Build) is routed by the core to the matching Adapter; the Adapter invokes the real toolchain (for example <code>efx_run --flow compile</code>) and posts structured results back to the Workbench for display</li>
 <li>Each Adapter owns its Workbench tab content; the core handles loading, resource injection, and the unified look-and-feel</li>
 </ul>
+<pre class="mermaid">flowchart LR
+    WD[workspaceDocument&lt;br&gt;HTML parsing and resource injection] --&gt; WB[&quot;Workbench shell&lt;br&gt;(six tabs / System root)&quot;]
+    WB --&gt;|capability request| AR[AdapterRegistry]
+    AR &lt;--&gt;|headless adapter protocol| EF[efinity-adapter]
+    AR &lt;--&gt;|headless adapter protocol| RK[rk3588-adapter]
+    EF --&gt;|build / timing / debug / program&lt;br&gt;software / IP / designApi| RUN[&quot;efx_run --flow compile&quot;]
+    RK --&gt; BSP[&quot;BSP profile validation&lt;br&gt;four-stage cross-compilation&quot;]
+</pre>
 <h2 id="4-capability-overview">4. Capability overview</h2>
 <table>
 <thead>
@@ -232,48 +234,48 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td>Project creation and takeover</td>
-<td>Trae natural language / Workbench Control</td>
+<td>Trae natural language / Workbench Control (<code>evoverse.selectDesignFlow</code>, EvoVerse: Select Design Flow)</td>
 <td>The <code>project_next</code> envelope names the single currently recommended action; the revision is re-read after every execution, and existing folders or archives can also be taken over</td>
 </tr>
 <tr>
 <td>Board wizard</td>
-<td><code>EvoVerse: New Board</code></td>
+<td><code>evoverse.newBoard</code> (EvoVerse: New Board…)</td>
 <td>Creates a new board definition from a schematic PDF / pinout data and registers it in the Catalog</td>
 </tr>
 <tr>
 <td>Catalog materials</td>
-<td><code>EvoVerse: Sync Catalog</code></td>
-<td>Syncs boards / carriers / Jackets / IP from the private Catalog; tutorial materials count only as evidence-backed sources and never replace a new project's specification</td>
+<td><code>evoverse.syncCatalog</code> (EvoVerse: Sync Catalog)</td>
+<td>Syncs boards / carriers / Jackets / IP from the official public Catalog release repository; tutorial materials count only as evidence-backed sources and never replace a new project's specification</td>
 </tr>
 <tr>
 <td>RTL editing</td>
 <td>Native editor</td>
-<td>Verilog / SystemVerilog syntax, snippets, and a right-click <code>(* mark_debug *)</code> marker</td>
+<td>Verilog / SystemVerilog syntax, snippets, and a right-click <code>(* mark_debug *)</code> marker (<code>efinity.debug.addSelectedSignal</code>, Add Signal to Efinity Debug)</td>
 </tr>
 <tr>
 <td>Simulation</td>
-<td><code>EvoVerse: Simulate</code></td>
-<td>One-click Icarus Verilog / QuestaSim runs with VCD waveforms opened automatically; regression and ISP image simulation supported</td>
+<td><code>evoverse.sim</code> (Toolchain: Simulate)</td>
+<td>One-click Icarus Verilog / QuestaSim runs with VCD waveforms opened automatically; ISP image simulation uses <code>evoverse.simIsp</code> (Toolchain: Simulate ISP (Video Sim))</td>
 </tr>
 <tr>
 <td>Code style check</td>
-<td><code>EvoVerse: Check Code Style</code></td>
+<td><code>evoverse.codeCheck</code> (Toolchain: Check RTL Code Style)</td>
 <td>Surfaces deterministic RTL issues (reset, CDC, naming, and more) before the build</td>
 </tr>
 <tr>
 <td>Build</td>
-<td>Build tab / <code>EvoVerse: Build</code></td>
-<td>Invokes the native Efinity unified flow (PT → map → pnr → pgm) with live output and cancellation</td>
+<td>Build tab / <code>evoverse.build</code> (Toolchain: Build)</td>
+<td>Invokes the native Efinity unified flow (PT → map → pnr → pgm) with live output and cancellation; the full flow uses <code>evoverse.buildFull</code> (Toolchain: Build (Full Flow))</td>
 </tr>
 <tr>
 <td>Build reports</td>
-<td>Build tab / <code>EvoVerse: Open Report</code></td>
+<td>Build tab / <code>evoverse.openReport</code> (Toolchain: Open Build Report)</td>
 <td>Structured views of resource utilization, clock domains, I/O, and timing summaries</td>
 </tr>
 <tr>
 <td>Timing diagnostics</td>
-<td><code>EvoVerse: Diagnose Timing</code></td>
-<td>A 12-rule engine reports a cause and confidence per violating endpoint; datapath tracing, pipeline-depth analysis, and a Tcl console</td>
+<td><code>evoverse.diagnoseTiming</code> (Toolchain: Diagnose Timing Violations)</td>
+<td>The six-fingerprint root-cause classification engine reports a cause and confidence per violating endpoint; datapath tracing, pipeline-depth analysis, and a Tcl console</td>
 </tr>
 <tr>
 <td>On-chip debug</td>
@@ -282,13 +284,13 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>Programming</td>
-<td><code>EvoVerse: Program FPGA</code></td>
+<td><code>evoverse.program</code> (Toolchain: Program FPGA)</td>
 <td>Calls efx_pgm to download the bitstream over FTDI/JTAG</td>
 </tr>
 <tr>
 <td>RISC-V software</td>
-<td>SW tab / <code>EvoVerse: New RISC-V Project</code></td>
-<td>Sapphire SoC application creation, BSP generation, build, download, and GDB debugging</td>
+<td>SW tab / <code>evoverse.newRiscvProject</code> (EvoVerse: New RISC-V Project…)</td>
+<td>Sapphire SoC application creation, BSP generation (<code>evoverse.generateBsp</code>, Software: Generate BSP Headers), build, download, and GDB debugging</td>
 </tr>
 <tr>
 <td>IP management</td>
@@ -297,12 +299,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>Interface design (DesignAPI)</td>
-<td><code>EvoVerse: Open Design</code></td>
+<td><code>evoverse.openDesign</code> (Efinity: Open Native Design)</td>
 <td>Transactional edits to ISF interface constraints: preview → confirm → apply → DRC</td>
 </tr>
 <tr>
 <td>Knowledge base</td>
-<td><code>EvoVerse: Knowledge Base</code></td>
+<td><code>evoverse.knowledgeBase</code> (EvoVerse: Show Knowledge Base)</td>
 <td>Accumulates verified toolchain behavior and fixes, queryable by humans and agents</td>
 </tr>
 <tr>
@@ -328,12 +330,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tr>
 <td>MCP</td>
 <td>MCP server</td>
-<td>The agent entry point for Catalog, projects, verification, builds, debug, and evidence; 97 tools grouped by domain, with per-tool parameter details on the "MCP Tool Reference" page of the documentation portal</td>
-</tr>
-<tr>
-<td>Reliable software tasks</td>
-<td>MCP <code>software_task_*</code></td>
-<td>A controlled closed loop for RISC-V software: BSP binding, host tests, cross-builds, and board tests are all gated by receipts; injecting PASS is forbidden</td>
+<td>The agent entry point to the project control plane; it exposes 11 tools in total: <code>project_status</code> / <code>project_next</code> / <code>project_execute</code> + <code>evoverse_health</code> + 7 <code>rk3588_*</code> tools (environment status / prepare / deploy, project generate / preflight / build / status)</td>
 </tr>
 </tbody>
 </table>
@@ -358,7 +355,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td><strong>Timing</strong></td>
-<td>Timing reports, 12-rule diagnostics, datapath and pipeline analysis, Tcl console</td>
+<td>Timing reports, six-fingerprint root-cause diagnostics, datapath and pipeline analysis, Tcl console</td>
 </tr>
 <tr>
 <td><strong>Debug</strong></td>
@@ -381,7 +378,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </code></pre>
 <p>For a complete first-run experience, follow the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 project tutorial</a>: discover materials and freeze the specification first, then generate and verify the RTL, and finally integrate and build. You never leave the IDE.</p>
 <h3 id="6-2-the-timing-closure-loop">6.2 The timing-closure loop</h3>
-<pre><code>Build → Diagnose Timing (the 12 rules report cause and confidence)
+<pre><code>Build → Diagnose Timing (the six-fingerprint root-cause classification engine reports cause and confidence)
 → datapath tracing / pipeline analysis to locate the bottleneck
 → adjust the build strategy or modify the RTL → Build again to verify WNS/TNS
 </code></pre>
@@ -473,7 +470,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <h2 id="9-upgrades-uninstallation-and-faq">9. Upgrades, uninstallation, and FAQ</h2>
 <ul>
-<li><strong>Upgrading</strong>: the core and the installed Adapters stay on the same version number (for example, all at 0.9.0); when upgrading the core, upgrade the Adapters at the same time.</li>
+<li><strong>Upgrading</strong>: the core and the installed Adapters stay on the same version number (for example, all at 1.0.0); when upgrading the core, upgrade the Adapters at the same time.</li>
 <li><strong>Uninstalling an Adapter</strong>: the core keeps working; the corresponding Workspace tabs disappear and everything else is unaffected.</li>
 </ul>
 <p><strong>Q: I only do FPGA development—do I need to install the RK3588 Adapter?</strong>
@@ -493,4 +490,5 @@ Adapter versions are independent of the Efinity version; an occasional major Efi
 </ul></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

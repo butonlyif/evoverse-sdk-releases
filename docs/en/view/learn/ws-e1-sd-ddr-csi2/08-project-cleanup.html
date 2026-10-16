@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}
 .tutorial-article{border-top:5px solid var(--accent)}
 .tutorial-article>h2{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--soft),transparent);padding:10px 12px;border-bottom:0;border-radius:8px}
@@ -121,6 +123,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Once the display link is verified, do not let scratch drafts, candidate files, and reports litter the project root. This chapter has Trae generate a cleanup preview first, execute only after you confirm each entry, and finally re-run one <code>efx_run --flow compile</code> to prove the project is still deliverable.</p>
 </blockquote>
 <p>The goal of cleanup is to make it easy for the next engineer to find files — not to rewrite a project that already works. The frozen specification package (<code>design-package/</code>), the baselines formed by the three promoted increments (including each round's <code>candidate.promote</code> receipt), the delivered candidates, and all evidence receipts are protected files — they are the evidence chain of this SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX link on the TJ180A484S, and they take no part in the cleanup.</p>
+<p>The cleanup runs in the order shown below — preview first, confirmation-driven, closed out by a re-build:</p>
+<pre class="mermaid">flowchart TD
+    A[&quot;Generate cleanup preview&lt;br&gt;reports/project-cleanup-preview.md&quot;] --&gt; B[&quot;You confirm each entry&lt;br&gt;uncertain items marked as needing a decision&quot;]
+    B --&gt; C[&quot;Execute only confirmed entries&lt;br&gt;fix reference paths along the way&quot;]
+    C --&gt; D{&quot;Project XML and&lt;br&gt;script paths still valid?&quot;}
+    D --&gt;|Yes| E[&quot;build.native re-build&lt;br&gt;efx_run --flow compile&quot;]
+    D --&gt;|No| F[&quot;Stop at the problem&lt;br&gt;roll back unconfirmed actions&quot;]
+    E --&gt; G[&quot;Report: reorganized / protected /&lt;br&gt;references updated / re-build result&quot;]
+</pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Inspect the current WS-E1 project and first generate a &quot;project directory cleanup
 preview&quot;; do not move, rename, or delete any files. For design-package/, rtl/,
@@ -225,4 +236,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
+<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

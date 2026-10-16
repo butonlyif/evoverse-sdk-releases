@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -114,6 +116,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <ul>
 <li>Trae; standard VS Code is also supported, but follow the Trae route first for initial setup.</li>
 <li>64-bit Python 3.11+.</li>
+<li>Git on PATH (<code>EvoVerse: Sync Catalog</code> relies on a plain Git sync).</li>
 <li>Install Efinity 2026.1+ when real FPGA builds and programming are needed.</li>
 <li>Icarus Verilog or QuestaSim for ordinary RTL simulation.</li>
 </ul>
@@ -122,7 +125,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Extract the customer package completely before running any script. In the directory containing the package, run:</p>
 <pre><code class="language-powershell">tar -xzf EvoVerse-SDK-v*.tar.gz
 </code></pre>
-<p>Windows 10 1803+ ships with <code>tar</code>, handles long paths, and avoids the "path too long" errors typical of zip extraction (7-Zip also works). After extraction, open <code>START-HERE.md</code> or <code>docs/site/customer-portal.html</code> and confirm you can see the three role-based routes.</p>
+<p>Windows 10 1803+ ships with <code>tar</code>, handles long paths, and avoids the "path too long" errors typical of zip extraction (7-Zip also works). After extraction, open <code>START-HERE.md</code> or <code>docs/site-en/customer-portal.html</code> and confirm you can see the three role-based routes.</p>
 <h3 id="2-one-command-deployment">2. One-command deployment</h3>
 <p>Open PowerShell in the package directory:</p>
 <pre><code class="language-powershell">.\deploy.ps1 -Target trae
@@ -135,14 +138,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>When Trae prompts for a restart, fully restart the host so the MCP configuration takes effect.</li>
 <li>In Settings, confirm that <code>evoverse.efinityPath</code> points at the actual Efinity installation directory.</li>
 </ol>
-<h3 id="3-1-obtain-the-private-catalog">3.1 Obtain the private Catalog</h3>
+<h3 id="3-1-sync-the-catalog">3.1 Sync the Catalog</h3>
 <ol>
-<li>Tell the EvoVerse operations team your GitHub account and wait for the invitation to the private <code>evoverse-catalog</code> repository.</li>
-<li>Accept the invitation; the repository URL becomes visible to the VSIX client, but the content cannot be read without GitHub authorization.</li>
-<li>Authenticate that account on this machine using Git Credential Manager or the GitHub CLI. Do not request or use a team-shared PAT.</li>
-<li>Run <code>EvoVerse: Sync Catalog</code>. The sync verifies signatures and integrity first, then switches the local version transactionally.</li>
-<li>Run <code>evoverse catalog status --json</code> and record <code>catalogVersion</code>, <code>commit</code>, and <code>treeDigest</code>.</li>
-<li>If the network or authentication fails, fix it and retry; if a newer version is unavailable but the installed one is healthy, run <code>EvoVerse: Roll Back Catalog</code> to roll back offline.</li>
+<li>Run <code>EvoVerse: Sync Catalog</code>. The sync pulls from the official public release repository (<code>evoverse-catalog-release</code>) by default—<strong>no GitHub account is required</strong>; when it finishes it writes the receipt <code>catalog-sync-receipt.json</code>, recording <code>catalog_version</code> and <code>commit</code>.</li>
+<li>Run <code>evoverse catalog status --json</code> and record <code>state</code>, <code>location</code>, and the receipt's <code>catalog_version</code> and <code>commit</code>.</li>
+<li>If the network fails, fix it and retry; a failed sync does not affect the existing local Catalog (only official entries are overwritten; local content is untouched). If the local catalog directory is corrupted, simply run <code>EvoVerse: Sync Catalog</code> again to rebuild it; the workspace pointer file <code>.evoverse/catalog.json</code> records the trusted material root (<code>catalogRoot</code>).</li>
+<li>To use a self-hosted mirror or a private repository instead, override the repository URL with <code>evoverse sync --repository &lt;URL&gt;</code> or the <code>EVOVERSE_CATALOG_REPOSITORY</code> environment variable.</li>
 </ol>
 <h3 id="4-verify-the-installation">4. Verify the installation</h3>
 <ol>
@@ -186,7 +187,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>Catalog empty / <code>CATALOG_NOT_INSTALLED</code></td>
-<td>Accept the private repository invitation, complete local GitHub authentication, then run <code>EvoVerse: Sync Catalog</code></td>
+<td>Run <code>EvoVerse: Sync Catalog</code> (the default public release repository needs no GitHub account)</td>
 </tr>
 <tr>
 <td>Trae Agent cannot see MCP</td>
@@ -205,5 +206,6 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="uninstall">Uninstall</h2>
 <p>Uninstall the installed VSIX files from Extensions. Uninstalling the extension does not automatically delete customer projects or the data under <code>evoverse.home</code>; dispose of the user data manually only after confirming it is no longer needed.</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
+
 
 </body></html>

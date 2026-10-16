@@ -94,6 +94,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
 .article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
 .article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0</p>
@@ -131,7 +133,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <hr />
 <h2 id="current-learning-entry-point">Current learning entry point</h2>
-<p>Enter through the Video Sim task on the offline customer documentation portal. This manual, together with <a href="platform-overview.html">Platform Overview</a> and the <a href="video-ip-design-guide.html">Video IP Design Guide</a> in the same directory, is the current reference; the retired VIP01–VIP10 tutorial tree is no longer distributed with the SDK working directory.</p>
+<p>Enter through the Video Sim task on the offline customer documentation portal. This manual, together with <a href="introduction.html">Platform Introduction</a> and the <a href="video-ip-design-guide.html">Video IP Design Guide</a> in the same directory, is the current reference; the retired VIP01–VIP10 tutorial tree is no longer distributed with the SDK working directory.</p>
 <hr />
 <h2 id="1-product-introduction">1. Product introduction</h2>
 <p>The VIP simulation and verification platform is an <strong>end-to-end video IP simulation environment</strong>, delivered as a Trae / VS Code extension with two entry points: a graphical console and the command line. Core capabilities:</p>
@@ -208,7 +210,7 @@ iverilog: Icarus Verilog version 12.0 (stable)
 </blockquote>
 <hr />
 <h2 id="3-system-architecture">3. System architecture</h2>
-<pre><code class="language-mermaid">flowchart TB
+<pre class="mermaid">flowchart TB
     subgraph GUI[&quot;Trae IDE — VIP Sim console&quot;]
         PARAM[&quot;⚙ Simulation parameters&lt;br/&gt;IP / resolution / frame count&quot;]
         REG[&quot;📋 Register editing&lt;br/&gt;regdef.json → form&quot;]
@@ -241,7 +243,7 @@ iverilog: Icarus Verilog version 12.0 (stable)
     REGB --&gt; DUT
     SNK --&gt;|result.hex| Python
     Python -- &quot;output.png / report.json&quot; --&gt; GUI
-</code></pre>
+</pre>
 <h3 id="3-1-data-bridging">3.1 Data bridging</h3>
 <p>Python and Verilog are bridged through <strong>hex text files</strong>:</p>
 <table>
@@ -315,13 +317,13 @@ iverilog: Icarus Verilog version 12.0 (stable)
 <li><strong>Already a simulation project</strong> → the console loads directly and auto-detects the project's IP / registers / inputs and outputs (no manual import). When you open a simulation project folder, the console <strong>pops up automatically</strong> as well.</li>
 <li><strong>Not a simulation project (or no folder open)</strong> → the console shows a "Get Started" landing page; click <strong>➕ New Simulation Project</strong> to create a project in the same view—no separate command needed.</li>
 </ul>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
   A[Open the simulation console] --&gt; B{Simulation project?}
   B -- Yes --&gt; C[Load the console&lt;br/&gt;auto-import the project]
   B -- No --&gt; D[Get Started landing page]
   D -- click New --&gt; E[Pick location / name → copy template → create venv]
   E --&gt; F[Open the project] --&gt; C
-</code></pre>
+</pre>
 <p>When you create a project, the extension automatically:
 1. Copies the complete simulation environment to the new directory (Python scripts / Verilog BFMs / Makefile / example DUT)
 2. Creates the in-project Python virtual environment <code>.venv</code> and installs opencv/numpy/pillow
@@ -545,14 +547,14 @@ python scripts/import_project.py --src /path/to/your/project --json
 <li>Refresh the console → import an image → run the simulation</li>
 </ol>
 <p><strong>The development iteration loop</strong>:</p>
-<pre><code class="language-mermaid">flowchart LR
+<pre class="mermaid">flowchart LR
     A[&quot;Describe the requirement to the AI&quot;] --&gt; B[&quot;gen_ip_spec.py generates\nRTL + TB + regdef + golden&quot;]
     B --&gt; C[&quot;make verify IP=&amp;lt;ip&amp;gt;&quot;]
     C --&gt; D{&quot;Golden reference PASS?&quot;}
     D -- No --&gt; E[&quot;Fix the RTL / golden.py&lt;br/&gt;inspect analysis panels / waveforms&quot;]
     E --&gt; C
     D -- Yes --&gt; F[&quot;Verify on a large image / run the regression&quot;]
-</code></pre>
+</pre>
 <p><strong>About fixing the golden model</strong>: the auto-generated golden model is an algorithm template; RTL details (fixed-point widths, truncation points, saturation logic) need manual review. How to check:</p>
 <pre><code class="language-bash"># Compare the RTL fixed-point arithmetic against golden.py's Python arithmetic
 make verify IP=my_filter WIDTH=64 HEIGHT=48
@@ -1004,4 +1006,5 @@ make verify IP=my_filter WIDTH=64 HEIGHT=48
 <strong>Last updated</strong>: 2026-06-24</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>
