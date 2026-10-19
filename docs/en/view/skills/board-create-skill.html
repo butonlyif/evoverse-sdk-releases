@@ -126,6 +126,7 @@ Distributor or community pages can help discover part numbers, but they cannot c
 <ol>
 <li>Board overview;</li>
 <li>Hardware reference;</li>
+<li>Device behaviors (button active levels, seven-segment common anode/cathode, derived from schematic topology);</li>
 <li>Interface descriptions;</li>
 <li>Power and clocks;</li>
 <li>Development guide;</li>
@@ -134,6 +135,8 @@ Distributor or community pages can help discover part numbers, but they cannot c
 <li>The consolidated board manual with Mermaid block diagrams.</li>
 </ol>
 <p>The customer's own <code>docs/datasheet.md</code> is never created, overwritten, or tidied up; <code>demos/</code>, <code>ips/</code>, and non-Stage0 jackets are never modified either.</p>
+<h2 id="device-behavior-derivation">Device behavior derivation</h2>
+<p>Beyond listing devices, the Skill derives the electrical behavior of user-interaction and visible-output devices — push buttons, DIP switches, LEDs, seven-segment displays, buzzers, relays — from the schematic topology (pull-up/pull-down, driver transistor stage, common-terminal rail) and records it in the <code>device_behaviors</code> container of <code>hardware.yaml</code>: for example whether a pressed button reads <code>low</code> or <code>high</code> on the FPGA pin, or whether a display is <code>common_anode</code> or <code>common_cathode</code>. Without schematic evidence the entry stays <code>UNVERIFIED</code>; nothing is guessed. These facts appear in the "Device behaviors" section of <code>board-manual.md</code> for direct use in later RTL and constraint design.</p>
 <h2 id="fpga-and-rk3588">FPGA and RK3588</h2>
 <p>FPGA validation distinguishes "the package ball exists" from "that ball is allowed to carry the specified GPIO or hard-macro function". It checks device constraints such as bank/VCCIO, PLL reference clocks, configuration/JTAG, differential pairs, MIPI lanes, DDR, and PCIe/QSE/SerDes. The package/bank output of an Efinity probe cannot, by itself, prove a hard macro legal.</p>
 <p>For the RK3588, phase one generates the platform contract and a <code>PROFILE_READY</code> template. The build stage is reachable only after a real source root, a pinned BSP commit, the build environment, the loader, partitions, and artifacts are explicitly bound; the template never fabricates any of these.</p>

@@ -17,8 +17,8 @@ Browse online before downloading (same content as inside the packages):
 
 | Language | Package | Size | SHA256 (first 8) |
 |----------|---------|------|------------------|
-| 简体中文 | [EvoVerse-SDK-v1.0.0-Customer-Package.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.0/EvoVerse-SDK-v1.0.0-Customer-Package.tar.gz) | 6.76 MB | `4ACD3A7B` |
-| English | [EvoVerse-SDK-v1.0.0-Customer-Package-EN.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.0/EvoVerse-SDK-v1.0.0-Customer-Package-EN.tar.gz) | 6.73 MB | `3A211457` |
+| 简体中文 | [EvoVerse-SDK-v1.0.0-Customer-Package.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.0/EvoVerse-SDK-v1.0.0-Customer-Package.tar.gz) | 6.89 MB | `5D81155A` |
+| English | [EvoVerse-SDK-v1.0.0-Customer-Package-EN.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.0/EvoVerse-SDK-v1.0.0-Customer-Package-EN.tar.gz) | 6.86 MB | `D6A8F0CB` |
 
 - Full checksums: [SHA256SUMS-v1.0.0.txt](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.0/SHA256SUMS-v1.0.0.txt)
 - All versions: [Releases](https://github.com/butonlyif/evoverse-sdk-releases/releases)

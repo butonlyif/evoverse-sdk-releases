@@ -673,6 +673,17 @@ design.assign_pkg_pin(&quot;led[0]&quot;,&quot;K14&quot;)
 <pre><code class="language-text">design.setup_partial_design(&quot;pd&quot;)
 design.finish_partial_design(&quot;pd&quot;)
 </code></pre>
+<h3 id="2-7-import_design-原生导入实测-2026-10-18-spike">2.7 <code>import_design</code> 原生导入实测（2026-10-18 spike）</h3>
+<p>实测载体：<code>scripts/hardip_import_smoke.py</code>（helloworld-unified 拷贝，Ti60F225/C4），全链路 PASS：草稿会话导出 ISF → <code>import_design</code> 写入 peri → 重放安全 MANAGED 段追加 → <code>import_gpio.bat --dry-run</code> exit 0 → <code>efx_run --flow compile</code> 连跑两次 PASS。实测结论：</p>
+<ol>
+<li><strong>官方示例自带的 <code>&lt;design&gt;.peri.xml</code> 只含硬 IP</strong>（helloworld 仅 <code>pll_inst1</code>）。RTL 顶层端口 GPIO（<code>led</code>/<code>rstn</code>/…）由 PT 在编译期从网表物化写入 peri。因此对<strong>从未编译过</strong>的工程做 ISF 干跑/导入，会在 <code>Fail to assign package pin. Unknown instance &lt;rtl-port&gt;</code> 上失败——这不是导入缺陷，而是门禁前置条件：<strong>导入入口验证（以及真实的硬 IP 添加流程）必须以"已能编译的工程"为基线</strong>（先跑一次基线 compile 物化 GPIO）。</li>
+<li><strong><code>load_design</code> 是沙箱语义</strong>：把 peri + 工程 XML 拷进临时沙箱后 <code>DesignAPI().load()</code>；<code>save()</code> 只写回沙箱路径——落盘真实 peri 必须把沙箱内的 peri 文件拷回工程目录。</li>
+<li><strong>导入防 "exists" 冲突的可行做法</strong>：从草稿会话 <code>export_design</code> 出的 ISF 中，仅保留本会话新建实例的 <code>create_*</code> 行（其余 <code>create_*</code> 行注释），此文本可直接喂 <code>import_design</code>；同一文本把全部 <code>create_*</code> 行注释后即为重放安全 MANAGED 段（幂等 set/assign 行），追加进工程引用的 pins ISF 即可通过「引导编译 + 重放编译」两连 PASS。</li>
+<li><strong>Ti60F225 器件能力实测</strong>（DesignAPI <code>capabilities</code>）：blockTypes = <code>GPIO/JTAG/LVDS_BIDIR/LVDS_RX/LVDS_TX/MIPI_RX_LANE/MIPI_TX_LANE/OSC/PLL</code>——<strong>无硬 DPHY（MIPI_DPHY_TX/RX）、无 DDR 块型</strong>；MIPI 仅 lane 级（<code>EFX_MIPI_RX_LN_V1</code>/<code>EFX_MIPI_TX_LN_V1</code>）。块版本：PLL=<code>EFX_PLL_V3</code>、OSC=<code>EFX_OSC_V3</code>。ioBanks = 1A/1B/2A/2B/3A/3B/4A/4B/BL/BR/TL/TR（12 个）。</li>
+<li><strong>MIPI_RX_LANE 放置不归 auto_assign 管</strong>：<code>auto_assign_resource</code> 不会给 lane 选 clock-lane 槽位，且会把 PLL 外部 refclk 分到 HSIO 引脚（实测 GPIOB_P_00）——与 MIPI lane 共存时触发 <code>gpio_rule_hsio_usage</code> 冲突；lane 需手动 clock-lane 槽位 + <code>set_iobank_voltage("&lt;bank&gt;","1.2")</code>，涉及 5 类规则（<code>gpio_rule_hsio_usage</code>/<code>mipi_ln_rule_usage</code>/<code>mipi_ln_rule_group_clock</code>/<code>mipi_ln_rule_rx_clk_conn</code>/<code>io_bank_rule_mipi_dphy</code>）。</li>
+<li><strong>peri 持久化语义实证</strong>：草稿/导入会话日志反复出现 <code>Reuse. Try to create an existing PLL output clock : pll_inst1_CLKOUT0</code>——helloworld 的 <code>clk</code> 端口带 <code>(* syn_peri_port = 0 *)</code>，本就预期由 PLL 驱动；新建 PLL 的输出 pin 必须避开已有 RTL 端口名（否则双驱动）。</li>
+<li><strong>编译环境配方（教训 0xc0000139）</strong>：从外部终端直接跑 <code>efx_run.bat</code> 会因继承 PATH 里的外来 Python DLL 报 <code>cannot load library libdevicedb_wrapper.dll: error 0x7f</code>。正确做法（adapter <code>sanitizeEfinityEnv</code> / SDK <code>buildEfinityCommand</code> 的 Python 镜像）：PATH 前置 Efinity 全部 bin 目录并剔除所有外来 python 目录；命令写成临时 .bat（<code>call setup.bat</code> → <code>call efx_run.bat "&lt;xml&gt;" --flow compile</code>）规避嵌套引号。</li>
+</ol>
 <hr />
 <h2 id="3-重放安全契约-本仓库-isf-验收的第一判据">3. 重放安全契约（本仓库 ISF 验收的第一判据）</h2>
 <h3 id="3-1-为什么存在这个契约">3.1 为什么存在这个契约</h3>

@@ -749,6 +749,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <p>颜色含义：绿色 = 满足时序，黄色 = 接近临界（&lt; 1ns），红色 = 违例。</p>
 <h4 id="software-tab-详情">Software Tab 详情</h4>
+<p>SW Tab 以三步向导组织（也可用自然语言或命令面板完成同样操作）：</p>
 <table>
 <thead>
 <tr>
@@ -758,43 +759,56 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </thead>
 <tbody>
 <tr>
-<td><strong>工具链状态</strong></td>
-<td>xPack RISC-V GCC 是否已检测/下载</td>
+<td><strong>步骤 1 选择应用</strong></td>
+<td>应用卡片（名称 / RTOS / ELF 徽标），点击选中</td>
 </tr>
 <tr>
-<td><strong>BSP 状态</strong></td>
-<td>BSP 目录是否就绪</td>
+<td><strong>步骤 2 构建</strong></td>
+<td>构建选中应用，生成 <code>.elf</code> 用于调试</td>
 </tr>
 <tr>
-<td><strong>App 列表</strong></td>
-<td>每个 App 有独立操作按钮：Build / Flash / GDB</td>
+<td><strong>步骤 3 DAP 调试</strong></td>
+<td>启动 IDE 原生调试（配置自动写入 <code>.vscode/launch.json</code>，需 cortex-debug 扩展，缺失时给出一键安装引导）</td>
+</tr>
+<tr>
+<td><strong>工具链 / BSP 状态</strong></td>
+<td>xPack RISC-V GCC 检测与 BSP 就绪状态</td>
+</tr>
+<tr>
+<td><strong>高级（折叠）</strong></td>
+<td>New Software App / New RISC-V Project / Regen BSP / 烧录到板</td>
 </tr>
 </tbody>
 </table>
 <h4 id="ip-tab-详情">IP Tab 详情</h4>
+<p>IP Tab 为四泳道目录页（顶部提供搜索框，按名称 / library / 厂商 / VLNV 过滤）：</p>
 <table>
 <thead>
 <tr>
-<th>区域</th>
+<th>泳道</th>
 <th>内容</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>IP 实例列表</strong></td>
-<td>扫描 XML <code>&lt;efx:ip_info&gt;</code> 和 <code>ip/</code> 目录获得</td>
+<td><strong>Efinity 软 IP</strong></td>
+<td>运行时从 Efinity IPM 获取全部可用 IP（按 library 分组）；每个 IP 附类别推荐句，支持「直接加入」（预选该 IP 进入 Add IP 流程）与「复制推荐句」（粘贴给 @evoverse 用自然语言加入）</td>
 </tr>
 <tr>
-<td><strong>每项操作</strong></td>
-<td><strong>Efinity</strong>（SoC 类 IP，如 RISC-V Sapphire — 在 Efinity 原生多 Tab 配置向导中配置） / <strong>Config</strong>（在 VS Code 内编辑 settings.json 参数） / <strong>Regen</strong>（重新生成 RTL）</td>
+<td><strong>Catalog Verified IP</strong></td>
+<td>已登记进工程基线（<code>baseline.manifest.json</code>）的 catalog 验证 IP；为空时可一键执行 baseline ips-only 登记</td>
 </tr>
 <tr>
-<td><strong>全局操作</strong></td>
-<td>Add IP / IP List / Open in Efinity IP Manager / Sync from Efinity / Sync Project Files</td>
+<td><strong>工作区实例</strong></td>
+<td>扫描 XML <code>&lt;efx:ip_info&gt;</code> 和 <code>ip/</code> 目录获得；每项操作 <strong>Efinity</strong>（SoC 类）/ <strong>Config</strong> / <strong>Regen</strong></td>
+</tr>
+<tr>
+<td><strong>硬 IP（ISF 通道）</strong></td>
+<td>PLL / DDR / LVDS / D-PHY / OSC 引导卡——只给 ISF API 提示与参考文档，不提供加入按钮（硬 IP 走 <code>constraints/*.isf</code> + <code>import_gpio --dry-run</code> 自检通道）</td>
 </tr>
 </tbody>
 </table>
-<p>SoC/IP 类 IP（<code>kind</code> 含 sapphire/riscv/soc）的卡片会显示 <strong>CPU</strong> 图标和橙色 <strong>Efinity</strong> 按钮，点击后在 Efinity GUI 中使用原生多 Tab IP Configuration Wizard 完成复杂参数配置。配置完成后使用 <strong>Sync from Efinity</strong> 按钮将改动同步回工程并重新生成。</p>
+<p>SoC/IP 类 IP（<code>kind</code> 含 sapphire/riscv/soc）的卡片会显示 <strong>CPU</strong> 图标和橙色 <strong>Efinity</strong> 按钮，点击后在 Efinity GUI 中使用原生多 Tab IP Configuration Wizard 完成复杂参数配置。配置完成后使用 <strong>Sync from Efinity</strong> 按钮将改动同步回工程并重新生成。全局操作（Add IP / IP List / Open in Efinity IP Manager / Sync from Efinity / Sync Project Files）收进「高级」折叠区，命令面板与自然语言入口保持不变。</p>
 <h3 id="4-4-board-catalog-视图">4.4 Board Catalog 视图</h3>
 <p>树形结构展示所有 Catalog 物料：</p>
 <pre><code>📦 Boards
@@ -2271,29 +2285,29 @@ evoverse new-software my-rtos --type freertos
         └── evoverse-software.md
 </code></pre>
 <h3 id="15-4-构建-烧录软件">15.4 构建/烧录软件</h3>
-<p>在 Workbench <strong>Software Tab</strong> 中操作：</p>
+<p>在 Workbench <strong>Software Tab</strong> 三步向导中操作：</p>
 <table>
 <thead>
 <tr>
-<th>按钮</th>
+<th>步骤 / 按钮</th>
 <th>功能</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Build</strong></td>
-<td>编译固件（<code>make</code>）→ 生成 <code>.elf</code> / <code>.hex</code> / <code>.bin</code></td>
+<td><strong>步骤 2 构建</strong></td>
+<td>编译选中固件（<code>make</code>）→ 生成 <code>.elf</code> / <code>.hex</code> / <code>.bin</code></td>
 </tr>
 <tr>
-<td><strong>Flash</strong></td>
-<td>构建并通过 JTAG 烧录到 FPGA</td>
+<td><strong>步骤 3 DAP 调试</strong></td>
+<td>写入 <code>.vscode/launch.json</code> 并启动 IDE 原生 OpenOCD + GDB 调试会话</td>
 </tr>
 <tr>
-<td><strong>GDB</strong></td>
-<td>启动 OpenOCD + GDB 调试会话</td>
+<td><strong>高级 → 烧录到板</strong></td>
+<td>通过 JTAG 烧录到 FPGA 并运行</td>
 </tr>
 <tr>
-<td><strong>Sync BSP</strong></td>
+<td><strong>高级 → Regen BSP</strong></td>
 <td>重新同步 BSP 头文件</td>
 </tr>
 </tbody>

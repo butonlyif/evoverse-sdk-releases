@@ -104,32 +104,444 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <code>skills/efinity-build-review.md</code>
 <a href="../../../skills/efinity-build-review.md">Markdown 源文件</a></p>
 <h1>Efinity AI 工程感知编译评审</h1></header>
-<main class="article"><h1 id="efinity-ai-工程感知编译评审">Efinity AI 工程感知编译评审</h1>
-<p><code>efinity-build-review</code> Skill 用于解释一个现有 Efinity 工程及其原生编译证据。它支持 EvoVerse 工程，也支持没有 <code>.evoverse</code>、源码位于任意目录或通过 flist/include 引用的客户原生工程。</p>
-<h2 id="使用方式">使用方式</h2>
-<p>在工程目录打开 Trae，然后输入：</p>
+<main class="article"><h1 id="efinity-ai-工程感知编译评审-使用说明书">Efinity AI 工程感知编译评审 · 使用说明书</h1>
+<p><code>efinity-build-review</code> Skill 把一个现有 Efinity 工程的全部原生编译证据变成一份可审计的评审报告：先给确定性状态，再给 AI 解读与可验证建议。它支持 EvoVerse 工程，也支持没有 <code>.evoverse</code>、源码位于任意目录、通过 flist/include 引用的客户原生工程，甚至只有报告没有源码的工程。</p>
+<p>评审是只读的：Skill 不改 RTL、SDC、ISF、工程 XML，也不改任何报告。要应用建议时，先给补丁/设置预览，确认后才走原生能力执行，并用新的原生编译证据验收。</p>
+<h2 id="一-它解决什么问题">一、它解决什么问题</h2>
+<p>接手一个 Efinity 工程时，通常要回答这些问题：编译到底走到哪一步了？时序过没过、差多少？资源用了多少？约束全不全？报告里的关键路径对应我哪段代码？下一步该改什么、改了会不会破坏功能？这份评审把上述问题一次性回答清楚，并且每条结论都能追溯到证据：</p>
+<ul>
+<li><strong>确定性事实</strong>（资源、WNS/TNS、编译阶段、verdict）来自对原生报告的解析，不由 AI 编写；</li>
+<li><strong>AI 只负责</strong>解释、风险分析和可验证建议，且每条建议都带风险等级、功能影响和验证步骤；</li>
+<li>缺失的信息显示 <code>NOT_AVAILABLE</code> 或 <code>UNKNOWN</code>，不会被渲染成 0，也不会被猜一个数。</li>
+</ul>
+<h2 id="二-前置条件">二、前置条件</h2>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trae + EvoVerse SDK</td>
+<td>已安装 SDK 与 efinity-adapter 两个 VSIX，MCP 会话已连接</td>
+</tr>
+<tr>
+<td>一个 Efinity 工程目录</td>
+<td>至少有原生工程 XML；有 <code>outflow/</code> 原生报告时结论更完整</td>
+</tr>
+<tr>
+<td>Efinity 工具链（可选）</td>
+<td>仅当需要跑新编译（<code>efx_run --flow compile</code>）时需要</td>
+</tr>
+<tr>
+<td>MCP 工具可用</td>
+<td><code>efinity_review_collect</code> / <code>efinity_review_validate</code> / <code>efinity_review_render</code> 三个工具在会话中可见</td>
+</tr>
+</tbody>
+</table>
+<p>升级或重新部署 SDK 后需重连 MCP 会话（重启 Trae 或重连 MCP），工具列表才会刷新。</p>
+<h2 id="三-快速开始">三、快速开始</h2>
+<h3 id="你对-trae-说什么">你对 Trae 说什么</h3>
+<p>在工程目录打开 Trae，输入：</p>
 <pre><code class="language-text">/efinity-build-review
 评审这个 Efinity 工程。先让我选择工程 XML，再解释工程结构、编译阶段、资源、时序、约束覆盖、产物、关键路径源码关联和下一步。
 </code></pre>
-<p>如果目录中有多个 Efinity XML，Skill 会要求明确选择，不会静默使用第一个文件。默认分析已有报告；运行新的原生编译前会说明动作并取得授权。</p>
-<h2 id="如何阅读结论">如何阅读结论</h2>
-<p>报告顶部给出六个互相独立的维度：Flow、Artifact、Timing、Resource、Constraint 和 Freshness。总状态含义如下：</p>
+<p>常用变体：</p>
+<pre><code class="language-text">/efinity-build-review
+目录里有多个工程，评审其中的客户交付工程。当前没有原生报告，请先征得我同意后跑一次完整编译，再出评审。
+</code></pre>
+<pre><code class="language-text">/efinity-build-review
+重新评审上次那个工程。重点解释 Setup 最差路径的源码来源，并对比可行的优化策略，不要直接改代码。
+</code></pre>
+<p>如果目录中有多个 Efinity XML，Skill 会列出全部候选要求明确选择，不会静默使用第一个或最新的文件。默认只分析已有报告；运行新的原生编译前会说明动作并取得授权。</p>
+<h2 id="四-完整工作流程">四、完整工作流程</h2>
+<pre class="mermaid">flowchart LR
+    A[用户选择工程 XML] --&gt; B[efinity_review_collect 采集确定性证据]
+    B --&gt; C[AI 阅读闭包内源码与索引生成 AIReviewDocument]
+    C --&gt; D[efinity_review_render 最终校验并原子落盘六件产物]
+    D --&gt;|文档无效| E[仅修复报告字段并重试一次]
+    E --&gt;|仍失败| F[mode deterministic 渲染确定性降级报告]
+    D --&gt;|成功| G[返回全部产物路径]
+    F --&gt; G
+    G --&gt; H[可用时打开 Webview 否则返回 HTML 入口]
+</pre>
+<ol>
+<li><strong>选择评审对象</strong>：Skill 只在当前工作区内发现原生 Efinity XML；多候选时必须由你选择。</li>
+<li><strong>采集证据</strong>：调用 <code>efinity_review_collect</code>，得到证据包（evidence bundle），包含能力等级、新鲜度、六维度状态、关键路径、源码关联、策略评估等。</li>
+<li><strong>理解工程</strong>：AI 只读选定 XML/flist/include 命名的源码闭包与相关 SDC/ISF/peri/IP 配置，建立顶层功能、模块层级、时钟/复位域、外部接口、状态机与反馈路径的理解。</li>
+<li><strong>生成并最终校验</strong>：AI 按 <code>AIReviewDocument</code> 契约生成评审，直接提交 <code>efinity_review_render</code>；render 内置权威校验，失败时只修复报告字段一次，不重新分析工程。<code>efinity_review_validate</code> 仅用于需要单独诊断校验错误的场景。</li>
+<li><strong>渲染落盘</strong>：正常评审修复后仍失败或 AI 不可用时，调用 <code>efinity_review_render</code> 的 <code>mode: deterministic</code> 生成合法的确定性降级报告。只有聊天文字、没有六件产物路径，不算完成。</li>
+<li><strong>查看与导出</strong>：用 <code>evoverse.openEfinityBuildReview</code> 打开报告；需要给客户时用导出功能生成脱敏版。</li>
+</ol>
+<p>如果宿主没有提供这三个 MCP 工具，Skill 会报告 <code>CAPABILITY_UNAVAILABLE</code>，而不是用自由文本冒充正式报告。</p>
+<h2 id="五-能力等级与证据新鲜度">五、能力等级与证据新鲜度</h2>
+<table>
+<thead>
+<tr>
+<th>能力等级</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FULL_PROJECT</code></td>
+<td>工程、源码、约束与报告齐全，可做代码级关联分析</td>
+</tr>
+<tr>
+<td><code>LIMITED_PROJECT</code></td>
+<td>部分源码、生成单元、VHDL 或加密 IP 无法深入分析</td>
+</tr>
+<tr>
+<td><code>REPORT_ONLY</code></td>
+<td>只有报告状态，代码级结论被禁用</td>
+</tr>
+<tr>
+<td><code>PREFLIGHT_ONLY</code></td>
+<td>没有任何原生实现报告</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>新鲜度</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CURRENT</code></td>
+<td>报告可证明对应当前输入</td>
+</tr>
+<tr>
+<td><code>POSSIBLY_STALE</code></td>
+<td>时间戳兼容，但报告不带完整输入摘要，无法证明严格对应</td>
+</tr>
+<tr>
+<td><code>STALE</code></td>
+<td>工程输入比报告新，报告是历史证据</td>
+</tr>
+<tr>
+<td><code>UNKNOWN</code></td>
+<td>无法建立新鲜度</td>
+</tr>
+</tbody>
+</table>
+<p>mtime 兼容检查只能产生 <code>POSSIBLY_STALE</code>，不能证明 <code>CURRENT</code>。<code>STALE</code> 报告按历史证据对待：改完源码后应重新编译再评审。</p>
+<h2 id="六-阅读报告">六、阅读报告</h2>
+<h3 id="6-1-六维度状态与-verdict">6.1 六维度状态与 verdict</h3>
+<p>报告首先给出执行摘要和客户行动建议，随后用「确定性状态总览」展示六个互相独立的维度：编译流程（Flow）、产物（Artifact）、时序（Timing）、资源（Resource）、约束（Constraint）、新鲜度（Freshness）。每个 section 标题右侧有状态徽章（需修复/需关注/正常/数据缺失），hero 区按 verdict 着色。总状态（verdict）含义：</p>
 <ul>
 <li><code>BLOCKED</code>：编译失败或证据不足以继续。</li>
 <li><code>BUILT_NOT_READY</code>：已有编译产物，但存在时序失败、过期证据或其他阻断。</li>
-<li><code>READY_WITH_RISK</code>：可以进入下一步验证，但仍有明确风险或只能确认报告“可能是当前的”。</li>
+<li><code>READY_WITH_RISK</code>：可以进入下一步验证，但仍有明确风险。</li>
 <li><code>READY_FOR_VERIFICATION</code>：编译证据满足进入后续验证的条件；这不等于仿真、烧录或实板功能通过。</li>
 </ul>
-<p>mtime 兼容检查只能产生 <code>POSSIBLY_STALE</code>，不能证明 <code>CURRENT</code>。缺失值显示 <code>NOT_AVAILABLE</code> 或 <code>UNKNOWN</code>，不会显示为零。</p>
-<h2 id="源码定位与建议边界">源码定位与建议边界</h2>
-<p>关键路径定位分为 <code>EXACT</code>、<code>SYMBOL_MATCH</code>、<code>SEMANTIC_CANDIDATE</code>、<code>HEURISTIC</code> 和 <code>UNRESOLVED</code>。只有原生报告在当前工程证据闭包内给出的 <code>file:line</code> 才是 <code>EXACT</code>；重名候选会全部保留并标记歧义。Verilog/SystemVerilog 使用结构化 tokenizer/parser 建立 module、instance、port、parameter、process、assign、function、generate、数组、source range 与驱动—消费者图，再以数据锥辅助定位；宏与参数展开不完整、VHDL、生成或加密单元会明确降级，不伪装为完整 elaboration。</p>
-<p>增加 pipeline 的建议会检查反馈、FSM、valid/ready、包边界、Reset/CE、固定延迟、RAM/DSP、CDC、多消费者和验证资产。路径抽屉会并列显示数据锥、候选位置、pipeline 适用性、策略矩阵、功能影响和验证清单。证据不足时结论为 <code>UNKNOWN</code>。I/O delay 需要外部器件时序和 PCB 参数；<code>false_path</code>、<code>multicycle_path</code>、<code>max_delay</code>、<code>min_delay</code> 需要结构证据、设计意图证据和用户确认。Skill 不会为消除违例编造数值或自动改写 RTL/SDC/ISF/XML。</p>
-<h2 id="报告和导出">报告和导出</h2>
-<p>本地评审通过临时目录原子生成不可覆盖的新目录，包含 <code>review.json</code>、<code>evidence.json</code>、<code>report.html</code> 和 <code>report.md</code>；失败或取消不会留下可误认成完成的报告。导出的 HTML 保持零脚本和严格 CSP；IDE Webview 只注入带 nonce 的本地桥，打开源码时再次按 evidence ID、文件存在性和行号校验，客户内容不能直接执行命令。HTML 提供可打印样式；当前 PDF 边界是 IDE/浏览器“打印为 PDF”，不是内置确定性 PDF 引擎。</p>
-<p>客户导出会删除本地绝对路径和源码正文，并扫描凭据式文本、环境变量值及路径。发现泄漏风险时导出失败关闭，必须先处理 finding，不能绕过。对比会先检查工程、器件和 Top 兼容性，再显示 WNS/TNS、资源、耗时、路径、约束和问题簇变化；没有新的原生 after-build evidence 时，策略不能标记为 <code>IMPROVED</code>、<code>NO_CHANGE</code> 或 <code>REGRESSED</code>。</p>
-<h2 id="验证边界">验证边界</h2>
-<p>Compile、Timing、Simulation、Programming 和 Hardware 是独立状态。评审可以确认原生报告记录了 map/interface/PNR/PGM 和 bitstream，但不得据此推断仿真、下载或板级功能通过。资源、WNS/TNS、阶段状态及顶层 verdict 来自确定性解析层；AI 只负责解释、风险分析和可验证建议。</p></main>
+<h3 id="6-2-报告章节导览">6.2 报告章节导览</h3>
+<p>报告界面以中文为主（信号名、工具标识符保留英文），并提供互链的纯英文版 <code>report-en.html</code> / <code>report-en.md</code>。章节顺序问题前置：</p>
+<p>当前阅读顺序为“执行摘要与 AI 建议 → 状态与宏观系统框架 → 技术诊断 → 默认折叠附录”。宏观框架只展示顶层和按模块类型聚合的主要功能块；原生编译流程、产物、设计—实现对照、限制和证据身份位于附录，其中设计—实现对照默认收起并显示总项数与需关注项数。</p>
+<table>
+<thead>
+<tr>
+<th>章节</th>
+<th>内容</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>确定性状态总览</td>
+<td>六维度状态、阻塞项、风险项</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>执行摘要</td>
+<td>AI 执行摘要</td>
+<td>AI</td>
+</tr>
+<tr>
+<td>问题聚类</td>
+<td>时序违例 / 原生错误 / 警告风暴聚类</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>关键路径与源码关联</td>
+<td>路径卡片：违例/满足徽章 + 裕量 + 起止点摘要头，展开见 hop 表、端点映射、数据锥、策略矩阵</td>
+<td>确定性 + AI</td>
+</tr>
+<tr>
+<td>时序预算</td>
+<td>Setup / Hold 的 WNS、TNS、违例路径数</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>原生编译流程</td>
+<td>map / interface / place / route / timing / pgm 六阶段</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>时钟与约束覆盖</td>
+<td>每时钟域 WNS/TNS 与约束覆盖度</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>资源占用</td>
+<td>每类资源 used / avail / util</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>设计拓扑</td>
+<td>设计单元、实例边界、黑盒</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>设计—实现对照</td>
+<td>设计单元与实现证据对照</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>原生产物</td>
+<td>报告、数据库、bitstream 及 SHA-256</td>
+<td>确定性解析</td>
+</tr>
+<tr>
+<td>AI 分析章节</td>
+<td>模型按工程定制生成的 sections</td>
+<td>AI</td>
+</tr>
+<tr>
+<td>限制与未知项</td>
+<td>证据局限与 AI 未知项</td>
+<td>混合</td>
+</tr>
+<tr>
+<td>证据身份</td>
+<td>reviewInputId 与生成时间</td>
+<td>确定性解析</td>
+</tr>
+</tbody>
+</table>
+<p>bitstream 已生成不代表时序收敛；两者在报告中分开呈现。</p>
+<h3 id="6-3-结论类型">6.3 结论类型</h3>
+<p>每条 AI 结论标注为四类之一：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>含义</th>
+<th>必须携带</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FACT</code></td>
+<td>报告/源码直接支持的事实</td>
+<td>证据 ID</td>
+</tr>
+<tr>
+<td><code>INTERPRETATION</code></td>
+<td>AI 解读或根因假设</td>
+<td>证据 ID</td>
+</tr>
+<tr>
+<td><code>RECOMMENDATION</code></td>
+<td>行动建议</td>
+<td>风险、功能影响、验证步骤、是否需要用户决策</td>
+</tr>
+<tr>
+<td><code>UNKNOWN</code></td>
+<td>证据不足的未知项</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>模块用途等由命名或行为推断的结论是 <code>INTERPRETATION</code>，不是厂商事实。置信度标注 <code>HIGH</code> / <code>MEDIUM</code> / <code>LOW</code> / <code>NOT_APPLICABLE</code>。评审文档为双语：中文主字段 + 必填的英文镜像（文档 <code>headlineEn</code>、章节 <code>titleEn</code>、结论 <code>en</code>），缺失镜像会导致校验失败。</p>
+<h2 id="七-源码关联与定位等级">七、源码关联与定位等级</h2>
+<p>关键路径定位分为五级：</p>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EXACT</code></td>
+<td>原生报告的 file:line 注释落在选定工程证据闭包内</td>
+</tr>
+<tr>
+<td><code>SYMBOL_MATCH</code></td>
+<td>叶子符号匹配；重名候选全部保留并标记歧义</td>
+</tr>
+<tr>
+<td><code>SEMANTIC_CANDIDATE</code></td>
+<td>语义候选</td>
+</tr>
+<tr>
+<td><code>HEURISTIC</code></td>
+<td>文件名/综合后缀启发式，非精确注解</td>
+</tr>
+<tr>
+<td><code>UNRESOLVED</code></td>
+<td>无法解析</td>
+</tr>
+</tbody>
+</table>
+<p>Verilog/SystemVerilog 使用结构化 tokenizer/parser 建立 module、instance、port、parameter、process、assign、function、generate、数组、source range 与驱动—消费者图，再以数据锥辅助定位。宏与参数展开不完整、VHDL、生成或加密单元会明确降级，不伪装为完整 elaboration。路径抽屉并列显示端点候选、AST 数据锥、主逻辑区映射、pipeline 适用性、策略矩阵、功能影响和验证清单。</p>
+<h2 id="八-优化建议与约束安全">八、优化建议与约束安全</h2>
+<h3 id="8-1-pipeline-适用性">8.1 pipeline 适用性</h3>
+<p>建议增加 pipeline 寄存器前，Skill 会检查：反馈、状态转移逻辑、valid/ready 握手、包边界 sideband、多消费者、Reset/CE、固定延迟协议、RAM/DSP 延迟、CDC、验证资产（断言/testbench）。结论只有四种：<code>SUITABLE</code>、<code>CONDITIONALLY_SUITABLE</code>、<code>UNSUITABLE</code>、<code>UNKNOWN</code>——缺一项语义证据就不能给出确定的 pipeline 建议。</p>
+<h3 id="8-2-策略矩阵">8.2 策略矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PIPELINE</code></td>
+<td>流水线打拍</td>
+</tr>
+<tr>
+<td><code>RETIME</code></td>
+<td>寄存器重定时</td>
+</tr>
+<tr>
+<td><code>EXPRESSION_REFACTOR</code></td>
+<td>表达式重构（逻辑深度/比较器扇入）</td>
+</tr>
+<tr>
+<td><code>FANOUT_REPLICATION</code></td>
+<td>高扇出网络复制</td>
+</tr>
+<tr>
+<td><code>RAM_DSP_REGISTER</code></td>
+<td>使用原语支持的 RAM/DSP 输入输出寄存</td>
+</tr>
+<tr>
+<td><code>TOOL_EFFORT</code></td>
+<td>原生工具档位/seed 选项</td>
+</tr>
+<tr>
+<td><code>CLOCK_ARCHITECTURE</code></td>
+<td>时钟架构调整</td>
+</tr>
+<tr>
+<td><code>IO_CONSTRAINT</code></td>
+<td>补全 IO 时序约束</td>
+</tr>
+<tr>
+<td><code>CDC_ARCHITECTURE</code></td>
+<td>CDC 架构改造</td>
+</tr>
+<tr>
+<td><code>NO_ACTION</code></td>
+<td>证据或收益不足，暂不改动</td>
+</tr>
+</tbody>
+</table>
+<p>每条建议并列给出预期方向、风险与功能影响、验证步骤。策略生命周期：<code>PROPOSED</code> → <code>ACCEPTED</code> → <code>APPLIED_UNVERIFIED</code> → <code>IMPROVED</code> / <code>NO_CHANGE</code> / <code>REGRESSED</code> / <code>REJECTED</code>；终态必须引用新的原生 after-build 证据，没有新证据时策略不能标记为终态。</p>
+<h3 id="8-3-约束安全红线">8.3 约束安全红线</h3>
+<ul>
+<li>I/O delay 需要外部器件时序（Tco/Setup/Hold）与 PCB 延迟/偏斜参数；缺参数时只显示占位并向你索要，绝不编造 <code>0 ns</code>、<code>2 ns</code> 或其他"保守值"。</li>
+<li><code>set_false_path</code>、<code>set_multicycle_path</code>、<code>set_max_delay</code>、<code>set_min_delay</code> 只为消除违例而添加是被禁止的；时序例外需要结构证据、设计意图证据和你的明确确认。</li>
+<li>Skill 不会为消除违例自动改写 RTL、SDC、ISF 或工程 XML。</li>
+</ul>
+<h2 id="九-报告产物与目录结构">九、报告产物与目录结构</h2>
+<pre><code class="language-text">&lt;工程根&gt;/
+└─ .evoverse/
+   ├─ reports/build-review/&lt;reviewId&gt;/     # 本地完整评审（不可覆盖）
+   │  ├─ review.json        # AI 评审文档（权威输入，中文主字段 + en 镜像）
+   │  ├─ evidence.json      # 确定性证据包
+   │  ├─ report.html        # 自包含 HTML 报告（中文为主）
+   │  ├─ report.md          # Markdown 版（中文为主）
+   │  ├─ report-en.html     # 纯英文版 HTML
+   │  └─ report-en.md       # 纯英文版 Markdown
+   └─ exports/build-review/&lt;reviewId&gt;/     # 客户脱敏导出（同样六件，evidence 为脱敏版）
+</code></pre>
+<ul>
+<li>本地评审通过临时目录原子生成；已存在的 <code>reviewId</code> 不会被覆盖。失败或取消不会留下可误认成完成的报告。</li>
+<li>导出的 HTML 保持零脚本与严格 CSP（<code>default-src 'none'</code>）；IDE Webview 只注入带 nonce 的本地桥，打开源码时再次按 evidence ID、文件存在性和行号校验，客户内容不能直接执行命令。</li>
+<li>HTML 提供可打印样式；当前 PDF 边界是 IDE/浏览器"打印为 PDF"，不是内置确定性 PDF 引擎。</li>
+<li>客户导出会删除本地绝对路径和源码正文，并扫描凭据式文本、环境变量值及路径；发现泄漏风险时导出失败关闭（fail closed），必须先处理 finding，不能绕过。</li>
+<li>对比会先检查工程、器件和 Top 兼容性，再显示 WNS/TNS、资源、耗时、路径、约束和问题簇变化。</li>
+</ul>
+<h2 id="十-命令与-mcp-工具速查">十、命令与 MCP 工具速查</h2>
+<table>
+<thead>
+<tr>
+<th>入口</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efinity_review_collect</code></td>
+<td>为明确选择的工程 XML 采集确定性证据；正式评审第一步</td>
+</tr>
+<tr>
+<td><code>efinity_review_validate</code></td>
+<td>可选诊断工具；单独查看 schema / 证据引用错误，正常流程无需预调用</td>
+</tr>
+<tr>
+<td><code>efinity_review_render</code></td>
+<td>最终校验并原子生成六件产物；传 <code>review</code> 生成完整评审，AI 不可用时传 <code>mode: deterministic</code> 生成确定性降级报告</td>
+</tr>
+<tr>
+<td>命令 <code>evoverse.openEfinityBuildReview</code></td>
+<td>打开当前工程最新一份已渲染评审（Webview）</td>
+</tr>
+</tbody>
+</table>
+<p>三个 MCP 工具的公共参数：<code>project</code>（工程目录绝对路径）、<code>projectXml</code>（你明确选择的工程 XML 绝对路径）；<code>validate</code> 需传入 <code>review</code>。<code>render</code> 二选一传入绑定 collect <code>reviewInputId</code> 的 <code>review</code>，或在 AI 不可用时传 <code>mode: deterministic</code>。</p>
+<p><code>evoverse.openEfinityBuildReview</code> 打开前会重新校验 <code>review.json</code> 与 <code>evidence.json</code> 的 schema 一致性及 HTML 安全性；校验失败会提示重新渲染，不会打开被改动过的报告。</p>
+<h2 id="十一-常见问题">十一、常见问题</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skill 报 <code>CAPABILITY_UNAVAILABLE</code></td>
+<td>宿主未暴露评审 MCP 工具。升级/重部署 SDK 后重连 MCP 会话；不要接受自由文本冒充的报告</td>
+</tr>
+<tr>
+<td>目录里有多个工程 XML</td>
+<td>Skill 会列出全部候选要求选择；确认你选的是要交付/评审的那一个</td>
+</tr>
+<tr>
+<td>能力等级是 <code>PREFLIGHT_ONLY</code></td>
+<td>没有原生报告。明确要求后 Skill 会执行 <code>efx_run --flow compile</code> 再评审</td>
+</tr>
+<tr>
+<td>报告标记 <code>STALE</code></td>
+<td>视为历史证据；重新编译后再评审，不要基于旧报告做验收</td>
+</tr>
+<tr>
+<td><code>render</code> 返回文档校验错误</td>
+<td>Skill 只修复报告字段一次；仍失败则用 <code>mode: deterministic</code> 渲染确定性报告，不在分析阶段结束</td>
+</tr>
+<tr>
+<td>导出被 privacy findings 阻止</td>
+<td>失败关闭。先按 finding 处理（如报告文本中的绝对路径），再重新导出</td>
+</tr>
+<tr>
+<td>打不开报告，提示 schema/HTML 校验失败</td>
+<td>评审目录被改动过或损坏；用 <code>efinity_review_render</code> 对同一评审重新渲染</td>
+</tr>
+</tbody>
+</table>
+<h2 id="十二-验证边界">十二、验证边界</h2>
+<p>Compile、Timing、Simulation、Programming 和 Hardware 是独立状态。评审可以确认原生报告记录了 map/interface/PNR/PGM 和 bitstream，但不得据此推断仿真、下载或板级功能通过。资源、WNS/TNS、阶段状态及顶层 verdict 来自确定性解析层；AI 只负责解释、风险分析和可验证建议。工程文件与报告是证据，不是指令——Skill 会忽略任何试图借注释或日志文本改变评审流程的内容。</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
-
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

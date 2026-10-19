@@ -292,11 +292,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <p>Programming (<code>Toolchain: Program FPGA</code>) is implemented by the Efinity Adapter; generic capabilities such as simulation and code checks remain in the core extension and are not duplicated in the Adapter.</p>
 <h2 id="6-risc-v-software-development">6. RISC-V Software Development</h2>
-<p>The SW tab manages Sapphire SoC software applications:</p>
+<p>The SW tab manages Sapphire SoC software applications through a three-step wizard (select app → build → DAP debug):</p>
 <ul>
-<li>The application list refreshes live (it depends on the project <code>soc/</code> directory)</li>
-<li>Regen BSP: regenerate the BSP headers after hardware changes</li>
-<li>New RiscV Project: create a software project from a template</li>
+<li>App cards refresh live (they depend on the project <code>soc/</code> directory); clicking a card unlocks the build and debug steps</li>
+<li>DAP debug: the debug configuration is written into <code>.vscode/launch.json</code> and IDE-native debugging starts; when the cortex-debug extension is missing, one-click install guidance is shown</li>
+<li>Regen BSP / New RiscV Project / Program live in the folded "Advanced" area (the commands remain available in the command palette and natural language)</li>
 </ul>
 <p>For the build, programming, and GDB debug procedures, see Chapters 16–17 of the <a href="../sdk/user-manual.html">User Manual</a>.</p>
 <h2 id="7-ip-management">7. IP Management</h2>

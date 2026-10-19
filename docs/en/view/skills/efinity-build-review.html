@@ -104,32 +104,443 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <code>skills/efinity-build-review.md</code>
 <a href="../../../skills/efinity-build-review.md">Markdown source</a></p>
 <h1>Project-Aware Efinity AI Build Review</h1></header>
-<main class="article"><h1 id="project-aware-efinity-ai-build-review">Project-Aware Efinity AI Build Review</h1>
-<p>The <code>efinity-build-review</code> skill explains an existing Efinity project and its native build evidence. It supports EvoVerse projects and customer-native projects without <code>.evoverse</code>, including arbitrary source layouts and flist/include references.</p>
-<h2 id="use-it">Use it</h2>
+<main class="article"><h1 id="project-aware-efinity-ai-build-review-user-guide">Project-Aware Efinity AI Build Review · User Guide</h1>
+<p>The <code>efinity-build-review</code> skill turns all native build evidence of an existing Efinity project into an auditable review report: deterministic status first, then AI interpretation and verifiable recommendations. It supports EvoVerse projects and customer-native projects without <code>.evoverse</code>, arbitrary source layouts, flist/include references, and even report-only projects with no sources at all.</p>
+<p>Reviewing is read-only: the skill never edits RTL, SDC, ISF, or the project XML, and never edits reports. To apply a recommendation, it first shows a patch/settings preview; only after your confirmation does it use native capabilities, and it verifies the result with fresh native build evidence.</p>
+<h2 id="1-what-problem-it-solves">1. What problem it solves</h2>
+<p>Taking over an Efinity project usually raises these questions: how far did the build get? Did timing pass, and by how much did it miss? How much of the device is used? Are constraints complete? Which of my code does a reported critical path correspond to? What should change next, and would that change break function? This review answers them all at once, with every statement traceable to evidence:</p>
+<ul>
+<li><strong>Deterministic facts</strong> (resources, WNS/TNS, compile stages, the verdict) come from parsing native reports, not from the AI;</li>
+<li><strong>The AI only</strong> explains, analyzes risk, and proposes verifiable recommendations — each with risk level, functional impact, and verification steps;</li>
+<li>Missing information renders as <code>NOT_AVAILABLE</code> or <code>UNKNOWN</code>, never as zero and never guessed.</li>
+</ul>
+<h2 id="2-prerequisites">2. Prerequisites</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trae + EvoVerse SDK</td>
+<td>SDK and efinity-adapter VSIXes installed; MCP session connected</td>
+</tr>
+<tr>
+<td>An Efinity project directory</td>
+<td>At least a native project XML; native <code>outflow/</code> reports give fuller conclusions</td>
+</tr>
+<tr>
+<td>Efinity toolchain (optional)</td>
+<td>Only needed to run a fresh build (<code>efx_run --flow compile</code>)</td>
+</tr>
+<tr>
+<td>MCP tools available</td>
+<td><code>efinity_review_collect</code> / <code>efinity_review_validate</code> / <code>efinity_review_render</code> visible in the session</td>
+</tr>
+</tbody>
+</table>
+<p>After upgrading or redeploying the SDK, reconnect the MCP session (restart Trae or reconnect MCP) so the host refreshes its tool list.</p>
+<h2 id="3-quick-start">3. Quick start</h2>
+<h3 id="what-you-say-to-trae">What you say to Trae</h3>
 <p>Open the project folder in Trae and enter:</p>
 <pre><code class="language-text">/efinity-build-review
-Review this Efinity project. Let me select the project XML, then explain the design structure, build stages, resources, timing, constraint coverage, artifacts, critical-path source correlation, and next actions.
+Review this Efinity project. Let me select the project XML first, then explain the design structure, build stages, resources, timing, constraint coverage, artifacts, critical-path source correlation, and next actions.
 </code></pre>
-<p>When multiple Efinity XML files exist, the skill requires an explicit selection. It analyzes existing reports by default and asks before starting a new native build.</p>
-<h2 id="read-the-result">Read the result</h2>
-<p>The report keeps Flow, Artifact, Timing, Resource, Constraint, and Freshness separate:</p>
+<p>Common variants:</p>
+<pre><code class="language-text">/efinity-build-review
+There are several projects in this folder; review the customer deliverable. No native reports exist yet — ask for my approval, run a full build, then produce the review.
+</code></pre>
+<pre><code class="language-text">/efinity-build-review
+Re-review the same project as last time. Focus on the source origin of the worst Setup path and compare viable optimization strategies. Do not modify code directly.
+</code></pre>
+<p>When multiple Efinity XML files exist, the skill lists every candidate and requires an explicit selection; it never silently picks the first or newest file. It analyzes existing reports by default and explains the action and gets approval before starting a new native build.</p>
+<h2 id="4-end-to-end-workflow">4. End-to-end workflow</h2>
+<pre class="mermaid">flowchart LR
+    A[User selects project XML] --&gt; B[efinity_review_collect gathers deterministic evidence]
+    B --&gt; C[AI reads the source closure and indexes to draft the AIReviewDocument]
+    C --&gt; D[efinity_review_render performs final validation and atomic persistence]
+    D --&gt;|invalid document| E[Repair only reported document fields and retry once]
+    E --&gt;|still invalid| F[mode deterministic renders a deterministic fallback]
+    D --&gt;|success| G[Return every artifact path]
+    F --&gt; G
+    G --&gt; H[Open Webview when available otherwise return the HTML entry]
+</pre>
+<ol>
+<li><strong>Select the review subject</strong>: the skill discovers native Efinity XML files only inside the selected workspace; with multiple candidates, you choose.</li>
+<li><strong>Collect evidence</strong>: call <code>efinity_review_collect</code> to obtain the evidence bundle — capability level, freshness, six-dimension status, critical paths, source correlations, strategy assessments.</li>
+<li><strong>Understand the project</strong>: the AI reads only the source closure named by the selected XML/flists/includes plus the relevant SDC/ISF/peri/IP configuration, building an understanding of top-level purpose, hierarchy, clock/reset domains, external interfaces, state machines, and feedback paths.</li>
+<li><strong>Generate and finalize</strong>: the AI drafts the review per the <code>AIReviewDocument</code> contract and submits it directly to <code>efinity_review_render</code>; render performs the authoritative validation. On failure, only the reported document fields are repaired once, without restarting project analysis. <code>efinity_review_validate</code> is reserved for independent diagnostics.</li>
+<li><strong>Render</strong>: if the repaired review still fails or AI generation is unavailable, call <code>efinity_review_render</code> with <code>mode: deterministic</code> to create a valid deterministic-only report. Chat text without all six artifact paths is not completion.</li>
+<li><strong>Inspect and export</strong>: open the report with <code>evoverse.openEfinityBuildReview</code>; use the export action to produce a redacted copy for customers.</li>
+</ol>
+<p>If the host does not expose these MCP tools, the skill reports <code>CAPABILITY_UNAVAILABLE</code> instead of presenting free-form text as an authoritative report.</p>
+<h2 id="5-capability-levels-and-evidence-freshness">5. Capability levels and evidence freshness</h2>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FULL_PROJECT</code></td>
+<td>Project, sources, constraints, and reports all available; code-level correlation enabled</td>
+</tr>
+<tr>
+<td><code>LIMITED_PROJECT</code></td>
+<td>Some sources, generated units, VHDL, or encrypted IP cannot be deeply analyzed</td>
+</tr>
+<tr>
+<td><code>REPORT_ONLY</code></td>
+<td>Report state only; code-level conclusions are disabled</td>
+</tr>
+<tr>
+<td><code>PREFLIGHT_ONLY</code></td>
+<td>No native implementation reports at all</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Freshness</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CURRENT</code></td>
+<td>Reports provably correspond to the current inputs</td>
+</tr>
+<tr>
+<td><code>POSSIBLY_STALE</code></td>
+<td>Timestamps are compatible, but native reports carry no complete input digest, so exact identity is unproven</td>
+</tr>
+<tr>
+<td><code>STALE</code></td>
+<td>Project inputs are newer than the reports; treat reports as historical</td>
+</tr>
+<tr>
+<td><code>UNKNOWN</code></td>
+<td>Freshness cannot be established</td>
+</tr>
+</tbody>
+</table>
+<p>An mtime-only compatibility check can produce <code>POSSIBLY_STALE</code>, never strong <code>CURRENT</code>. Treat <code>STALE</code> reports as history: rebuild after source changes, then re-review.</p>
+<h2 id="6-reading-the-report">6. Reading the report</h2>
+<h3 id="6-1-six-dimensions-and-the-verdict">6.1 Six dimensions and the verdict</h3>
+<p>The report presents the executive summary and customer actions first. The "Deterministic status cockpit" then keeps six independent dimensions: Flow, Artifact, Timing, Resource, Constraint, and Freshness. Every section heading carries a status badge (Needs fix / Needs attention / OK / No data), and the hero is colored by verdict. The verdict means:</p>
 <ul>
-<li><code>BLOCKED</code>: the build failed or evidence is insufficient.</li>
-<li><code>BUILT_NOT_READY</code>: build output exists, but timing, freshness, or another condition blocks readiness.</li>
+<li><code>BLOCKED</code>: the build failed or evidence is insufficient to continue.</li>
+<li><code>BUILT_NOT_READY</code>: build output exists, but timing failures, stale evidence, or another condition blocks readiness.</li>
 <li><code>READY_WITH_RISK</code>: proceed to verification only with the stated risks.</li>
 <li><code>READY_FOR_VERIFICATION</code>: build evidence supports the next verification step; this is not a simulation, programming, or hardware pass.</li>
 </ul>
-<p>An mtime-only check can produce <code>POSSIBLY_STALE</code>, never strong <code>CURRENT</code>. Missing facts remain <code>NOT_AVAILABLE</code> or <code>UNKNOWN</code>, not zero.</p>
-<h2 id="source-correlation-and-advice-safety">Source correlation and advice safety</h2>
-<p>Path locations are labeled <code>EXACT</code>, <code>SYMBOL_MATCH</code>, <code>SEMANTIC_CANDIDATE</code>, <code>HEURISTIC</code>, or <code>UNRESOLVED</code>. Only an authorized native-report <code>file:line</code> annotation is <code>EXACT</code>. Ambiguous candidates remain visible. Verilog/SystemVerilog uses a structured tokenizer/parser to model modules, instances, ports, parameters, processes, assignments, functions, generate blocks, arrays, source ranges, and driver-consumer edges, then uses data cones to support correlation. Incomplete macro/parameter elaboration, VHDL, generated units, and encrypted units degrade explicitly instead of pretending to be fully elaborated.</p>
-<p>Pipeline advice checks feedback, FSM state, valid/ready, packet boundaries, reset/clock enable, fixed latency, RAM/DSP behavior, CDC, multiple consumers, and verification assets. The path drawer presents the data cone, candidate locations, pipeline suitability, strategy matrix, functional impact, and verification checklist together. Missing semantic evidence yields <code>UNKNOWN</code>. I/O delays require external-device and PCB timing parameters. Timing exceptions require structural evidence, design-intent evidence, and user confirmation. The skill does not invent values or silently edit RTL, SDC, ISF, or XML.</p>
-<h2 id="reports-and-export">Reports and export</h2>
-<p>Each local review is atomically promoted from a temporary directory into a new non-overwriting directory containing <code>review.json</code>, <code>evidence.json</code>, <code>report.html</code>, and <code>report.md</code>; failure or cancellation cannot leave a partial review that looks complete. Exported HTML remains script-free under a strict CSP. The IDE Webview injects only a nonce-bound local bridge and revalidates evidence ID, file existence, and line number before opening source, so customer content cannot invoke commands directly. The HTML has a print stylesheet; PDF support currently means IDE/browser “Print to PDF”, not a built-in deterministic PDF engine.</p>
-<p>Customer export removes local paths and source bodies, then scans for absolute paths, credential-like text, and environment values. Findings fail closed. Comparison first checks project, device, and top-module compatibility, then reports changes in WNS/TNS, resources, duration, paths, constraints, and issue clusters. Without fresh native after-build evidence, a strategy cannot become <code>IMPROVED</code>, <code>NO_CHANGE</code>, or <code>REGRESSED</code>.</p>
-<h2 id="verification-boundary">Verification boundary</h2>
-<p>Compile, Timing, Simulation, Programming, and Hardware are independent results. A native map/interface/PNR/PGM pass and bitstream do not prove simulation, download, or board behavior. Resources, WNS/TNS, stages, and the top-level verdict come from deterministic parsing; AI provides only explanation, risk analysis, and verifiable recommendations.</p></main>
+<h3 id="6-2-report-section-map">6.2 Report section map</h3>
+<p>The reading order is now “executive summary and AI recommendations → status and macro system framework → technical diagnosis → collapsed appendix.” The framework shows only the top and major block types supported by source evidence. Native flow, artifacts, the design–implementation crosswalk, limitations, and evidence identity are in the appendix; the crosswalk is collapsed by default with item and finding counts.</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Content</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deterministic status cockpit</td>
+<td>Six dimensions, blockers, risks</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Executive summary</td>
+<td>AI executive summary</td>
+<td>AI</td>
+</tr>
+<tr>
+<td>Issue clusters</td>
+<td>Timing / native error / warning storm clusters</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Critical paths &amp; source correlation</td>
+<td>Path cards: VIOLATED/MET badge + slack + endpoint summary header; hop table, mappings, data cone, strategy matrix inside</td>
+<td>Deterministic + AI</td>
+</tr>
+<tr>
+<td>Timing budget</td>
+<td>Setup / Hold WNS, TNS, violating-path counts</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Native compile flow</td>
+<td>map / interface / place / route / timing / pgm stages</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Clocks and constraint coverage</td>
+<td>Per-clock WNS/TNS and constraint coverage</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Resource terrain</td>
+<td>used / avail / util per resource</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Design topology</td>
+<td>Design units, instance boundaries, black boxes</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Design–implementation crosswalk</td>
+<td>Design units mapped to implementation evidence</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>Native output artifacts</td>
+<td>Reports, databases, bitstream, SHA-256</td>
+<td>Deterministic parsing</td>
+</tr>
+<tr>
+<td>AI analysis sections</td>
+<td>Model-authored sections tailored to the project</td>
+<td>AI</td>
+</tr>
+<tr>
+<td>Limits and unknowns</td>
+<td>Evidence limitations and AI unknowns</td>
+<td>Mixed</td>
+</tr>
+<tr>
+<td>Evidence identity</td>
+<td>reviewInputId and generation time</td>
+<td>Deterministic parsing</td>
+</tr>
+</tbody>
+</table>
+<p>Section headings are Chinese in the primary report; the list above reflects the English twin. A generated bitstream does not imply timing closure; the report keeps them separate.</p>
+<h3 id="6-3-claim-kinds">6.3 Claim kinds</h3>
+<p>Every AI claim is labeled one of four kinds:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Meaning</th>
+<th>Must carry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FACT</code></td>
+<td>Directly supported by reports/sources</td>
+<td>Evidence IDs</td>
+</tr>
+<tr>
+<td><code>INTERPRETATION</code></td>
+<td>AI interpretation or root-cause hypothesis</td>
+<td>Evidence IDs</td>
+</tr>
+<tr>
+<td><code>RECOMMENDATION</code></td>
+<td>Actionable advice</td>
+<td>Risk, functional impact, verification steps, user-decision flag</td>
+</tr>
+<tr>
+<td><code>UNKNOWN</code></td>
+<td>Not enough evidence</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusions inferred from names or behavior (for example, module purpose) are <code>INTERPRETATION</code>, not vendor facts. Confidence is labeled <code>HIGH</code> / <code>MEDIUM</code> / <code>LOW</code> / <code>NOT_APPLICABLE</code>. The review document is bilingual: Chinese primary fields plus a mandatory English mirror (document <code>headlineEn</code>, section <code>titleEn</code>, claim <code>en</code>); a missing mirror fails validation.</p>
+<h2 id="7-source-correlation-levels">7. Source correlation levels</h2>
+<p>Path locations are labeled:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EXACT</code></td>
+<td>A native-report file:line annotation inside the selected project evidence closure</td>
+</tr>
+<tr>
+<td><code>SYMBOL_MATCH</code></td>
+<td>Leaf symbol match; duplicate candidates all remain visible and ambiguity is marked</td>
+</tr>
+<tr>
+<td><code>SEMANTIC_CANDIDATE</code></td>
+<td>Semantic candidate</td>
+</tr>
+<tr>
+<td><code>HEURISTIC</code></td>
+<td>Filename/synthesis-suffix heuristic, not an exact annotation</td>
+</tr>
+<tr>
+<td><code>UNRESOLVED</code></td>
+<td>No resolution</td>
+</tr>
+</tbody>
+</table>
+<p>Verilog/SystemVerilog uses a structured tokenizer/parser to model modules, instances, ports, parameters, processes, assignments, functions, generate blocks, arrays, source ranges, and driver-consumer edges, then uses data cones to support correlation. Incomplete macro/parameter elaboration, VHDL, generated units, and encrypted units degrade explicitly instead of pretending to be fully elaborated. The path drawer presents endpoint candidates, the AST data cone, principal-logic mapping, pipeline suitability, the strategy matrix, functional impact, and the verification checklist together.</p>
+<h2 id="8-optimization-advice-and-constraint-safety">8. Optimization advice and constraint safety</h2>
+<h3 id="8-1-pipeline-suitability">8.1 Pipeline suitability</h3>
+<p>Before suggesting a pipeline register, the skill checks: feedback, state-transition logic, valid/ready handshakes, packet-boundary sidebands, multiple consumers, reset/clock enable, fixed-latency contracts, RAM/DSP latency, CDC, and verification assets (assertions/testbenches). The verdict is one of <code>SUITABLE</code>, <code>CONDITIONALLY_SUITABLE</code>, <code>UNSUITABLE</code>, <code>UNKNOWN</code> — one missing semantic check prevents a definite pipeline recommendation.</p>
+<h3 id="8-2-strategy-matrix">8.2 Strategy matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PIPELINE</code></td>
+<td>Pipeline register insertion</td>
+</tr>
+<tr>
+<td><code>RETIME</code></td>
+<td>Register retiming</td>
+</tr>
+<tr>
+<td><code>EXPRESSION_REFACTOR</code></td>
+<td>Expression refactor (logic depth / comparator fan-in)</td>
+</tr>
+<tr>
+<td><code>FANOUT_REPLICATION</code></td>
+<td>Replication of high-fanout nets</td>
+</tr>
+<tr>
+<td><code>RAM_DSP_REGISTER</code></td>
+<td>Primitive-supported RAM/DSP input/output registers</td>
+</tr>
+<tr>
+<td><code>TOOL_EFFORT</code></td>
+<td>Native tool effort/seed options</td>
+</tr>
+<tr>
+<td><code>CLOCK_ARCHITECTURE</code></td>
+<td>Clock architecture change</td>
+</tr>
+<tr>
+<td><code>IO_CONSTRAINT</code></td>
+<td>Complete I/O timing constraints</td>
+</tr>
+<tr>
+<td><code>CDC_ARCHITECTURE</code></td>
+<td>CDC architecture redesign</td>
+</tr>
+<tr>
+<td><code>NO_ACTION</code></td>
+<td>Evidence or benefit insufficient; no change</td>
+</tr>
+</tbody>
+</table>
+<p>Each recommendation states the expected direction, risk and functional impact, and verification steps side by side. Strategy lifecycle: <code>PROPOSED</code> → <code>ACCEPTED</code> → <code>APPLIED_UNVERIFIED</code> → <code>IMPROVED</code> / <code>NO_CHANGE</code> / <code>REGRESSED</code> / <code>REJECTED</code>; a final state must reference fresh native after-build evidence, and without new evidence a strategy cannot be marked final.</p>
+<h3 id="8-3-constraint-safety-rules">8.3 Constraint safety rules</h3>
+<ul>
+<li>I/O delays require external-device timing (Tco/Setup/Hold) and PCB delay/skew parameters; when they are missing, the skill shows placeholders and asks you — it never invents <code>0 ns</code>, <code>2 ns</code>, or another "conservative" value.</li>
+<li>Adding <code>set_false_path</code>, <code>set_multicycle_path</code>, <code>set_max_delay</code>, or <code>set_min_delay</code> merely to remove a violation is forbidden; timing exceptions require structural evidence, design-intent evidence, and your explicit confirmation.</li>
+<li>The skill never rewrites RTL, SDC, ISF, or the project XML on its own to eliminate a violation.</li>
+</ul>
+<h2 id="9-artifacts-and-directory-layout">9. Artifacts and directory layout</h2>
+<pre><code class="language-text">&lt;project root&gt;/
+└─ .evoverse/
+   ├─ reports/build-review/&lt;reviewId&gt;/     # Full local review (non-overwriting)
+   │  ├─ review.json        # AI review document (authoritative input; Chinese fields + en mirror)
+   │  ├─ evidence.json      # Deterministic evidence bundle
+   │  ├─ report.html        # Self-contained HTML report (Chinese-first UI)
+   │  ├─ report.md          # Markdown copy (Chinese-first)
+   │  ├─ report-en.html     # Pure-English HTML twin
+   │  └─ report-en.md       # Pure-English Markdown twin
+   └─ exports/build-review/&lt;reviewId&gt;/     # Redacted customer export (same six files; evidence redacted)
+</code></pre>
+<ul>
+<li>Each local review is atomically promoted from a temporary directory; an existing <code>reviewId</code> is never overwritten. Failure or cancellation cannot leave a partial review that looks complete.</li>
+<li>Exported HTML remains script-free under a strict CSP (<code>default-src 'none'</code>). The IDE Webview injects only a nonce-bound local bridge and revalidates evidence ID, file existence, and line number before opening source, so customer content cannot invoke commands directly.</li>
+<li>The HTML has a print stylesheet; PDF support currently means IDE/browser "Print to PDF", not a built-in deterministic PDF engine.</li>
+<li>Customer export removes local paths and source bodies, then scans for credential-like text, environment values, and paths; findings fail closed — fix the finding, do not bypass it.</li>
+<li>Comparison first checks project, device, and top-module compatibility, then reports changes in WNS/TNS, resources, duration, paths, constraints, and issue clusters.</li>
+</ul>
+<h2 id="10-command-and-mcp-tool-reference">10. Command and MCP tool reference</h2>
+<table>
+<thead>
+<tr>
+<th>Entry point</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>efinity_review_collect</code></td>
+<td>Gather deterministic evidence for the explicitly selected project XML; the mandatory first step</td>
+</tr>
+<tr>
+<td><code>efinity_review_validate</code></td>
+<td>Optional diagnostic tool for schema and evidence-reference errors; not a mandatory pre-render pass</td>
+</tr>
+<tr>
+<td><code>efinity_review_render</code></td>
+<td>Finalize and atomically persist six artifacts; pass <code>review</code> for a full AI report or <code>mode: deterministic</code> for a deterministic fallback</td>
+</tr>
+<tr>
+<td>Command <code>evoverse.openEfinityBuildReview</code></td>
+<td>Open the latest rendered review of the active project (Webview)</td>
+</tr>
+</tbody>
+</table>
+<p>Common parameters are <code>project</code> and the explicitly selected absolute <code>projectXml</code>. <code>validate</code> takes <code>review</code>; <code>render</code> takes either the review bound to collect's <code>reviewInputId</code>, or <code>mode: deterministic</code> when AI composition is unavailable.</p>
+<p><code>evoverse.openEfinityBuildReview</code> re-validates <code>review.json</code> against <code>evidence.json</code> and the HTML safety properties before opening; on failure it prompts to re-render and refuses to open a modified report.</p>
+<h2 id="11-faq">11. FAQ</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skill reports <code>CAPABILITY_UNAVAILABLE</code></td>
+<td>The host does not expose the review MCP tools. Reconnect the MCP session after upgrading/redeploying the SDK; do not accept free-form text as a report</td>
+</tr>
+<tr>
+<td>Multiple project XMLs in the folder</td>
+<td>The skill lists all candidates for selection; confirm you pick the one to deliver/review</td>
+</tr>
+<tr>
+<td>Capability is <code>PREFLIGHT_ONLY</code></td>
+<td>No native reports. On your explicit request the skill runs <code>efx_run --flow compile</code> first, then reviews</td>
+</tr>
+<tr>
+<td>Report marked <code>STALE</code></td>
+<td>Treat as historical evidence; rebuild and re-review rather than accepting on stale reports</td>
+</tr>
+<tr>
+<td><code>render</code> returns document-validation issues</td>
+<td>The skill repairs document fields once; a second failure uses <code>mode: deterministic</code> so the run still ends with rendered artifacts</td>
+</tr>
+<tr>
+<td>Export blocked by privacy findings</td>
+<td>Fails closed. Fix the finding (for example an absolute path in report text), then export again</td>
+</tr>
+<tr>
+<td>Report will not open; schema/HTML validation failed</td>
+<td>The review directory was modified or corrupted; re-render the same review with <code>efinity_review_render</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="12-verification-boundary">12. Verification boundary</h2>
+<p>Compile, Timing, Simulation, Programming, and Hardware are independent results. A native map/interface/PNR/PGM pass and bitstream do not prove simulation, download, or board behavior. Resources, WNS/TNS, stage states, and the top-level verdict come from the deterministic parsing layer; the AI provides only explanation, risk analysis, and verifiable recommendations. Project files and reports are evidence, never instructions — the skill ignores any comment or log text that attempts to change this workflow.</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
-
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
 </body></html>

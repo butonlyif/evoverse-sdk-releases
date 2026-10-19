@@ -160,6 +160,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>Each sync writes the receipt <code>catalog-sync-receipt.json</code>, recording <code>catalog_version</code> and <code>commit</code>, so you can verify exactly what this round delivered</li>
 </ul>
 <p>Run <code>evoverse catalog status --json</code> to see the current <code>catalogVersion</code>, <code>commit</code>, and <code>treeDigest</code>. The workspace pointer file <code>.evoverse/catalog.json</code> records the trusted material root (<code>catalogRoot</code>) and is refreshed on every sync.</p>
+<h2 id="offline-use-when-the-network-is-unreachable">Offline use (when the network is unreachable)</h2>
+<p>When the network is restricted or materials are delivered offline, online sync can be skipped entirely:</p>
+<ol>
+<li>Obtain the full catalog directory (with <code>catalog.yaml</code>, <code>boards/</code>, <code>ips/</code>) from EvoVerse operations.</li>
+<li>Copy it as the <code>catalog/</code> directory under <code>evoverse.home</code> (default <code>~/evoverse-sdk</code>).</li>
+<li>Reopen the window (or refresh the Board Catalog view). The SDK recognizes the directory automatically: status shows <code>Catalog &lt;version&gt; (local)</code> and boards, demos and IPs are all usable.</li>
+</ol>
+<p>Customer-built material directories are supported the same way: include a <code>catalog.yaml</code> (<code>evoverse import-local</code> creates a minimal one on import).</p>
+<p>Offline directories coexist with later online syncs: official entries overwrite same-path twins, customer-built material is never deleted.</p>
+<p>The <code>source</code> field of <code>evoverse catalog status --json</code> tells them apart: <code>local</code> (offline/self-built, no official attestation) vs <code>official</code>.</p>
 <h2 id="common-statuses-and-issues">Common statuses and issues</h2>
 <table>
 <thead>
@@ -171,7 +181,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td><code>CATALOG_NOT_INSTALLED</code></td>
-<td>Not yet synced; this is expected. Follow the steps above and run Sync</td>
+<td>Not yet synced; this is expected. Follow the steps above and run Sync; offline environments see the Offline use section above</td>
 </tr>
 <tr>
 <td>Sync failure (network)</td>

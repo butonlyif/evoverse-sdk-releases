@@ -749,6 +749,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <p>Color meaning: green = timing met, yellow = near critical (&lt; 1 ns), red = violation.</p>
 <h4 id="software-tab-details">Software tab details</h4>
+<p>The Software tab is organized as a three-step wizard (the same operations also work through natural language or the command palette):</p>
 <table>
 <thead>
 <tr>
@@ -758,43 +759,56 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </thead>
 <tbody>
 <tr>
-<td><strong>Toolchain status</strong></td>
-<td>Whether xPack RISC-V GCC has been detected/downloaded</td>
+<td><strong>Step 1 Select app</strong></td>
+<td>App cards (name / RTOS / ELF badge); click to select</td>
 </tr>
 <tr>
-<td><strong>BSP status</strong></td>
-<td>Whether the BSP directory is ready</td>
+<td><strong>Step 2 Build</strong></td>
+<td>Builds the selected app and produces the <code>.elf</code> used for debugging</td>
 </tr>
 <tr>
-<td><strong>App list</strong></td>
-<td>Each app has its own action buttons: Build / Flash / GDB</td>
+<td><strong>Step 3 DAP debug</strong></td>
+<td>Starts IDE-native debugging (the configuration is written into <code>.vscode/launch.json</code>; requires the cortex-debug extension, with one-click install guidance when missing)</td>
+</tr>
+<tr>
+<td><strong>Toolchain / BSP status</strong></td>
+<td>xPack RISC-V GCC detection and BSP readiness</td>
+</tr>
+<tr>
+<td><strong>Advanced (folded)</strong></td>
+<td>New Software App / New RISC-V Project / Regen BSP / Program board</td>
 </tr>
 </tbody>
 </table>
 <h4 id="ip-tab-details">IP tab details</h4>
+<p>The IP tab is a four-lane catalog page with a search box on top (filter by name / library / vendor / VLNV):</p>
 <table>
 <thead>
 <tr>
-<th>Area</th>
+<th>Lane</th>
 <th>Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>IP instance list</strong></td>
-<td>Obtained by scanning the XML <code>&lt;efx:ip_info&gt;</code> and the <code>ip/</code> directory</td>
+<td><strong>Efinity soft IP</strong></td>
+<td>All IPs available in the Efinity IPM at runtime, grouped by library; each IP carries a category recommendation sentence with <strong>Add directly</strong> (preselects the IP in the Add IP flow) and <strong>Copy sentence</strong> (paste to @evoverse to add via natural language)</td>
 </tr>
 <tr>
-<td><strong>Per-instance actions</strong></td>
-<td><strong>Efinity</strong> (SoC-class IP such as RISC-V Sapphire — configured in Efinity's native multi-tab wizard) / <strong>Config</strong> (edit settings.json parameters inside VS Code) / <strong>Regen</strong> (regenerate the RTL)</td>
+<td><strong>Catalog Verified IP</strong></td>
+<td>Verified catalog IPs registered in the project baseline (<code>baseline.manifest.json</code>); an empty lane offers one-click baseline ips-only registration</td>
 </tr>
 <tr>
-<td><strong>Global actions</strong></td>
-<td>Add IP / IP List / Open in Efinity IP Manager / Sync from Efinity / Sync Project Files</td>
+<td><strong>Workspace instances</strong></td>
+<td>Obtained by scanning the XML <code>&lt;efx:ip_info&gt;</code> and the <code>ip/</code> directory; per-instance actions <strong>Efinity</strong> (SoC-class) / <strong>Config</strong> / <strong>Regen</strong></td>
+</tr>
+<tr>
+<td><strong>Hard IP (ISF channel)</strong></td>
+<td>PLL / DDR / LVDS / D-PHY / OSC guidance cards — ISF API hints and reference docs only, no add buttons (hard IP flows through <code>constraints/*.isf</code> + <code>import_gpio --dry-run</code>)</td>
 </tr>
 </tbody>
 </table>
-<p>Cards for SoC/IP-class IP (<code>kind</code> containing sapphire/riscv/soc) show a <strong>CPU</strong> icon and an orange <strong>Efinity</strong> button; clicking it opens Efinity's native multi-tab IP Configuration Wizard in the Efinity GUI for the complex parameter setup. After configuring, use <strong>Sync from Efinity</strong> to sync the changes back into the project and regenerate.</p>
+<p>Cards for SoC/IP-class IP (<code>kind</code> containing sapphire/riscv/soc) show a <strong>CPU</strong> icon and an orange <strong>Efinity</strong> button; clicking it opens Efinity's native multi-tab IP Configuration Wizard in the Efinity GUI for the complex parameter setup. After configuring, use <strong>Sync from Efinity</strong> to sync the changes back into the project and regenerate. Global actions (Add IP / IP List / Open in Efinity IP Manager / Sync from Efinity / Sync Project Files) live in the folded "Advanced" area; the command palette and natural-language entries stay unchanged.</p>
 <h3 id="4-4-the-board-catalog-view">4.4 The Board Catalog view</h3>
 <p>All Catalog materials are shown in a tree:</p>
 <pre><code>📦 Boards
@@ -2271,29 +2285,29 @@ evoverse new-software my-rtos --type freertos
         └── evoverse-software.md
 </code></pre>
 <h3 id="15-4-build-flash-software">15.4 Build/flash software</h3>
-<p>Operate from the Workbench <strong>Software tab</strong>:</p>
+<p>Operate from the Workbench <strong>Software tab</strong> three-step wizard:</p>
 <table>
 <thead>
 <tr>
-<th>Button</th>
+<th>Step / button</th>
 <th>Function</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Build</strong></td>
-<td>Compiles the firmware (<code>make</code>) → produces <code>.elf</code> / <code>.hex</code> / <code>.bin</code></td>
+<td><strong>Step 2 Build</strong></td>
+<td>Compiles the selected firmware (<code>make</code>) → produces <code>.elf</code> / <code>.hex</code> / <code>.bin</code></td>
 </tr>
 <tr>
-<td><strong>Flash</strong></td>
-<td>Builds and flashes to the FPGA over JTAG</td>
+<td><strong>Step 3 DAP debug</strong></td>
+<td>Writes <code>.vscode/launch.json</code> and starts the IDE-native OpenOCD + GDB debug session</td>
 </tr>
 <tr>
-<td><strong>GDB</strong></td>
-<td>Starts an OpenOCD + GDB debug session</td>
+<td><strong>Advanced → Program board</strong></td>
+<td>Flashes to the FPGA over JTAG and runs</td>
 </tr>
 <tr>
-<td><strong>Sync BSP</strong></td>
+<td><strong>Advanced → Regen BSP</strong></td>
 <td>Re-syncs the BSP headers</td>
 </tr>
 </tbody>

@@ -160,6 +160,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>每轮同步写入回执 <code>catalog-sync-receipt.json</code>，记录 <code>catalog_version</code> 与 <code>commit</code>，可核对本轮同步内容</li>
 </ul>
 <p>可用 <code>evoverse catalog status --json</code> 查看当前 <code>catalogVersion</code>、<code>commit</code> 与 <code>treeDigest</code>。工作区 <code>.evoverse/catalog.json</code> 指针文件记录受信物料根目录（<code>catalogRoot</code>），随每次同步刷新。</p>
+<h2 id="离线使用-无法联网时">离线使用（无法联网时）</h2>
+<p>网络受限或需要线下交付时，可以跳过在线同步，直接使用离线拷贝的 Catalog：</p>
+<ol>
+<li>从 EvoVerse 运营方获取完整 catalog 目录（含 <code>catalog.yaml</code>、<code>boards/</code>、<code>ips/</code>）。</li>
+<li>将其整体拷贝为 <code>evoverse.home</code>（默认 <code>~/evoverse-sdk</code>）下的 <code>catalog/</code> 目录。</li>
+<li>重新打开窗口（或刷新 Board Catalog 视图）。SDK 自动识别该目录：状态显示 <code>Catalog &lt;版本&gt;（本地）</code>，板卡、Demo 与 IP 全部可用。</li>
+</ol>
+<p>客户自建物料目录同样支持：目录中需包含 <code>catalog.yaml</code>（<code>evoverse import-local</code> 导入时会自动创建最小文件）。</p>
+<p>离线目录与后续在线同步可以共存：官方条目以新版为准覆盖同名路径，客户自建物料不会被删除。</p>
+<p>可用 <code>evoverse catalog status --json</code> 的 <code>source</code> 字段区分来源：<code>local</code>（离线/自建，无官方凭证）或 <code>official</code>（官方同步）。</p>
 <h2 id="常见状态与问题">常见状态与问题</h2>
 <table>
 <thead>
@@ -171,7 +181,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td><code>CATALOG_NOT_INSTALLED</code></td>
-<td>尚未同步，属预期状态；完成上述获取流程后 Sync 即可</td>
+<td>尚未同步，属预期状态；完成上述获取流程后 Sync 即可，离线环境见上节「离线使用」</td>
 </tr>
 <tr>
 <td>同步失败（网络）</td>

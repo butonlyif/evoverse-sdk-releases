@@ -134,6 +134,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
   evidence-snapshot.json
   design-context.json
   decisions.md
+  planning/ip-decisions.json
   specification.md
   implementation-plan.md
   traceability-matrix.md
@@ -152,6 +153,54 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>物料发现遵循可信物料源层级：① 已安装 Catalog，唯一可信物料库。入口只有两个：CLI <code>evoverse catalog status --json</code> 返回的 <code>location</code> 字段指向已同步的 Catalog 目录（内含 <code>catalog/</code> 与 <code>catalog-sync-receipt.json</code>）；工作区指针文件 <code>.evoverse/catalog.json</code> 的 <code>catalogRoot</code> 字段即物料根，SDK 在激活、打开 Welcome 页和每次同步后自动刷新。② 工具链自带代码与示例（<code>$EFINITY_HOME/examples/</code>、SDK <code>docs/efinity/</code> 知识库）；③ 本工作区现有代码（只读）；④ 网络开源代码（不可信，仅用于发现，引用前必须经仿真确认并记录来源）。禁止全盘搜索定位物料或引用开发树副本。</p>
 <p>对 Efinity 相关结论，先查询运行时工具链知识和当前 IP/工程能力；静态示例或旧工程只可作为带来源的材料。客户确认后，Skill 运行 <code>Skills/evoverse-design-spec/scripts/validate_design_package.py design-package</code> 校验结构、摘要和物料适配任务，并本地预报服务端 <code>spec.draft</code> 会拒绝的 <code>GENERATION_NOT_READY</code> 发现（决策状态、数值策略、协议角色、连接方向等），避免密封后才被服务端退回。此检查不等于 RTL 仿真、Efinity 编译、时序收敛或硬件验证。</p>
 <p>可靠工作流中，<code>spec.draft</code> 以 <code>packagePath</code> 提交密封的可执行 2.0 规格包目录：服务端密封并记录 <code>specPackageDigest</code> 作为可靠身份，<code>specification.md</code> 由密封脚本确定性生成、仅供人工评审；Markdown 文件不能作为 <code>packagePath</code> 提交。</p>
+<h2 id="ip-实现规划-规格起草前">IP 实现规划（规格起草前）</h2>
+<p>在起草任何规格修订之前，每个功能节点都必须先回答「这个功能用什么实现」：Efinity 硬 IP、Efinity 软 IP、Catalog Verified IP、工作区既有模块、自写 RTL，还是开源代码。这是<strong>强制考虑项</strong>——不允许跳过评估直接写 RTL；但 IP 本身不是强制选择项——工程师可以选择自写 RTL 或既有模块，只是当存在兼容的 IP 候选时，必须记录可读的技术否决理由（接口不匹配、资源代价、许可、集成耦合等）。</p>
+<p>整个规划由服务端控制面驱动，Agent 与 UI 不发明事实：</p>
+<ul>
+<li><strong>库存快照</strong>：<code>ip.inventory.refresh</code> 由服务端执行，不接受调用方输入；它从当前工具链重新盘点 Efinity IP 库存，生成绑定当前器件、封装、Efinity 版本与库存摘要的不可变快照。换了器件或工具版本，旧快照即失效，依赖它的决策必须重算。</li>
+<li><strong>节点决策</strong>：<code>ip.plan</code> 按节点提交 <code>nodeId</code> 加一个选择（<code>realizationKind</code> / <code>candidateId</code> / 可读工程理由），并为每个未选中的相关候选给出否决理由。候选清单、兼容性、风险级别与必需证据门全部由服务端从当前快照推导并写入 <code>planning/ip-decisions.json</code>。</li>
+<li><strong>候选来源只有六类封闭枚举</strong>：<code>EFINITY_HARD_IP</code>、<code>EFINITY_SOFT_IP</code>、<code>CATALOG_VERIFIED_IP</code>、<code>EXISTING_MODULE</code>、<code>CUSTOM_RTL</code>、<code>OPEN_SOURCE</code>。未知可用性、不支持当前器件或工具版本、风险无法归类（<code>UNCLASSIFIED</code>）、选择 <code>INCOMPATIBLE</code> / <code>UNVERIFIED</code> 候选，一律阻断，不会静默回退到生成 RTL。</li>
+<li><strong>风险只升不降</strong>：风险级别（<code>IP_L1</code> / <code>IP_L2</code> / <code>IP_L3</code> / <code>RTL_L2</code> / <code>RTL_L3</code>）由服务端封闭规则表按具体 IP 与配置推导，Agent 只能解释结果，不能指定、降低或替代。</li>
+</ul>
+<p>证据边界固定，任何对话都不能豁免：</p>
+<table>
+<thead>
+<tr>
+<th>来源</th>
+<th>功能仿真</th>
+<th>Native Build</th>
+<th>板级验证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Efinity 硬 IP / 软 IP / Catalog Verified IP</td>
+<td>不要求（作为 IP 资格）</td>
+<td>必须要求</td>
+<td>仅风险升级时；<code>IP_L3</code> 必须要求</td>
+</tr>
+<tr>
+<td><code>IP_L3</code>（DDR、MIPI D-PHY、LVDS 等外部高速接口）</td>
+<td>不要求</td>
+<td>必须要求，另需 bank 校验</td>
+<td>必须要求</td>
+</tr>
+<tr>
+<td>既有模块 / 自写 RTL</td>
+<td>必须要求</td>
+<td>必须要求</td>
+<td>风险要求时</td>
+</tr>
+<tr>
+<td>开源代码</td>
+<td>必须要求</td>
+<td>必须要求，另需来源与许可证据</td>
+<td>风险要求时</td>
+</tr>
+</tbody>
+</table>
+<p>「不要求功能仿真」只针对 IP 本身的资格认定，不免除配置校验、接口检查、时序约束、Native Build 或系统级证据。Native Build 通过不能等同硬件通过。围绕 vendor IP 生成的包装层只有纯直连接线（<code>DIRECT_WIRE</code>）才免仿真，含功能行为的包装层必须仿真后才放行。</p>
+<p><code>spec.draft</code> 在所有功能节点决策完成前保持阻断。批准后，评审用的 <code>specification.md</code> 会从 <code>planning/ip-decisions.json</code> 确定性派生两个章节——「IP 选择与复用矩阵」（每个节点的候选、兼容性、风险、选择理由与被否决方案）和「IP 集成契约」（身份、参数、端口、bank/电压/引脚与约束要求、生成方式及验收条件）；它们是评审视图，不是权威，权威始终是可执行 JSON。</p>
 <h2 id="冻结后的下一步">冻结后的下一步</h2>
 <p>客户确认设计包中所有 <code>DECISION_REQUIRED</code> 项后，冻结的 <code>generation-manifest.json</code> 绑定物料账本、证据快照和设计上下文的摘要。之后使用 <code>/evoverse-rtl</code> 把实施计划中的一个叶子任务生成到受控候选目录。它可以读取 <code>materials/</code>，但绝不能修改材料副本或回写参考基线。Feature intent 完成后等待系统集成；最终规格和复盘由系统集成 intent 一并确认，避免分支状态与主线交付状态不一致。</p>
 <p>冻结前还必须在验证规格的 <code>assurance</code> 段声明 <code>rtl-baseline@1</code>、选定规则包、每个显式协议契约，以及带规则 ID、原因、到期时间和精确文件/模块/接口范围的例外。视频契约使用 <code>evoverse.video@1</code>，必须明确 module、imageWidth、bitsPerPixel、parallelism 和 lineBufferDepth；任何缺失或歧义均为 <code>DECISION_REQUIRED</code>，不得从端口名称推断。</p>

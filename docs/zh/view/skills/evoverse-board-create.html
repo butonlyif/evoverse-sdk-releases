@@ -129,6 +129,7 @@ RK3588 分开保存功能 pinout。核心板和底板各自保存机器事实，
 <ol>
 <li>板卡概览；</li>
 <li>硬件参考；</li>
+<li>器件行为（按键有效电平、数码管共阴/共阳等，由原理图拓扑推导）；</li>
 <li>接口说明；</li>
 <li>电源与时钟；</li>
 <li>开发指南；</li>
@@ -138,6 +139,14 @@ RK3588 分开保存功能 pinout。核心板和底板各自保存机器事实，
 </ol>
 <p>客户自己的 <code>docs/datasheet.md</code> 永远不会被创建、覆盖或整理；<code>demos/</code>、
 <code>ips/</code> 与非 Stage0 jackets 也不会被修改。</p>
+<h2 id="器件行为推导">器件行为推导</h2>
+<p>Skill 不只罗列器件，还会从原理图拓扑（上拉/下拉、驱动三极管、公共端接法）
+推导按键、拨码开关、LED、数码管、蜂鸣器、继电器等用户可交互/可见输出器件
+的电气行为，写入 <code>hardware.yaml</code> 的 <code>device_behaviors</code> 容器：例如按键按下
+在 FPGA 引脚上读到 <code>low</code> 还是 <code>high</code>、数码管是共阳（<code>common_anode</code>）还是
+共阴（<code>common_cathode</code>）。没有原理图依据时保持 <code>UNVERIFIED</code>，绝不猜值。
+这些事实在 <code>board-manual.md</code> 的 "Device behaviors" 一节呈现，后续 RTL 与
+约束设计可直接参考。</p>
 <h2 id="fpga-与-rk3588">FPGA 与 RK3588</h2>
 <p>FPGA 校验区分“封装球存在”和“该球允许承担指定 GPIO/硬核功能”。它检查
 bank/VCCIO、PLL 参考时钟、配置/JTAG、差分对、MIPI lane、DDR、PCIe/QSE/

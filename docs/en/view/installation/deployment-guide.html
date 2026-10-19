@@ -144,6 +144,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>Run <code>evoverse catalog status --json</code> and record <code>state</code>, <code>location</code>, and the receipt's <code>catalog_version</code> and <code>commit</code>.</li>
 <li>If the network fails, fix it and retry; a failed sync does not affect the existing local Catalog (only official entries are overwritten; local content is untouched). If the local catalog directory is corrupted, simply run <code>EvoVerse: Sync Catalog</code> again to rebuild it; the workspace pointer file <code>.evoverse/catalog.json</code> records the trusted material root (<code>catalogRoot</code>).</li>
 <li>To use a self-hosted mirror or a private repository instead, override the repository URL with <code>evoverse sync --repository &lt;URL&gt;</code> or the <code>EVOVERSE_CATALOG_REPOSITORY</code> environment variable.</li>
+<li>For permanently offline environments, copy a full catalog directory as described in the Offline use section of the Catalog Materials guide.</li>
 </ol>
 <h3 id="4-verify-the-installation">4. Verify the installation</h3>
 <ol>

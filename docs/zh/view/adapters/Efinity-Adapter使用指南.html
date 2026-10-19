@@ -292,11 +292,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <p>烧录（<code>Toolchain: Program FPGA</code>）由 Efinity Adapter 实现；仿真和代码检查等通用能力仍由核心扩展提供，不在 Adapter 中重复。</p>
 <h2 id="6-risc-v-软件开发">6. RISC-V 软件开发</h2>
-<p>SW Tab 管理 Sapphire SoC 软件应用：</p>
+<p>SW Tab 以三步向导管理 Sapphire SoC 软件应用（选择应用 → 构建 → DAP 调试）：</p>
 <ul>
-<li>应用列表实时刷新（依赖工程 <code>soc/</code> 目录）</li>
-<li>Regen BSP：硬件变更后重新生成 BSP 头文件</li>
-<li>New RiscV Project：从模板创建软件工程</li>
+<li>应用卡片实时刷新（依赖工程 <code>soc/</code> 目录），点击选中后解锁构建与调试步骤</li>
+<li>DAP 调试：调试配置自动写入 <code>.vscode/launch.json</code> 并启动 IDE 原生调试；cortex-debug 扩展缺失时给出一键安装引导</li>
+<li>Regen BSP / New RiscV Project / 烧录等收进「高级」折叠区（命令仍可在命令面板与自然语言中使用）</li>
 </ul>
 <p>构建、烧录与 GDB 调试流程见<a href="../sdk/用户使用手册.html">用户使用手册</a>第 16-17 章。</p>
 <h2 id="7-ip-管理">7. IP 管理</h2>
