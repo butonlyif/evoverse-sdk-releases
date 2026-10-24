@@ -106,10 +106,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Skill：从原理图创建板卡</h1></header>
 <main class="article"><h1 id="evoverse-board-create-用户指南">evoverse-board-create · 用户指南</h1>
 <blockquote>
-<p><strong>面向客户</strong> · EvoVerse SDK v1.0.0 · 2026-09-21</p>
+<p><strong>面向客户</strong> · EvoVerse SDK v1.0.0 · 2026-10-24</p>
 </blockquote>
 <p>这个 Skill 把板卡资料整理成 SDK 可验证的机器契约，并自动生成人可读说明书。
-适用于独立 FPGA 单板、FPGA 核心板+底板，以及 FPGA+RK3588 异构系统。</p>
+适用于独立 FPGA 单板、纯 SoC 单板（RK3588 为首个实现）、FPGA 核心板+底板，
+以及 FPGA+RK3588 异构系统；多个 SoC 目标各生成独立目录互不覆盖。</p>
 <h2 id="需要准备">需要准备</h2>
 <ul>
 <li>对应硬件版本的原理图、BOM 和受控设计资料；</li>
@@ -123,7 +124,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="输出结构">输出结构</h2>
 <p>每个物料根包含 <code>board.yaml</code>、<code>hardware.yaml</code>、<code>sources.yaml</code>，并按 FPGA 与
 RK3588 分开保存功能 pinout。核心板和底板各自保存机器事实，选择底板后才生成
-组合说明书。功能映射直接连接到最终器件，不包含冗余的板间连接器位置。</p>
+组合说明书。功能映射直接连接到最终器件，不包含冗余的板间连接器位置。
+每个 SoC 目标在 <code>platforms/&lt;target-id&gt;/</code> 下生成三份最小物料：规范化的小型
+<code>platform.yaml</code>、由已确认原理图事实推导的 <code>&lt;board-id&gt;.dts</code> 初始骨架，以及
+Adapter 词汇的 <code>profile.template.json</code>（未绑定字段保持空白/未解决，绝不伪造）；
+当平台输入中带有确认的本地 BSP/环境绑定事实时，同目录额外生成可执行的
+<code>evoverse-rk3588-profile.json</code>（沿用现有 Profile 模式，原值渲染）。</p>
 <p><code>docs/generated/</code> 自动产生；其中面向客户阅读的综合说明书固定为
 <code>docs/generated/board-manual.md</code>：</p>
 <ol>
@@ -151,9 +157,25 @@ RK3588 分开保存功能 pinout。核心板和底板各自保存机器事实，
 <p>FPGA 校验区分“封装球存在”和“该球允许承担指定 GPIO/硬核功能”。它检查
 bank/VCCIO、PLL 参考时钟、配置/JTAG、差分对、MIPI lane、DDR、PCIe/QSE/
 SerDes 等器件约束。Efinity probe 的 package/bank 输出不能单独证明硬核合法。</p>
-<p>RK3588 在第一期生成平台契约与 <code>PROFILE_READY</code> 模板。只有显式绑定真实源码根、
-固定 BSP commit、构建环境、loader、分区和产物之后，才能进入构建阶段；模板
-不会伪造这些信息。</p>
+<p>RK3588 走直接资源流：先确认目标身份，再按「板卡/模组厂商官方 BSP → 芯片
+厂商官方 SDK → 厂商明确支持的上游项目」顺序搜索一手开发资源；社区仓库、
+镜像、论坛帖、分销商页面只作发现线索，除非用户显式接受否则不能成为选定的
+BSP 或环境。定制板没有板卡厂商 BSP 时，以芯片厂商官方 SDK 为基础，从原理图
+事实推导本板 DTS；同 SoC 其他板卡的 BSP 不能互换。选定资源只记录可复现信息
+（官方归属、URL/仓库、发布 ref、支持的主机构建环境、许可证/访问说明、观察
+日期）到 <code>sources.yaml</code>，未下载核验的字节不编造哈希。</p>
+<p>大型 BSP 压缩包、工具链、容器镜像、固件包或任何需要接受许可的资源，下载前
+必须先向用户展示确切的来源、版本/ref、已知大小、目标位置与许可/访问要求，
+确认后才下载；Skill 不嵌入凭据、不代用户接受许可。确认后使用现有 Git/HTTP/
+归档/包管理/容器工具在用户批准的位置取得资源，重新运行生成更新同一
+<code>platforms/&lt;target-id&gt;/</code> 目标文件，用真实 BSP 根、ref、环境、loader、分区与
+阶段补全 <code>evoverse-rk3588-profile.json</code>，然后调用现有 RK3588 Adapter
+preflight。下载成功本身不是 <code>BUILD_READY</code>——该结论只由 Adapter 在绑定完成且
+preflight 通过后报告。</p>
+<p>缺失必备原理图事实、权威 BSP/环境来源、访问权限或用户确认时，状态为
+<code>INCOMPLETE</code>：部分物料仍然生成并激活，可进入 Catalog 被发现，后续补齐事实后
+重新生成同一目标目录即可完成——<code>INCOMPLETE</code> 不是 Catalog 拒收。只有畸形契约、
+路径逃逸或破坏性写冲突才会让生成操作失败退出。</p>
 <h2 id="运行">运行</h2>
 <pre><code class="language-powershell">cd Skills\evoverse-board-create
 python -m pinout_tool.cli material-generate `
@@ -166,8 +188,11 @@ python -m pinout_tool.cli material-generate `
 替换上一版有效自动产物。</p>
 <h2 id="验证范围">验证范围</h2>
 <p>生成 Stage0 只证明输入文件已经形成，不证明 Efinity 编译、烧录或实板运行。
-未运行原生编译时状态为 <code>NATIVE_BUILD_NOT_RUN</code>。RK3588 的构建、启动和实板验证
-也必须分别产生自己的证据。</p></main>
+未运行原生编译时状态为 <code>NATIVE_BUILD_NOT_RUN</code>。RK3588 的原生构建、镜像打包、
+烧录、启动和实板验证是彼此独立的证据边界，生成文件一律不宣称其中任何一项；
+RK3588 Adapter 也会自动发现 <code>platforms/&lt;target-id&gt;/</code> 下生成的模板与可执行
+Profile（可执行 Profile 优先），未绑定模板只呈现 <code>PROFILE_READY</code> 与缺失绑定
+清单，不会转为完整 Profile。</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
 

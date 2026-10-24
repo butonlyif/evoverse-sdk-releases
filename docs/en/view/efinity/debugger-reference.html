@@ -438,7 +438,30 @@ endmodule
 <td>CLI script for debug core auto-instantiation</td>
 </tr>
 </tbody>
-</table></main>
+</table>
+<hr />
+<h2 id="16-cli-debug-compile-contract-verified-on-efinity-2026-1">16. CLI Debug Compile Contract (verified on Efinity 2026.1)</h2>
+<blockquote>
+<p>Every behavior below was verified against the real toolchain (2026.10, the M0/E2E qualification of the natural-language netlist debug task) and applies only to the 2026.1 install (measured on 2026.1.132.1.15); other versions are unverified. It covers the CLI debug compile path of the unified <code>efx_run --flow compile</code> flow.</p>
+</blockquote>
+<h3 id="16-1-native-sta-discovery-flow">16.1 Native STA discovery flow</h3>
+<p>Signal discovery over the compiled netlist uses Efinity's native STA flow:</p>
+<pre><code>efx_run --flow sta_tclsh --tcl_script &lt;script&gt;
+</code></pre>
+<p>Through this flow the caller reads the current compiled database (the STA report) and obtains true scalar signal identities (<code>net:</code> form), widths, and clock status. This is the only supported source of netlist signals — RTL source names that never went through synthesis may be renamed or optimized away and are not valid probe candidates.</p>
+<h3 id="16-2-the-peri-syn-recipe-1-1-baseline-0-0-debug-compile">16.2 The peri-syn recipe: 1/1 baseline + 0/0 debug compile</h3>
+<p>A single <code>&lt;design&gt;.dbg.map.v</code> is produced <strong>only</strong> when both <code>peri-syn-instantiation</code> and <code>peri-syn-inference</code> are <strong>0</strong>; with either at 1 the artifact splits into <code>&lt;design&gt;.dbg.map.core.v</code> and <code>efx_run_dbg.py:94-115</code> raises because the single file is missing (reproduced three ways on 2026.1.132.1.15: wizard profile / direct efx_run_dbg.py / the vendor mark_debug two-compile ritual).</p>
+<p>The Adapter's Debug Build recipe (same shape as the vendor mark_debug two-compile ritual):</p>
+<ol>
+<li><strong>Ordinary build</strong> (peri-syn 1/1, the defaults): the baseline compile that primes <code>outflow/&lt;design&gt;.peri.db</code></li>
+<li><strong>Debug Build</strong>: the two options are temporarily flipped to 0/0 during the compile (project XML params, <code>value_type="e_option"</code>) and restored to 1/1 afterwards (temp file + rename, finally-restore)</li>
+</ol>
+<p>The 0/0 state should exist only during the Debug Build; a crash can leave the options on disk, and re-running the Debug Build restores them again.</p>
+<h3 id="16-3-fixed-work_dbg-publishing">16.3 Fixed work_dbg publishing</h3>
+<p><code>efx_run.py</code> never forwards the project XML's <code>&lt;efx:work_dir&gt;</code> parameter — no matter how the XML configures it, debug core artifacts are published to the fixed <code>&lt;project&gt;/work_dbg/</code>. The caller must publish <code>debug_profile.wizard.json</code> and <code>debug_top.v</code> there beforehand; in wizard mode <code>compile_dbg_core</code> requires <code>work_dbg/debug_top.v</code> to pre-exist and reports <code>No such file: work_dbg\debug_top.v</code> otherwise.</p>
+<h3 id="16-4-hardware-path-boundary">16.4 Hardware path boundary</h3>
+<p>A successful compile (debug-core bitstream with digests) is <strong>not</strong> hardware evidence. Programming, device scan, and trigger capture are separate user steps; until they actually run, everything is reported <code>NOT_RUN</code> and never inferred from a compile PASS.</p>
+<p><strong>Verification date:</strong> 2026-10 (M0 gate reopened PASS + E2E reached READY_TO_PROGRAM; evidence in project-review)</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
 

@@ -392,6 +392,49 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
+<h2 id="9-自然语言网表调试-免-mark_debug-流程">9. 自然语言网表调试（免 mark_debug 流程）</h2>
+<p>Debug 页的七步流程基于 RTL <code>(* mark_debug *)</code> 标记。还有一条完全不同的路径：在 Trae 对话里用自然语言描述要观察什么（信号、总线、状态机、握手、计数器），由 Efinity Adapter 直接从<strong>编译后网表</strong>选点并完成调试编译。这条路不写任何 RTL 属性——选中的是综合后的真实标量信号，不会被综合改名或优化掉。</p>
+<p>两种流程对比：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>mark_debug 流程（§3 七步）</th>
+<th>自然语言网表流程</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>选点方式</td>
+<td>手工在 RTL 源码加属性标记</td>
+<td>对话描述目标，Adapter 从编译数据库发现候选</td>
+</tr>
+<tr>
+<td>信号身份</td>
+<td>源码信号名（综合可能改名或优化掉）</td>
+<td>编译后网表的精确标量标识（<code>net:</code> 形式）</td>
+</tr>
+<tr>
+<td>编译次数</td>
+<td>两次普通 Build</td>
+<td>一次普通 Build（基线）+ 一次 Debug Build（含调试核）</td>
+</tr>
+<tr>
+<td>配置发布</td>
+<td><code>outflow/debug_profile.mark_debug.json</code></td>
+<td><code>work_dbg/</code>（<code>debug_profile.wizard.json</code> + <code>debug_top.v</code>）</td>
+</tr>
+</tbody>
+</table>
+<p>关键纪律：</p>
+<ul>
+<li><strong>对话是唯一的自然语言入口</strong>：候选信号、摘要、写入全部由 Adapter 权威给出，AI 不自行猜名、发明或直接应用网表信号。</li>
+<li><strong>普通 Build 是用户授权</strong>：没有当前编译数据库时流程停止并要求先执行普通 Build（<code>BASELINE_BUILD_REQUIRED</code>），不会隐式代跑。</li>
+<li><strong>发现基于原生 STA</strong>：Adapter 通过 <code>efx_run --flow sta_tclsh</code> 读取编译数据库，返回按相关度排序的候选（精确标量标识、位宽、时钟状态、匹配原因）。</li>
+<li><strong>停止条件如实报告</strong>：<code>BASELINE_BUILD_REQUIRED</code>（缺基线编译）、<code>STALE_DISCOVERY</code>（输入漂移需重新发现）、<code>UNRESOLVED_CLOCK_DOMAIN</code> / <code>AMBIGUOUS_BUS</code>（需收窄目标）、<code>DEBUG_BUILD_FAILED</code>（返回日志路径）——每类都要解释，不绕过。</li>
+<li><strong>位流不是硬件证据</strong>：流程到达 <code>READY_TO_PROGRAM</code>（绑定所选信号的调试位流与摘要）后移交 Workbench；烧录、扫描、触发采集是独立的用户操作，未实际执行时一律 <code>NOT_RUN</code>。</li>
+</ul>
+<p>底层 CLI 契约（peri-syn 配方、work_dbg 固定发布）见 <a href="Efinity-Debugger参考.html">Efinity Debugger 参考</a> §16。</p>
 <hr />
 <p>底层机制（两次编译的 elab.vdb 依赖、XML debugger 块字段、profile JSON 格式）见 <a href="Efinity-Debugger参考.html">Efinity Debugger 参考</a>。</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>

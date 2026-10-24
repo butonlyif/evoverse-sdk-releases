@@ -106,10 +106,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Skill: Create a Board from a Schematic</h1></header>
 <main class="article"><h1 id="evoverse-board-create-user-guide">evoverse-board-create · User Guide</h1>
 <blockquote>
-<p><strong>Customer-facing</strong> · EvoVerse SDK v1.0.0 · 2026-09-21</p>
+<p><strong>Customer-facing</strong> · EvoVerse SDK v1.0.0 · 2026-10-24</p>
 </blockquote>
 <p>This Skill turns board documentation into machine contracts the SDK can verify, and automatically generates a human-readable manual.
-It covers standalone FPGA boards, FPGA core-module-plus-carrier combinations, and heterogeneous FPGA+RK3588 systems.</p>
+It covers standalone FPGA boards, SoC-only boards (RK3588 as the first implementation), FPGA core-module-plus-carrier combinations, and heterogeneous FPGA+RK3588 systems; multiple SoC targets each generate their own directory and never overwrite each other.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
 <li>Schematics, BOM, and controlled design material for the exact hardware revision;</li>
@@ -121,7 +121,8 @@ It covers standalone FPGA boards, FPGA core-module-plus-carrier combinations, an
 <p>Uncertain items are kept as <code>UNVERIFIED</code>, and conflicting sources as <code>CONFLICT</code>; nothing is filled in with guessed values.
 Distributor or community pages can help discover part numbers, but they cannot confirm electrical or functional facts.</p>
 <h2 id="output-structure">Output structure</h2>
-<p>Every material root contains <code>board.yaml</code>, <code>hardware.yaml</code>, and <code>sources.yaml</code>, with the functional pinouts stored separately for the FPGA and the RK3588. The core module and the carrier each keep their own machine facts; the combined manual is generated only after a carrier is selected. Functional mappings connect directly to the final device and contain no redundant inter-board connector positions.</p>
+<p>Every material root contains <code>board.yaml</code>, <code>hardware.yaml</code>, and <code>sources.yaml</code>, with the functional pinouts stored separately for the FPGA and the RK3588. The core module and the carrier each keep their own machine facts; the combined manual is generated only after a carrier is selected. Functional mappings connect directly to the final device and contain no redundant inter-board connector positions.
+Every SoC target generates minimal material under <code>platforms/&lt;target-id&gt;/</code>: a small normalized <code>platform.yaml</code>, an initial <code>&lt;board-id&gt;.dts</code> skeleton derived only from confirmed schematic facts, and the Adapter-vocabulary <code>profile.template.json</code> (unbound fields stay blank/unresolved and are never fabricated); when the platform input carries confirmed local BSP/environment binding facts, the executable <code>evoverse-rk3588-profile.json</code> is additionally generated in the same directory (reusing the existing Profile schema, values rendered verbatim).</p>
 <p><code>docs/generated/</code> is produced automatically; the consolidated manual intended for customer reading is always <code>docs/generated/board-manual.md</code>:</p>
 <ol>
 <li>Board overview;</li>
@@ -139,18 +140,20 @@ Distributor or community pages can help discover part numbers, but they cannot c
 <p>Beyond listing devices, the Skill derives the electrical behavior of user-interaction and visible-output devices — push buttons, DIP switches, LEDs, seven-segment displays, buzzers, relays — from the schematic topology (pull-up/pull-down, driver transistor stage, common-terminal rail) and records it in the <code>device_behaviors</code> container of <code>hardware.yaml</code>: for example whether a pressed button reads <code>low</code> or <code>high</code> on the FPGA pin, or whether a display is <code>common_anode</code> or <code>common_cathode</code>. Without schematic evidence the entry stays <code>UNVERIFIED</code>; nothing is guessed. These facts appear in the "Device behaviors" section of <code>board-manual.md</code> for direct use in later RTL and constraint design.</p>
 <h2 id="fpga-and-rk3588">FPGA and RK3588</h2>
 <p>FPGA validation distinguishes "the package ball exists" from "that ball is allowed to carry the specified GPIO or hard-macro function". It checks device constraints such as bank/VCCIO, PLL reference clocks, configuration/JTAG, differential pairs, MIPI lanes, DDR, and PCIe/QSE/SerDes. The package/bank output of an Efinity probe cannot, by itself, prove a hard macro legal.</p>
-<p>For the RK3588, phase one generates the platform contract and a <code>PROFILE_READY</code> template. The build stage is reachable only after a real source root, a pinned BSP commit, the build environment, the loader, partitions, and artifacts are explicitly bound; the template never fabricates any of these.</p>
+<p>The RK3588 follows a direct resource flow: after the target identity is confirmed, first-party development resources are searched in the order "board/module vendor BSP → SoC vendor SDK → upstream projects explicitly supported by the vendor"; community repositories, mirrors, forum posts, and distributor pages are discovery leads only and cannot become the selected BSP or environment unless the user explicitly accepts a non-authoritative source. For a custom board without a board-vendor BSP, the SoC vendor's official SDK is the base and the custom board DTS is derived from schematic facts; a BSP for another board with the same SoC is not interchangeable. Only reproducible identity is recorded for each selected resource (official owner, URL/repository, published ref, supported host/build environment, license/access note, observation date) in <code>sources.yaml</code>; hashes are never invented for bytes that were not downloaded and inspected.</p>
+<p>Before downloading a large BSP archive, toolchain, container image, or firmware bundle — or any resource that requires license acceptance — the user must first be shown the exact source, version/ref, known size, destination, and license/access requirement, and the download happens only after confirmation; the Skill never embeds credentials or accepts a license on the user's behalf. After confirmation, the selected official resources are obtained with existing Git/HTTP/archive/package/container tools in the user-approved location, generation is rerun to update the same <code>platforms/&lt;target-id&gt;/</code> target files, <code>evoverse-rk3588-profile.json</code> is completed from the real BSP root, ref, environment, loader, partitions, and stages, and the existing RK3588 Adapter preflight is invoked. A successful download by itself is not <code>BUILD_READY</code> — that verdict is reported only by the Adapter after binding completes and preflight passes.</p>
+<p>When required schematic facts, an authoritative BSP/environment source, access, or user confirmation is missing, the status is <code>INCOMPLETE</code>: the partial material is still generated and activated, remains discoverable in Catalog, and can be completed later by rerunning generation against the same target directory — <code>INCOMPLETE</code> is not Catalog rejection. Only malformed contracts, path escapes, or destructive write collisions fail the generation run.</p>
 <h2 id="running">Running</h2>
 <pre><code class="language-powershell">cd Skills\evoverse-board-create
 python -m pinout_tool.cli material-generate `
-  --root &lt;板卡或核心板物料目录&gt; `
-  --carrier &lt;所选底板目录&gt; `
-  --fpga-authority &lt;精确FPGA器件权威数据.json&gt; `
-  --rk3588-authority &lt;精确RK3588权威数据.json&gt;
+  --root &lt;board-or-module-material-root&gt; `
+  --carrier &lt;selected-carrier-root&gt; `
+  --fpga-authority &lt;exact-fpga-authority.json&gt; `
+  --rk3588-authority &lt;exact-rk3588-authority.json&gt;
 </code></pre>
 <p>The command runs through structure, sources, device pins, combination, target artifacts, and documentation, in that order. No error ever replaces the previous valid auto-generated output.</p>
 <h2 id="verification-scope">Verification scope</h2>
-<p>Generating a Stage0 proves only that the input files exist; it does not prove Efinity compilation, programming, or operation on the physical board. Until a native compile has run, the status stays <code>NATIVE_BUILD_NOT_RUN</code>. RK3588 builds, boot, and on-board validation must each produce their own evidence as well.</p></main>
+<p>Generating a Stage0 proves only that the input files exist; it does not prove Efinity compilation, programming, or operation on the physical board. Until a native compile has run, the status stays <code>NATIVE_BUILD_NOT_RUN</code>. For the RK3588, native build, image packaging, programming, boot, and on-board validation are separate evidence boundaries and are never claimed by generated files; the RK3588 Adapter also discovers generated templates and executable profiles under <code>platforms/&lt;target-id&gt;/</code> automatically (executable profiles win; unbound templates only surface <code>PROFILE_READY</code> plus the missing-binding list and are never converted into a full profile).</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
 

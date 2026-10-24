@@ -392,6 +392,49 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
+<h2 id="9-natural-language-netlist-debug-no-mark_debug">9. Natural-Language Netlist Debug (no mark_debug)</h2>
+<p>The Debug tab's seven-step flow is based on RTL <code>(* mark_debug *)</code> attributes. A completely different path also exists: describe in a Trae conversation what you want to observe (signals, buses, FSMs, handshakes, counters), and the Efinity Adapter selects probes directly from the <strong>compiled netlist</strong> and completes the debug compile. This path writes no RTL attributes — the selected scalars are real post-synthesis signals that synthesis can no longer rename or optimize away.</p>
+<p>Comparison of the two flows:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>mark_debug flow (§3, seven steps)</th>
+<th>Natural-language netlist flow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Probe selection</td>
+<td>Hand-written attributes in RTL source</td>
+<td>Describe the goal in chat; the Adapter discovers candidates from the compiled database</td>
+</tr>
+<tr>
+<td>Signal identity</td>
+<td>Source-level names (synthesis may rename or optimize them away)</td>
+<td>Exact scalar identities of the compiled netlist (<code>net:</code> form)</td>
+</tr>
+<tr>
+<td>Number of compiles</td>
+<td>Two ordinary builds</td>
+<td>One ordinary build (baseline) + one Debug Build (with debug cores)</td>
+</tr>
+<tr>
+<td>Configuration publishing</td>
+<td><code>outflow/debug_profile.mark_debug.json</code></td>
+<td><code>work_dbg/</code> (<code>debug_profile.wizard.json</code> + <code>debug_top.v</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Key disciplines:</p>
+<ul>
+<li><strong>The conversation is the only natural-language entry</strong>: candidates, digests, and writes all come authoritatively from the Adapter; the AI never guesses names, invents signals, or applies netlist signals on its own.</li>
+<li><strong>The ordinary build is a user authorization</strong>: without a current compiled database the flow stops and asks for an ordinary build first (<code>BASELINE_BUILD_REQUIRED</code>); it never runs one implicitly.</li>
+<li><strong>Discovery is native STA</strong>: the Adapter reads the compiled database through <code>efx_run --flow sta_tclsh</code> and returns ranked candidates (exact scalar identities, width, clock status, match reasons).</li>
+<li><strong>Stop conditions are reported honestly</strong>: <code>BASELINE_BUILD_REQUIRED</code> (no baseline compile), <code>STALE_DISCOVERY</code> (inputs drifted, re-discover), <code>UNRESOLVED_CLOCK_DOMAIN</code> / <code>AMBIGUOUS_BUS</code> (narrow the goal), <code>DEBUG_BUILD_FAILED</code> (log paths returned) — each is explained, never worked around.</li>
+<li><strong>A bitstream is not hardware proof</strong>: after the flow reaches <code>READY_TO_PROGRAM</code> (a debug bitstream bound to the confirmed selection, with digests) it hands over to the Workbench; programming, scanning, and trigger capture are separate user actions, reported <code>NOT_RUN</code> until they actually run.</li>
+</ul>
+<p>For the underlying CLI contract (the peri-syn recipe, fixed work_dbg publishing), see <a href="debugger-reference.html">Efinity Debugger Reference</a> §16.</p>
 <hr />
 <p>For the underlying mechanisms (the elab.vdb dependency behind the two compiles, XML debugger block fields, the profile JSON format), see the <a href="debugger-reference.html">Efinity Debugger Reference</a>.</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>

@@ -86,7 +86,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <div class="topbar"><a class="brand" href="customer-portal.html"><img src="assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="tutorials.html">教程中心</a><a class="pnav-item" href="efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="video-sim.html">Video Sim</a><a class="pnav-item on" href="skills.html">Skills</a><a class="pnav-item" href="boards.html">板卡与物料</a><a class="pnav-item" href="cli-reference.html">CLI 参考</a><a class="pnav-item" href="mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.0 · Trae 优先</p><h1>Skills · Agent 技能参考</h1><p>每个 Skill 的完整说明：触发场景、工作流与约束。</p>
 <label><span class="sr-only">搜索文档</span><input id="search" class="search" type="search" placeholder="搜索当前产品文档…"></label></header>
-<main><div class="book"><aside class="book-toc" aria-label="目录"><h4>Agent Skills · 7</h4><a href="#skill-efinity-build-review">efinity-build-review</a><a href="#skill-efinity-knowledge">efinity-knowledge</a><a href="#skill-efinity-project">efinity-project</a><a href="#skill-evoverse-board-create">evoverse-board-create</a><a href="#skill-evoverse-design-spec">evoverse-design-spec</a><a href="#skill-evoverse-project-review">evoverse-project-review</a><a href="#skill-evoverse-rtl">evoverse-rtl</a></aside><div class="book-main"><section class="entry" id="skill-efinity-build-review" data-search="efinity-build-review Use when a user wants an AI review of an existing Efinity build, including project meaning, compile status, timing, constraints, resources, artifacts, code-correlated paths, or safe next-step recommendations for EvoVerse or customer-owned native projects."><h3><code>efinity-build-review</code></h3><p>Use when a user wants an AI review of an existing Efinity build, including project meaning, compile status, timing, constraints, resources, artifacts, code-correlated paths, or safe next-step recommendations for EvoVerse or customer-owned native projects.</p><div class="doc-body"><p>Produce one evidence-bound, rendered review for the exact native Efinity project the user selected. Analysis is an intermediate stage, not the deliverable.</p>
+<main><div class="book"><aside class="book-toc" aria-label="目录"><h4>Agent Skills · 8</h4><a href="#skill-efinity-build-review">efinity-build-review</a><a href="#skill-efinity-knowledge">efinity-knowledge</a><a href="#skill-efinity-netlist-debug">efinity-netlist-debug</a><a href="#skill-efinity-project">efinity-project</a><a href="#skill-evoverse-board-create">evoverse-board-create</a><a href="#skill-evoverse-design-spec">evoverse-design-spec</a><a href="#skill-evoverse-project-review">evoverse-project-review</a><a href="#skill-evoverse-rtl">evoverse-rtl</a></aside><div class="book-main"><section class="entry" id="skill-efinity-build-review" data-search="efinity-build-review Use when a user wants an AI review of an existing Efinity build, including project meaning, compile status, timing, constraints, resources, artifacts, code-correlated paths, or safe next-step recommendations for EvoVerse or customer-owned native projects."><h3><code>efinity-build-review</code></h3><p>Use when a user wants an AI review of an existing Efinity build, including project meaning, compile status, timing, constraints, resources, artifacts, code-correlated paths, or safe next-step recommendations for EvoVerse or customer-owned native projects.</p><div class="doc-body"><p>Produce one evidence-bound, rendered review for the exact native Efinity project the user selected. Analysis is an intermediate stage, not the deliverable.</p>
 <h2 id="completion-contract">Completion contract</h2>
 <p>Run this state machine in one turn unless a blocking condition below applies:</p>
 <p><code>SELECT → COLLECT → COMPOSE → FINALIZE → DELIVER</code></p>
@@ -217,6 +217,79 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>The authoritative knowledge source = <code>docs/efinity/*.md</code>; do not copy or mirror it anywhere else.</li>
 <li>Prefer the MCP tool for queries; avoid manually Reading multiple files.</li>
 <li>When citing knowledge base content, use specific section numbers (e.g., <code>Efinity工具链参考.md §3.2</code>).</li>
+</ul></div></section><section class="entry" id="skill-efinity-netlist-debug" data-search="efinity-netlist-debug Use when a user describes in natural language what behavior to observe inside a compiled Efinity FPGA design (signals, buses, FSMs, handshakes, counters) and wants on-chip debug capture, instead of hand-picking RTL signals with mark_debug."><h3><code>efinity-netlist-debug</code></h3><p>Use when a user describes in natural language what behavior to observe inside a compiled Efinity FPGA design (signals, buses, FSMs, handshakes, counters) and wants on-chip debug capture, instead of hand-picking RTL signals with mark_debug.</p><div class="doc-body"><p>Turn a plain-language observation goal into Adapter-discovered debug candidates. This chat
+is the only natural-language input; you interpret the goal — you never guess, invent, or apply
+netlist signals yourself. The Efinity Adapter is authoritative for every signal, digest, and
+write. Do not use the legacy RTL <code>(* mark_debug *)</code> attribute flow here: this flow selects real
+compiled-netlist signals, not source-level guesses that synthesis may rename or optimize away.</p>
+<h2 id="completion-contract">Completion contract</h2>
+<p><strong>The chat stops after discovery.</strong> In one turn run <code>SELECT → INTENT → DISCOVER</code>, present the
+Adapter's ranked candidates, and stop. CONFIRM → PROFILE → BUILD → HAND OFF are Workbench-owned
+stages: the user confirms the structured selection in the Workbench Debug tab, whose trusted
+host mints separate one-use APPLY and BUILD confirmations that this chat can never mint or
+forge. Report every stage separately: discovery, profile, build, programming, capture. A
+bitstream is not hardware proof; programming and capture are distinct, user-driven steps and
+must be reported as not run until they actually run.</p>
+<h2 id="chat-stages-you-run-these">Chat stages (you run these)</h2>
+<h3 id="select">SELECT</h3>
+<p>Every call carries <code>project</code> and an explicit <code>project_xml</code> (absolute path). If the workspace
+contains multiple Efinity XMLs, ask the user which one — never pick by order, timestamp, or
+basename. Do not proceed with an implicit XML.</p>
+<h3 id="intent">INTENT</h3>
+<p>Call <code>efinity_debug_intent_create</code> with <code>goals</code> (each a <code>{"description": ...}</code> object phrasing
+what to observe). The Adapter answers with the authoritative <code>intent</code> (id, <code>revision</code>, <code>status</code>
+starting at <code>DRAFT</code>). To change the goal later, call <code>efinity_debug_intent_revise</code> with the
+current <code>expected_revision</code>; this discards candidates and receipts by design. Read state any
+time with <code>efinity_debug_intent_read</code> — never trust your memory of a previous response.</p>
+<h3 id="discover">DISCOVER</h3>
+<p>Call <code>efinity_debug_signals_discover</code> with <code>intent_id</code> and <code>expected_revision</code>. The Adapter
+queries the current compiled database through Efinity's native STA flow and returns ranked
+<code>candidates</code> (exact scalar identities, width, clock status, match reasons). Present candidates
+with their reasons; do not add names of your own. Then stop and point the user at the
+Workbench Debug tab. Never call <code>efinity_debug_selection_preview</code>,
+<code>efinity_debug_selection_apply</code>, or <code>efinity_debug_build</code> from the chat: preview, apply, and
+build live behind Workbench-minted one-use confirmations, so an unconfirmed headless call is
+refused by design.</p>
+<p>Stop conditions, each a typed status on the intent — explain it, do not work around it:</p>
+<ul>
+<li><code>BASELINE_BUILD_REQUIRED</code>: no current compiled database. The ordinary build is a user
+  authorization, not something this flow runs implicitly. Ask first.</li>
+<li><code>STALE_DISCOVERY</code>: inputs or database drifted since the last discovery. Re-run discovery;
+  if the goal wording should change, revise first. Never reuse stale picks.</li>
+<li><code>UNRESOLVED_CLOCK_DOMAIN</code> or <code>AMBIGUOUS_BUS</code>: the selection crosses clocks or a bus cannot be
+  grouped safely. Ask the user to narrow the goal. Never default to the first clock.</li>
+</ul>
+<h2 id="workbench-owned-stages-describe-them-never-drive-them">Workbench-owned stages (describe them, never drive them)</h2>
+<h3 id="confirm">CONFIRM</h3>
+<p>The user builds the structured selection from Adapter candidates only: <code>scalarSignalIds</code> (the
+<code>net:</code> identifiers exactly as returned), <code>probeTypes</code>, <code>sampleClock</code>, <code>sampleDepth</code>, and
+<code>userTap</code> — the closed <code>USER1</code>/<code>USER2</code> enum, never a boolean. For "capture everything"
+requests the Workbench shows the totals (probe count, widths, depth) before confirmation.
+<code>efinity_debug_selection_preview</code> returns the structured preview (exact probes, resolved USER
+TAP, and the XML digests apply will change) plus a one-use receipt, and the Workbench host
+mints the APPLY confirmation against that exact identity.</p>
+<h3 id="profile">PROFILE</h3>
+<p><code>efinity_debug_selection_apply</code> consumes the one-use receipt under the minted confirmation;
+replaying it fails closed. On success the intent reaches <code>PROFILE_READY</code> — the vendor profile
+and debug core are published by the Adapter; nobody writes profile files or Tcl by hand.</p>
+<h3 id="build">BUILD</h3>
+<p><code>efinity_debug_build</code> runs the unified Efinity compile under a separately minted BUILD
+confirmation — a confirmed Apply never authorizes Build. Build acceptance reconciles the
+compiled wizard profile's <code>jtag_user</code> against the confirmed <code>USER1</code>/<code>USER2</code> value: any TAP
+drift fails closed as <code>DEBUG_BUILD_REJECTED</code>. Stage failures return log paths as
+<code>DEBUG_BUILD_FAILED</code> — report them, do not retry blindly. On success the intent is
+<code>READY_TO_PROGRAM</code> with bitstream digests.</p>
+<h3 id="hand-off">HAND OFF</h3>
+<p>Programming, device scan, trigger setup, and capture run in the EvoVerse Workbench Debug tab
+on the same authoritative state. Offer to open it; report programming and capture as not run
+until the user performs them. Never claim hardware proof from a compile.</p>
+<h2 id="discipline">Discipline</h2>
+<ul>
+<li>Always pass the <code>expected_revision</code> from the latest Adapter response; on <code>REVISION_CONFLICT</code>,
+  re-read with <code>efinity_debug_intent_read</code> and reconcile — two surfaces may share one intent.</li>
+<li>Source changes invalidate candidates, receipts, and minted confirmations; that is the system
+  working, not an error.</li>
+<li>Request and response field reference: <code>references/intent-contract.md</code>.</li>
 </ul></div></section><section class="entry" id="skill-efinity-project" data-search="efinity-project Use when a user wants to create an Efinity project or change an existing Efinity project&#x27;s device, sources, constraints, IP, build settings, or debugger settings through natural language."><h3><code>efinity-project</code></h3><p>Use when a user wants to create an Efinity project or change an existing Efinity project&#x27;s device, sources, constraints, IP, build settings, or debugger settings through natural language.</p><div class="doc-body"><p>Land the user's project intent step by step in a <strong>native Efinity project</strong>, and prove the result with a native compile of the current inputs. Routine project creation and modification can start directly from a Trae conversation; if the user asks to define a complete system specification first, carry over the design decisions from <code>evoverse-design-spec</code> and then perform the project configuration here. Do not spin up a second set of project-settings pages.</p>
 <h2 id="1-determine-goals-and-evidence">1. Determine Goals and Evidence</h2>
 <ol>
@@ -247,9 +320,21 @@ those facts. Do not retrofit legacy Catalog layouts unless explicitly asked.</p>
 <li><code>module</code>: a core module that requires a selected <code>carrier</code>;</li>
 <li><code>carrier</code>: one baseboard belonging to exactly one module.</li>
 </ul>
-<p>A module may contain FPGA only or FPGA + RK3588. Declare FPGA as target type
-<code>fpga</code> owned by Adapter <code>efinity</code>; declare RK3588 as
-<code>soc</code> owned by Adapter <code>rk3588</code>. When both exist, also emit a
+<p>A module may contain FPGA only, SoC only, or FPGA + SoC. Boards route by
+development target, not by SoC family:</p>
+<ul>
+<li>FPGA-only: every target is type <code>fpga</code> owned by Adapter <code>efinity</code>; the
+  Efinity material flow below is the whole job.</li>
+<li>SoC-only: every target is type <code>soc</code> owned by its Adapter (today
+  <code>rk3588</code>); generate the minimal per-target material in
+  <code>platforms/&lt;target-id&gt;/</code> (see "Find the SoC BSP and environment").</li>
+<li>FPGA + SoC: run both paths and render the existing
+  <code>hardware.yaml.cross_chip_links</code> in the single consolidated manual.</li>
+</ul>
+<p>Declare FPGA as target type <code>fpga</code> owned by Adapter <code>efinity</code>; declare an
+RK3588 target as <code>soc</code> owned by Adapter <code>rk3588</code>. Multiple SoC targets each
+own one <code>platforms/&lt;target-id&gt;/</code> directory so outputs never overwrite each
+other. When both target types exist, also emit a
 System interface contract between final device endpoints.</p>
 <h2 id="output-ownership">Output ownership</h2>
 <p>Generate into <code>board-data/boards/&lt;id&gt;/</code> by default. Write a Catalog checkout
@@ -272,7 +357,12 @@ or delete it.</p>
 │   ├── package-audit.csv         # exact FPGA package closure, when claimed
 │   └── rk3588.csv                 # when present
 ├── constraints/fpga/
-├── platforms/                    # when RK3588 is present
+├── platforms/                    # one dir per SoC target
+│   └── &lt;target-id&gt;/
+│       ├── platform.yaml         # small normalized platform contract
+│       ├── &lt;board-id&gt;.dts        # initial board DTS from confirmed facts
+│       ├── profile.template.json # unresolved Adapter profile template
+│       └── evoverse-rk3588-profile.json # RK3588 only, after real binding
 ├── docs/
 │   ├── datasheet.md              # customer-owned; optional
 │   └── generated/
@@ -326,7 +416,44 @@ from the installed Catalog copy — the <code>location</code> returned by the SD
 that the SDK rewrites on activation and after every sync — never from
 development checkouts or arbitrary local trees located by broad searches.
 Internet finds stay discovery-only until confirmed by first-party sources.</p>
-<h3 id="3-write-the-machine-contract">3. Write the machine contract</h3>
+<h3 id="3-find-the-soc-bsp-and-environment-direct-online-workflow">3. Find the SoC BSP and environment (direct online workflow)</h3>
+<p>For every <code>type: soc</code> target, search automatically in this order:</p>
+<ol>
+<li>the exact board or module vendor's official BSP/SDK, documentation,
+   download center, and official source repositories;</li>
+<li>the SoC vendor's official SDK, kernel, U-Boot, firmware, toolchain,
+   build, image, and flashing resources;</li>
+<li>official upstream projects explicitly supported by the board or SoC
+   vendor.</li>
+</ol>
+<p>Community repositories, mirrors, forum posts, distributors, and
+search-result snippets are discovery leads only — they cannot become the
+selected BSP or environment unless the user explicitly accepts a
+non-authoritative source. For a custom board with no board-vendor BSP, use
+the SoC vendor's official SDK as the base and derive the custom board DTS
+from schematic facts; a BSP for another board with the same SoC is not
+interchangeable merely because the SoC matches. Record the practical
+identity of each selected resource — official owner, URL or repository,
+release/tag/branch/commit when published, supported host/build
+environment, license/access note, observation date — in <code>sources.yaml</code>;
+never invent hashes for bytes that were not downloaded and inspected.</p>
+<p>Public documentation and repository/release metadata may be inspected
+directly. Before downloading a large BSP archive, repository set,
+toolchain, container image, or firmware bundle — or any material that
+requires license acceptance — show the user the exact source, version/ref,
+expected size when known, destination, and license/access requirement;
+ask for confirmation; download only after confirmation. Never embed
+credentials or accept a license on the user's behalf.</p>
+<p>After the user confirms, obtain the selected official resources with
+existing Git, HTTP, archive, package, or container tools in the
+user-approved destination — never by inventing a new download service.
+Record the actual local paths and published refs, rerun generation so the
+same <code>platforms/&lt;target-id&gt;/</code> target files are updated, complete the
+executable Adapter Profile <code>evoverse-rk3588-profile.json</code> from the real
+BSP root, ref, environment, loader, partition layout, and stages, then
+invoke the existing Adapter preflight against it. A successful download
+alone is not <code>BUILD_READY</code>.</p>
+<h3 id="4-write-the-machine-contract">4. Write the machine contract</h3>
 <p>Use the schemas under <code>schemas/</code>:</p>
 <ul>
 <li><code>board.yaml</code>: identity, kind/composition, revisions, development targets,
@@ -350,7 +477,7 @@ Internet finds stay discovery-only until confirmed by first-party sources.</p>
 </code></pre>
 <p>Unknown contract keys, duplicate IDs, missing files, absolute escapes, and
 <code>../</code> escapes are errors.</p>
-<h3 id="4-build-functional-pinouts">4. Build functional pinouts</h3>
+<h3 id="5-build-functional-pinouts">5. Build functional pinouts</h3>
 <p>Before building the functional subset, read
 <code>references/schematic-pin-closure.md</code>
 and complete its exact-package audit procedure. Power/ground closure comes
@@ -391,7 +518,7 @@ catalog CSVs use zero-padded style (<code>GPIOL_02</code>); always match through
 reset, clocks, debug, and peripheral buses against official Rockchip material.
 Validate both ends of every confirmed FPGA/RK3588 link for protocol, direction,
 lane/width, clock, and reset agreement.</p>
-<h3 id="5-generate-and-validate">5. Generate and validate</h3>
+<h3 id="6-generate-and-validate">6. Generate and validate</h3>
 <p>After blocking choices are confirmed, run:</p>
 <pre><code class="language-powershell">cd Skills\evoverse-board-create
 python -m pinout_tool.cli material-generate `
@@ -404,17 +531,37 @@ python -m pinout_tool.cli material-generate `
 command executes structure → evidence → exact-device pinout → composition →
 optional exact-package audit → target generation → deterministic documents. It activates owned outputs only
 after all checks pass. A malformed v1 package fails; never fall back to legacy.</p>
+<p>For each SoC target the generator writes <code>platforms/&lt;target-id&gt;/</code> with
+<code>platform.yaml</code>, <code>&lt;board-id&gt;.dts</code>, and the Adapter <code>profile.template.json</code>;
+when the platform input already carries confirmed local BSP/environment
+binding, it also writes <code>platforms/&lt;target-id&gt;/evoverse-rk3588-profile.json</code>
+using the existing Profile schema. A missing authoritative BSP/environment
+source, a missing SoC device authority (<code>--rk3588-authority</code>), or unresolved
+evidence and SoC pinout facts return <code>INCOMPLETE</code> with the missing-item list
+while still activating the partial target material; FPGA pinout authority
+errors still fail the run, and only malformed contracts, path
+escapes, or unsafe writes reject it. The legacy singleton input
+<code>platforms/rk3588.yaml</code> stays readable; new generation reads and writes the
+target directory.</p>
 <p>The combined <code>docs/generated/board-manual.md</code> must be readable, precise, include Mermaid architecture diagrams,
 and visibly list uncertainty/conflicts. Never parse Markdown to recover missing
 machine facts.</p>
-<h3 id="6-interpret-readiness-honestly">6. Interpret readiness honestly</h3>
+<h3 id="7-interpret-readiness-honestly">7. Interpret readiness honestly</h3>
 <ul>
 <li>FPGA output contains native Efinity unified-flow XML, replay-safe source ISF,
   SDC, and RTL. It does not create/delete <code>peri.xml</code> and never claims build PASS
   merely because files were generated.</li>
-<li>RK3588 Phase 1 output is <code>PROFILE_READY</code> and remains
-  <code>BSP_BINDING_REQUIRED</code> until real source root, pinned BSP commit/environment,
-  loader, partition layout, and artifacts are bound.</li>
+<li>SoC material outcomes are <code>GENERATED</code> or <code>INCOMPLETE</code>. <code>GENERATED</code> means the
+  target files and manual were produced from identified sources. <code>INCOMPLETE</code>
+  means a required schematic fact, authoritative BSP/environment source,
+  access, or user confirmation is missing — the partial material is still
+  generated, Catalog-usable, and intended for later completion by rerunning
+  generation after the facts or resources are supplied; <code>INCOMPLETE</code> is not
+  Catalog rejection. Before acquisition the target template stays
+  <code>PROFILE_READY</code> and <code>BSP_BINDING_REQUIRED</code> until real source root, pinned BSP
+  commit/environment, loader, partition layout, and artifacts are bound.</li>
+<li><code>BUILD_READY</code> is reported only by the Adapter after the confirmed official
+  resources are bound into the executable Profile and Adapter preflight passes.</li>
 <li>If native compile was not executed, report <code>NATIVE_BUILD_NOT_RUN</code>.</li>
 </ul>
 <p>Native compile, programming, RK boot, and hardware validation are separate

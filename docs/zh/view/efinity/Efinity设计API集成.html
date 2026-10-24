@@ -192,7 +192,7 @@ DRC。IPM、结果解析或后置 DRC失败时恢复原数据库，避免硬 IP 
 <p>历史 <code>peri.xml</code> 可能不兼容当前 Efinity schema。遇到此情况，应使用对应工程
 的 <code>*.peri.isf</code> 重新生成数据库，而不是修改 XML schema 或在 SDK 中维护迁移器。</p>
 <h2 id="tj180-实测基线">TJ180 实测基线</h2>
-<p>Efinity 2026.1 下已使用 <code>docs/tutorials/snapshots/stage3-pwm</code> 完成隔离闭环：</p>
+<p>Efinity 2026.1 下已在 stage3-pwm 快照工程上完成隔离闭环：</p>
 <ol>
 <li>删除复制工程中的旧 <code>peri.xml</code>。</li>
 <li>从 <code>constraints/base.peri.isf</code> 重建接口数据库。</li>

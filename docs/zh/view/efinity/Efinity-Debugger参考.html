@@ -438,7 +438,30 @@ endmodule
 <td>CLI 调试核心自动实例化脚本</td>
 </tr>
 </tbody>
-</table></main>
+</table>
+<hr />
+<h2 id="16-cli-调试编译契约-efinity-2026-1-实测">16. CLI 调试编译契约（Efinity 2026.1 实测）</h2>
+<blockquote>
+<p>以下行为全部通过真实工具链验证（2026.10，自然语言网表调试任务的 M0/E2E 资格测试），仅适用于 2026.1 安装（实测 2026.1.132.1.15）；其他版本未验证。针对 <code>efx_run --flow compile</code> 统一流程的 CLI 调试编译路径。</p>
+</blockquote>
+<h3 id="16-1-原生-sta-发现流程">16.1 原生 STA 发现流程</h3>
+<p>编译后网表的信号发现走 Efinity 原生 STA 流：</p>
+<pre><code>efx_run --flow sta_tclsh --tcl_script &lt;script&gt;
+</code></pre>
+<p>调用方通过该流程读取当前编译数据库（STA 报告），取得真实标量信号标识（<code>net:</code> 形式）、位宽与时钟状态。这是唯一受支持的网表信号来源——未经编译的 RTL 源码名可能被综合改名或优化掉，不作为选点依据。</p>
+<h3 id="16-2-peri-syn-配方-1-1-基线-0-0-调试编译">16.2 peri-syn 配方：1/1 基线 + 0/0 调试编译</h3>
+<p>单个 <code>&lt;design&gt;.dbg.map.v</code> <strong>只在</strong> <code>peri-syn-instantiation</code> 与 <code>peri-syn-inference</code> <strong>同时为 0</strong> 时产出；任一为 1 时产物分裂为 <code>&lt;design&gt;.dbg.map.core.v</code>，<code>efx_run_dbg.py:94-115</code> 因找不到单文件直接 raise（2026.1.132.1.15 三路复现：wizard profile / 直接 efx_run_dbg.py / vendor mark_debug 两次编译仪式）。</p>
+<p>Adapter 的 Debug Build 配方（与 vendor mark_debug 两次编译仪式同形）：</p>
+<ol>
+<li><strong>普通 Build</strong>（peri-syn 1/1，默认值）：基线编译，为后续流程 primes <code>outflow/&lt;design&gt;.peri.db</code></li>
+<li><strong>Debug Build</strong>：编译期间把两项临时切到 0/0（工程 XML 参数，<code>value_type="e_option"</code>），完成后恢复 1/1（临时文件 + rename，finally 恢复）</li>
+</ol>
+<p>0/0 只应存在于 Debug Build 期间；进程崩溃可能把两项留在磁盘上，重新执行 Debug Build 会再次恢复。</p>
+<h3 id="16-3-work_dbg-固定发布">16.3 work_dbg 固定发布</h3>
+<p><code>efx_run.py</code> 从不转发工程 XML 的 <code>&lt;efx:work_dir&gt;</code> 参数——无论 XML 怎么配，调试核产物都发布到固定的 <code>&lt;project&gt;/work_dbg/</code>。调用方需把 <code>debug_profile.wizard.json</code> 与 <code>debug_top.v</code> 预先发布到该目录；wizard 模式下 <code>compile_dbg_core</code> 要求 <code>work_dbg/debug_top.v</code> 预先存在，缺失时报 <code>No such file: work_dbg\debug_top.v</code>。</p>
+<h3 id="16-4-硬件路径边界">16.4 硬件路径边界</h3>
+<p>编译成功（含调试核位流与摘要）<strong>不是</strong>硬件证据。烧录、设备扫描、触发采集是独立的用户步骤；未实际执行时一律报告 <code>NOT_RUN</code>，不得由编译 PASS 推断。</p>
+<p><strong>验证日期:</strong> 2026-10（M0 资格门 reopened PASS + E2E 到达 READY_TO_PROGRAM；证据见 project-review）</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
 
