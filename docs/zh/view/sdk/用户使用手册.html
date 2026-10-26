@@ -3313,6 +3313,8 @@ evoverse --help           # 显示 CLI 版本标识与当前可用子命令
 <p><strong>A</strong>: 不要把运行时 <code>catalog/</code> 目录重新纳入 SDK 或客户工程版本管理。每位成员执行 <code>EvoVerse: Sync Catalog</code> 即可从官方公开发布仓库同步（无需 GitHub 账号）；用 <code>evoverse catalog status --json</code> 对齐版本、commit 与 tree digest。</p>
 <h3 id="q11-可以同时推进多个-intent-吗">Q11: 可以同时推进多个 Intent 吗？</h3>
 <p><strong>A</strong>: 可以，但第一次设计本身是主线上的 <code>INITIAL_DESIGN</code> 系统集成 Intent，没有 feature worktree；它完成完整规格、生成、系统仿真和文档确认并建立首个基线前，不允许开启第二个 Intent。之后最多同时有 4 个 feature Intent，每个使用独立分支和 worktree，本地验证通过只显示“Module verified, waiting for system integration”。主线 Workbench 分为 <strong>Feature Intents</strong> 与 <strong>System Integration</strong>：系统集成按 FIFO 一次吸收一个分支，重新确认组合规格、系统仿真和文档后才晋升基线。冲突或系统验证失败会 abort 合并并保留分支/worktree；进入某个 Intent worktree 后，<strong>Current Intent</strong> 仍只显示该 Intent。</p>
+<h3 id="q12-不想生成-git-工程可以吗">Q12: 不想生成 Git 工程可以吗？</h3>
+<p><strong>A</strong>: 可以。Git 是可选的：在没有 Git 仓库的目录打开 Welcome 页时，SDK 会询问一次是否初始化 Git 仓库，选择会记入工作区设置 <code>evoverse.workspace.gitMode</code>（<code>ask</code> / <code>always</code> / <code>never</code>，默认 <code>ask</code>；也可随时在 Settings 中修改）。选择「不使用 Git」（或设为 <code>never</code>）后，SDK 不再执行 <code>git init</code>，并把工作区默认流程切为 <code>free</code> 自由策略——开发在主工作区逐模块串行进行：每个模块一个 Intent，规格、交付、基线安装全部照常工作，交付即安装/扩展基线（纯文件操作），后续模块在前一基线上继续。可靠策略的 worktree 隔离与系统集成以 Git 为前提，该模式下不可用：若在无 Git 工作区请求 reliable Intent，控制面会立即返回结构化错误 <code>GIT_REPOSITORY_REQUIRED</code>（两条出路：<code>git init</code> 后重试，或改用 <code>strategy: "free"</code>）。之后想恢复并行模式，把 <code>gitMode</code> 改回 <code>always</code>（或 <code>ask</code>）并对该目录执行 <code>git init</code> 即可。</p>
 <hr />
 <h2 id="附录-a-版本演进历史">附录 A：版本演进历史</h2>
 <p>记录手册描述中提到的关键行为变更及其引入版本，供版本升级时查阅。正文中的"历史变更"注记均指向本附录。</p>
