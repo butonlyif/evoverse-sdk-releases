@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trae 安装与首次配置</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<p class="doc-meta"><a href="../../customer-portal.html">← 返回EvoVerse SDK</a>
+<span>默认宿主的完整安装流程。</span>
+<code>installation/Trae安装指南.md</code>
+<a href="../../../installation/Trae安装指南.md">Markdown 源文件</a></p>
+<h1>Trae 安装与首次配置</h1></header>
+<main class="article"><h1 id="evoverse-sdk-trae-安装指南">EvoVerse SDK：Trae 安装指南</h1>
+<blockquote>
+<p>适用版本：v1.0.0　更新日期：2026-10-16　推荐宿主：Trae CN / Trae International</p>
+</blockquote>
+<h2 id="上手链路总览">上手链路总览</h2>
+<p>从拿到发布包到开始第一个设计，主线是 6 步：</p>
+<pre class="mermaid">flowchart LR
+    A[获取发布包] --&gt; B[安装 3 个 VSIX]
+    B --&gt; C[重启 Trae]
+    C --&gt; D[首启引导&lt;br&gt;确认工作区]
+    D --&gt; E[Welcome 自动打开]
+    E --&gt; F[Sync Catalog]
+    F --&gt; G[&quot;@evoverse 开工&quot;]
+</pre>
+<p>每步的验证方式见对应章节。基础软件（Trae、Python、Git、Efinity、驱动、仿真器）在装 VSIX 之前备齐。</p>
+<h2 id="1-前置条件">1. 前置条件</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>要求</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>Windows 10/11 64 位（首选）；macOS 12+；Ubuntu 20.04+</td>
+<td>macOS 不能作为完整的 Efinity 编译/烧录工作站</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>64 位 3.11+</td>
+<td>CLI 与 MCP Server 只用标准库，无需 pip 装包</td>
+</tr>
+<tr>
+<td>Git</td>
+<td>在 PATH 中</td>
+<td><code>EvoVerse: Sync Catalog</code> 拉取板卡目录依赖 Git</td>
+</tr>
+<tr>
+<td>Efinity</td>
+<td>2026.1+</td>
+<td>真实编译、烧录时需要</td>
+</tr>
+<tr>
+<td>仿真器</td>
+<td>Icarus Verilog</td>
+<td>RTL 功能仿真；QuestaSim 也可</td>
+</tr>
+<tr>
+<td>硬件</td>
+<td>FPGA 核心板 + USB 数据线</td>
+<td>清单见 §2</td>
+</tr>
+</tbody>
+</table>
+<p>电脑配置建议：8 核 CPU、16 GB 内存（较大工程 32 GB）、30 GB 以上 SSD 可用空间、2 个以上 USB 口。</p>
+<h2 id="2-硬件准备">2. 硬件准备</h2>
+<ol>
+<li>EvoVerse/Efinix FPGA 核心板（例如 Catalog 中的 <code>ws-e1</code>）；</li>
+<li>匹配的底板 / Carrier / 客户自研板；</li>
+<li>符合板卡规格的电源——不要凭接口外形猜测电压和极性；</li>
+<li>可传输数据的 USB 线——只充电线不能用于 JTAG/串口；</li>
+<li>板载 FTDI 调试接口，或 FT2232H/FT4232H JTAG 模块；</li>
+<li>需要串口日志时，备板载 USB-UART 或独立 3.3 V USB-UART；</li>
+<li>传感器 / MIPI / 显示 / 网络外设按需。</li>
+</ol>
+<p>连接前阅读 Catalog 中的板卡规格（装好并同步 Catalog 后可用）：</p>
+<pre><code class="language-text">~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/&lt;board-id&gt;.md
+~/evoverse-sdk/catalog/boards/&lt;board-id&gt;/docs/
+</code></pre>
+<h2 id="3-安装基础软件">3. 安装基础软件</h2>
+<h3 id="3-1-安装-trae">3.1 安装 Trae</h3>
+<ol>
+<li>从 <a href="https://www.trae.ai/">Trae 官方下载页</a>安装 Trae CN 或 Trae International；</li>
+<li>启动并完成账号登录。</li>
+</ol>
+<p>验证：命令面板执行 <code>Trae: Show Version</code> 能返回版本号。</p>
+<h3 id="3-2-安装-python-3-11">3.2 安装 Python 3.11+</h3>
+<ol>
+<li>从 <a href="https://www.python.org/downloads/">Python 官网</a>安装 64 位 Python 3.11 或更新版本；</li>
+<li>勾选 <strong>Add Python to PATH</strong>。</li>
+</ol>
+<p>验证：</p>
+<pre><code class="language-powershell">py -3 --version     # Windows
+python3 --version   # macOS / Linux
+</code></pre>
+<p>输出必须是 3.11 或更高。版本不足时首启引导会报 <code>SYSTEM_PYTHON_MISSING</code>，Python 相关能力被禁用。客户 VSIX 不需要 Node.js / npm。</p>
+<h3 id="3-3-安装-git">3.3 安装 Git</h3>
+<ol>
+<li>从 <a href="https://git-scm.com/">Git 官网</a>安装，Windows 安装时选默认选项（含 Git Credential Manager）；</li>
+<li>已装 GitHub CLI 的也可用其认证。</li>
+</ol>
+<p>验证：</p>
+<pre><code class="language-powershell">git --version
+</code></pre>
+<h3 id="3-4-安装-efinity-2026-1">3.4 安装 Efinity 2026.1+</h3>
+<ol>
+<li>从 Efinix Support Center 获取安装包，按该版本官方指南完成安装与许可证配置；</li>
+<li>记录 Efinity 根目录（例如 <code>C:\Efinity\2026.1</code>）。</li>
+</ol>
+<p>验证：根目录下存在 <code>bin/setup.bat</code>（Windows）或 <code>bin/setup.sh</code>，以及 <code>bin/efx_run.bat</code>。EvoVerse 每次运行工具时会调用 Efinity 的 setup 脚本建立子进程环境，无需永久修改 PATH。</p>
+<h3 id="3-5-安装-fpga-usb-jtag-驱动">3.5 安装 FPGA USB/JTAG 驱动</h3>
+<ul>
+<li>Windows：按板卡用户手册与 Efinity 安装指南使用 Zadig/指定驱动；不要盲目替换复合 FTDI 设备的所有接口，先确认板卡文档要求的 interface；</li>
+<li>macOS：Efinity 安装包自带驱动；</li>
+<li>Linux：断开板卡后执行 <code>sudo &lt;EFINITY_HOME&gt;/bin/install_usb_driver.sh</code>，重载 udev 规则后重新连接板卡。</li>
+</ul>
+<h3 id="3-6-安装-icarus-verilog">3.6 安装 Icarus Verilog</h3>
+<ul>
+<li>macOS：<code>brew install icarus-verilog</code>；</li>
+<li>Linux：<code>sudo apt install iverilog</code>；</li>
+<li>Windows：安装预编译版本并加入 PATH。</li>
+</ul>
+<p>验证：<code>iverilog -V</code> 与 <code>vvp -V</code> 均能输出版本号。</p>
+<h3 id="3-7-可选-risc-v-软件工具链">3.7 可选：RISC-V 软件工具链</h3>
+<p>仅使用 Sapphire/RISC-V SoC 时需要。装好后可在 Trae 中执行 <code>EvoVerse: Download &amp; Install RISC-V Toolchain</code> 自动安装，或手动安装后设置 <code>evoverse.riscvToolchainPath</code>。</p>
+<h2 id="4-获取发布包">4. 获取发布包</h2>
+<ol>
+<li>拿到客户交付包 <code>EvoVerse-SDK-v1.0.0.tar.gz</code>；</li>
+<li>在包所在目录完整解压（Windows 10 1803+ 自带 <code>tar</code>，不会出现 zip 解压的路径过长报错）：</li>
+</ol>
+<pre><code class="language-powershell">tar -xzf EvoVerse-SDK-v*.tar.gz
+</code></pre>
+<p>验证：解压目录下能看到 <code>deploy.ps1</code> / <code>deploy.sh</code> 与 3 个 <code>.vsix</code>。<code>START-HERE.md</code> 和 <code>docs/site/customer-portal.html</code> 是入口文档。</p>
+<h2 id="5-安装-3-个-vsix">5. 安装 3 个 VSIX</h2>
+<p>v1.0.0 交付 3 个同版本扩展：</p>
+<table>
+<thead>
+<tr>
+<th>VSIX</th>
+<th>作用</th>
+<th>是否必装</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evoverse-sdk-1.0.0.vsix</code></td>
+<td>SDK 核心：Welcome、Catalog、Workbench 外壳、CLI / MCP</td>
+<td>必装</td>
+</tr>
+<tr>
+<td><code>evoverse-efinity-adapter-1.0.0.vsix</code></td>
+<td>Efinity 编译 / 时序 / 调试 / 烧录 / IP</td>
+<td>FPGA 开发必装</td>
+</tr>
+<tr>
+<td><code>evoverse-rk3588-adapter-1.0.0.vsix</code></td>
+<td>RK3588 软件验证闭环</td>
+<td>做 RISC-V 软件时安装</td>
+</tr>
+</tbody>
+</table>
+<p>三个 VSIX 版本必须一致；混用不同版本不受支持。</p>
+<h3 id="5-1-方式-a-一键部署-推荐">5.1 方式 A：一键部署（推荐）</h3>
+<p>在解压后的包目录打开 PowerShell：</p>
+<pre><code class="language-powershell">.\deploy.ps1 -Target trae
+</code></pre>
+<p>macOS / Linux：</p>
+<pre><code class="language-bash">./deploy.sh --target trae
+</code></pre>
+<p>脚本按依赖顺序安装 Core、两个 Adapter 与 Skills；可选 Adapter 在包内缺失时跳过并提示。Video Sim 已内嵌于 Core VSIX，无需单独安装。</p>
+<p>验证：扩展面板中已安装的 EvoVerse 扩展均为 Enabled 状态。</p>
+<h3 id="5-2-方式-b-扩展面板手动安装">5.2 方式 B：扩展面板手动安装</h3>
+<ol>
+<li>按 <code>Ctrl+Shift+X</code>（macOS：<code>Cmd+Shift+X</code>）打开扩展面板；</li>
+<li>点右上角 <code>...</code> → <strong>Install from VSIX...</strong>；</li>
+<li>按上表顺序逐个选择 VSIX。</li>
+</ol>
+<p>或用命令行：</p>
+<pre><code class="language-powershell">trae --install-extension D:\packages\evoverse-sdk-1.0.0.vsix
+trae --install-extension D:\packages\evoverse-efinity-adapter-1.0.0.vsix
+trae --install-extension D:\packages\evoverse-rk3588-adapter-1.0.0.vsix
+</code></pre>
+<h2 id="6-重启-trae-并完成首次引导">6. 重启 Trae 并完成首次引导</h2>
+<ol>
+<li><strong>完全退出并重启 Trae</strong>，让扩展激活；</li>
+<li>首次激活时弹窗 <strong>"Set up EvoVerse SDK?"</strong>，选择 <strong>Yes, set up</strong>。引导会在默认工作区 <code>~/evoverse-sdk</code> 建立 Catalog、工程与运行时目录（可用 <code>evoverse.home</code> 修改路径），不修改系统文件；</li>
+<li>观察 Output → <strong>EvoVerse SDK</strong>，引导逐项输出，全部为 ✓ 后出现 <code>=== EvoVerse SDK ready ===</code>：</li>
+<li><code>EVOVERSE_HOME ready at …</code>——工作区就绪；</li>
+<li><code>Deployed Efinity knowledge base</code>——知识库部署；</li>
+<li><code>MCP integration: …</code>——写入 <code>~/.trae/mcp.json</code> 的 <code>mcpServers.evoverse</code>（仅合并，不覆盖其它条目；覆盖前备份为 <code>*.evoverse.bak</code>）；</li>
+<li><code>Agent rule: …</code>——写入 <code>~/.trae/user_rules/</code> 下的 <code>evoverse.md</code> 与 <code>evoverse-rtl-style.md</code>；</li>
+<li><code>CLI works: …</code>——CLI 冒烟测试；</li>
+<li>Git 不在 PATH 时会有 <code>! git not found</code> 警告，装好 Git 后 Sync Catalog 才可用；</li>
+<li>Python 缺失或版本不足时报 <code>SYSTEM_PYTHON_MISSING</code>，装好 Python 3.11+ 后重跑引导；</li>
+<li>完成后出现提示 <strong>"Restart the host to load the MCP server."</strong>，选 <strong>Restart now</strong> 再次重启。</li>
+</ol>
+<p>验证：重启后 <strong>Welcome 页自动打开</strong>。没有自动打开时，命令面板执行 <code>EvoVerse: Show Welcome</code>（<code>evoverse.welcome</code>）。</p>
+<p>弹窗当时选了 <strong>Later</strong>、或需要重跑引导时，执行 <code>EvoVerse: Set Up (re-run bootstrap)</code>（<code>evoverse.setup</code>）。标准 VS Code 不会写入 <code>~/.trae</code>，宿主差异见 HOST-DIFFERENCES.md。</p>
+<h2 id="7-同步-catalog">7. 同步 Catalog</h2>
+<p>首次安装时 Catalog 为空，界面与 MCP 报 <code>CATALOG_NOT_INSTALLED</code>，这是预期状态，不是故障。</p>
+<ol>
+<li>运行 <code>EvoVerse: Sync Catalog</code>（<code>evoverse.syncCatalog</code>）。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号</strong>；完成后写入回执 <code>catalog-sync-receipt.json</code>；</li>
+<li>运行 <code>EvoVerse: Catalog Status</code>（<code>evoverse.catalogStatus</code>），或终端执行 <code>evoverse catalog status --json</code>，记录 <code>state</code>、<code>location</code> 与回执里的 <code>catalog_version</code>、<code>commit</code>。</li>
+</ol>
+<p>如需改用自建镜像或私有仓库，可用 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址。</p>
+<p>验证：Welcome 页 Board Catalog 面板能列出板卡（如 <code>ws-e1</code>）。同步失败不影响已有本地内容，修复网络后重新同步即可。</p>
+<h2 id="8-验证安装">8. 验证安装</h2>
+<ol>
+<li>左侧活动栏能打开 EvoVerse；</li>
+<li>Workbench 能显示已安装的 Adapter（装了 Efinity Adapter 就应有对应条目）；</li>
+<li>运行 <code>EvoVerse: Health Check</code>（<code>evoverse.sdkHealthCheck</code>），确认 Python / Efinity / MCP / 仿真器 / CLI / Adapter 各项通过（Welcome 页也有 SDK 体检面板）；</li>
+<li>设置中确认 <code>evoverse.efinityPath</code> 指向实际 Efinity 安装目录。</li>
+</ol>
+<h2 id="9-开始使用">9. 开始使用</h2>
+<ol>
+<li><strong>自然语言开工</strong>：在 Chat 面板输入 <code>@evoverse</code> 描述需求：</li>
+</ol>
+<p><code>text
+   @evoverse 我要在 ws-e1 上实现 MIPI 到 USB，中间用 DDR 缓冲</code></p>
+<p>SDK 会先确认工作方式：可靠设计流程或自由开发。不带 <code>@evoverse</code> 的普通对话保持自由开发，不自动启用可靠流程，也不向客户工程生成专用规则文件。</p>
+<ol>
+<li><strong>Workbench 选流程</strong>：也可以在 Workbench 的 Project Control 下拉中选择设计流程，对应命令 <code>EvoVerse: Select Design Flow</code>（<code>evoverse.selectDesignFlow</code>）；</li>
+<li><strong>Workbench 六个 Tab</strong>：Home / Build / Timing / Debug / SW / IP；</li>
+<li><strong>编译</strong>：Build Tab 或命令面板 <code>Toolchain: Build</code>（<code>evoverse.build</code>）。Build 由 Efinity Adapter 执行 <code>efx_run --flow compile</code>，状态栏显示 <code>Build: Ready / Running / Failed</code>；</li>
+<li><strong>时序诊断</strong>：<code>Toolchain: Diagnose Timing Violations</code>（<code>evoverse.diagnoseTiming</code>）；</li>
+<li><strong>烧板</strong>：<code>Toolchain: Program FPGA</code>（<code>evoverse.program</code>）。</li>
+</ol>
+<p>日常开发全流程见<a href="../sdk/用户使用手册.html">用户使用手册</a>。</p>
+<h2 id="10-故障排查">10. 故障排查</h2>
+<h3 id="10-1-chat-面板找不到-evoverse">10.1 Chat 面板找不到 <code>@evoverse</code></h3>
+<ol>
+<li>确认 <code>~/.trae/mcp.json</code> 中存在 <code>mcpServers.evoverse</code>；</li>
+<li>确认完成过 "Restart the host to load the MCP server." 提示后的重启；</li>
+<li>Trae → Settings → MCP，确认 <code>evoverse</code> Server 状态为 <code>running</code>；</li>
+<li>Chat 面板输入 <code>@</code>，下拉列表应出现 <code>evoverse</code>。</li>
+</ol>
+<h3 id="10-2-trae-mcp-json-被破坏">10.2 <code>~/.trae/mcp.json</code> 被破坏</h3>
+<p>SDK 写入前会备份为 <code>~/.trae/mcp.json.evoverse.bak</code>。从备份恢复后重跑 <code>EvoVerse: Set Up (re-run bootstrap)</code>：</p>
+<pre><code class="language-bash">cp ~/.trae/mcp.json.evoverse.bak ~/.trae/mcp.json
+</code></pre>
+<h3 id="10-3-agent-规则与团队规则冲突">10.3 Agent 规则与团队规则冲突</h3>
+<ul>
+<li>规则源在 <code>~/evoverse-sdk/agent-rules/</code>，不要直接改 <code>~/.trae/user_rules/*.md</code>；</li>
+<li>项目级规则写到 <code>.github/copilot-instructions.md</code>；</li>
+<li>确需改用户规则时先备份，并在 SDK 升级后人工合并。</li>
+</ul>
+<h3 id="10-4-引导报-system_python_missing">10.4 引导报 <code>SYSTEM_PYTHON_MISSING</code></h3>
+<p>安装或修正 Python 3.11+（见 §3.2），或把 <code>evoverse.pythonPath</code> 指向真实解释器后重跑 <code>EvoVerse: Set Up (re-run bootstrap)</code>。</p>
+<h3 id="10-5-其他">10.5 其他</h3>
+<p>安装类问题（Sync Catalog 失败、Health Check 不通过、找不到 Efinity）对照<a href="部署指南.html">部署指南</a>的「遇到问题」表处理。</p>
+<h2 id="11-下一步">11. 下一步</h2>
+<ul>
+<li><a href="../sdk/用户使用手册.html">用户使用手册</a>：日常开发全流程；</li>
+<li><a href="../efinity/Efinity工具链参考.html">Efinity 工具链参考</a>：Efinity CLI 参数；</li>
+<li><a href="部署指南.html">部署指南</a>：客户包安装与验收口径；</li>
+<li>HOST-DIFFERENCES.md：多宿主差异与 Gotchas。</li>
+</ul></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
+</body></html>
