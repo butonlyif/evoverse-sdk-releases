@@ -141,7 +141,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </ol>
 <h3 id="3-1-同步-catalog">3.1 同步 Catalog</h3>
 <ol>
-<li>运行 <code>EvoVerse: Sync Catalog</code>。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号</strong>；完成后写入回执 <code>catalog-sync-receipt.json</code>，记录 <code>catalog_version</code> 与 <code>commit</code>。</li>
+<li>运行 <code>EvoVerse: Sync Catalog</code>。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号</strong>；GitHub 不可达（网络错误）时自动改从 Gitee 国内镜像抓取同一发布，回执记录实际使用的仓库；完成后写入回执 <code>catalog-sync-receipt.json</code>，记录 <code>catalog_version</code> 与 <code>commit</code>。</li>
 <li>运行 <code>evoverse catalog status --json</code>，记录 <code>state</code>、<code>location</code> 与回执里的 <code>catalog_version</code>、<code>commit</code>。</li>
 <li>网络失败时修复后重试；同步失败不影响本地现有 Catalog（官方条目才被覆盖，本地内容不动）。本地 catalog 目录损坏时，重新运行 <code>EvoVerse: Sync Catalog</code> 重建即可；工作区 <code>.evoverse/catalog.json</code> 指针文件记录受信物料根目录（<code>catalogRoot</code>）。</li>
 <li>如需改用自建镜像或私有仓库，可通过命令 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址。</li>

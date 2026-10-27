@@ -131,10 +131,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="获取流程">获取流程</h2>
 <ol>
 <li>在 Trae / VS Code 左侧打开「Board Catalog」视图点刷新，或运行命令 <code>EvoVerse: Sync Catalog</code>。</li>
-<li>同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号、无需任何仓库邀请</strong>。</li>
+<li>同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号、无需任何仓库邀请</strong>；GitHub 不可达（网络错误）时自动改从 Gitee 国内镜像抓取同一发布，内容与校验完全一致，回执 <code>repository_id</code> 记录实际使用的仓库。</li>
 <li>同步完成后，Welcome 与 Trae 自然语言工程流程即可看到全部板卡、Demo 与 IP。</li>
 </ol>
-<p>如需改用自建镜像或私有仓库，可通过命令 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址（优先级：<code>--repository</code> &gt; 环境变量 &gt; 默认公开仓库）。旧版本同步过的本机缓存若指向旧地址，重新 Sync 时会自动重建，无需手工清理。</p>
+<p>如需改用自建镜像或私有仓库，可通过命令 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址（优先级：<code>--repository</code> &gt; 环境变量 &gt; 默认公开仓库；Gitee 兜底仅作用于默认公开仓库，显式覆盖失败时原样报错）。旧版本同步过的本机缓存若指向旧地址，重新 Sync 时会自动重建，无需手工清理。</p>
 <h2 id="同步后物料在哪里">同步后物料在哪里</h2>
 <p>物料安装到 <code>evoverse.home</code>（默认 <code>~/evoverse-sdk</code>）下的 <code>catalog/</code> 目录：</p>
 <ul>
@@ -184,7 +184,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <h2 id="设计说明">设计说明</h2>
-<p>物料不打进安装包是刻意的解耦设计：Catalog 版本与扩展版本独立演进，通过同步获取最新物料（含 treeDigest 门禁校验）。Catalog 默认从官方公开发布仓库同步，无需 GitHub 账号；如需自建镜像或私有仓库，可用 <code>--repository</code> 参数或 <code>EVOVERSE_CATALOG_REPOSITORY</code> 环境变量覆盖。板卡文档与板卡数据在同一仓库中同版本演进，因此文档也随物料同步，而不是随安装包静态分发。</p></div></main>
+<p>物料不打进安装包是刻意的解耦设计：Catalog 版本与扩展版本独立演进，通过同步获取最新物料（含 treeDigest 门禁校验）。Catalog 默认从官方公开发布仓库同步，无需 GitHub 账号（GitHub 网络不可达时自动改用 Gitee 国内镜像）；如需自建镜像或私有仓库，可用 <code>--repository</code> 参数或 <code>EVOVERSE_CATALOG_REPOSITORY</code> 环境变量覆盖。板卡文档与板卡数据在同一仓库中同版本演进，因此文档也随物料同步，而不是随安装包静态分发。</p></div></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 <script>
 const input=document.getElementById('search');input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();document.querySelectorAll('[data-search]').forEach(e=>e.classList.toggle('hidden',q&&!e.dataset.search.toLowerCase().includes(q)));});

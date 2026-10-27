@@ -307,7 +307,7 @@ positional arguments:
     doctor       报告过期或无效的适配器描述符
 
 options:
-  -h, --help     show this help message and exit</pre></section><h2 class="entry-group">Catalog 同步与物料</h2><section class="entry" id="cli-sync" data-search="sync 安装经过验证的 EvoVerse 官方 Catalog 发布版（默认公开仓库，无需 GitHub 账号）"><h3><code>evoverse sync</code></h3><p>安装经过验证的 EvoVerse 官方 Catalog 发布版（默认公开仓库，无需 GitHub 账号）</p><pre>usage: evoverse sync [-h] [--channel {stable,preview}]
+  -h, --help     show this help message and exit</pre></section><h2 class="entry-group">Catalog 同步与物料</h2><section class="entry" id="cli-sync" data-search="sync 安装经过验证的 EvoVerse 官方 Catalog 发布版（默认公开仓库，无需 GitHub 账号；GitHub 网络不可达时自动改用 Gitee 镜像）"><h3><code>evoverse sync</code></h3><p>安装经过验证的 EvoVerse 官方 Catalog 发布版（默认公开仓库，无需 GitHub 账号；GitHub 网络不可达时自动改用 Gitee 镜像）</p><pre>usage: evoverse sync [-h] [--channel {stable,preview}]
                      [--repository REPOSITORY] [--json]
 
 options:
@@ -315,7 +315,7 @@ options:
   --channel {stable,preview}
   --repository REPOSITORY
                         覆盖 Catalog 仓库 URL（默认公开 release 仓库；也可用环境变量
-                        EVOVERSE_CATALOG_REPOSITORY）
+                        EVOVERSE_CATALOG_REPOSITORY；显式覆盖不参与 Gitee 兜底）
   --json</pre></section><section class="entry" id="cli-catalog" data-search="catalog 检查或同步 Catalog"><h3><code>evoverse catalog</code></h3><p>检查或同步 Catalog</p><pre>usage: evoverse catalog [-h] {status} ...
 
 positional arguments:

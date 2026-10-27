@@ -1123,7 +1123,7 @@ evoverse sync-sources --dir rtl --dir my_ip_dir  # 指定扫描目录
 </table>
 <h3 id="6-2-同步-catalog">6.2 同步 Catalog</h3>
 <p><strong>命令</strong>：<code>EvoVerse: Sync Catalog</code></p>
-<p>首次安装时 Catalog 为空，CLI、MCP 与界面会明确返回 <code>CATALOG_NOT_INSTALLED</code>。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号或仓库邀请</strong>；如需自建镜像或私有仓库，可在 CLI 用 <code>--repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址。</p>
+<p>首次安装时 Catalog 为空，CLI、MCP 与界面会明确返回 <code>CATALOG_NOT_INSTALLED</code>。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号或仓库邀请</strong>；GitHub 不可达（网络错误）时自动改从 Gitee 国内镜像抓取同一发布，回执记录实际使用的仓库；如需自建镜像或私有仓库，可在 CLI 用 <code>--repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址（显式覆盖不参与 Gitee 兜底）。</p>
 <p>同步拉取远端最新 <code>catalog-v*</code> 正式 tag，并以 treeDigest 校验内容完整性，再把官方内容镜像覆盖到本地 <code>catalog/</code>（官方同名条目以远端为准）；网络失败不会影响现有本地内容。</p>
 <p>客户可在 <code>evoverse.home/catalog/</code> 下新增自己的 Board、IP、Carrier、Jacket 或 Demo；CLI、MCP 和工作台会从这个唯一根目录一起发现它们。Sync 不会删除本地多出的条目——任何层级上官方发布没有的目录或文件（例如 <code>catalog/boards/customer-board/</code>、<code>catalog/ips/customer-ip/</code>）都会原样保留。注意：若客户物料与官方条目同名同路径，同步时会被官方版本覆盖，请为客户物料使用独立目录和 ID。</p>
 <p><strong>CLI 等效</strong>：</p>
