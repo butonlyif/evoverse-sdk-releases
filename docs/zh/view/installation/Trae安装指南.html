@@ -298,7 +298,7 @@ trae --install-extension D:\packages\evoverse-rk3588-adapter-1.0.0.vsix
 <h2 id="7-同步-catalog">7. 同步 Catalog</h2>
 <p>首次安装时 Catalog 为空，界面与 MCP 报 <code>CATALOG_NOT_INSTALLED</code>，这是预期状态，不是故障。</p>
 <ol>
-<li>运行 <code>EvoVerse: Sync Catalog</code>（<code>evoverse.syncCatalog</code>）。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号</strong>；完成后写入回执 <code>catalog-sync-receipt.json</code>；</li>
+<li>运行 <code>EvoVerse: Sync Catalog</code>（<code>evoverse.syncCatalog</code>）。同步默认拉取官方公开发布仓库（<code>evoverse-catalog-release</code>），<strong>无需 GitHub 账号</strong>；GitHub 不可达（网络错误）时自动改从 Gitee 国内镜像抓取同一发布，回执记录实际使用的仓库；完成后写入回执 <code>catalog-sync-receipt.json</code>；</li>
 <li>运行 <code>EvoVerse: Catalog Status</code>（<code>evoverse.catalogStatus</code>），或终端执行 <code>evoverse catalog status --json</code>，记录 <code>state</code>、<code>location</code> 与回执里的 <code>catalog_version</code>、<code>commit</code>。</li>
 </ol>
 <p>如需改用自建镜像或私有仓库，可用 <code>evoverse sync --repository &lt;URL&gt;</code> 或环境变量 <code>EVOVERSE_CATALOG_REPOSITORY</code> 覆盖仓库地址。</p>
