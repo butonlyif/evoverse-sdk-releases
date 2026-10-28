@@ -266,7 +266,7 @@ bin/efinity.exe or bin/efinity
 <p>macOS / Linux:</p>
 <pre><code class="language-bash">./deploy.sh --target vscode
 </code></pre>
-<p>The script installs Core, the two Adapters, and Skills in dependency order; an optional Adapter missing from the package is skipped with a notice. Video Sim is embedded in the Core VSIX and needs no separate install.</p>
+<p>The script installs Core and the two Adapters in dependency order; an optional Adapter missing from the package is skipped with a notice. <strong>Skills are not copied into a VS Code host directory</strong>: the eight Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (loaded on demand in agent mode; requires the Copilot Chat extension); to use a Skill's content, you can also ask the Agent to read <code>Skills/&lt;skill-name&gt;/SKILL.md</code> from the delivered package as instructions; the MCP control-plane tools are wired into the user-level <code>mcp.json</code> by the SDK and are unaffected. Video Sim is embedded in the Core VSIX and needs no separate install.</p>
 <h3 id="5-2-method-b-manual-install-via-cli-the-extensions-panel">5.2 Method B: manual install via CLI / the Extensions panel</h3>
 <pre><code class="language-powershell">code --install-extension D:\packages\evoverse-sdk-1.0.0.vsix
 code --install-extension D:\packages\evoverse-efinity-adapter-1.0.0.vsix
@@ -574,7 +574,7 @@ cat &quot;$HOME/evoverse-sdk/agent-rules/rules-rtl-style.md&quot; &gt;&gt; .gith
 <p><strong>Verify</strong>: open a project that has built successfully and contains a timing report → <code>Toolchain: Diagnose Timing Violations</code> → click <strong>Ask AI</strong> and confirm the streaming reply → ask a follow-up question to confirm multi-turn context → in the Build Report click <strong>Ask AI Agent</strong> and confirm you receive an answer with a build summary. The answer should cite the current report's WNS/TNS, clock domains, or critical paths; model suggestions are for analysis only and cannot replace simulation, CDC checks, and the Efinity timing report.</p>
 <h2 id="11-start-using">11. Start using</h2>
 <ol>
-<li><strong>Start in natural language</strong>: describe the requirement in the VS Code native Chat (Agent mode); the Agent proceeds step by step through the <code>project_next</code> envelope with confirmation. Without a native Chat Agent, use the Workbench's Project Control dropdown to pick the design flow (<code>EvoVerse: Select Design Flow</code>, <code>evoverse.selectDesignFlow</code>);</li>
+<li><strong>Start in natural language</strong>: describe the requirement directly in VS Code native Chat (Agent mode), without <code>@evoverse</code>. The Agent offers free/reliable and follows the EvoVerse MCP <code>project_next</code> envelope. <code>@evoverse</code> is compatibility navigation only: it opens Project Control but does not continue the native Agent, create an Intent, or choose a flow. Without a native Chat Agent, use the Workbench Project Control dropdown (<code>evoverse.selectDesignFlow</code>);</li>
 <li><strong>The Workbench's six tabs</strong>: Home / Build / Timing / Debug / SW / IP;</li>
 <li><strong>Build</strong>: the Build tab or <code>Toolchain: Build</code> (<code>evoverse.build</code>). The build is executed by the Efinity Adapter via <code>efx_run --flow compile</code>, and the status bar shows <code>Build: Ready / Running / Failed</code>;</li>
 <li><strong>Simulate</strong>: <code>Toolchain: Simulate</code> (<code>evoverse.sim</code>); open VCDs with VaporView;</li>

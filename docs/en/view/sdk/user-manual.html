@@ -110,7 +110,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <strong>Last updated</strong>: 2026-09-30
 <strong>Applies to SDK version</strong>: v1.0.0
 <strong>Supported platforms</strong>: Trae IDE / VS Code 1.80+ · Windows · macOS · Linux</p>
-<p><strong>Agent Runtime (v0.7.1+)</strong>: Timing Diagnosis, Build Report, and the native <code>@evoverse</code> share one persistent session. The model can be the host <code>vscode.lm</code> or an OpenAI-compatible endpoint; the model ID must be configured explicitly, remote content can be previewed and confirmed before it is sent, and the API Key is stored only in SecretStorage.
+<p><strong>Agent entry</strong>: Trae uses <code>@evoverse</code>; VS Code describes the design directly in the native Agent without <code>@evoverse</code>. The embedded Runtime used by Timing Diagnosis, Build Report, and the compatibility participant is not the VS Code native Agent session.
 <strong>Prerequisites</strong>: Python 3.11+ (auto-detected), Efinity 2026.1+ (required for builds and programming), Icarus Verilog or QuestaSim (required for simulation)</p>
 <p><strong>Design-flow selection (2026-09-30)</strong>: Trae natural language and Workbench Control share the server-side current-action envelope. Reliable/free mode is stored per design iteration; it is not a project-wide switch. A new conversation restores the current revision, the recommended action, and the evidence boundary from <code>project_next</code>. Free mode does not block ordinary Builds, but controlled changes show <code>UNVERIFIED_CHANGES</code>; at any time you can choose "bring the current changes into the reliable flow" to incrementally re-run the affected gates.</p>
 </blockquote>
@@ -212,7 +212,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>EvoVerse SDK v1.0.0 adopts a layered <strong>SDK shell + Adapter</strong> architecture. The SDK keeps the Workbench shell and the System root; vendor-specific capabilities are provided by separate Adapter extensions, connected through the trusted headless adapter protocol:</p>
 <pre class="mermaid">flowchart LR
     subgraph host[&quot;Host (Trae / VS Code)&quot;]
-        nl[&quot;Natural language / @evoverse&quot;]
+        nl[&quot;Trae: @evoverse / VS Code: native Agent&quot;]
         wb[&quot;Workbench shell (six tabs)&quot;]
     end
     subgraph sdk[&quot;EvoVerse SDK core&quot;]
@@ -252,7 +252,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td><strong>Host integration</strong></td>
-<td>Natural language / <code>@evoverse</code> chat, Workbench UI, MCP registration</td>
+<td>Trae <code>@evoverse</code>; VS Code native Agent + MCP; Workbench UI</td>
 <td>Chat and IDE UI</td>
 </tr>
 <tr>
@@ -792,7 +792,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td><strong>Efinity soft IP</strong></td>
-<td>All IPs available in the Efinity IPM at runtime, grouped by library; each IP carries a category recommendation sentence with <strong>Add directly</strong> (preselects the IP in the Add IP flow) and <strong>Copy sentence</strong> (paste to @evoverse to add via natural language)</td>
+<td>All IPs available in the Efinity IPM at runtime, grouped by library; <strong>Copy sentence</strong> goes to <code>@evoverse</code> in Trae or the native Agent in VS Code</td>
 </tr>
 <tr>
 <td><strong>Catalog Verified IP</strong></td>
@@ -1575,7 +1575,7 @@ vvp sim_test.vvp
 - <strong>Mermaid flow diagram</strong>: path-hop visualization
 - <strong>Source jump</strong>: click to open the corresponding RTL line</p>
 <h4 id="ai-copilot-chat">AI Copilot chat</h4>
-<p>The diagnosis panel embeds an AI chat area (since v0.7.1 it shares one persistent session with <code>@evoverse</code>; see <a href="#a2-ai-diagnosis-behavior-changes-v071">Appendix A.A2</a>):</p>
+<p>The diagnosis panel embeds an AI chat area (since v0.7.1 it shares the embedded Runtime session with the compatibility <code>@evoverse</code> participant, but not with the VS Code native Agent; see <a href="#a2-ai-diagnosis-behavior-changes-v071">Appendix A.A2</a>):</p>
 <ul>
 <li>Automatic packaging: RTL snippets + SDC constraints + diagnosis results</li>
 <li>Follow-up questions: keep drilling down within the conversation</li>
@@ -3359,9 +3359,9 @@ evoverse --help           # shows the CLI version banner and the currently avail
 </thead>
 <tbody>
 <tr>
-<td><strong>Persistent AI session</strong></td>
+<td><strong>Embedded AI session</strong></td>
 <td>Timing Diagnosis, Build Report, and <code>@evoverse</code> each used a separate session</td>
-<td>All three share one persistent session; AI context carries across panels</td>
+<td>They share the embedded Runtime session; the VS Code native Agent remains separate</td>
 </tr>
 <tr>
 <td><strong>Auto-applying fixes</strong></td>

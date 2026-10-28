@@ -131,7 +131,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Open PowerShell in the package directory:</p>
 <pre><code class="language-powershell">.\deploy.ps1 -Target trae
 </code></pre>
-<p>The script installs Core, the Efinity Adapter, the RK3588 Adapter, and Skills in dependency order (the two Adapters are optional components and are skipped with a notice if absent from the package). Video Sim is already embedded in the Core VSIX and needs no separate installation. If customer policy forbids script-based installation, use <strong>Install from VSIX…</strong> in the Trae Extensions panel in the same order.</p>
+<p>The script installs Core, the Efinity Adapter, the RK3588 Adapter, and Skills in dependency order (the two Adapters are optional components and are skipped with a notice if absent from the package). Skills go into Trae's skill directory (<code>~/.trae-cn/skills</code> for Trae CN) and are then invoked with <code>/skill-name</code> in the chat; the vscode target copies no skill directory — Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (loaded on demand in agent mode; requires the Copilot Chat extension), or ask the Agent to read <code>Skills/&lt;skill-name&gt;/SKILL.md</code> from the delivered package. Video Sim is already embedded in the Core VSIX and needs no separate installation. If customer policy forbids script-based installation, use <strong>Install from VSIX…</strong> in the Trae Extensions panel in the same order.</p>
 <h3 id="3-first-time-setup">3. First-time setup</h3>
 <ol>
 <li>Run <code>EvoVerse: Set Up (re-run bootstrap)</code> from the command palette.</li>

@@ -109,7 +109,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="5-minute-overview">5-minute overview</h2>
 <p>If this is your first time generating RTL with vibe coding, read these five points in order:</p>
 <ol>
-<li><strong>Describe the requirement in Trae Chat, starting with <code>@evoverse</code></strong>. The Agent first confirms with you how to work: the reliable design flow (recommended; confirmed stage by stage) or free-form development. For a first encounter, choose the reliable design flow.</li>
+<li><strong>Describe the requirement according to the host</strong>: start with <code>@evoverse</code> in Trae Chat; in the VS Code native Agent, describe it directly without <code>@evoverse</code>. The Agent first confirms reliable or free-form work.</li>
 <li><strong>Every "done" must come back with a receipt</strong>: the L1–L4 risk level, the <code>evidenceId</code> of every gate, and the spec freeze status. Without a receipt it is not a PASS; <code>blocked</code> is not a pass.</li>
 <li><strong>Never edit protected assets (XML / SDC / ISF / YAML / IP configuration / register maps) directly</strong> — they go through the Broker channel of <code>apply-controlled-change</code>; ordinary RTL can be edited directly.</li>
 <li><strong>Catalog material is a read-only baseline</strong>: the Agent observes the worktree with <code>asset.observe</code> and brings free-form code into a managed candidate with <code>asset.adopt</code>; no bootstrap script is ever required — never rewrite catalog material directly. See <a href="../sdk/rtl-baseline-bootstrap.html">Worktree assets and the RTL baseline</a>.</li>

@@ -124,8 +124,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </thead>
 <tbody>
 <tr>
-<td>Trae + EvoVerse SDK</td>
-<td>已安装 SDK 与 efinity-adapter 两个 VSIX，MCP 会话已连接</td>
+<td>Trae 或 VS Code + EvoVerse SDK</td>
+<td>已安装 SDK 与 efinity-adapter 两个 VSIX，MCP 会话已连接。Trae 中 Skill 已装入宿主 Skill 目录；VS Code 中经 VSIX <code>chatSkills</code> 声明对 Copilot Chat 可用（需已安装 Copilot Chat），也可让 Agent 直接读取交付包 <code>Skills/efinity-build-review/SKILL.md</code> 作为指令</td>
 </tr>
 <tr>
 <td>一个 Efinity 工程目录</td>
@@ -141,10 +141,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
-<p>升级或重新部署 SDK 后需重连 MCP 会话（重启 Trae 或重连 MCP），工具列表才会刷新。</p>
+<p>升级或重新部署 SDK 后需重连 MCP 会话（重启宿主或重连 MCP），工具列表才会刷新。</p>
 <h2 id="三-快速开始">三、快速开始</h2>
-<h3 id="你对-trae-说什么">你对 Trae 说什么</h3>
-<p>在工程目录打开 Trae，输入：</p>
+<h3 id="你对宿主-agent-说什么">你对宿主 Agent 说什么</h3>
+<p>在工程目录打开 Trae（VS Code 用户可经 Copilot Chat 调用本 Skill，或改为让 Agent 先读取交付包 <code>Skills/efinity-build-review/SKILL.md</code>），输入：</p>
 <pre><code class="language-text">/efinity-build-review
 评审这个 Efinity 工程。先让我选择工程 XML，再解释工程结构、编译阶段、资源、时序、约束覆盖、产物、关键路径源码关联和下一步。
 </code></pre>

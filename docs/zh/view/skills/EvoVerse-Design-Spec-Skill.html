@@ -113,13 +113,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>需要让客户确认 RISC-V、硬 IP 模型、寄存器接口、外部接口或验证 Oracle 等影响架构的选择。</li>
 </ul>
 <p>不适合用它做一次小的自由 RTL 修改；这类工作可直接编辑，或在需要受控证据时使用 <code>/evoverse-rtl</code>。</p>
-<h2 id="在-trae-中调用">在 Trae 中调用</h2>
-<p>在目标工程的空目录打开 Trae 对话，先输入 Skill，再给出完整目标和材料范围。例如：</p>
+<h2 id="调用方式">调用方式</h2>
+<p><strong>Trae（推荐宿主）</strong>：SDK 激活时把本 Skill 安装到 Trae 的 Skill 目录，宿主识别后即可用 <code>/evoverse-design-spec</code> 调用。在目标工程的空目录打开 Trae 对话，先输入 Skill，再给出完整目标和材料范围。例如：</p>
 <pre><code class="language-text">/evoverse-design-spec
 为 WS-E1 的 TJ180A484S 新建一个工程：从 SD 卡读取图像，写入 DDR 帧缓存，再由 MIPI CSI-2 TX 输出到外部桥接器。
 只从 Catalog、Efinity IP 和允许使用的其他 Demo 中发现物料；不得复制 sd-ddr-csi2 工程。请生成 design-package，列出每个物料的证据、复用分类、待确认决策和分阶段实施计划。
 </code></pre>
 <p>Skill 会先澄清会改变架构或验收的少数问题。对可由当前材料确认的内容，它应当使用 MCP 查询，而不是凭名称或经验猜测。</p>
+<p><strong>VS Code</strong>：SDK 不向 VS Code 复制宿主级 Skill 目录，Skill 经 VSIX 的 <code>chatSkills</code> 声明提供给 Copilot Chat（agent 模式按需加载，需已安装 Copilot Chat 扩展）；等效做法是让 Agent 直接读取交付包内的 <code>Skills/evoverse-design-spec/SKILL.md</code> 并按其执行（MCP 控制面工具已由 SDK 写入 <code>mcp.json</code>）。</p>
 <h2 id="产物与证据">产物与证据</h2>
 <p>规格分两种上下文，但系统始终只有一份有效规格：</p>
 <ul>

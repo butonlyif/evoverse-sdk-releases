@@ -128,17 +128,17 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <ol>
 <li>Install the three VSIXes: <code>evoverse-sdk</code>, <code>evoverse-efinity-adapter</code>, <code>evoverse-rk3588-adapter</code> (same version, currently 1.0.0), and restart the IDE afterwards.</li>
 <li>On first launch a "Set up EvoVerse SDK?" dialog pops up; confirm the SDK workspace (default <code>~/evoverse-sdk</code>); after confirmation the Welcome page opens automatically.</li>
-<li>On the Welcome page click Sync Catalog once to sync the board catalog, then type <code>@evoverse</code> in the Trae chat (or use the Workbench Project Control dropdown, command <code>evoverse.selectDesignFlow</code>) to start the conversation.</li>
+<li>On the Welcome page click Sync Catalog, then start by host: <strong>Trae:</strong> type <code>@evoverse</code> in Chat. <strong>VS Code:</strong> describe the goal directly in native Chat Agent mode, without <code>@evoverse</code>, and confirm that EvoVerse MCP is Running. The Workbench Project Control dropdown (<code>evoverse.selectDesignFlow</code>) is navigation only.</li>
 </ol>
 <pre class="mermaid">flowchart LR
     A[&quot;Install the three VSIXes&lt;br&gt;SDK + Efinity/RK3588 Adapter&quot;] --&gt; B[&quot;Restart the IDE&lt;br&gt;confirm workspace ~/evoverse-sdk&quot;]
     B --&gt; C[&quot;Welcome page&lt;br&gt;Sync Catalog&quot;]
-    C --&gt; D[&quot;@evoverse start the conversation&quot;]
+    C --&gt; D[&quot;Trae: @evoverse&lt;br/&gt;VS Code: native Agent&quot;]
 </pre>
 <p>Note: <code>~/evoverse-sdk</code> is the SDK workspace, not this tutorial's project root. The next step opens an empty directory, and Stage0 builds the project there.</p>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
 <p>Open an empty directory as the project root and say the following in Trae Chat:</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use @evoverse to create an EvoVerse project in this empty directory. Choose board ws-e1 / ws-e1-base;
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use @evoverse to create an EvoVerse project in this empty directory (in the VS Code native Agent, omit the leading @evoverse). Choose board ws-e1 / ws-e1-base;
 my hardware is a WS-E1 core module (TJ180A484S) seated on a ws-e1-base carrier,
 and the goal is a display link of SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX.
 Before doing anything, read me back the project identity you are about to write (board, carrier, device, speed grade);

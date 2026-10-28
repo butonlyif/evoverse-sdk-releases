@@ -266,7 +266,7 @@ bin/efinity.exe 或 bin/efinity
 <p>macOS / Linux：</p>
 <pre><code class="language-bash">./deploy.sh --target vscode
 </code></pre>
-<p>脚本按依赖顺序安装 Core、两个 Adapter 与 Skills；可选 Adapter 在包内缺失时跳过并提示。Video Sim 已内嵌于 Core VSIX，无需单独安装。</p>
+<p>脚本按依赖顺序安装 Core 与两个 Adapter；可选 Adapter 在包内缺失时跳过并提示。<strong>Skill 不复制进 VS Code 宿主目录</strong>：8 个 Skill 经 VSIX 的 <code>chatSkills</code> 声明提供给 Copilot Chat（agent 模式按需加载，需已安装 Copilot Chat 扩展）；需要 Skill 内容时，也可让 Agent 直接读取交付包内的 <code>Skills/&lt;skill-name&gt;/SKILL.md</code> 作为指令执行；MCP 控制面工具已由 SDK 写入用户级 <code>mcp.json</code>，不受影响。Video Sim 已内嵌于 Core VSIX，无需单独安装。</p>
 <h3 id="5-2-方式-b-命令行-扩展面板手动安装">5.2 方式 B：命令行 / 扩展面板手动安装</h3>
 <pre><code class="language-powershell">code --install-extension D:\packages\evoverse-sdk-1.0.0.vsix
 code --install-extension D:\packages\evoverse-efinity-adapter-1.0.0.vsix
@@ -574,7 +574,7 @@ cat &quot;$HOME/evoverse-sdk/agent-rules/rules-rtl-style.md&quot; &gt;&gt; .gith
 <p><strong>验证</strong>：打开一个已成功构建、含时序报告的工程 → <code>Toolchain: Diagnose Timing Violations</code> → 点 <strong>Ask AI</strong> 确认流式返回 → 继续追问确认多轮上下文 → Build Report 点 <strong>询问 AI Agent</strong> 确认收到带构建摘要的回答。回答应引用当前报告的 WNS/TNS、时钟域或关键路径；模型建议只用于分析，不能替代仿真、CDC 检查和 Efinity 时序报告。</p>
 <h2 id="11-开始使用">11. 开始使用</h2>
 <ol>
-<li><strong>自然语言开工</strong>：在 VS Code 原生 Chat（Agent 模式）中描述需求，Agent 走 <code>project_next</code> envelope 逐步确认后执行；没有原生 Chat Agent 时，用 Workbench 的 Project Control 下拉选择设计流程（<code>EvoVerse: Select Design Flow</code>，<code>evoverse.selectDesignFlow</code>）；</li>
+<li><strong>自然语言开工</strong>：在 VS Code 原生 Chat（Agent 模式）中直接描述需求，无需 <code>@evoverse</code>。Agent 让你选择 free/reliable，并通过 EvoVerse MCP 的 <code>project_next</code> envelope 逐步确认；<code>@evoverse</code> 仅为打开 Project Control 的兼容导航，不会接续原生 Agent、创建 Intent 或替你选择流程。没有原生 Chat Agent 时，可使用 Workbench 的 Project Control 下拉（<code>evoverse.selectDesignFlow</code>）；</li>
 <li><strong>Workbench 六个 Tab</strong>：Home / Build / Timing / Debug / SW / IP；</li>
 <li><strong>编译</strong>：Build Tab 或 <code>Toolchain: Build</code>（<code>evoverse.build</code>）。Build 由 Efinity Adapter 执行 <code>efx_run --flow compile</code>，状态栏显示 <code>Build: Ready / Running / Failed</code>；</li>
 <li><strong>仿真</strong>：<code>Toolchain: Simulate</code>（<code>evoverse.sim</code>）；VCD 用 VaporView 打开；</li>

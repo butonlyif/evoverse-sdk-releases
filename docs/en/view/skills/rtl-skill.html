@@ -113,14 +113,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>You want the existing project kept as a read-only baseline so the Agent cannot drag unrelated RTL, test assets, or constraints into the change.</li>
 </ul>
 <p>It does not replace free-form development. Ordinary Agent edits and builds remain available and are never blocked by this Skill; they simply do not automatically earn the candidate, isolation, and promotion evidence this Skill produces.</p>
-<h2 id="invoking-in-trae">Invoking in Trae</h2>
-<p>Open the project that contains the approved specification, and state in the conversation the single task, the specification source, the target RTL path, the simulation sources, and the read-only dependencies. For example:</p>
+<h2 id="how-to-invoke">How to invoke</h2>
+<p><strong>Trae (recommended host)</strong>: at activation the SDK installs this Skill into Trae's skill directory (<code>~/.trae-cn/skills</code> for Trae CN, <code>~/.trae/skills</code> for the international edition); once the host recognizes it, invoke <code>/evoverse-rtl</code> in the chat. Open the project that contains the approved specification, and state in the conversation the single task, the specification source, the target RTL path, the simulation sources, and the read-only dependencies. For example:</p>
 <pre><code class="language-text">/evoverse-rtl
 根据 design-package/specification.md 实现视频帧写入控制器。交付到 rtl/frame_writer.sv；
 保留 sim/frame_writer_tb.sv 与 sim/models/ 作为验证源；rtl/common/ 必须只读。
 请先展示任务范围和控制面回执，再开始生成。
 </code></pre>
 <p>If the interfaces, bit widths, register map, clock/reset domains, Oracle, or hard IP models remain ambiguous, the Skill stops and requires going back to <code>/evoverse-design-spec</code> for a decision or updating the specification first.</p>
+<p><strong>VS Code</strong>: the SDK does not copy a host-level skill directory into VS Code (unlike Trae); Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution — loaded on demand in agent mode, and in recent Copilot Chat versions also callable as the <code>/evoverse-rtl</code> slash command (requires the Copilot Chat extension). The equivalent is to ask the Agent to read <code>Skills/evoverse-rtl/SKILL.md</code> from the delivered package and follow it as instructions; the MCP control-plane tools are already wired into the user-level <code>mcp.json</code> by the SDK.</p>
 <h2 id="controlled-lifecycle">Controlled lifecycle</h2>
 <pre class="mermaid">flowchart TD
     S[&quot;project_status read-only check&lt;br/&gt;read revision and active Intent&quot;] --&gt; A[&quot;Intent intent.create&quot;]

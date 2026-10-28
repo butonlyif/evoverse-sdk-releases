@@ -106,6 +106,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Skill：自然语言网表调试</h1></header>
 <main class="article"><h1 id="自然语言网表调试">自然语言网表调试</h1>
 <p><code>efinity-netlist-debug</code> Skill 用于在 Trae 对话中调试一个<strong>已编译</strong>的 Efinity 工程：描述你想观察什么行为（信号、总线、状态机、握手、计数器），Skill 从编译后网表发现候选信号并呈现给你。对话在发现后停止——确认选点、生成调试配置与调试编译都在 Workbench Debug 页完成。这条流程不修改 RTL——不写 <code>(* mark_debug *)</code> 属性，选中的是综合后的真实标量信号，不会被综合改名或优化掉。</p>
+<p>调用方式因宿主而异：Trae 中 SDK 已把本 Skill 装入宿主 Skill 目录，可直接用 <code>/efinity-netlist-debug</code> 调用；VS Code 中 Skill 经 VSIX 的 <code>chatSkills</code> 声明提供给 Copilot Chat（agent 模式按需加载，需已安装 Copilot Chat 扩展），等效做法是让 Agent 直接读取交付包内的 <code>Skills/efinity-netlist-debug/SKILL.md</code> 并按其执行（MCP 调试工具已由 SDK 写入 <code>mcp.json</code>）。</p>
 <h2 id="用法示例">用法示例</h2>
 <pre><code class="language-text">/efinity-netlist-debug
 我想观察 counter 计到 0xA5 时 rdata 的变化。

@@ -109,7 +109,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>适用版本：EvoVerse SDK v1.0.0</p>
 </blockquote>
 <p>这套流程把设计规格书作为唯一行为权威。即使功能很小，也先建立并冻结规格，再生成 RTL。仿真代码、Oracle、测试向量和模型不从待测 RTL 反推，避免“代码和测试一起错但仍显示通过”。</p>
-<p><code>@evoverse</code> 是受控流程入口，两个宿主语义一致：<strong>Trae</strong> 中以 <code>@evoverse</code> 开始规格或 RTL 设计需求，内置 Agent 打开 Workbench Control 并按控制面 envelope 逐步确认工作方式（可靠设计流程或自由开发）；<strong>VS Code</strong> 中在 <code>@evoverse</code> 会话里描述需求会确定性地打开 Project Control（命令 <code>evoverse.selectDesignFlow</code>），由同一控制面接管，不依赖模型的工具调用能力。不使用 <code>@evoverse</code> 时即为自由流程：普通 Agent 对话、直接编辑和 Build 不受影响。选择可靠设计流程后必须逐阶段确认；选择自由开发则不进入本流程。</p>
+<p>入口按宿主区分：<strong>Trae</strong> 中以 <code>@evoverse</code> 开始规格或 RTL 设计需求；<strong>VS Code</strong> 中直接在原生 Agent 描述需求，无需 <code>@evoverse</code>，Agent 通过 EvoVerse MCP 读取 envelope 并让用户选择 free/reliable。VS Code 的 <code>@evoverse</code> 仅为打开 Project Control 的兼容导航，不会继续原生 Agent 会话。入口本身不创建 Intent、不替用户选流程；选择 reliable 后才逐阶段确认，选择 free 则保持普通编辑与 Build。</p>
 <p><strong>RTL 设计规则验证不是 Coding Style Check。</strong> 它检查结构、时钟、复位、CDC、状态机、FIFO、数据完整性及协议契约；动态义务需要仿真证据，<code>incomplete</code> 不是 PASS。</p>
 <h2 id="1-规格分层与合适颗粒">1. 规格分层与合适颗粒</h2>
 <ul>

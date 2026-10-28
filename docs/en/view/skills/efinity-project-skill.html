@@ -106,6 +106,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Skill: Configure an Efinity Project in Natural Language</h1></header>
 <main class="article"><h1 id="configure-efinity-projects-in-natural-language">Configure Efinity Projects in Natural Language</h1>
 <p>The <code>efinity-project</code> Skill creates or modifies Efinity projects from a Trae conversation. It confirms the device, RTL, clocks, pins, IPs, compile options, and Debugger settings step by step, explains the impact of each choice, and then calls Efinity's own project API, DesignAPI, IP Manager, and the unified compile flow.</p>
+<p>Invocation differs by host: in Trae the SDK installs this Skill into the host skill directory, so <code>/efinity-project</code> works directly; in VS Code Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (loaded on demand in agent mode; requires the Copilot Chat extension), and the equivalent is to ask the Agent to read <code>Skills/efinity-project/SKILL.md</code> from the delivered package and follow it as instructions (the MCP tools are already wired into <code>mcp.json</code> by the SDK).</p>
 <h2 id="creating-a-new-project">Creating a new project</h2>
 <p>Open Trae in the target directory and enter:</p>
 <pre><code class="language-text">/efinity-project

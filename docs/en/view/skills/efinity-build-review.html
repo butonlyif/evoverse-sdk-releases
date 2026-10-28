@@ -124,8 +124,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </thead>
 <tbody>
 <tr>
-<td>Trae + EvoVerse SDK</td>
-<td>SDK and efinity-adapter VSIXes installed; MCP session connected</td>
+<td>Trae or VS Code + EvoVerse SDK</td>
+<td>SDK and efinity-adapter VSIXes installed; MCP session connected. In Trae the Skill is installed into the host skill directory; in VS Code it is offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (requires the Copilot Chat extension), or ask the Agent to read <code>Skills/efinity-build-review/SKILL.md</code> from the delivered package as instructions</td>
 </tr>
 <tr>
 <td>An Efinity project directory</td>
@@ -141,10 +141,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
-<p>After upgrading or redeploying the SDK, reconnect the MCP session (restart Trae or reconnect MCP) so the host refreshes its tool list.</p>
+<p>After upgrading or redeploying the SDK, reconnect the MCP session (restart the host or reconnect MCP) so the host refreshes its tool list.</p>
 <h2 id="3-quick-start">3. Quick start</h2>
-<h3 id="what-you-say-to-trae">What you say to Trae</h3>
-<p>Open the project folder in Trae and enter:</p>
+<h3 id="what-you-say-to-the-host-agent">What you say to the host agent</h3>
+<p>Open the project folder in Trae (VS Code users: invoke the Skill from Copilot Chat, or ask the Agent to read <code>Skills/efinity-build-review/SKILL.md</code> from the delivered package first) and enter:</p>
 <pre><code class="language-text">/efinity-build-review
 Review this Efinity project. Let me select the project XML first, then explain the design structure, build stages, resources, timing, constraint coverage, artifacts, critical-path source correlation, and next actions.
 </code></pre>

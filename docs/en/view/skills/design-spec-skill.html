@@ -113,13 +113,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>Getting the customer to confirm architecture-shaping choices such as RISC-V usage, hard IP models, register interfaces, external interfaces, or the verification Oracle.</li>
 </ul>
 <p>It is not the tool for a small, free-form RTL edit — do those directly, or use <code>/evoverse-rtl</code> when controlled evidence is required.</p>
-<h2 id="invoking-in-trae">Invoking in Trae</h2>
-<p>Open a Trae chat in an empty directory of the target project, enter the Skill first, then state the full objective and the material scope. For example:</p>
+<h2 id="how-to-invoke">How to invoke</h2>
+<p><strong>Trae (recommended host)</strong>: at activation the SDK installs this Skill into Trae's skill directory, so <code>/evoverse-design-spec</code> works directly in the chat. Open a Trae chat in an empty directory of the target project, enter the Skill first, then state the full objective and the material scope. For example:</p>
 <pre><code class="language-text">/evoverse-design-spec
 为 WS-E1 的 TJ180A484S 新建一个工程：从 SD 卡读取图像，写入 DDR 帧缓存，再由 MIPI CSI-2 TX 输出到外部桥接器。
 只从 Catalog、Efinity IP 和允许使用的其他 Demo 中发现物料；不得复制 sd-ddr-csi2 工程。请生成 design-package，列出每个物料的证据、复用分类、待确认决策和分阶段实施计划。
 </code></pre>
 <p>The Skill first clarifies the handful of questions that would change the architecture or the acceptance criteria. Anything the current material can confirm, it verifies through MCP queries rather than guessing from names or past experience.</p>
+<p><strong>VS Code</strong>: the SDK does not copy a host-level skill directory into VS Code; Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (loaded on demand in agent mode; requires the Copilot Chat extension). The equivalent is to ask the Agent to read <code>Skills/evoverse-design-spec/SKILL.md</code> from the delivered package and follow it as instructions (the MCP control-plane tools are already configured by the SDK).</p>
 <h2 id="deliverables-and-evidence">Deliverables and evidence</h2>
 <p>Specifications live in two contexts, but the system always keeps exactly one active specification:</p>
 <ul>
