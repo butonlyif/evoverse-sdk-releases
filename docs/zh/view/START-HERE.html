@@ -118,8 +118,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><strong>build / 烧录 / 调试</strong> — <a href="skills/efinity-project.html">自然语言配置 Efinity 工程</a> / <a href="efinity/Efinity工具链参考.html">Efinity 工具链参考</a> / <a href="efinity/Efinity常见编译错误排查.html">编译错误排查</a> / <a href="efinity/时序分析指南.html">时序指南</a> / <a href="efinity/Efinity优化设计.html">优化设计</a> / <a href="efinity/Efinity编程与烧录指南.html">编程与烧录</a> / <a href="efinity/Efinity-片上调试指南.html">片上调试</a></li>
 </ol>
 <p>高级 Efinity、时序、CDC、DesignAPI、寄存器和 IP 资料都保留在门户的"按需参考"区。它们不是入门前置阅读。</p>
-<h2 id="在-trae-chat-里开始-vibe-coding">在 Trae Chat 里开始 vibe coding</h2>
-<p>完成路径第 1–4 阶段后，下一步是让 Agent 帮你生成 RTL：<code>@evoverse</code> 是受控流程入口（两宿主语义一致）——<strong>Trae</strong> 在 Chat 里输入 <code>@evoverse</code> 开始；<strong>VS Code</strong> 在 <code>@evoverse</code> 会话里描述需求，会打开 Project Control 由控制面逐步确认。不用 <code>@evoverse</code> 即为自由开发。两条必读：</p>
+<h2 id="按宿主开始-vibe-coding">按宿主开始 vibe coding</h2>
+<p>完成路径第 1–4 阶段后，下一步是让 Agent 帮你生成 RTL。入口按宿主区分：<strong>Trae</strong> 在 Chat 里输入 <code>@evoverse</code> 并描述目标；<strong>VS Code</strong> 在原生 Chat 的 Agent 模式直接描述目标，无需 <code>@evoverse</code>，Agent 会询问 free/reliable 并通过 EvoVerse MCP 读取控制面。VS Code 的 <code>@evoverse</code> 只保留为打开 Project Control 的兼容导航，不会接续原生 Agent 对话。两边都不能由入口自动创建 Intent 或替用户选择流程。两条必读：</p>
 <ul>
 <li><a href="efinity/Efinity-Vibe-Coding-Harness.html">Efinity Vibe Coding Harness</a> — L1–L4 风险等级、受保护资产、证据回执、blocked vs passed 的区别</li>
 <li><a href="sdk/rtl-baseline-bootstrap.html">工作树资产与 RTL 基线</a> — Agent 用 <code>asset.observe</code> 观察工作树、经 <code>asset.adopt</code> 把自由代码纳入受管候选；catalog 物料保持只读基线，不需要运行任何 bootstrap 脚本</li>

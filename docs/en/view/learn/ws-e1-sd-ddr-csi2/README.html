@@ -131,7 +131,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><strong>Restart the IDE</strong> so that all three extensions are activated.</li>
 <li><strong>First-run bootstrap</strong>: after the restart a "Set up EvoVerse SDK?" dialog pops up; confirm the workspace location (default <code>~/evoverse-sdk</code>).</li>
 <li><strong>The Welcome page opens automatically</strong>. Click <strong>Sync Catalog</strong> to sync the board catalog and wait for it to finish — the <code>ws-e1 / ws-e1-base</code> board selection later comes from this catalog.</li>
-<li><strong>Start the conversation</strong>: type <code>@evoverse</code> in the Trae chat box and drive the SDK in natural language; the Workbench (the Project Control dropdown, command <code>evoverse.selectDesignFlow</code>) is the graphical entry point to the same control plane.</li>
+<li><strong>Start by host</strong>: <strong>Trae:</strong> type <code>@evoverse</code> and describe the goal. <strong>VS Code:</strong> describe the same goal directly in native Chat Agent mode, without <code>@evoverse</code>, after confirming the EvoVerse MCP server is Running. The Workbench Project Control dropdown (<code>evoverse.selectDesignFlow</code>) is a graphical entry, but it does not continue the Agent conversation.</li>
 </ol>
 <p>Then confirm two more things:</p>
 <ul>
@@ -144,7 +144,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
   B --&gt; C[&quot;First-run dialog confirms the workspace&lt;br&gt;~/evoverse-sdk&quot;]
   C --&gt; D[&quot;Welcome page opens automatically&quot;]
   D --&gt; E[&quot;Sync Catalog syncs the board catalog&quot;]
-  E --&gt; F[&quot;@evoverse natural-language development&quot;]
+  E --&gt; F[&quot;Trae: @evoverse&lt;br/&gt;VS Code: native Agent directly&quot;]
   F --&gt; G[&quot;Workbench six tabs&lt;br&gt;Home/Build/Timing/Debug/SW/IP&quot;]
 </pre>
 <h2 id="the-reliable-design-flow-a-five-step-control-loop">The reliable design flow: a five-step control loop</h2>

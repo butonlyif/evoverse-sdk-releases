@@ -131,7 +131,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><strong>重启 IDE</strong>，让三个扩展全部激活。</li>
 <li><strong>首次引导</strong>：重启后弹窗 "Set up EvoVerse SDK?"，确认工作区位置（默认 <code>~/evoverse-sdk</code>）。</li>
 <li><strong>Welcome 页自动打开</strong>。点 <strong>Sync Catalog</strong> 同步板卡目录，等同步完成——后面的 <code>ws-e1 / ws-e1-base</code> 板卡选择就来自这份目录。</li>
-<li><strong>开始对话</strong>：在 Trae 聊天框输入 <code>@evoverse</code>，用自然语言驱动 SDK；Workbench（Project Control 下拉，命令 <code>evoverse.selectDesignFlow</code>）是同一个控制面的图形入口。</li>
+<li><strong>开始对话（按宿主）</strong>：<strong>Trae：</strong>在聊天框输入 <code>@evoverse</code> 后描述目标。<strong>VS Code：</strong>在原生 Chat 的 Agent 模式直接描述同一目标，无需 <code>@evoverse</code>；先确认 EvoVerse MCP 为 Running。Workbench（Project Control 下拉，命令 <code>evoverse.selectDesignFlow</code>）是图形入口，但不会替 Agent 继续对话。</li>
 </ol>
 <p>再确认两项：</p>
 <ul>
@@ -144,7 +144,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
   B --&gt; C[&quot;首启弹窗确认工作区&lt;br&gt;~/evoverse-sdk&quot;]
   C --&gt; D[&quot;Welcome 页自动打开&quot;]
   D --&gt; E[&quot;Sync Catalog 同步板卡目录&quot;]
-  E --&gt; F[&quot;@evoverse 自然语言开发&quot;]
+  E --&gt; F[&quot;Trae: @evoverse&lt;br/&gt;VS Code: 原生 Agent 直接描述&quot;]
   F --&gt; G[&quot;Workbench 六 Tab&lt;br&gt;Home/Build/Timing/Debug/SW/IP&quot;]
 </pre>
 <h2 id="可靠设计流程-五步控制循环">可靠设计流程：五步控制循环</h2>
@@ -243,7 +243,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>最终 bitstream 由 Efinity 原生统一流程 <code>efx_run --flow compile</code> 产生；MIPI CSI-2 输出用真实接收端或片上调试核验证。</li>
 </ul>
 <h2 id="遇到问题怎么办">遇到问题怎么办</h2>
-<p>教程里的提示词刻意只说意图，不带控制面动作名和流程步骤——推进流程、选动作、核对回执是 Trae 的工作，你不需要背。生成与仿真本身有随机性，遇到不顺利的情况按三条原则处理：</p>
+<p>教程里的提示词刻意只说意图，不带控制面动作名和流程步骤——推进流程、选动作、核对回执是 Agent 的工作，你不需要背。以下章节的“你对 Trae 说什么”保留为 Trae 主线；在 VS Code 中把同一提示词直接发给原生 Agent，去掉开头的 <code>@evoverse</code> 即可。生成与仿真本身有随机性，遇到不顺利的情况按三条原则处理：</p>
 <ol>
 <li><strong>只说目标，不背流程。</strong> 描述你想要什么（"把 SD 卡数据写进 DDR"），而不是命令步骤。Trae 的做法若与教程描述的机制不一致，直接问它"你打算怎么推进"，听它解释后再决定。</li>
 <li><strong>等得久先问进度，别催也别重来。</strong> 生成、仿真、原生编译都是分钟级到几十分钟级的任务，中途叠加新指令只会打乱节奏。觉得太慢就问"现在到哪一步了、还差什么"，而不是重发一遍提示词。</li>

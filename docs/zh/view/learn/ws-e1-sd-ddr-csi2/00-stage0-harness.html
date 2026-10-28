@@ -128,17 +128,17 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <ol>
 <li>安装三个 VSIX：<code>evoverse-sdk</code>、<code>evoverse-efinity-adapter</code>、<code>evoverse-rk3588-adapter</code>（版本一致，当前为 1.0.0），装完重启 IDE。</li>
 <li>首次启动会弹出 "Set up EvoVerse SDK?"，确认 SDK 工作区（默认 <code>~/evoverse-sdk</code>）；确认后 Welcome 页自动打开。</li>
-<li>在 Welcome 页点一次 Sync Catalog 同步板卡目录，然后在 Trae 聊天里输入 <code>@evoverse</code>（或用 Workbench 的 Project Control 下拉，命令 <code>evoverse.selectDesignFlow</code>）开始对话。</li>
+<li>在 Welcome 页点一次 Sync Catalog 同步板卡目录，然后按宿主开始：<strong>Trae：</strong>在聊天里输入 <code>@evoverse</code>；<strong>VS Code：</strong>在原生 Chat 的 Agent 模式直接描述目标，无需 <code>@evoverse</code>，并确认 EvoVerse MCP 为 Running。Workbench 的 Project Control 下拉（<code>evoverse.selectDesignFlow</code>）只负责图形导航。</li>
 </ol>
 <pre class="mermaid">flowchart LR
     A[&quot;安装三个 VSIX&lt;br&gt;SDK + Efinity/RK3588 Adapter&quot;] --&gt; B[&quot;重启 IDE&lt;br&gt;确认工作区 ~/evoverse-sdk&quot;]
     B --&gt; C[&quot;Welcome 页&lt;br&gt;Sync Catalog&quot;]
-    C --&gt; D[&quot;@evoverse 开始对话&quot;]
+    C --&gt; D[&quot;Trae: @evoverse&lt;br/&gt;VS Code: 原生 Agent&quot;]
 </pre>
 <p>注意：<code>~/evoverse-sdk</code> 是 SDK 工作区，不是本教程的工程根。下一步打开的是一个空目录，Stage0 在那里建工程。</p>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <p>打开一个空目录作为工程根，在 Trae Chat 里说：</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 @evoverse 在当前空目录建一个 EvoVerse 工程。板卡选 ws-e1 / ws-e1-base，
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 @evoverse 在当前空目录建一个 EvoVerse 工程（VS Code 原生 Agent 中去掉开头的 @evoverse）。板卡选 ws-e1 / ws-e1-base，
 我的硬件是一块 WS-E1 核心模组（TJ180A484S）插在 ws-e1-base 底板上，
 目标是做一条 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的显示链路。
 动手之前，先把要写入的工程身份（板卡、载板、器件、速度等级）讲给我听；

@@ -131,7 +131,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>在客户包目录打开 PowerShell：</p>
 <pre><code class="language-powershell">.\deploy.ps1 -Target trae
 </code></pre>
-<p>脚本按依赖顺序安装 3 个 VSIX（Core、Efinity Adapter、RK3588 Adapter）和 Skills（两个 Adapter 为可选组件，包内缺失时跳过并提示）。Video Sim 已内嵌于 Core VSIX，无需单独安装。若客户策略禁止脚本安装，可在 Trae 的扩展面板按相同顺序选择 <strong>Install from VSIX…</strong>。</p>
+<p>脚本按依赖顺序安装 3 个 VSIX（Core、Efinity Adapter、RK3588 Adapter）和 Skills（两个 Adapter 为可选组件，包内缺失时跳过并提示）。Skills 装入 Trae 的 Skill 目录（Trae CN 为 <code>~/.trae-cn/skills</code>），之后在对话中用 <code>/skill-name</code> 斜杠调用；VS Code 目标不复制 Skill 目录，Skill 经 VSIX 的 <code>chatSkills</code> 声明提供给 Copilot Chat（agent 模式按需加载，需已安装 Copilot Chat 扩展），也可让 Agent 直接读取交付包内的 <code>Skills/&lt;skill-name&gt;/SKILL.md</code>。Video Sim 已内嵌于 Core VSIX，无需单独安装。若客户策略禁止脚本安装，可在 Trae 的扩展面板按相同顺序选择 <strong>Install from VSIX…</strong>。</p>
 <h3 id="3-首次设置">3. 首次设置</h3>
 <ol>
 <li>在命令面板运行 <code>EvoVerse: Set Up (re-run bootstrap)</code>。</li>

@@ -110,7 +110,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <strong>更新日期</strong>：2026-09-30
 <strong>适用 SDK 版本</strong>: v1.0.0
 <strong>适用平台</strong>：Trae IDE / VS Code 1.80+ · Windows · macOS · Linux</p>
-<p><strong>Agent Runtime（v0.7.1+）</strong>：Timing Diagnosis、Build Report 和原生 <code>@evoverse</code> 使用同一持久化会话。模型可选择宿主 <code>vscode.lm</code> 或 OpenAI-compatible 端点；模型 ID 必须显式配置，远程内容发送前可预览并确认，API Key 仅保存在 SecretStorage。
+<p><strong>Agent 入口</strong>：Trae 使用 <code>@evoverse</code>；VS Code 在原生 Agent 中直接描述设计、无需 <code>@evoverse</code>。Timing Diagnosis、Build Report 与兼容 participant 的内嵌 Runtime 会话不等于 VS Code 原生 Agent 会话。
 <strong>前置要求</strong>：Python 3.11+（自动检测），Efinity 2026.1+（编译/烧录时需要），Icarus Verilog 或 QuestaSim（仿真时需要）</p>
 <p><strong>设计流程选择（2026-09-30）</strong>：Trae 自然语言与 Workbench Control 共用服务端 current-action envelope。可靠/自由模式按设计迭代保存，不是工程全局开关；新对话从 <code>project_next</code> 恢复当前 revision、推荐动作与证据边界。自由模式不阻止普通 Build，但受控修改显示 <code>UNVERIFIED_CHANGES</code>，可随时选择“将当前修改纳入可靠流程”增量重走受影响门禁。</p>
 </blockquote>
@@ -212,7 +212,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>EvoVerse SDK v1.0.0 采用 <strong>SDK 外壳 + Adapter</strong> 分层架构。SDK 保留 Workbench 外壳与 System 根；厂商专属能力由独立 Adapter 扩展提供，经 trusted headless adapter 协议接入：</p>
 <pre class="mermaid">flowchart LR
     subgraph host[&quot;宿主（Trae / VS Code）&quot;]
-        nl[&quot;自然语言 / @evoverse&quot;]
+        nl[&quot;Trae: @evoverse / VS Code: 原生 Agent&quot;]
         wb[&quot;Workbench 外壳（六 Tab）&quot;]
     end
     subgraph sdk[&quot;EvoVerse SDK 核心&quot;]
@@ -252,7 +252,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td><strong>宿主集成</strong></td>
-<td>自然语言 / <code>@evoverse</code> 对话、Workbench UI、MCP 注册</td>
+<td>Trae <code>@evoverse</code>；VS Code 原生 Agent + MCP；Workbench UI</td>
 <td>对话与 IDE 界面</td>
 </tr>
 <tr>
@@ -792,7 +792,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td><strong>Efinity 软 IP</strong></td>
-<td>运行时从 Efinity IPM 获取全部可用 IP（按 library 分组）；每个 IP 附类别推荐句，支持「直接加入」（预选该 IP 进入 Add IP 流程）与「复制推荐句」（粘贴给 @evoverse 用自然语言加入）</td>
+<td>运行时从 Efinity IPM 获取全部可用 IP（按 library 分组）；支持「直接加入」与「复制推荐句」（Trae 粘贴给 <code>@evoverse</code>；VS Code 粘贴给原生 Agent）</td>
 </tr>
 <tr>
 <td><strong>Catalog Verified IP</strong></td>
@@ -1575,7 +1575,7 @@ vvp sim_test.vvp
 - <strong>Mermaid 流程图</strong>：路径跳转可视化
 - <strong>源码跳转</strong>：点击直接打开对应 RTL 行</p>
 <h4 id="ai-copilot-对话">AI Copilot 对话</h4>
-<p>诊断面板内置 AI 对话区（v0.7.1 起与 <code>@evoverse</code> 共享持久化会话，详见 <a href="#a2-ai-诊断行为变更v071">附录 A.A2</a>）：</p>
+<p>诊断面板内置 AI 对话区（v0.7.1 起与兼容 <code>@evoverse</code> participant 的内嵌 Runtime 共享会话；不与 VS Code 原生 Agent 共享，详见 <a href="#a2-ai-诊断行为变更v071">附录 A.A2</a>）：</p>
 <ul>
 <li>自动打包：RTL 片段 + SDC 约束 + 诊断结果</li>
 <li>支持追问：可在对话中继续深入分析</li>
@@ -3364,9 +3364,9 @@ evoverse --help           # 显示 CLI 版本标识与当前可用子命令
 </thead>
 <tbody>
 <tr>
-<td><strong>AI 持久化会话</strong></td>
+<td><strong>内嵌 AI 持久化会话</strong></td>
 <td>Timing Diagnosis、Build Report、<code>@evoverse</code> 各用独立会话</td>
-<td>三者共享同一持久化会话，AI 上下文可跨面板延续</td>
+<td>三者在内嵌 Runtime 内共享；VS Code 原生 Agent 仍是独立会话</td>
 </tr>
 <tr>
 <td><strong>自动应用修复</strong></td>

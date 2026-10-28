@@ -109,7 +109,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="5-分钟导读">5 分钟导读</h2>
 <p>如果这是你第一次用 vibe coding 生成 RTL，按顺序看这5 件事：</p>
 <ol>
-<li><strong>在 Trae Chat 里以 <code>@evoverse</code> 开头</strong>描述需求。Agent 会先与你确认工作方式：可靠设计流程（推荐，逐阶段确认）或自由开发。第一次接触建议选可靠设计流程。</li>
+<li><strong>按宿主描述需求</strong>：Trae Chat 以 <code>@evoverse</code> 开头；VS Code 原生 Agent 直接描述，无需 <code>@evoverse</code>。Agent 会先与你确认可靠设计流程（推荐）或自由开发。</li>
 <li><strong>每次"完成"必须带回执</strong>：L1–L4 风险等级、每个门禁的 <code>evidenceId</code>、spec freeze 状态。没有回执不算 PASS；<code>blocked</code> 不等于通过。</li>
 <li><strong>受保护资产（XML / SDC / ISF / YAML / IP 配置 / 寄存器映射）永远不要直接编辑</strong>——它们走 <code>apply-controlled-change</code> 的 Broker 通道；普通 RTL 可以直接编辑。</li>
 <li><strong>catalog 物料是只读基线</strong>：Agent 用 <code>asset.observe</code> 观察工作树、用 <code>asset.adopt</code> 把自由代码纳入受管候选，不需要运行任何 bootstrap 脚本；不要直接改写 catalog 物料。详见 <a href="../sdk/rtl-baseline-bootstrap.html">工作树资产与 RTL 基线</a>。</li>
