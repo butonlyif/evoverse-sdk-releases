@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
 <span>当前 WS-E2 双离线包、环境 READY、自然语言工程生成、四阶段 BUILD_READY 与硬件 NOT_RUN 的完整边界。</span>
 <code>rk3588/RK3588-开发全流程指南.md</code>
@@ -106,10 +106,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>RK3588 开发全流程指南</h1></header>
 <main class="article"><h1 id="rk3588-开发全流程指南">RK3588 开发全流程指南</h1>
 <blockquote>
-<p><strong>版本</strong>：v1.0.0　<strong>更新日期</strong>：2026-09-25<br />
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>版本</strong>：v1.0.1　<strong>更新日期</strong>：2026-11-12
 <strong>当前基线</strong>：WS-E2 / RK3588J / BSP <code>b8f5dda5</code> / 工具链 <code>2026.09</code></p>
 </blockquote>
 <p>本文说明 EvoVerse 当前真实可用的环境部署、工程生成和最小系统构建链路。第一次操作请直接阅读<a href="../learn/ws-e2-rk3588-minimal/README.html">《WS-E2 RK3588J 最小系统自然语言教程》</a>。</p>
+<blockquote>
+<p><strong>2026-11-12 当前边界</strong>：独立交付的 Linux Environment Manager 已承接环境安装与执行，RK3588 Adapter 直接发现、握手并调用本机 <code>evoverse-env</code>。SDK 不再注入或代理 Manager 通道；legacy <code>target.deploy</code> 仍封闭，新 target 动作走 Adapter 直连通道。</p>
+</blockquote>
 <h2 id="1-四个状态不能混用">1. 四个状态不能混用</h2>
 <pre class="mermaid">flowchart LR
   A[安装三个 VSIX] --&gt; B[同步 Catalog]
@@ -139,15 +143,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </thead>
 <tbody>
 <tr>
-<td><code>evoverse-sdk-1.0.0.vsix</code></td>
+<td><code>evoverse-sdk-1.0.1.vsix</code></td>
 <td>SDK Shell、Catalog、自然语言工具和系统编排</td>
 </tr>
 <tr>
-<td><code>evoverse-efinity-adapter-1.0.0.vsix</code></td>
+<td><code>evoverse-efinity-adapter-1.0.1.vsix</code></td>
 <td>WS-E2 FPGA 侧 Efinity 能力</td>
 </tr>
 <tr>
-<td><code>evoverse-rk3588-adapter-1.0.0.vsix</code></td>
+<td><code>evoverse-rk3588-adapter-1.0.1.vsix</code></td>
 <td>RK3588 环境体检、工程预检、构建和证据展示</td>
 </tr>
 </tbody>
@@ -159,16 +163,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>Catalog 还锁定内部 manifest、最低 Adapter 版本、板卡绑定和许可策略。部署硬门槛为 <strong>8,300,000,000 字节</strong>，建议至少保留 9 GiB。</p>
 <h2 id="3-环境建立">3. 环境建立</h2>
 <ol>
-<li>安装三个 VSIX 和 Docker Desktop，切换到 Linux containers。</li>
-<li>同步 Catalog（<code>EvoVerse: Sync Catalog</code>，默认公开仓库无需 GitHub 账号）。</li>
-<li>执行 Adapter 环境体检。</li>
-<li>将双离线包放入 <code>&lt;EVOVERSE_HOME&gt;/downloads/rk3588/</code>，或逐个选择。</li>
-<li>Adapter 校验外层大小/SHA、内部 manifest、逐文件 checksum 后签发一次性 <strong>inspection token</strong>。</li>
-<li>用户明确接受许可，再执行一键部署。</li>
-<li>Adapter 重建 BSP Git 树、导入 Docker image、运行 BSP qualification、写入逐文件回执并再次体检。</li>
+<li>在 Ubuntu 24.04 x86_64 主机安装独立 <code>evoverse-env</code> <code>.deb</code> 和 Docker Engine，执行 <code>evoverse-env handshake --json</code>。</li>
+<li>安装三个 VSIX；Manager 不在 VSIX 中。非标准安装路径使用 Adapter 设置 <code>evoverse.rk3588.environmentManagerPath</code>。</li>
+<li>将双离线包与签名索引、manifest、material lock 和许可策略作为同一 release assets 目录交付。</li>
+<li>Adapter 直接调用 Manager <code>catalog list</code> 和 <code>plan create</code>；同一输入生成同一 <code>planDigest</code>。</li>
+<li>Workbench 展示计划影响和许可集，用户确认后 Adapter 产生并立即消费单次确认 token。</li>
+<li>Manager 以原计划执行 <code>install</code>，再以 <code>verify</code> 复核回执和安装身份。</li>
+<li>只有安装提交且 quick verify 通过才展示环境 <code>READY</code>；取消、不完整或身份不符都不会被 Adapter 升格。</li>
 </ol>
-<p>默认位置：BSP 在 <code>&lt;EVOVERSE_HOME&gt;/bsp/ws-e2/b8f5dda5/</code>，工具链材料在 <code>&lt;EVOVERSE_HOME&gt;/toolchains/rk3588/2026.09/</code>，回执在 <code>&lt;EVOVERSE_HOME&gt;/receipts/rk3588/</code>。</p>
-<p>部署具备事务语义：取消或失败时回滚本次目录、回执和新导入的镜像；部署前已有镜像不删除。半套安装只有在完整文件闭包、BSP qualification 或 Docker image 身份重新通过后才复用。</p>
+<p>具体交付物和诊断见 <a href="RK3588-离线环境部署指南.html">RK3588 离线环境部署指南</a>。</p>
 <h2 id="4-ws-e2-最小系统推荐">4. WS-E2 最小系统推荐</h2>
 <p>整理后的 WS-E2 材料确认核心板包含 RK3588J、PMIC、电源时序、LPDDR4X、eMMC 和 24 MHz 基准时钟；载板提供最小启动所需的串口与 USB OTG 路径。当前推荐：</p>
 <ul>

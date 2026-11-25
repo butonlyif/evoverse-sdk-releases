@@ -112,46 +112,47 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Preview, confirm, then tidy the project safely.</span>
 <code>learn/ws-e1-sd-ddr-csi2/08-project-cleanup.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/08-project-cleanup.md">Markdown source</a></p>
 <h1>08 Tidy Up and Deliver the Project</h1></header>
-<main class="article tutorial-article"><h1 id="stage-08-directory-cleanup-and-delivery">Stage 08 · Directory Cleanup and Delivery</h1>
+<main class="article tutorial-article"><h1 id="stage-08-organize-the-project-and-hand-it-off">Stage 08 · Organize the Project and Hand It Off</h1>
 <blockquote>
-<p>Once the display link is verified, do not let scratch drafts, candidate files, and reports litter the project root. This chapter has Trae generate a cleanup preview first, execute only after you confirm each entry, and finally re-run one <code>efx_run --flow compile</code> to prove the project is still deliverable.</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>Once the display chain is verified, do not leave temporary drafts, candidate files, and reports scattered across the project root. This chapter has Trae generate a cleanup preview first; you confirm it item by item before anything is executed, and finally a single <code>efx_run --flow compile</code> rebuild proves the project is still deliverable.</p>
 </blockquote>
-<p>The goal of cleanup is to make it easy for the next engineer to find files — not to rewrite a project that already works. The frozen specification package (<code>design-package/</code>), the baselines formed by the three promoted increments (including each round's <code>candidate.promote</code> receipt), the delivered candidates, and all evidence receipts are protected files — they are the evidence chain of this SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX link on the TJ180A484S, and they take no part in the cleanup.</p>
-<p>The cleanup runs in the order shown below — preview first, confirmation-driven, closed out by a re-build:</p>
+<p>The goal of cleanup is to make files easy for the next engineer to find, not to rewrite a project that already works. The frozen specification package (<code>design-package/</code>), the baseline formed when the three modules converged and were promoted (together with the promotion receipt), the delivered candidates, and all evidence receipts are protected files — they form the evidence chain of this SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX link on the TJ180A484S, and they take no part in cleanup.</p>
+<p>The execution order of cleanup is shown below: preview first, confirmation-driven, rebuild to close:</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;Generate cleanup preview&lt;br&gt;reports/project-cleanup-preview.md&quot;] --&gt; B[&quot;You confirm each entry&lt;br&gt;uncertain items marked as needing a decision&quot;]
-    B --&gt; C[&quot;Execute only confirmed entries&lt;br&gt;fix reference paths along the way&quot;]
+    A[&quot;Generate the cleanup preview&lt;br&gt;reports/project-cleanup-preview.md&quot;] --&gt; B[&quot;You confirm item by item&lt;br&gt;uncertain items are flagged as needs-decision&quot;]
+    B --&gt; C[&quot;Execute only the confirmed entries&lt;br&gt;fix referenced paths to match&quot;]
     C --&gt; D{&quot;Project XML and&lt;br&gt;script paths still valid?&quot;}
-    D --&gt;|Yes| E[&quot;build.native re-build&lt;br&gt;efx_run --flow compile&quot;]
-    D --&gt;|No| F[&quot;Stop at the problem&lt;br&gt;roll back unconfirmed actions&quot;]
-    E --&gt; G[&quot;Report: reorganized / protected /&lt;br&gt;references updated / re-build result&quot;]
+    D --&gt;|yes| E[&quot;Native rebuild&lt;br&gt;efx_run --flow compile&quot;]
+    D --&gt;|no| F[&quot;Stop at the problem&lt;br&gt;roll back the unconfirmed actions&quot;]
+    E --&gt; G[&quot;Report: organized / protected /&lt;br&gt;references updated / rebuild result&quot;]
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">The project is finished — help me tidy up the directory. Generate a cleanup preview first, look-only, no moves:
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">The project is done, so help me organize the directories. Generate a cleanup preview first — look only, change nothing:
 list which files you suggest moving, which are protected and must not be touched, which references need updating after a move,
-and which ones you are unsure about and need my decision. After I confirm, execute only the confirmed entries,
-and finally rebuild once to prove the tidied project is still deliverable.
+and which you are unsure about and need me to decide. After I confirm, execute only the confirmed entries,
+then rebuild once to prove the organized project is still deliverable.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li>Reads the project contract, the material ledger, the <code>candidate.deliver</code> and <code>candidate.promote</code> receipts, and the Efinity project files, and builds a "file ownership and references" inventory.</li>
-<li>The preview stage produces only a report (such as <code>reports/project-cleanup-preview.md</code>) and modifies no project file.</li>
-<li>Only after you confirm does it reorganize the files allowed to move, correcting the confirmed relative paths along the way.</li>
-<li>After reorganizing, it records one native <code>efx_run --flow compile</code> via <code>build.native</code>: a broken path or a build failure stops at the problem — it never copies reference-project files to paper over it.</li>
-<li>Every step respects the project contract: the project XML is never hand-edited; reference fixes go through the sync capability.</li>
+<li>Reads the project contract, the material ledger, the candidate deliveries and promotion receipts, and the Efinity project files to build a "file ownership and references" inventory.</li>
+<li>In the preview phase it produces only a report (such as <code>reports/project-cleanup-preview.md</code>) and modifies no project file.</li>
+<li>Only after your confirmation does it organize the files that are allowed to move and update the confirmed relative paths to match.</li>
+<li>When cleanup is complete, it records one native <code>efx_run --flow compile</code> rebuild: a broken path or a failed build stops at the problem — it will not copy reference project files to paper over it.</li>
+<li>Every step respects the project contract: the project XML is never edited by hand, and reference fixes go through the synchronization capability.</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
-<li>Every file suggested for moving was generated or is maintained by this project itself, and the inventory lists where it is referenced.</li>
-<li>Third-party IP under <code>IP/</code>, Efinity artifacts, the frozen <code>design-package/</code>, the project XML, constraints, and baseline files are all on the protected list.</li>
-<li>"Delete" applies only to the temp files you explicitly approved; anything that cannot be judged stays as-is and is listed as needing a decision.</li>
-<li>After cleanup the project XML still references the correct RTL, constraints, IP, and software inputs, and the re-build report comes from the post-cleanup directory state.</li>
+<li>Every file proposed for a move was generated or maintained by this project, and the list states where it is referenced.</li>
+<li>Third-party IP under <code>IP/</code>, Efinity-generated artifacts, the <code>design-package/</code> frozen specification package, the project XML, constraints, and baseline files are all on the protected list.</li>
+<li>"Delete" applies only to temporary files you explicitly approved; anything you cannot judge stays as it is and is listed as a needs-decision item.</li>
+<li>After cleanup the project XML still references the correct RTL, constraints, IP, and software inputs, and the rebuild report comes from this directory state.</li>
 </ul>
 <h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
 <table>
@@ -164,59 +165,59 @@ and finally rebuild once to prove the tidied project is still deliverable.
 <tbody>
 <tr>
 <td>The preview contains entries you are unsure about</td>
-<td>Mark all of them "needs my decision" — moving less beats moving more; the benefit of tidying is tiny next to the cost of touching a protected file by mistake.</td>
+<td>Flag them all as "needs my decision" — better to move too little than too much; the gain from cleanup is far smaller than the cost of touching a protected file by mistake.</td>
 </tr>
 <tr>
-<td>The re-build fails</td>
-<td>Have Trae keep the failure report and roll back the unconfirmed actions, returning the directory to its pre-cleanup state, instead of patching onward.</td>
+<td>The rebuild fails</td>
+<td>Have Trae keep the failure report and roll back the unconfirmed actions, returning to the pre-cleanup directory state instead of patching onward.</td>
 </tr>
 <tr>
-<td>It suggests touching the project XML or third-party IP</td>
-<td>Refuse. They are on the protected list; reference fixes go only through the sync capability — no "renaming things so the directory looks tidier".</td>
+<td>It proposes touching the project XML or third-party IP</td>
+<td>Refuse. Those are on the protected list; reference fixes may only go through the synchronization capability — no incidental "renaming to make the tree tidier".</td>
 </tr>
 </tbody>
 </table>
-<h2 id="red-lines-for-natural-language-prompts">Red lines for natural-language prompts</h2>
-<p>This chapter may only touch the RTL / simulation / software / reports / helper scripts generated by this project itself. The following phrasings push the agent past the protected list and break the project contract:</p>
+<h2 id="natural-language-red-lines">Natural-language red lines</h2>
+<p>This chapter may only touch the RTL / simulation / software / reports / helper scripts generated by this project itself. The following phrasings would push the Agent past the protected list and break the project contract:</p>
 <table>
 <thead>
 <tr>
 <th>Don't say this</th>
-<th>Why it's dangerous</th>
+<th>Why it is dangerous</th>
 <th>Say this instead</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>"Clean up the temp directories"</td>
-<td>It doesn't distinguish "temp files" from "protected files" — the frozen specification package, IP artifacts, and the project XML can all be treated as "temp"</td>
-<td>"First mark in the preview which files are this project's temp files; leave everything not listed untouched"</td>
+<td>"Clean up the temp directory"</td>
+<td>It does not distinguish "temporary files" from "protected files" — the frozen specification package, IP-generated artifacts, and the project XML can all be mistaken for temporary</td>
+<td>"First mark in the preview which files are this project's temporary files; leave everything unlisted as it is"</td>
 </tr>
 <tr>
 <td>"This file is no longer used, delete it"</td>
-<td>"No longer used" is a subjective judgment; the agent can easily mistake a baseline file for a temp file</td>
-<td>"Provide a receipt or path evidence that it is temporary, then delete"</td>
+<td>"No longer used" is a subjective judgment, and the Agent can easily treat a baseline file as temporary</td>
+<td>"Give me the receipt or path evidence showing it is temporary, then delete it"</td>
 </tr>
 <tr>
-<td>"Archive the candidate-area files into reports/"</td>
-<td>Candidates and baselines are governed by the control plane: <code>candidate.deliver</code> freezes and <code>candidate.promote</code> promotes, and the receipts already record their digests; manual archiving pollutes reports</td>
-<td>"Leave candidate-area files as they are after delivery; no archiving needed"</td>
+<td>"Archive the candidate area into reports/"</td>
+<td>Candidates and baselines are under the control plane: a candidate is frozen once delivered and becomes the baseline once promoted, and the receipts already record the digests; manual archiving would pollute reports</td>
+<td>"Leave the candidate area files as they are; no archiving needed"</td>
 </tr>
 <tr>
-<td>"Rename the project XML so the directory looks tidier"</td>
-<td>The project XML is a protected file; renaming it leaves the Adapter unable to find the project</td>
-<td>"Do not rename or delete the project XML; just state the current situation in the confirmation report"</td>
+<td>"Rename the project XML so the tree looks tidier"</td>
+<td>The project XML is a protected file, and renaming it leaves the Adapter unable to find the project</td>
+<td>"Do not rename or delete the project XML; just describe the current state in the confirmation report"</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
 <li><code>reports/project-cleanup-preview.md</code> records the preview, the scope you confirmed, the actual changes, and the items left unhandled.</li>
-<li>The directory clearly separates <code>design-package/</code>, <code>rtl/</code>, <code>sim/</code>, <code>constraints/</code>, <code>software/</code>, <code>reports/</code>, and the helper scripts, with third-party IP and Efinity artifacts untouched by mistake.</li>
-<li>The re-run <code>efx_run --flow compile</code> succeeds, and the report comes from the post-cleanup directory state; on failure, the report is kept and unconfirmed actions are rolled back, rather than claiming the project is still deliverable.</li>
-<li>The final delivery notes can say where the materials, the frozen specification, the baselines formed by the three promotions, and the build/hardware evidence each live.</li>
+<li>The tree clearly separates <code>design-package/</code>, <code>rtl/</code>, <code>sim/</code>, <code>constraints/</code>, <code>software/</code>, <code>reports/</code>, and helper scripts, and third-party IP and Efinity-generated artifacts have not been touched by mistake.</li>
+<li>The <code>efx_run --flow compile</code> rebuild succeeds and its report comes from the post-cleanup directory state; on failure, the report is kept and the unconfirmed actions are rolled back, rather than claiming the project is still deliverable.</li>
+<li>The final handoff note can point out which directories hold the material, the frozen specification, the baseline formed by module convergence and promotion, and the build and hardware evidence.</li>
 </ul>
-<p>This completes the path from an empty directory to a running display on the board. Revisit the <a href="07-skills-and-mcp.html">stage 07 quick reference</a>, or return to the <a href="README.html">tutorial overview</a> to start your next intent.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="07-skills-and-mcp.html">← Previous: 07 Skills and MCP</a><a class="stage-overview" href="README.html">Tutorial overview</a></nav></main>
+<p>At this point the whole path from an empty directory to an on-board display is complete. Look back at the <a href="07-skills-and-mcp.html">Stage 07 quick reference</a>, or return to the <a href="README.html">tutorial overview</a> to start the next intent.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="07-skills-and-mcp.html">← Previous: 07 Skills and MCP</a><a class="stage-overview" href="README.html">Tutorial overview</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

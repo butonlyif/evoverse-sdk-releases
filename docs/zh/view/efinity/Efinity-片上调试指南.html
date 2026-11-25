@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
 <span>标记信号、两次编译、触发采集、VIO 与调试痕迹清理的完整闭环。</span>
 <code>efinity/Efinity-片上调试指南.md</code>
@@ -106,7 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Efinity 片上调试指南</h1></header>
 <main class="article"><h1 id="efinity-片上调试指南">Efinity 片上调试指南</h1>
 <blockquote>
-<p><strong>版本</strong>：v1.0　<strong>适用 SDK</strong>：v1.0.0（Efinity Adapter）
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>版本</strong>：v1.0　<strong>适用 SDK</strong>：v1.0.1（Efinity Adapter）
 <strong>更新日期</strong>：2026-09-30</p>
 </blockquote>
 <p>Efinity Adapter 的 Debug 页提供不打开 Efinity GUI 的片上调试闭环：标记信号 → 两次编译 → 烧录 → 扫描设备 → 配置触发条件 → 采集波形。全程通过 <code>evoverse_dbg.py</code> 桥接 Efinity 官方调试 API，结果以 VCD 波形文件交付。</p>

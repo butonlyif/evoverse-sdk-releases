@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EvoVerse 与 RK3588：从自然语言意图到板端应用</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
+<p class="doc-meta"><a href="../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
+<span>知识总览：Core/Adapter/Catalog 分工、从意图到板端证据的完整链路、当前能力边界与三平台环境部署。</span>
+<code>rk3588/EvoVerse-RK3588自然语言开发架构与部署全景.md</code>
+<a href="../../../rk3588/EvoVerse-RK3588自然语言开发架构与部署全景.md">Markdown 源文件</a></p>
+<h1>EvoVerse 与 RK3588：从自然语言意图到板端应用</h1></header>
+<main class="article"><h1 id="evoverse-与-rk3588-从自然语言意图到板端应用">EvoVerse 与 RK3588：从自然语言意图到板端应用</h1>
+<blockquote>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用基线：EvoVerse SDK / RK3588 Adapter v1.0.1
+当前验证基线：WS-E2 / RK3588J / <code>rk3588j-evm</code> / <code>minimal-linux</code><br />
+文档性质：知识总结，不是已冻结的产品设计或实施排期<br />
+更新日期：2026-10-31</p>
+</blockquote>
+<p>这份文档回答五个问题：</p>
+<ol>
+<li>EvoVerse 整体是什么，Core、Adapter、Catalog、工具链和目标板怎样配合？</li>
+<li>用户说出一个应用意图后，系统怎样把它变成工程、模型、应用和板端证据？</li>
+<li>当前仓库已经实现到哪一步，哪些能力还只是目标状态？</li>
+<li>SDK 之外还需要准备什么环境，在 Windows、macOS 和 Linux 上分别怎样部署？</li>
+<li>要把它完善成可扩展到更多 CPU、GPU、NPU、XPU 的平台，还需要补什么？</li>
+</ol>
+<hr />
+<h2 id="1-一页读懂-它是什么-现在在哪里">1. 一页读懂：它是什么、现在在哪里</h2>
+<h3 id="1-1-evoverse-不是另一套芯片工具链">1.1 EvoVerse 不是另一套芯片工具链</h3>
+<p>EvoVerse 位于自然语言和原生开发工具之间。它不替代 Rockchip BSP、Buildroot、Linux、RKNN 或烧录工具，而是把这些能力组织成可理解、可确认、可执行、可追踪的工程流程。</p>
+<pre><code class="language-text">用户意图
+   ↓
+EvoVerse Core：理解目标、管理状态、确认、证据和下一步
+   ↓
+具体 Adapter：把通用动作翻译成厂商/器件动作
+   ↓
+Catalog + 原生工具链：提供受控事实并真正生成二进制
+   ↓
+目标设备：部署、启动、运行和验证
+</code></pre>
+<p>最重要的边界是：</p>
+<blockquote>
+<p>Core 管理“怎样安全地完成一项工程任务”；Adapter 管理“某个厂商和器件具体怎样完成”。</p>
+</blockquote>
+<p>Core 不保存 CPU、GPU、NPU、XPU 固定枚举。它只理解开放的 capability、产物关系、执行状态、风险、确认和证据。Rockchip、RK3588、RKNN、DTS、Buildroot、Maskrom 等概念属于 RK3588 Adapter 及其 Catalog。</p>
+<h3 id="1-2-当前已经能做到什么">1.2 当前已经能做到什么</h3>
+<p>截至本文基线，当前系统已经能够：</p>
+<ul>
+<li>安装 EvoVerse Core、Efinity Adapter 和 RK3588 Adapter；</li>
+<li>发现并调用 RK3588 Adapter 的结构化 headless 能力；</li>
+<li>同步受版本控制的 Catalog；</li>
+<li>检查并部署 RK3588 双离线环境包；</li>
+<li>从 WS-E2 / RK3588J / minimal-linux 基线生成平台工程；</li>
+<li>基于真实 BSP symbol 生成受管 DTS/DTSI 候选；</li>
+<li>完成 preflight；</li>
+<li>在固定 Linux 容器中执行 U-Boot、Kernel、Rootfs、Package 四阶段构建；</li>
+<li>生成 Build Identity、产物摘要、报告和 <code>BUILD_READY</code> 证据。</li>
+</ul>
+<h3 id="1-3-当前还不能声称什么">1.3 当前还不能声称什么</h3>
+<p>当前系统还不能声称已经实现：</p>
+<ul>
+<li>从任意自然语言意图自动生成完整 RK3588 应用；</li>
+<li>自动完成 ONNX→RKNN、精度对照、应用集成和板端 benchmark；</li>
+<li>由 Adapter 原生完成设备发现、固件 Flash、回读与回滚；</li>
+<li>自动完成 UART、ADB、SSH 或启动失败诊断；</li>
+<li>在 macOS/Windows 前端与远程 Linux builder 之间形成完整受控执行面；</li>
+<li>以统一控制面支持任意 CPU/GPU/NPU/XPU 厂商流程。</li>
+</ul>
+<p>因此，当前真实能力可以概括为：</p>
+<blockquote>
+<p>已经具备“自然语言驱动的 RK3588 平台工程生成与可复现构建底座”，尚未形成“从意图到经过实机验证的 NPU 应用”的完整闭环。</p>
+</blockquote>
+<hr />
+<h2 id="2-整体系统-sdk-内部与-sdk-外部">2. 整体系统：SDK 内部与 SDK 外部</h2>
+<p>理解 EvoVerse 最容易出错的地方，是只看到了 IDE 扩展，而忽略了 SDK 外部的大型环境、原生工具和目标设备。</p>
+<pre class="mermaid">flowchart TB
+    U[用户自然语言&lt;br/&gt;系统 + 外设 + 模型 + 应用 + 验收目标]
+
+    subgraph SDK[EvoVerse SDK 内部]
+      CORE[Core&lt;br/&gt;Intent / Spec / Plan / State / Evidence]
+      REG[Adapter Registry&lt;br/&gt;发现、API 协商、能力路由]
+      ADP[RK3588 Adapter&lt;br/&gt;厂商与器件语义]
+      MCP[MCP / CLI / Workbench&lt;br/&gt;结构化入口与展示]
+    end
+
+    subgraph KNOWLEDGE[受控知识与材料]
+      CAT[Catalog&lt;br/&gt;板卡、基线、版本、策略]
+      PKG[离线环境包&lt;br/&gt;BSP + Toolchain]
+    end
+
+    subgraph EXEC[SDK 外部 Linux 执行环境]
+      DOCKER[Docker Linux Container]
+      BSP[Rockchip BSP&lt;br/&gt;U-Boot / Kernel / rkbin / Buildroot]
+      RKNN[RKNN Toolkit / Model Tools]
+      CC[AArch64 Compiler / Build System]
+    end
+
+    subgraph PROJECT[客户工程与产物]
+      SRC[Profile / DTS / Application Source]
+      MODEL[ONNX / RKNN / Model Package]
+      FW[Firmware / Application Package]
+      REPORT[Manifest / Digest / Report / Receipt]
+    end
+
+    subgraph DEVICE[RK3588 目标设备]
+      FLASH[eMMC / SD / USB Maskrom]
+      OS[Bootloader / Kernel / Rootfs]
+      APP[Application / RKNPU Runtime]
+      OBS[Logs / Functional Evidence / Benchmark]
+    end
+
+    U --&gt; CORE --&gt; REG --&gt; ADP
+    MCP &lt;--&gt; CORE
+    ADP &lt;--&gt; CAT
+    ADP &lt;--&gt; PKG
+    ADP --&gt; DOCKER
+    PKG --&gt; BSP
+    PKG --&gt; DOCKER
+    DOCKER --&gt; BSP
+    DOCKER --&gt; RKNN
+    DOCKER --&gt; CC
+    BSP --&gt; SRC
+    RKNN --&gt; MODEL
+    CC --&gt; FW
+    SRC --&gt; FW
+    MODEL --&gt; FW
+    FW --&gt; FLASH --&gt; OS --&gt; APP --&gt; OBS
+    REPORT --- SRC
+    REPORT --- MODEL
+    REPORT --- FW
+    OBS --&gt; CORE
+</pre>
+<h3 id="2-1-sdk-内部负责什么">2.1 SDK 内部负责什么</h3>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>核心职责</th>
+<th>不应该承担的职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自然语言交互</td>
+<td>理解目标、发现缺失信息、解释结果</td>
+<td>猜工具版本、BSP label 或分区表</td>
+</tr>
+<tr>
+<td>EvoVerse Core</td>
+<td>Intent、规格、计划、状态、确认、路由、产物身份和证据</td>
+<td>理解 RKNN、DTS、CUDA 等厂商私有字段</td>
+</tr>
+<tr>
+<td>Adapter</td>
+<td>厂商能力翻译、安全门禁、原生工具调用、结果归一化</td>
+<td>自行推进 Core 生命周期或伪造成功状态</td>
+</tr>
+<tr>
+<td>Catalog</td>
+<td>板卡、基线、版本、策略、已验证组合</td>
+<td>执行构建或替代原生工具</td>
+</tr>
+<tr>
+<td>Workbench/MCP/CLI</td>
+<td>给人和 Agent 提供统一入口</td>
+<td>各自复制一套业务实现</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-2-sdk-外部负责什么">2.2 SDK 外部负责什么</h3>
+<table>
+<thead>
+<tr>
+<th>外部组成</th>
+<th>作用</th>
+<th>为什么不能简单打进 VSIX</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker/远程 Linux</td>
+<td>提供一致的 Linux 执行环境</td>
+<td>体积、平台架构、运行权限不同</td>
+</tr>
+<tr>
+<td>Rockchip BSP</td>
+<td>U-Boot、Kernel、rkbin、Buildroot、分区与固件材料</td>
+<td>体积大、版本绑定、许可与源码身份复杂</td>
+</tr>
+<tr>
+<td>交叉工具链</td>
+<td>生成 AArch64 目标程序和系统组件</td>
+<td>需要与 BSP、libc、sysroot 配套</td>
+</tr>
+<tr>
+<td>RKNN 工具链</td>
+<td>模型检查、转换、量化和报告</td>
+<td>Python/native 依赖与版本矩阵复杂</td>
+</tr>
+<tr>
+<td>设备连接工具</td>
+<td>Flash、串口、ADB、SSH、回读</td>
+<td>依赖主机驱动、USB 权限和物理设备状态</td>
+</tr>
+<tr>
+<td>目标板 runtime</td>
+<td>驱动、RKNPU runtime、应用服务</td>
+<td>必须与固件和模型版本匹配</td>
+</tr>
+</tbody>
+</table>
+<p>SDK 安装完成，只代表“控制软件可用”；并不代表 BSP、工具链、模型环境和目标板都已准备好。</p>
+<hr />
+<h2 id="3-core-如何兼容未来的-cpu-gpu-npu-xpu">3. Core 如何兼容未来的 CPU、GPU、NPU、XPU</h2>
+<h3 id="3-1-core-只保存跨平台仍然成立的概念">3.1 Core 只保存跨平台仍然成立的概念</h3>
+<table>
+<thead>
+<tr>
+<th>Core 概念</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intent / Specification / Revision</td>
+<td>描述目标、确认理解、防止旧请求覆盖新请求</td>
+</tr>
+<tr>
+<td>Adapter identity / API range</td>
+<td>发现并路由到能力提供者</td>
+</tr>
+<tr>
+<td>Capability Plan / Dependency</td>
+<td>表达动作及其依赖，不规定厂商步骤</td>
+</tr>
+<tr>
+<td>Artifact / Manifest / Digest / Lineage</td>
+<td>管理产物身份、来源、缓存和组合关系</td>
+</tr>
+<tr>
+<td>Execution / Progress / Cancellation</td>
+<td>管理长任务生命周期</td>
+</tr>
+<tr>
+<td>Risk / Permission / Confirmation</td>
+<td>控制文件修改、部署和设备写入</td>
+</tr>
+<tr>
+<td>Evidence / Metric / Blocker / Remediation</td>
+<td>保存事实，支持完成、纠错和回滚</td>
+</tr>
+<tr>
+<td>Device identity / Deployment receipt</td>
+<td>记录部署目标、内容和恢复点</td>
+</tr>
+</tbody>
+</table>
+<p>capability id 和 artifact role 必须是开放标识符，而不是 Core 维护的封闭枚举。Core 可以校验命名、版本、依赖、摘要和状态，但不应规定所有 Adapter 只能使用一份 CPU/GPU/NPU 功能清单。</p>
+<h3 id="3-2-厂商和器件语义必须留在-adapter">3.2 厂商和器件语义必须留在 Adapter</h3>
+<table>
+<thead>
+<tr>
+<th>Adapter 私有内容</th>
+<th>RK3588 示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>厂商与器件</td>
+<td>Rockchip、RK3588J、具体板卡与载板</td>
+</tr>
+<tr>
+<td>工具链与 runtime</td>
+<td>RKNN-Toolkit2、RKNPU2、BSP、Buildroot</td>
+</tr>
+<tr>
+<td>工程私有字段</td>
+<td>DTS label、defconfig、kernel fragment、loader</td>
+</tr>
+<tr>
+<td>私有产物</td>
+<td><code>.rknn</code>、固件镜像、厂商报告</td>
+</tr>
+<tr>
+<td>设备协议</td>
+<td>Maskrom、Loader、分区烧录、回读</td>
+</tr>
+<tr>
+<td>性能解释</td>
+<td>NPU 利用率、厂商 profiler、转换精度报告</td>
+</tr>
+<tr>
+<td>兼容矩阵</td>
+<td>driver/runtime/toolkit/firmware 配套关系</td>
+</tr>
+</tbody>
+</table>
+<p>一个实用判断方法是：</p>
+<blockquote>
+<p>如果明天接入一种从未出现过的计算单元，这个字段是否仍有相同含义和控制作用？</p>
+</blockquote>
+<p>如果答案是“是”，例如 digest、dependency、risk、receipt，它可以属于 Core；如果答案依赖某个厂商、器件、runtime 或文件格式，它就应属于 Adapter。</p>
+<h3 id="3-3-多-adapter-的长期结构">3.3 多 Adapter 的长期结构</h3>
+<pre class="mermaid">flowchart LR
+    C[EvoVerse Core&lt;br/&gt;开放能力 + 通用治理]
+    C --&gt; R[Rockchip Adapter&lt;br/&gt;RK3588 / RKNN / BSP]
+    C --&gt; G[GPU Adapter&lt;br/&gt;厂商 SDK / Runtime]
+    C --&gt; Q[NPU Adapter&lt;br/&gt;厂商模型与设备工具]
+    C --&gt; L[CPU/Linux Adapter&lt;br/&gt;Compiler / OS / Package]
+    C --&gt; F[未来 XPU / DSP / FPGA Adapter]
+</pre>
+<p>这些 Adapter 可以声明完全不同的计划。Core 不根据“它是 GPU 还是 NPU”选择流程，而根据 Adapter 返回的能力、依赖、风险和证据决定合法下一步。</p>
+<hr />
+<h2 id="4-从一句自然语言到板端应用-完整流程是什么">4. 从一句自然语言到板端应用，完整流程是什么</h2>
+<p>用户可能只说：</p>
+<blockquote>
+<p>在 WS-E2 上做一个摄像头目标检测应用，使用 RK3588 NPU，启动后自动运行，并给出 FPS 和延迟。</p>
+</blockquote>
+<p>系统内部不能直接把这句话变成一组 shell 命令。完整闭环应分为十个阶段。</p>
+<h3 id="4-1-意图与应用规格">4.1 意图与应用规格</h3>
+<p>自然语言首先生成的是可确认的应用规格，而不是代码。规格至少应描述：</p>
+<ul>
+<li>目标设备与系统基线；</li>
+<li>输入源、格式、尺寸和帧率；</li>
+<li>模型任务、来源、许可与精度目标；</li>
+<li>预处理、后处理和业务逻辑；</li>
+<li>输出方式，例如屏幕、文件、网络或 GPIO；</li>
+<li>运行方式，例如 systemd 服务、容器或命令行；</li>
+<li>性能、资源和功能验收条件；</li>
+<li>部署模式与可接受风险。</li>
+</ul>
+<p>用户确认规格后，后续计划和候选都应绑定同一个 <code>specDigest</code>。</p>
+<h3 id="4-2-adapter-计划">4.2 Adapter 计划</h3>
+<p>RK3588 Adapter 根据规格和当前环境给出依赖图，而不是一串写死的全局步骤：</p>
+<pre class="mermaid">flowchart TD
+    S[Approved Application Spec] --&gt; P[Adapter Plan]
+    P --&gt; PF[平台工程生成/预检]
+    P --&gt; MI[模型检查]
+    P --&gt; AG[应用源码生成]
+    PF --&gt; PB[平台或固件构建]
+    MI --&gt; MC[ONNX → RKNN]
+    MC --&gt; MV[模型语义/精度验证]
+    AG --&gt; AB[AArch64 应用构建]
+    PB --&gt; PKG[Application Package]
+    MV --&gt; PKG
+    AB --&gt; PKG
+    PKG --&gt; DP[部署计划与确认]
+    DP --&gt; DEV[目标设备]
+    DEV --&gt; RV[功能与性能验证]
+</pre>
+<p>只修改应用逻辑时可以跳过模型转换；只更换模型时不必重建整个 BSP；只有发布固件或改变系统组件时才需要进入完整固件构建和 Flash。</p>
+<h3 id="4-3-平台工程生成">4.3 平台工程生成</h3>
+<p>当前已实现的 RK3588 生成链主要覆盖这一阶段：</p>
+<ol>
+<li>从 Catalog 读取 <code>runtime-project.json</code> 和 <code>health-policy.json</code>；</li>
+<li>找到已部署 BSP 与工具链；</li>
+<li>校验 BSP root commit、组件、loader、分区和环境身份；</li>
+<li>根据平台契约生成 DTS/DTSI 候选；</li>
+<li>生成 <code>evoverse-rk3588-profile.json</code>；</li>
+<li>通过受管文件和原子写入安装候选；</li>
+<li>写入 generation manifest 和文件摘要；</li>
+<li>执行 preflight。</li>
+</ol>
+<p>DTS 不能由大模型自由发挥。它必须来自真实 BSP symbol、Catalog 约束和可验证的变换规则，否则 label、时钟、regulator、pinmux 和驱动兼容性无法保证。</p>
+<h3 id="4-4-模型资格与转换">4.4 模型资格与转换</h3>
+<p>模型不能因为“扩展名是 ONNX”就直接交给 NPU。模型资格至少需要回答：</p>
+<ul>
+<li>模型来源、版本、许可和 SHA-256 是什么；</li>
+<li>opset、算子和动态 shape 是否受支持；</li>
+<li>输入颜色空间、layout、尺寸、dtype、归一化和量化参数是什么；</li>
+<li>输出 tensor 怎样解释；</li>
+<li>量化数据集是否代表实际输入；</li>
+<li>转换工具、目标平台和配置是什么；</li>
+<li>RKNN 与源模型输出偏差是否在规格允许范围内。</li>
+</ul>
+<p>合理的链路是：</p>
+<pre><code class="language-text">源模型 → inspect → 资格判断 → 量化/转换 → .rknn
+      → 源模型/RKNN 样本对照 → 模型包与转换报告
+</code></pre>
+<p>模型身份不能只记录 <code>.rknn</code> 摘要，还要绑定源模型、转换工具、配置、量化数据摘要和输入输出契约。</p>
+<h3 id="4-5-应用生成与构建">4.5 应用生成与构建</h3>
+<p>应用应由可组合部件生成，而不是一次输出一个不可维护的大文件：</p>
+<ul>
+<li>输入适配器：Camera/V4L2、文件、RTSP、共享内存；</li>
+<li>预处理：resize、crop、颜色转换、归一化、layout；</li>
+<li>推理封装：模型加载、tensor 绑定、执行和错误处理；</li>
+<li>后处理：检测框、分类、分割、关键点等；</li>
+<li>业务逻辑：告警、跟踪、记录、协议输出；</li>
+<li>生命周期：配置、日志、健康检查、systemd/容器；</li>
+<li>验收探针：样本结果、FPS、延迟、内存和温度。</li>
+</ul>
+<p>构建必须使用与目标 rootfs 匹配的 sysroot、编译器和 runtime，而不是开发机上的任意本地库。</p>
+<h3 id="4-6-application-package">4.6 Application Package</h3>
+<p>平台、模型和应用最后应汇入一个可追踪的应用包：</p>
+<pre><code class="language-text">Application Package
+├── application binary / libraries
+├── model.rknn
+├── preprocessing + postprocessing config
+├── service or container definition
+├── install / health / rollback metadata
+└── manifest + digests + compatibility requirements
+</code></pre>
+<p>同一个应用包可以有两种交付方式：</p>
+<ul>
+<li><strong>固件集成</strong>：加入 rootfs 后重建固件，适合发布与量产；</li>
+<li><strong>增量部署</strong>：通过 SSH、ADB 或受控设备通道更新，适合开发和现场升级。</li>
+</ul>
+<h3 id="4-7-设备部署与验证">4.7 设备部署与验证</h3>
+<p>部署完成不是流程终点。至少需要分别记录：</p>
+<ol>
+<li>设备身份与当前系统版本；</li>
+<li>部署前后应用、模型和 runtime 摘要；</li>
+<li>安装/Flash 回执与回滚点；</li>
+<li>服务启动和健康检查；</li>
+<li>功能样本结果；</li>
+<li>FPS、延迟、内存、温度和长稳结果。</li>
+</ol>
+<p>只有具备这些证据，才能说“应用在这块板上达到了什么状态”。</p>
+<hr />
+<h2 id="5-各层具体有什么-怎样发挥作用">5. 各层具体有什么、怎样发挥作用</h2>
+<h3 id="5-1-evoverse-core">5.1 EvoVerse Core</h3>
+<p>Core 是控制面，主要包含：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workbench Shell</td>
+<td>承载多个 Adapter 工作区和 System 总览</td>
+</tr>
+<tr>
+<td>Adapter Registry</td>
+<td>注册、卸载、API 协商和能力发现</td>
+</tr>
+<tr>
+<td>Project Control</td>
+<td>管理 Intent、规格、修订、确认和状态推进</td>
+</tr>
+<tr>
+<td>Catalog Sync/Pointer</td>
+<td>定位可信 Catalog，而不是扫描任意同名目录</td>
+</tr>
+<tr>
+<td>MCP/CLI</td>
+<td>为 Agent 提供结构化调用入口</td>
+</tr>
+<tr>
+<td>Artifact/Evidence</td>
+<td>管理 manifest、digest、blocker、receipt 和证据引用</td>
+</tr>
+</tbody>
+</table>
+<p>Core 的价值不是“替大模型包一层 API”，而是把不稳定的生成过程变成可审阅、可重放、可恢复的工程事务。</p>
+<h3 id="5-2-rk3588-adapter">5.2 RK3588 Adapter</h3>
+<p>Adapter 是语义翻译器、安全门禁和结果归一化器。目前声明的 headless 能力包括：</p>
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>当前作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>environment.status</code></td>
+<td>查看 Docker、包、BSP、工具链和空间状态</td>
+</tr>
+<tr>
+<td><code>environment.prepare</code></td>
+<td>Adapter 直连 Manager 读取 catalog 并生成 <code>planDigest</code> 绑定的安装计划</td>
+</tr>
+<tr>
+<td><code>environment.deploy</code></td>
+<td>Workbench 完成许可确认后，Adapter 以单次 token 调用 Manager 安装并验证</td>
+</tr>
+<tr>
+<td><code>project.generate</code></td>
+<td>从 Catalog 基线生成工程</td>
+</tr>
+<tr>
+<td><code>project.preflight</code></td>
+<td>检查工程、BSP、工具链和身份一致性</td>
+</tr>
+<tr>
+<td><code>project.build</code></td>
+<td>运行 U-Boot、Kernel、Rootfs、Package 四阶段</td>
+</tr>
+<tr>
+<td><code>project.status</code></td>
+<td>读取报告并判断 readiness</td>
+</tr>
+</tbody>
+</table>
+<p>未来模型、应用、设备和 runtime 能力也应由 Adapter 提供，但不应把 RKNN 私有字段放进 Core。</p>
+<h3 id="5-3-catalog">5.3 Catalog</h3>
+<p>Catalog 不是普通模板目录。它保存：</p>
+<ul>
+<li>板卡、载板和 SoC 身份；</li>
+<li>支持的参考工程；</li>
+<li>BSP、工具链和容器版本；</li>
+<li>loader、分区、启动材料和构建入口；</li>
+<li>健康策略、许可策略和验收策略；</li>
+<li>已验证模型、应用组件和性能基线（未来应补）。</li>
+</ul>
+<p>可信位置以：</p>
+<pre><code class="language-bash">evoverse catalog status --json
+</code></pre>
+<p>返回的 <code>location</code> 为准。工作区的 <code>.evoverse/catalog.json</code> 是一跳指针；开发 checkout 或扩展 bundled 目录不能冒充已同步的可信 Catalog。</p>
+<h3 id="5-4-原生工具层">5.4 原生工具层</h3>
+<p>真正产生二进制的是原生工具：</p>
+<ul>
+<li>Rockchip BSP 产生 bootloader、kernel、rootfs 和固件；</li>
+<li>交叉编译器产生 AArch64 应用；</li>
+<li>RKNN-Toolkit2 产生 <code>.rknn</code>；</li>
+<li>RKNPU2/runtime 在目标板加载和执行模型；</li>
+<li>厂商 Flash/USB 工具写入设备。</li>
+</ul>
+<p>EvoVerse 应调用它们的原生流程并保存证据，不应通过额外脚本绕过错误配置。</p>
+<hr />
+<h2 id="6-当前实现状态-不要把-已有-和-目标-混在一起">6. 当前实现状态：不要把“已有”和“目标”混在一起</h2>
+<table>
+<thead>
+<tr>
+<th>能力域</th>
+<th>当前状态</th>
+<th>当前边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core/Adapter 注册与 API 协商</td>
+<td>已有</td>
+<td>可发现 RK3588 Adapter</td>
+</tr>
+<tr>
+<td>Catalog 同步与可信定位</td>
+<td>已有</td>
+<td>使用 receipt/location/pointer</td>
+</tr>
+<tr>
+<td>双离线环境包检查与部署</td>
+<td>已有</td>
+<td>固定 BSP 与工具链版本</td>
+</tr>
+<tr>
+<td>WS-E2 minimal-linux 工程生成</td>
+<td>已有</td>
+<td>当前只支持这一组工程身份</td>
+</tr>
+<tr>
+<td>BSP qualification 与 DTS 候选</td>
+<td>已有</td>
+<td>绑定真实 BSP symbol</td>
+</tr>
+<tr>
+<td>Preflight 与四阶段构建</td>
+<td>已有</td>
+<td>到 <code>BUILD_READY</code></td>
+</tr>
+<tr>
+<td>通用 Adapter Action 契约</td>
+<td>契约基础已有</td>
+<td>尚未贯通 ProjectState、Reducer、dispatch 和 next-action</td>
+</tr>
+<tr>
+<td>任意自然语言→完整应用规格</td>
+<td>部分基础</td>
+<td>尚无完整 RK3588 应用 schema 与稳定路由</td>
+</tr>
+<tr>
+<td>ONNX→RKNN 转换与验证</td>
+<td>未形成闭环</td>
+<td>无模型资格、转换和对照证据链</td>
+</tr>
+<tr>
+<td>应用组件生成与 Application Package</td>
+<td>未形成闭环</td>
+<td>无统一应用包契约</td>
+</tr>
+<tr>
+<td>Adapter 原生设备发现与 Flash</td>
+<td>未实现</td>
+<td>当前 descriptor 中 flash/debug 不支持</td>
+</tr>
+<tr>
+<td>增量部署、回滚、板端 benchmark</td>
+<td>未形成闭环</td>
+<td>缺设备通道与运行证据模型</td>
+</tr>
+<tr>
+<td>远程 Linux builder</td>
+<td>未实现完整控制面</td>
+<td>macOS/团队重构建仍需外部组织</td>
+</tr>
+<tr>
+<td>多 CPU/GPU/NPU/XPU Adapter 通用流</td>
+<td>架构方向已明确</td>
+<td>仍需将开放计划与产物图接入生命周期</td>
+</tr>
+</tbody>
+</table>
+<p>当前状态的关键判断是：<code>BUILD_READY</code> 只说明本次受控构建产生了可交付固件；它不等于已经烧录、成功启动或通过 NPU 应用验收。</p>
+<hr />
+<h2 id="7-sdk-外部环境到底要部署什么">7. SDK 外部环境到底要部署什么</h2>
+<h3 id="7-1-四类安装必须分开">7.1 四类安装必须分开</h3>
+<table>
+<thead>
+<tr>
+<th>安装/下载</th>
+<th>内容</th>
+<th>默认位置或结果</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EvoVerse 客户包</td>
+<td>VSIX、文档、部署脚本</td>
+<td>Trae/VS Code 扩展目录</td>
+<td>安装控制面与 Adapter</td>
+</tr>
+<tr>
+<td>Catalog Sync</td>
+<td>板卡、基线、策略、版本指针</td>
+<td>Catalog status 返回的 location</td>
+<td>决定允许生成什么</td>
+</tr>
+<tr>
+<td>RK3588 双离线包</td>
+<td>BSP 和固定工具链镜像</td>
+<td><code>&lt;EVOVERSE_HOME&gt;/downloads/rk3588/</code></td>
+<td>提供大型原生环境</td>
+</tr>
+<tr>
+<td>目标设备部署</td>
+<td>固件或 Application Package</td>
+<td>eMMC/SD/目标 rootfs</td>
+<td>让产物真正运行</td>
+</tr>
+</tbody>
+</table>
+<p>把它们都叫“下载 SDK”会导致最常见的误解：装完 VSIX 后认为已经拥有 BSP，或者构建完成后认为应用已经在板上运行。</p>
+<h3 id="7-2-当前双离线包">7.2 当前双离线包</h3>
+<p>当前基线要求：</p>
+<ul>
+<li><code>rk3588-toolchain-2026.09.evopkg</code></li>
+<li><code>ws-e2-rk3588-bsp-b8f5dda5.evopkg</code></li>
+</ul>
+<p>放入：</p>
+<pre><code class="language-text">&lt;EVOVERSE_HOME&gt;/downloads/rk3588/
+</code></pre>
+<p>Adapter 会验证包大小、SHA-256、manifest、逐文件 checksum、许可确认和环境身份，然后部署到：</p>
+<pre><code class="language-text">&lt;EVOVERSE_HOME&gt;/bsp/ws-e2/b8f5dda5/
+&lt;EVOVERSE_HOME&gt;/toolchains/rk3588/2026.09/
+&lt;EVOVERSE_HOME&gt;/receipts/rk3588/
+&lt;EVOVERSE_HOME&gt;/staging/rk3588/&lt;operation-id&gt;/
+</code></pre>
+<h3 id="7-3-模型环境还需要补什么">7.3 模型环境还需要补什么</h3>
+<p>要支持 NPU 应用，SDK 外部还需要一个受版本锁定的模型转换环境：</p>
+<ul>
+<li>Linux/Python 基线；</li>
+<li>RKNN-Toolkit2 与 native dependency；</li>
+<li>支持矩阵和目标平台配置；</li>
+<li>量化数据集或数据集摘要；</li>
+<li>ONNX reference runtime；</li>
+<li>转换、对照和 benchmark 工具；</li>
+<li>与板端 RKNPU driver/runtime 的兼容关系。</li>
+</ul>
+<p>它更适合进入固定 Linux 容器或远程 Linux builder，而不是散装安装到每台 Windows/macOS 主机。</p>
+<h3 id="7-4-设备环境还需要什么">7.4 设备环境还需要什么</h3>
+<p>板端部署至少涉及：</p>
+<ul>
+<li>可识别的设备 ID、板卡型号和当前系统版本；</li>
+<li>USB Maskrom/Loader 或 SD/eMMC 制作工具；</li>
+<li>串口驱动和日志采集；</li>
+<li>ADB/SSH 等增量部署通道；</li>
+<li>写入前检查、分区计划、确认、回读与回滚；</li>
+<li>runtime、驱动、模型和应用版本记录。</li>
+</ul>
+<p>这些能力当前不能由 EvoVerse 自动保证，应在外部烧录站或经过验证的实验室流程中完成，并把摘要与日志带回工程证据目录。</p>
+<hr />
+<h2 id="8-windows-macos-linux-应该怎样分工和部署">8. Windows、macOS、Linux 应该怎样分工和部署</h2>
+<h3 id="8-1-windows-当前最完整的客户主机">8.1 Windows：当前最完整的客户主机</h3>
+<p>主机准备：</p>
+<ul>
+<li>Windows 10/11 64 位；</li>
+<li>Python 3.11+、Git；</li>
+<li>Trae 或 VS Code；</li>
+<li>Docker Desktop，使用 Linux containers；</li>
+<li>当前离线环境至少约 9 GiB 空间，实际项目应预留更多；</li>
+<li>若承担烧录，安装经过验证的 USB、串口和厂商设备驱动。</li>
+</ul>
+<p>安装 EvoVerse：</p>
+<pre><code class="language-powershell"># Trae
+python deploy.py --host trae
+
+# 或 VS Code
+python deploy.py --host vscode
+</code></pre>
+<p>安装后按顺序执行：</p>
+<ol>
+<li>重启 IDE 并完成首次 Setup；</li>
+<li><code>EvoVerse: Sync Catalog</code>；</li>
+<li>验证 Catalog location/version/commit；</li>
+<li>放置两个 <code>.evopkg</code>；</li>
+<li>Workbench 执行环境检查（2026-11-01 起（P3）为只读事实展示，附 <code>LEGACY_ENVIRONMENT</code> 弃用说明，部署入口停用）；</li>
+<li>环境部署改由 Linux Environment Manager（P4）承接——Adapter 不再直接执行环境部署；</li>
+<li>等 Environment <code>READY</code>（P3 起该状态由 Environment Manager 报告）；</li>
+<li>生成工程、preflight、构建；</li>
+<li>将固件交给当前受控烧录流程。</li>
+</ol>
+<h3 id="8-2-macos-适合作为前端-不应假设具备全部设备工具">8.2 macOS：适合作为前端，不应假设具备全部设备工具</h3>
+<p>macOS 可以完成：</p>
+<ul>
+<li>Trae/VS Code、Core 和 Adapter 安装；</li>
+<li>CLI/MCP、Catalog 同步；</li>
+<li>意图、规格、工程和代码生成；</li>
+<li>Docker Desktop Linux VM 中的 BSP/应用/模型任务；</li>
+<li>报告与证据查看。</li>
+</ul>
+<p>安装命令：</p>
+<pre><code class="language-bash"># Trae
+python deploy.py --host trae
+
+# 或 VS Code
+python deploy.py --host vscode
+</code></pre>
+<p>主要限制：</p>
+<ul>
+<li>大型 BSP 通过 bind mount 时 I/O 可能较慢；</li>
+<li>ARM Mac 与 x86_64 Linux image 可能触发仿真；</li>
+<li>USB Maskrom、串口和厂商烧录工具未必原生可用；</li>
+<li>当前 Adapter 尚无 flash/debug，不能自动弥补这些差异。</li>
+</ul>
+<p>推荐拓扑：</p>
+<pre><code class="language-text">macOS IDE
+  ├─ 自然语言、规格、代码、Catalog、结果查看
+  └─ 发起受控任务
+            ↓
+Linux builder（Docker Desktop 或远程 Linux）
+  ├─ BSP build
+  ├─ ONNX → RKNN
+  └─ AArch64 application build
+            ↓
+Windows/Linux 烧录与验证站
+  ├─ Flash / UART / ADB / SSH
+  └─ 板端功能与性能证据
+</code></pre>
+<h3 id="8-3-linux-最适合重构建-模型转换和设备自动化">8.3 Linux：最适合重构建、模型转换和设备自动化</h3>
+<p>Linux 原生主机或受管 builder 更适合：</p>
+<ul>
+<li>保存大型 BSP 和构建缓存；</li>
+<li>运行固定容器；</li>
+<li>执行 RKNN 转换和交叉编译；</li>
+<li>接入 USB、串口和设备权限；</li>
+<li>执行 CI/批量构建与板端实验室自动化。</li>
+</ul>
+<p>一个完整远程 builder 还需要：</p>
+<ul>
+<li>身份认证和项目隔离；</li>
+<li>输入 manifest 与摘要校验；</li>
+<li>固定容器镜像和缓存策略；</li>
+<li>进度、日志、取消和断线重连；</li>
+<li>产物与证据回传；</li>
+<li>禁止未确认的设备写入。</li>
+</ul>
+<p>当前仓库尚未形成这套完整远程执行控制面，因此它属于完善方向，不是已交付能力。</p>
+<hr />
+<h2 id="9-构建-部署和证据怎样判断成功">9. 构建、部署和证据怎样判断成功</h2>
+<h3 id="9-1-当前四阶段平台构建">9.1 当前四阶段平台构建</h3>
+<pre><code class="language-text">U-Boot → Kernel/DTB → Rootfs → Package
+</code></pre>
+<p>每一阶段都应绑定本次输入、工具身份、日志和产物。旧产物存在不能证明本次构建成功。</p>
+<h3 id="9-2-不同-readiness-不能混用">9.2 不同 readiness 不能混用</h3>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>能说明什么</th>
+<th>不能说明什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment READY</td>
+<td>BSP/工具链环境可用</td>
+<td>工程或应用已生成</td>
+</tr>
+<tr>
+<td>PROFILE_READY</td>
+<td>平台工程与受管文件已生成</td>
+<td>原生构建成功</td>
+</tr>
+<tr>
+<td>BUILD_READY</td>
+<td>四阶段构建成功且固件摘要存在</td>
+<td>已烧录或成功启动</td>
+</tr>
+<tr>
+<td>DEPLOYED</td>
+<td>指定内容已写入指定设备</td>
+<td>功能和性能合格</td>
+</tr>
+<tr>
+<td>RUNTIME_VALIDATED</td>
+<td>指定应用在指定设备达到验收条件</td>
+<td>所有硬件场景都长期稳定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9-3-npu-应用需要多维证据">9.3 NPU 应用需要多维证据</h3>
+<ul>
+<li><strong>生成证据</strong>：规格、计划、候选、manifest 和 digest；</li>
+<li><strong>平台证据</strong>：Profile、BSP、工具链、构建报告和固件摘要；</li>
+<li><strong>模型证据</strong>：源模型、转换配置、量化数据、转换日志和输出对照；</li>
+<li><strong>应用证据</strong>：编译、依赖闭包、应用包和安装检查；</li>
+<li><strong>部署证据</strong>：设备身份、部署模式、前后版本、回执和回滚点；</li>
+<li><strong>运行证据</strong>：功能样本、FPS、延迟、内存、温度和稳定性。</li>
+</ul>
+<p>这些证据是依赖图，不是一个单一等级。例如“模型验证通过但应用未部署”和“应用已部署但性能不合格”必须保留为两个不同事实。</p>
+<h3 id="9-4-风险和确认">9.4 风险和确认</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>风险</th>
+<th>应有控制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>规格/计划生成</td>
+<td>低</td>
+<td>只预览，不写设备</td>
+</tr>
+<tr>
+<td>工程、模型、应用构建</td>
+<td>低到中</td>
+<td>固定环境；只写受管输出</td>
+</tr>
+<tr>
+<td>应用增量部署</td>
+<td>中</td>
+<td>绑定设备；展示替换内容；保留回滚包</td>
+</tr>
+<tr>
+<td>固件生成</td>
+<td>中</td>
+<td>只产生镜像，不自动 Flash</td>
+</tr>
+<tr>
+<td>Firmware Flash</td>
+<td>高</td>
+<td>单独能力、显式确认、分区计划、回读摘要</td>
+</tr>
+<tr>
+<td>runtime benchmark</td>
+<td>中</td>
+<td>限制资源和时长；记录设备负载和温度</td>
+</tr>
+</tbody>
+</table>
+<p>失败只能产生 blocker、remediation 或 correction intent，不能自动扩大权限。例如，应用部署失败不能自动升级成完整固件烧录。</p>
+<hr />
+<h2 id="10-现有控制面是否足够">10. 现有控制面是否足够</h2>
+<h3 id="10-1-可以直接复用的基础">10.1 可以直接复用的基础</h3>
+<ul>
+<li>Intent identity 和 <code>expectedRevision</code>；</li>
+<li>Specification draft/approve；</li>
+<li>digest、manifest 和 lineage；</li>
+<li>受管文件、stage/install 和原子写入；</li>
+<li>Adapter 的不透明 payload 边界；</li>
+<li>PASS/FAIL/INCOMPLETE/NOT_RUN、blocker 和 remediation；</li>
+<li>多 Intent、system integration、reconnect 与 committed observation。</li>
+</ul>
+<p>这些机制与芯片无关，适合成为异构计算 Core。</p>
+<h3 id="10-2-当前不足">10.2 当前不足</h3>
+<p>当前动作信封仍以：</p>
+<pre><code class="language-text">intent → spec → candidate → simulation → native build
+       → hardware program → hardware validate → integration
+</code></pre>
+<p>为主。这条链明显偏向 HDL/FPGA，不能完整表达平台固件、模型转换、应用包、增量部署和 runtime benchmark。</p>
+<p>仓库已经出现 <code>AdapterActionRequest</code>、<code>AdapterActionResult</code>、<code>AdapterPlanRef</code> 和 <code>CandidateManifestV2</code>，它们建立了正确的通用边界，但目前仍主要是契约层：尚未完整接入 ProjectState/facts、Reducer、动作注册、provider dispatch 和当前动作计算。</p>
+<h3 id="10-3-应怎样补-而不是怎样重写">10.3 应怎样补，而不是怎样重写</h3>
+<p>不需要建立 RK3588 专用 Core，也不应把 <code>rknnModelPath</code>、DTS、BSP 或 Buildroot 字段加入 Core。更合适的是：</p>
+<ol>
+<li>把通用 Adapter Action 契约接入状态、Reducer、dispatch 和 next-action；</li>
+<li>让 Adapter Plan 提供动作依赖图；</li>
+<li>让 <code>CandidateManifestV2</code> 支持领域中立产物；</li>
+<li>引入开放 artifact role、依赖边和多维 evidence；</li>
+<li>先让现有 RK3588 <code>project.generate/preflight/build/status</code> 走通通用流；</li>
+<li>再增加模型、应用、设备和 runtime 能力；</li>
+<li>保留现有 FPGA Adapter 的仿真、Build、Program 和 Validate 计划。</li>
+</ol>
+<p>这样 Core 只理解“计划身份、合法动作、产物关系、风险、确认和证据”，各 Adapter 自己定义厂商流程。</p>
+<hr />
+<h2 id="11-还需要做什么才能完善">11. 还需要做什么才能完善</h2>
+<p>下面按依赖关系排列，不代表已经确定的版本排期。</p>
+<h3 id="11-1-第一层-完成通用控制面">11.1 第一层：完成通用控制面</h3>
+<ul>
+<li>将通用 Adapter Action 契约接入完整生命周期；</li>
+<li>将固定 FPGA 动作排序改为 Adapter plan 驱动；</li>
+<li>建立开放 artifact/evidence 模型；</li>
+<li>保持 Core 不出现 CPU/GPU/NPU/XPU 固定枚举和厂商字段。</li>
+</ul>
+<h3 id="11-2-第二层-扩大可信平台基线">11.2 第二层：扩大可信平台基线</h3>
+<ul>
+<li>增加更多板卡、载板和系统基线；</li>
+<li>完善 Catalog qualification、版本和兼容矩阵；</li>
+<li>建立缓存、升级和基线迁移规则；</li>
+<li>保留当前 WS-E2 minimal-linux 作为可重放样板。</li>
+</ul>
+<h3 id="11-3-第三层-补齐-npu-模型与应用链">11.3 第三层：补齐 NPU 模型与应用链</h3>
+<ul>
+<li>定义 AI Application Spec；</li>
+<li>建立模型资格、RKNN 转换和样本对照；</li>
+<li>建立应用组件库与 AArch64 构建；</li>
+<li>定义 Application Package；</li>
+<li>用摄像头目标检测等代表性应用贯通全链。</li>
+</ul>
+<h3 id="11-4-第四层-建设外部执行环境">11.4 第四层：建设外部执行环境</h3>
+<ul>
+<li>固定 RKNN/应用构建容器；</li>
+<li>建设远程 Linux builder；</li>
+<li>实现日志、进度、取消、缓存和证据回传；</li>
+<li>明确 Windows/macOS/Linux 的支持矩阵。</li>
+</ul>
+<h3 id="11-5-第五层-设备部署与硬件验收">11.5 第五层：设备部署与硬件验收</h3>
+<ul>
+<li>先实现只读设备发现和部署计划预览；</li>
+<li>增加应用增量部署、健康检查和回滚；</li>
+<li>再增加高风险 Firmware Flash、回读和恢复；</li>
+<li>接入 UART、ADB、SSH 和启动诊断；</li>
+<li>建立功能、性能、温度和长稳证据。</li>
+</ul>
+<h3 id="11-6-第六层-验证多厂商可扩展性">11.6 第六层：验证多厂商可扩展性</h3>
+<p>选择至少一个与 RK3588 明显不同的 Adapter，例如通用 CPU/Linux 或 GPU runtime，验证：</p>
+<ul>
+<li>Core 无需增加器件类别枚举；</li>
+<li>同一 Intent/Plan/Artifact/Evidence 机制可以复用；</li>
+<li>Adapter 可以声明不同动作图和私有 schema；</li>
+<li>Workbench 能呈现不同流程而不复制 Core 状态机。</li>
+</ul>
+<p>只有经过第二种平台验证，才能真正证明 Core 是异构计算控制面，而不只是抽象过的 RK3588 控制器。</p>
+<hr />
+<h2 id="12-从零到当前可达状态的操作检查表">12. 从零到当前可达状态的操作检查表</h2>
+<h3 id="12-1-安装与环境">12.1 安装与环境</h3>
+<ul>
+<li>[ ] 安装 Python、Git、Trae/VS Code 和 Docker；</li>
+<li>[ ] 安装同版本 Core 与 RK3588 Adapter；</li>
+<li>[ ] 完成首次 Setup；</li>
+<li>[ ] Sync Catalog，并记录 location/version/commit；</li>
+<li>[ ] 将双离线包放入 <code>&lt;EVOVERSE_HOME&gt;/downloads/rk3588/</code>；</li>
+<li>[ ] 执行 environment status/prepare；</li>
+<li>[ ] 安装独立 <code>evoverse-env</code> <code>.deb</code>，确认 <code>handshake --json</code> 通过；</li>
+<li>[ ] 在 Workbench 审阅 Manager 生成的计划/许可并执行 environment deploy；</li>
+<li>[ ] 确认 Environment <code>READY</code>。</li>
+</ul>
+<h3 id="12-2-工程生成与构建">12.2 工程生成与构建</h3>
+<ul>
+<li>[ ] 选择 WS-E2 / rk3588j-evm / minimal-linux；</li>
+<li>[ ] 执行 project.generate；</li>
+<li>[ ] 检查 generation manifest 和受管文件摘要；</li>
+<li>[ ] 执行 project.preflight，确保无 error；</li>
+<li>[ ] 执行 U-Boot、Kernel、Rootfs、Package 四阶段；</li>
+<li>[ ] 检查本次 <code>build-report.json</code>；</li>
+<li>[ ] 确认 <code>success: true</code>、<code>readiness: BUILD_READY</code>；</li>
+<li>[ ] 记录固件产物 SHA-256。</li>
+</ul>
+<h3 id="12-3-若要声称已经到板端">12.3 若要声称已经到板端</h3>
+<ul>
+<li>[ ] 记录目标设备身份；</li>
+<li>[ ] 记录烧录或部署工具、loader、分区和输入摘要；</li>
+<li>[ ] 保存写入回执或人工操作记录；</li>
+<li>[ ] 保存串口启动日志；</li>
+<li>[ ] 记录 kernel/rootfs 版本；</li>
+<li>[ ] 完成至少一项板级功能验证；</li>
+<li>[ ] 若为 NPU 应用，保存模型身份、runtime、样本结果和性能指标。</li>
+</ul>
+<hr />
+<h2 id="13-常用术语">13. 常用术语</h2>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>本文含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core</td>
+<td>与厂商无关的控制面</td>
+</tr>
+<tr>
+<td>Adapter</td>
+<td>面向厂商、器件和工具链的能力实现</td>
+</tr>
+<tr>
+<td>Catalog</td>
+<td>经过同步和版本锁定的板卡、基线与策略材料</td>
+</tr>
+<tr>
+<td>BSP</td>
+<td>启动链、Kernel、Buildroot、驱动和固件材料集合</td>
+</tr>
+<tr>
+<td>Profile</td>
+<td>EvoVerse 对目标平台与环境身份的结构化描述</td>
+</tr>
+<tr>
+<td>Candidate</td>
+<td>尚未确认/安装的受控生成结果</td>
+</tr>
+<tr>
+<td>Manifest</td>
+<td>产物集合、摘要和关系的机器可读记录</td>
+</tr>
+<tr>
+<td>Build Identity</td>
+<td>本次构建输入、环境和产物的身份组合</td>
+</tr>
+<tr>
+<td>Application Package</td>
+<td>应用、模型、配置、服务定义和部署元数据的共同交付物</td>
+</tr>
+<tr>
+<td>Receipt</td>
+<td>环境部署、设备部署或写入操作的可追踪回执</td>
+</tr>
+<tr>
+<td>Readiness</td>
+<td>某个阶段是否满足继续推进的条件，不代表所有阶段成功</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-相关资料与实现依据">14. 相关资料与实现依据</h2>
+<h3 id="14-1-仓库资料">14.1 仓库资料</h3>
+<ul>
+<li><a href="RK3588-开发全流程指南.html">RK3588 开发全流程指南</a></li>
+<li><a href="RK3588-离线环境部署指南.html">RK3588 离线环境部署指南</a></li>
+<li><a href="../adapters/RK3588-Adapter使用指南.html">RK3588 Adapter 使用指南</a></li>
+<li>Adapter 架构与安装指南</li>
+<li><a href="RK3588-Adapter设计文档.html">RK3588 Adapter 设计文档</a></li>
+<li><a href="../installation/VSCode安装指南.html">VS Code 安装指南</a></li>
+<li><a href="../installation/Trae安装指南.html">Trae 安装指南</a></li>
+</ul>
+<h3 id="14-2-rockchip-模型工具入口">14.2 Rockchip 模型工具入口</h3>
+<p>这些资料用于理解官方工具分工。未来实际依赖仍应由 Catalog 锁定版本：</p>
+<ul>
+<li><a href="https://github.com/airockchip/rknn-toolkit2">AI Rockchip：RKNN-Toolkit2</a></li>
+<li><a href="https://github.com/airockchip/rknn_model_zoo">AI Rockchip：RKNN Model Zoo</a></li>
+<li><a href="https://github.com/rockchip-linux/rknpu2">RKNPU2 迁移说明与接口入口</a></li>
+</ul>
+<h3 id="14-3-当前实现判断所依据的源码">14.3 当前实现判断所依据的源码</h3>
+<ul>
+<li><code>sdk/extension/src/workbench/adapterRegistry.ts</code></li>
+<li><code>sdk/verification-engine/evoverse_verification/control/</code></li>
+<li><code>products/rk3588-adapter/extension/package.json</code></li>
+<li><code>products/rk3588-adapter/extension/src/extension.ts</code></li>
+<li><code>products/rk3588-adapter/extension/src/headlessContracts.ts</code></li>
+<li><code>products/rk3588-adapter/extension/src/headlessService.ts</code></li>
+<li><code>products/rk3588-adapter/extension/src/environment/</code></li>
+<li><code>products/rk3588-adapter/extension/src/runtime/rk3588/</code></li>
+<li><code>scripts/release.py</code>（含 <code>release</code> 流水线子命令）</li>
+</ul>
+<hr />
+<h2 id="15-最后的判断">15. 最后的判断</h2>
+<p>EvoVerse 对 RK3588 的价值，不是生成更多脚本，而是把自然语言、平台事实、厂商工具、应用产物和硬件证据连成一条受控链。</p>
+<p>当前最扎实的部分是平台工程与可复现构建底座；最明显的缺口是模型、应用、设备部署和板端验收；最重要的长期原则是保持 Core 领域中立，让 Adapter 承担具体厂商和器件语义。</p>
+<p>完善后的目标不是“输入一句话，AI 神奇地烧出一块板”，而是：</p>
+<blockquote>
+<p>用户用自然语言表达目标，系统形成可确认规格；Adapter 使用可信材料生成、构建和部署；每一步都有身份、摘要、风险边界和证据；新的 CPU、GPU、NPU、XPU 平台可以通过新 Adapter 接入，而不需要重写 Core。</p>
+</blockquote></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
+</body></html>

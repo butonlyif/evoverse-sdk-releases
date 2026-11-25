@@ -98,13 +98,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../customer-portal.html">← 返回EvoVerse SDK</a>
 <span>从物料证据到可冻结规格和实施计划的受控 Skill。</span>
 <code>skills/EvoVerse-Design-Spec-Skill.md</code>
 <a href="../../../skills/EvoVerse-Design-Spec-Skill.md">Markdown 源文件</a></p>
 <h1>EvoVerse Design Spec Skill</h1></header>
 <main class="article"><h1 id="evoverse-design-spec-skill">EvoVerse Design Spec Skill</h1>
+<blockquote>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+</blockquote>
 <p><code>evoverse-design-spec</code> 用于把一个 FPGA 或 FPGA 加软件的自然语言意图，转化为可评审、可实施、可追溯的设计包。它的产物是规格和实施计划，不是 RTL，也不会创建 Efinity 工程、约束、固件或编译产物。</p>
 <h2 id="何时使用">何时使用</h2>
 <ul>
@@ -200,7 +203,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
-<p>「不要求功能仿真」只针对 IP 本身的资格认定，不免除配置校验、接口检查、时序约束、Native Build 或系统级证据。Native Build 通过不能等同硬件通过。围绕 vendor IP 生成的包装层只有纯直连接线（<code>DIRECT_WIRE</code>）才免仿真，含功能行为的包装层必须仿真后才放行。</p>
+<p>「不要求功能仿真」只针对 IP 本身的资格认定，不免除配置校验、接口检查、时序约束、Native Build 或系统级证据。Native Build PASS 不能等同板级验证 PASS。围绕 vendor IP 生成的包装层只有纯直连接线（<code>DIRECT_WIRE</code>）才免仿真，含功能行为的包装层必须仿真后才放行。</p>
 <p><code>spec.draft</code> 在所有功能节点决策完成前保持阻断。批准后，评审用的 <code>specification.md</code> 会从 <code>planning/ip-decisions.json</code> 确定性派生两个章节——「IP 选择与复用矩阵」（每个节点的候选、兼容性、风险、选择理由与被否决方案）和「IP 集成契约」（身份、参数、端口、bank/电压/引脚与约束要求、生成方式及验收条件）；它们是评审视图，不是权威，权威始终是可执行 JSON。</p>
 <h2 id="冻结后的下一步">冻结后的下一步</h2>
 <p>客户确认设计包中所有 <code>DECISION_REQUIRED</code> 项后，冻结的 <code>generation-manifest.json</code> 绑定物料账本、证据快照和设计上下文的摘要。之后使用 <code>/evoverse-rtl</code> 把实施计划中的一个叶子任务生成到受控候选目录。它可以读取 <code>materials/</code>，但绝不能修改材料副本或回写参考基线。Feature intent 完成后等待系统集成；最终规格和复盘由系统集成 intent 一并确认，避免分支状态与主线交付状态不一致。</p>

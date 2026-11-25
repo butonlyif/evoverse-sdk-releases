@@ -112,18 +112,139 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>按步骤在 Trae 中完成工程。</span>
 <code>learn/ws-e1-sd-ddr-csi2/README.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/README.md">Markdown 源文件</a></p>
 <h1>WS-E1 SD 到 CSI-2 总览</h1></header>
-<main class="article tutorial-article"><h1 id="ws-e1-sd-到-csi-2-工程教程">WS-E1 SD 到 CSI-2 工程教程</h1>
+<main class="article tutorial-article"><h1 id="ws-e1-sd-到-csi-2-工程教程-复杂单-fpga">WS-E1 SD 到 CSI-2 工程教程（复杂单 FPGA）</h1>
 <blockquote>
-<p>适用版本：v1.0.0　目标器件：TJ180A484S（Titanium Ti60，C4 timing model）　默认宿主：Trae</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用版本：v1.0.1　目标器件：TJ180A484S（Titanium Ti60，C4 timing model）　默认宿主：Trae</p>
 </blockquote>
-<p>本教程带你从空目录开始，在 EvoVerse SDK 的可靠设计流程中重建一个完整工程：<strong>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX</strong>。你用自然语言描述目标，由 Project Control Plane 决定每一步是否允许推进；每一段结论都有证据回执。</p>
-<p>先讲清一条红线：<strong>不得把目标 <code>sd-ddr-csi2</code> 工程的 RTL、约束或工程文件复制为新工程的基线</strong>——目标工程只用于物料分析和结论比对。你要得到的是一个由你自己的规格、你自己的候选 RTL 和你自己的证据链支撑的工程，不是参考设计的副本。</p>
+<p>本教程只讲<strong>一个意图</strong>：在 TJ180A484S 上做一条 <strong>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX</strong> 显示链路。复杂单 FPGA 不等于必须由客户拆成十几个步骤；Agent 会把一个意图拆成若干模块切片，让每个模块按自己的契约独立收敛，最后在同一次芯片内 composition 中合成。</p>
+<p>先讲清一条红线：<strong>不得把目标 <code>sd-ddr-csi2</code> 工程的 RTL、约束或工程文件复制为新工程基线</strong>。目标工程只用于物料分析和结论比对；你要得到的是由你自己的规格、自己的候选 RTL 和自己的证据链支撑的工程。</p>
+<h2 id="一个意图-三个决策">一个意图，三个决策</h2>
+<p>整条旅程只要求你做三个决策，其余由控制面连续推进：</p>
+<ol>
+<li><strong>确认方案与可执行规格</strong>——Agent 先给出模块拆分（<code>sd_host</code>、<code>frame_buffer_writer</code>、<code>csi2_tx</code> 加时钟/复位）、每个模块的 <code>ModuleSpec</code> 与接口契约、仿真等级与验收场景。你一次确认后，规格冻结；生成前不会再反复打断你。</li>
+<li><strong>按需确认高成本或设备写入</strong>——只有烧录、部署或高成本构建需要你显式授权；只读检查、生成、仿真和低成本构建不打扰你。</li>
+<li><strong>查看证据边界并最终验收</strong>——技术完成时查看证据摘要与未运行等级；确认后给出接受回执。技术完成不等于已接受。</li>
+</ol>
+<h2 id="模块拆分与接口契约">模块拆分与接口契约</h2>
+<p>一个意图拆成三个模块切片，各自独立收敛，再合成一条链路：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>负责</th>
+<th>接口契约</th>
+<th>独立证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sd_host</code></td>
+<td>SD 卡初始化、命令/数据握手</td>
+<td>对 <code>frame_buffer_writer</code> 输出带 valid/ready 的样本流，位宽与节拍由 <code>ModuleSpec</code> 固定</td>
+<td>协议场景、超时与重试策略的仿真</td>
+</tr>
+<tr>
+<td><code>frame_buffer_writer</code></td>
+<td>把样本写入 DDR 帧缓冲，管理写端口背压</td>
+<td>读端所有权交接、写地址生成、满/空语义</td>
+<td>背压、边界地址与读回一致性的仿真</td>
+</tr>
+<tr>
+<td><code>csi2_tx</code></td>
+<td>从帧缓冲读出并按 CSI-2 TX 时序输出</td>
+<td>行/场同步、lane 数、像素节拍</td>
+<td>输出时序与协议场景的仿真</td>
+</tr>
+</tbody>
+</table>
+<p><strong>接口契约先于实现</strong>：每个模块的 <code>ModuleSpec</code> 写明端口、位宽、时钟域、复位语义和验收 Oracle；模块之间只通过契约握手，不靠“顶层连线时再说”。这就是模块可以独立生成、独立仿真、独立修复的原因。</p>
+<p><strong>芯片内 composition</strong>：三个模块各自通过契约与仿真后，Agent 在同一次 composition 中把它们和只读的 DDR wrapper、CSI-2 TX 硬核连到 TJ180A484S 的顶层，再做整链集成检查。composition 不是客户要背的第四步，而是 Agent 在“集成与实现”阶段完成的动作。</p>
+<h2 id="后台如何推进">后台如何推进</h2>
+<p>后台五阶段只用于解释系统，不构成你必须记忆的 action 清单：</p>
+<ol>
+<li><strong>Intent</strong> — 把你的自然语言目标落成受管意图，快照当前基线。</li>
+<li><strong>Plan &amp; Approve</strong> — 给出模块拆分、模块契约、仿真等级与验收场景，等你一次确认。</li>
+<li><strong>Generate &amp; Converge</strong> — 各模块并行生成候选、做 Design Assurance、独立仿真；失败只影响该模块。</li>
+<li><strong>Integrate &amp; Realize</strong> — 芯片内 composition、工程合同检查、原生编译与烧录。</li>
+<li><strong>Accept</strong> — 汇总证据边界，等你给出接受或拒绝回执。</li>
+</ol>
+<h2 id="证据终态">证据终态</h2>
+<p><code>BUILT</code>（有构建产物）→ <code>PACKAGED</code>（已打包）→ <code>PROGRAMMED</code>（已写入设备）→ <code>HARDWARE_VERIFIED</code>（实板观察）→ <code>SYSTEM_VERIFIED</code>（系统级证据完整）→ <code>READY_FOR_ACCEPTANCE</code>（技术完成）→ <code>ACCEPTED</code>（客户接受回执）；未实际执行的级别保持 <code>NOT_RUN</code>。<strong>仿真 PASS 不等于编译通过，编译通过不等于烧录成功，烧录成功不等于板上验证。</strong> 没有硬件时，硬件与系统级证据保持 <code>NOT_RUN</code>。</p>
+<h2 id="失败恢复">失败恢复</h2>
+<p>仿真 FAIL 是证据，不是事故：候选被冻结后不可变，修复必须重新生成候选并重新仿真；基线不会因为一次失败被污染，其他模块的既有证据也不失效。若失败暴露的是契约歧义（例如“SD 初始化超时后重试几次”没有定义），Agent 会回到规格决策，而不是在 RTL 里私自加逻辑。</p>
+<h2 id="规格升级">规格升级</h2>
+<p>规格升级只让<strong>受影响的证据</strong>失效。例如把 DDR 缓冲深度从 2 行改为 4 行：</p>
+<ul>
+<li><code>frame_buffer_writer</code> 的规格与仿真证据失效，需要重新生成、重新仿真；</li>
+<li><code>sd_host</code> 与 <code>csi2_tx</code> 的契约没有变化，它们的既有证据继续有效；</li>
+<li>composition 的整链集成证据需要重跑一次，因为顶层连接与缓冲行为变了。</li>
+</ul>
+<p>所以正确做法是<strong>只重跑受影响节点</strong>，而不是把整条教程从头再来；也不会因为一次规格升级把无关模块的 PASS 作废。</p>
+<h2 id="阶段导航">阶段导航</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>文档</th>
+<th>这一段要达成的结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td><a href="00-stage0-harness.html">环境与 Harness 自检</a></td>
+<td>工作区就绪，Agent 能读到你手上的板卡与器件</td>
+</tr>
+<tr>
+<td>01</td>
+<td><a href="01-material-analysis.html">物料分析</a></td>
+<td>盘点可复用、需适配、仅参考与不可用的材料</td>
+</tr>
+<tr>
+<td>02</td>
+<td><a href="02-system-specification.html">冻结模块规格</a></td>
+<td>三个模块的 <code>ModuleSpec</code>、接口契约、仿真等级与验收场景一次确认</td>
+</tr>
+<tr>
+<td>03</td>
+<td><a href="03-hardware-generation.html">按模块生成与独立仿真</a></td>
+<td>每个模块候选独立收敛，失败只回退该模块</td>
+</tr>
+<tr>
+<td>04</td>
+<td><a href="04-firmware-generation.html">Sapphire 固件</a></td>
+<td>固件与硬件契约同源，<code>SW_BUILT</code> 不等于功能正确</td>
+</tr>
+<tr>
+<td>05</td>
+<td><a href="05-sdk-integration.html">工程集成</a></td>
+<td>控制面资产、工程 XML 与 ISF/SDC 三视图一致</td>
+</tr>
+<tr>
+<td>06</td>
+<td><a href="06-build-and-display-verification.html">编译与硬件验证</a></td>
+<td>原生编译、按需烧录、逐场景硬件证据；无硬件保持 <code>NOT_RUN</code></td>
+</tr>
+<tr>
+<td>07</td>
+<td><a href="07-skills-and-mcp.html">Skill 与 MCP 速查</a></td>
+<td>高级参考：动作 id、工具与 Skill 索引</td>
+</tr>
+<tr>
+<td>08</td>
+<td><a href="08-project-cleanup.html">整理工程并交付</a></td>
+<td>整理预览先行，复编译证明工程仍可交付</td>
+</tr>
+</tbody>
+</table>
+<p>阶段 07 是高级参考，保留内部动作 id；主线章节只说意图与证据，不要求你背动作名。</p>
 <h2 id="开始前">开始前</h2>
 <p>环境准备按顺序走一遍，全程约 10 分钟：</p>
 <ol>
@@ -131,126 +252,28 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><strong>重启 IDE</strong>，让三个扩展全部激活。</li>
 <li><strong>首次引导</strong>：重启后弹窗 "Set up EvoVerse SDK?"，确认工作区位置（默认 <code>~/evoverse-sdk</code>）。</li>
 <li><strong>Welcome 页自动打开</strong>。点 <strong>Sync Catalog</strong> 同步板卡目录，等同步完成——后面的 <code>ws-e1 / ws-e1-base</code> 板卡选择就来自这份目录。</li>
-<li><strong>开始对话（按宿主）</strong>：<strong>Trae：</strong>在聊天框输入 <code>@evoverse</code> 后描述目标。<strong>VS Code：</strong>在原生 Chat 的 Agent 模式直接描述同一目标，无需 <code>@evoverse</code>；先确认 EvoVerse MCP 为 Running。Workbench（Project Control 下拉，命令 <code>evoverse.selectDesignFlow</code>）是图形入口，但不会替 Agent 继续对话。</li>
+<li><strong>打开一个空目录作为工程根</strong>，在 Chat 里直接描述意图：<strong>Trae：</strong>输入 <code>@evoverse</code> 后描述目标；<strong>VS Code：</strong>在原生 Chat 的 Agent 模式直接描述同一目标，无需 <code>@evoverse</code>，先确认 EvoVerse MCP 为 Running。Workbench（Project Control 下拉，命令 <code>evoverse.selectDesignFlow</code>）是图形入口，但不会替 Agent 继续对话。</li>
 </ol>
 <p>再确认两项：</p>
 <ul>
 <li>Efinity 2026.1+ 可用；功能仿真需要 Icarus Verilog（或 QuestaSim）。</li>
 <li>有一块 WS-E1 核心模组（TJ180A484S）加底板更佳；没有硬件也能完成到编译为止的全部阶段，硬件验证阶段会如实标记为待执行。</li>
 </ul>
-<p>上手链路：</p>
-<pre class="mermaid">flowchart LR
-  A[&quot;安装三个 VSIX&quot;] --&gt; B[&quot;重启 IDE&quot;]
-  B --&gt; C[&quot;首启弹窗确认工作区&lt;br&gt;~/evoverse-sdk&quot;]
-  C --&gt; D[&quot;Welcome 页自动打开&quot;]
-  D --&gt; E[&quot;Sync Catalog 同步板卡目录&quot;]
-  E --&gt; F[&quot;Trae: @evoverse&lt;br/&gt;VS Code: 原生 Agent 直接描述&quot;]
-  F --&gt; G[&quot;Workbench 六 Tab&lt;br&gt;Home/Build/Timing/Debug/SW/IP&quot;]
-</pre>
-<h2 id="可靠设计流程-五步控制循环">可靠设计流程：五步控制循环</h2>
-<p>v1.0.0 中，SDK 的所有可靠能力都由一个控制面（Project Control Plane）统一裁决。Agent、Workbench、CLI 都通过同一组接口推进：</p>
-<ol>
-<li><strong>读状态</strong> — 调用 <code>project_status</code>，得到当前 <code>revision</code>、Baseline、活动 Intent、证据与候选。</li>
-<li><strong>读动作</strong> — 调用 <code>project_next</code>，得到服务端允许的 ActionDescriptor 列表（含前置条件与阻塞原因）。</li>
-<li><strong>解释并选择</strong> — 让 Agent 向你解释每个动作的 effect、preconditions、blockedReasons；不确定就先问。</li>
-<li><strong>执行</strong> — 你确认后，用 <code>project_execute</code> 提交 <code>{actionId, expectedRevision, inputs}</code>。</li>
-<li><strong>处理决策并重读 revision</strong> — 遇到结构化决策（DecisionRequest）时由你选择；动作完成后重新 <code>project_status</code>，绝不复用旧 revision。</li>
-</ol>
-<p>每一次状态推进都产生证据（规格摘要、候选摘要、仿真回执、构建回执、硬件回执）。证据绑定在工程状态里，对话口头伪造不了。</p>
-<h2 id="八个阶段">八个阶段</h2>
-<table>
-<thead>
-<tr>
-<th>阶段</th>
-<th>文档</th>
-<th>控制面动作</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>00</td>
-<td><a href="00-stage0-harness.html">建立工程 Harness</a></td>
-<td><code>project.initialize</code></td>
-</tr>
-<tr>
-<td>01</td>
-<td><a href="01-material-analysis.html">物料分析</a></td>
-<td><code>asset.observe</code></td>
-</tr>
-<tr>
-<td>02</td>
-<td><a href="02-system-specification.html">冻结规格</a></td>
-<td><code>spec.draft</code> → <code>spec.approve</code>（差量规格，机制讲解）</td>
-</tr>
-<tr>
-<td>03</td>
-<td><a href="03-hardware-generation.html">生成 RTL 并交付候选</a></td>
-<td>三轮增量，每轮：<code>intent.create</code> → <code>simulation.profile.select</code> → <code>spec.draft</code> → <code>candidate.deliver</code> → <code>verification.simulate</code> → <code>candidate.promote</code></td>
-</tr>
-<tr>
-<td>04</td>
-<td><a href="04-firmware-generation.html">Sapphire 固件</a></td>
-<td><code>candidate.deliver</code>（软件候选）</td>
-</tr>
-<tr>
-<td>05</td>
-<td><a href="05-sdk-integration.html">SDK 集成</a></td>
-<td>合同检查与源同步</td>
-</tr>
-<tr>
-<td>06</td>
-<td><a href="06-build-and-display-verification.html">编译与硬件验证</a></td>
-<td><code>build.native</code> → <code>hardware.program</code> → <code>hardware.validate</code></td>
-</tr>
-<tr>
-<td>07</td>
-<td><a href="07-skills-and-mcp.html">Skills 与 MCP 速查</a></td>
-<td>工具与动作索引</td>
-</tr>
-<tr>
-<td>08</td>
-<td><a href="08-project-cleanup.html">整理工程并交付</a></td>
-<td>证据归档与复编译</td>
-</tr>
-</tbody>
-</table>
-<p>阶段之间有依赖：规格未批准时无法交付候选；候选未冻结时无法记录仿真证据；仿真未 PASS 时无法晋级；上一轮未晋级，下一轮增量就没有新父基线。构建证据与硬件证据相互独立，不互相替代。每一阶段结束后控制面会暂停，等你确认再继续。</p>
-<h2 id="三轮增量-每一轮都以晋级收尾">三轮增量：每一轮都以晋级收尾</h2>
-<p>教程主线不是"一次生成全链路"，而是三轮增量迭代：</p>
-<p><strong>Stage0 基线 → SD 输入增量 → 晋级 → DDR 缓冲增量 → 晋级 → CSI-2 输出增量 → 晋级 → Efinity 原生编译 → 实板验证</strong></p>
-<p>每一轮增量走同一个循环：</p>
-<ol>
-<li><code>intent.create</code> 声明意图时，控制面把当时的基线资产快照进 <code>IntentRecord.baseBaselineFiles</code>——这就是本轮的父基线。</li>
-<li><code>candidate.deliver</code> 只冻结候选并执行 Design Assurance，基线保持不变。</li>
-<li><code>verification.simulate</code> 对已冻结候选独立取证。</li>
-<li>仿真 PASS 且晋级资格满足后，<code>candidate.promote</code> 把候选与父基线合并安装为新基线——它就是下一轮增量的父基线。</li>
-</ol>
-<p>对应到教程阶段：</p>
-<pre class="mermaid">flowchart LR
-  S[&quot;Stage0 工程初始化&quot;] --&gt; M[&quot;物料分析&quot;]
-  M --&gt; P[&quot;系统规格&lt;br&gt;等级先于规格&quot;]
-  P --&gt; G[&quot;硬件生成&lt;br&gt;候选 仿真 晋级&quot;]
-  G --&gt; Q{&quot;三轮增量&lt;br&gt;全部晋级?&quot;}
-  Q -- &quot;下一轮增量&quot; --&gt; P
-  Q -- &quot;是&quot; --&gt; I[&quot;固件与 SDK 集成&quot;]
-  I --&gt; B[&quot;构建与显示验证&quot;]
-</pre>
-<p>提交动作时携带的 <code>expectedRevision</code> 只是并发提示值：控制面始终按最新 revision 追加事实，过期 revision 不会变成安全边界。</p>
 <h2 id="你将得到什么">你将得到什么</h2>
 <ul>
-<li>一个受管工程：工程身份、规格、候选、证据都在控制面状态里可追溯。</li>
-<li>一条从规格到硬件的证据链：每一步要么有 PASS 回执，要么明确标记 <code>incomplete</code> / <code>fail</code>——<code>incomplete</code> 永远不会被当作 PASS。</li>
+<li>一个受管工程：工程身份、冻结规格、候选与证据都在控制面状态里可追溯。</li>
+<li>一条从模块契约到硬件的证据链：每一步要么有 PASS 回执，要么明确标记 <code>incomplete</code> / <code>fail</code>——<code>incomplete</code> 永远不会被当作 PASS。</li>
 <li>最终 bitstream 由 Efinity 原生统一流程 <code>efx_run --flow compile</code> 产生；MIPI CSI-2 输出用真实接收端或片上调试核验证。</li>
 </ul>
 <h2 id="遇到问题怎么办">遇到问题怎么办</h2>
-<p>教程里的提示词刻意只说意图，不带控制面动作名和流程步骤——推进流程、选动作、核对回执是 Agent 的工作，你不需要背。以下章节的“你对 Trae 说什么”保留为 Trae 主线；在 VS Code 中把同一提示词直接发给原生 Agent，去掉开头的 <code>@evoverse</code> 即可。生成与仿真本身有随机性，遇到不顺利的情况按三条原则处理：</p>
+<p>教程里的提示词刻意只说意图，不带控制面动作名和流程步骤——推进流程、选动作、核对回执是 Agent 的工作。以下章节的“你对 Trae 说什么”保留为 Trae 主线；在 VS Code 中把同一提示词直接发给原生 Agent，去掉开头的 <code>@evoverse</code> 即可。生成与仿真本身有随机性，遇到不顺利的情况按三条原则处理：</p>
 <ol>
-<li><strong>只说目标，不背流程。</strong> 描述你想要什么（"把 SD 卡数据写进 DDR"），而不是命令步骤。Trae 的做法若与教程描述的机制不一致，直接问它"你打算怎么推进"，听它解释后再决定。</li>
-<li><strong>等得久先问进度，别催也别重来。</strong> 生成、仿真、原生编译都是分钟级到几十分钟级的任务，中途叠加新指令只会打乱节奏。觉得太慢就问"现在到哪一步了、还差什么"，而不是重发一遍提示词。</li>
-<li><strong>结果不符合预期，先说期望再说问题。</strong> 把"我期望看到什么、实际看到了什么"讲清楚，让 Trae 回到对应的证据或规格重新走流程。仿真 FAIL 不是事故，是证据——修复后重新交付、重新仿真即可，基线不会被污染。</li>
+<li><strong>只说目标，不背流程。</strong> 描述你想要什么（“把 SD 卡数据写进 DDR”），而不是命令步骤。Agent 的做法若与教程描述的机制不一致，直接问它“你打算怎么推进”，听它解释后再决定。</li>
+<li><strong>等得久先问进度，别催也别重来。</strong> 生成、仿真、原生编译都是分钟级到几十分钟级的任务，中途叠加新指令只会打乱节奏。觉得太慢就问“现在到哪一步了、还差什么”，而不是重发一遍提示词。</li>
+<li><strong>结果不符合预期，先说期望再说问题。</strong> 把“我期望看到什么、实际看到了什么”讲清楚，让 Agent 回到对应的证据或规格重新走流程。</li>
 </ol>
-<p>准备就绪后，从 <a href="00-stage0-harness.html">阶段 00：建立工程 Harness</a> 开始。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="next-stage" href="00-stage0-harness.html">下一阶段：00 建立 Stage0 物理 Harness →</a></nav></main>
+<p>准备就绪后，从 <a href="00-stage0-harness.html">阶段 00：环境与 Harness 自检</a> 开始。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="next-stage" href="00-stage0-harness.html">下一阶段：00 建立 Stage0 物理 Harness →</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
-<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
+
 </body></html>

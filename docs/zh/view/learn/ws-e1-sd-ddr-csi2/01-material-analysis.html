@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>按步骤在 Trae 中完成工程。</span>
 <code>learn/ws-e1-sd-ddr-csi2/01-material-analysis.md</code>
@@ -120,45 +120,45 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>01 物料分析</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-01-物料分析">阶段 01 · 物料分析</h1>
 <blockquote>
-<p>规格之前先看料。本阶段把 EVOVERSE_HOME 运营 Catalog 里的板卡、IP、Demo 材料盘点清楚，确定哪些能复用、哪些要改、哪些只能当参考，并把观察结果登记进控制面。</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>规格之前先看料。本阶段把 Catalog 里的板卡、IP、Demo 材料盘点清楚，确定哪些能复用、哪些要改、哪些只能当参考，并把观察结果登记进工程。</p>
 </blockquote>
-<p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 需要四类物料：SD 主机控制器、DDR 控制器与 PHY、MIPI CSI-2 TX 硬核、以及把三者连起来的自研 RTL。前两类优先用厂商或运营 Catalog 的成熟 IP，最后一片空白区才是你要生成 RTL 的地方。</p>
-<p>自研空白区不一次性吞下：本阶段要把账本按<strong>三轮增量</strong>拆分——SD 输入、DDR 缓冲、CSI-2 输出，各自标注复用材料、新增自研与涉及约束。每一轮增量在阶段 03 会以 <code>intent.create</code> 声明，并自动快照当时的基线资产到 <code>IntentRecord.baseBaselineFiles</code>；账本拆得清楚，后面对照父基线记账才不乱。</p>
+<p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 需要四类物料：SD 主机控制器、DDR 控制器与 PHY、MIPI CSI-2 TX 硬核，以及把三者连起来的自研 RTL。前几类优先用厂商或 Catalog 的成熟 IP，最后一片空白区才是你要生成 RTL 的地方。</p>
+<p>自研空白区按<strong>模块切片</strong>拆分：<code>sd_host</code>、<code>frame_buffer_writer</code>、<code>csi2_tx</code>，各自标注复用材料、新增自研与涉及约束。账本拆得清楚，阶段 02 的模块契约和后续“只重跑受影响节点”才有对照物。</p>
 <p>四类结论的判定走向如下：</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;扫描运营 Catalog&lt;br&gt;与当前工程目录&quot;] --&gt; B{&quot;逐项判定&quot;}
+    A[&quot;扫描 Catalog&lt;br&gt;与当前工程目录&quot;] --&gt; B{&quot;逐项判定&quot;}
     B --&gt;|许可 / 器件 / 电压兼容| C[&quot;REUSE_UNCHANGED&lt;br&gt;原样例化&quot;]
     B --&gt;|可用但需按规格改造| D[&quot;ADAPT_REQUIRED&lt;br&gt;适配后使用&quot;]
     B --&gt;|只看思路| E[&quot;REFERENCE_ONLY&lt;br&gt;禁止复制&quot;]
     B --&gt;|许可或不匹配| F[&quot;REJECTED&lt;br&gt;明确排除&quot;]
-    C --&gt; G[&quot;asset.observe 登记&lt;br&gt;写入 material-ledger.md&quot;]
+    C --&gt; G[&quot;登记物料账本&lt;br&gt;material-ledger.md&quot;]
     D --&gt; G
     E --&gt; G
     F --&gt; G
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">继续这个工程的物料分析。我要在 TJ180A484S 上做 SD card -&gt; DDR frame buffer
--&gt; MIPI CSI-2 TX，帮我盘点运营 Catalog 和工程目录里的相关材料：
+-&gt; MIPI CSI-2 TX，帮我盘点 Catalog 和工程目录里的相关材料：
 哪些可以直接例化、哪些要按我的规格改造、哪些只能当参考、哪些根本不能用，
 整理成一份物料清单登记进工程，每一条都注明来源、许可和理由。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
-<li>用 <code>project_status</code> 确认工程已初始化，读取 materials 视图。</li>
-<li>扫描 EVOVERSE_HOME 下的运营 Catalog（Catalog Sync 的结果）：板卡规格、IP 清单、Demo 材料、许可说明。</li>
+<li>读取当前工程状态与 materials 视图，确认 Harness 已就绪。</li>
+<li>扫描运营 Catalog：板卡规格、IP 清单、Demo 材料、许可说明。</li>
 <li>对每个候选材料给出四类结论之一：</li>
 <li><code>REUSE_UNCHANGED</code> — 原样例化（如 DDR 硬核 IP、CSI-2 TX 硬核）。</li>
 <li><code>ADAPT_REQUIRED</code> — 需要按你的规格适配（如参考 SD 主机的接口宽度）。</li>
 <li><code>REFERENCE_ONLY</code> — 只看思路，不许复制（目标 <code>sd-ddr-csi2</code> 工程的 RTL 属于这一类）。</li>
 <li><code>REJECTED</code> — 许可、器件或电压不匹配，明确排除。</li>
-<li>提交 <code>project_execute</code>（actionId 为 <code>asset.observe</code>），把观察结果登记进工程状态。</li>
-<li>生成 <code>design-package/material-ledger.md</code> 物料账本，逐行给出材料、来源、分类与理由。</li>
+<li>把观察结果登记进工程状态，并生成 <code>design-package/material-ledger.md</code> 物料账本，逐行给出材料、来源、分类与理由。</li>
 </ol>
 <h2 id="你需要确认什么">你需要确认什么</h2>
 <ul>
 <li>每一条 <code>REUSE_UNCHANGED</code> 是否真的与 TJ180A484S 的 bank 电压、引脚兼容——不匹配的材料宁可降级为 <code>ADAPT_REQUIRED</code>。</li>
 <li><code>REFERENCE_ONLY</code> 的边界：目标工程的 RTL、约束、工程文件不得进入你的工程目录，更不得成为新工程基线。</li>
-<li>账本里没有来历不明的材料：每一行都能回答"从哪来、许可能不能用在交付物里"。</li>
+<li>账本里没有来历不明的材料：每一行都能回答“从哪来、许可能不能用在交付物里”。</li>
 </ul>
 <h2 id="如果不顺利">如果不顺利</h2>
 <table>
@@ -171,11 +171,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td>列出的材料太多看不过来</td>
-<td>让 Trae 只保留"许可与器件兼容"有依据的条目，其余标为待查；账本宁缺毋滥。</td>
+<td>让 Trae 只保留“许可与器件兼容”有依据的条目，其余标为待查；账本宁缺毋滥。</td>
 </tr>
 <tr>
 <td>找不到 SD 主机或 CSI-2 相关材料</td>
-<td>如实接受"这一环是自研空白区"——找不到不等于硬凑；空白区会按三轮增量拆进规格。</td>
+<td>如实接受“这一环是自研空白区”——找不到不等于硬凑；空白区会按模块切片拆进规格。</td>
 </tr>
 <tr>
 <td>Trae 想把目标 sd-ddr-csi2 工程的 RTL 复制过来</td>
@@ -189,12 +189,12 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
-<li><code>asset.observe</code> 回执在控制面状态里可见，materials 区与账本一致。</li>
+<li>物料观察结果在工程状态里可见，materials 区与账本一致。</li>
 <li>账本覆盖数据链路每一环：SD 主机、DDR、MIPI CSI-2 TX、时钟与复位策略、未决空白区。</li>
-<li>空白区按三轮增量（SD 输入 / DDR 缓冲 / CSI-2 输出）拆分：每轮的复用、新增与涉及约束一目了然——它是阶段 02 差量规格的核心输入。</li>
+<li>空白区按模块切片（<code>sd_host</code> / <code>frame_buffer_writer</code> / <code>csi2_tx</code>）拆分：每个切片的复用、新增与涉及约束一目了然——它是阶段 02 模块契约的核心输入。</li>
 <li>后续 <code>efx_run --flow compile</code> 用到的每一个 IP 与引脚约定都能在账本里追溯到来源。</li>
 </ul>
-<p>完成后进入 <a href="02-system-specification.html">阶段 02：冻结规格</a>。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="00-stage0-harness.html">← 上一阶段：00 建立 Stage0 物理 Harness</a><a class="stage-overview" href="README.html">教程总览</a><a class="next-stage" href="02-system-specification.html">下一阶段：02 冻结规格 →</a></nav></main>
+<p>完成后进入 <a href="02-system-specification.html">阶段 02：冻结模块规格</a>。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="00-stage0-harness.html">← 上一阶段：00 建立 Stage0 物理 Harness</a><a class="stage-overview" href="README.html">教程总览</a><a class="next-stage" href="02-system-specification.html">下一阶段：02 冻结规格 →</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

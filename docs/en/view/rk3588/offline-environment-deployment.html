@@ -98,128 +98,100 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../rk3588-adapter.html">← Back to RK3588 Adapter</a>
 <span>Obtaining the WS-E2 dual offline packages, the fixed directory, one-shot deployment, health states, install locations and troubleshooting.</span>
 <code>rk3588/offline-environment-deployment.md</code>
 <a href="../../../rk3588/offline-environment-deployment.md">Markdown source</a></p>
 <h1>RK3588 Offline Environment Deployment Guide</h1></header>
 <main class="article"><h1 id="rk3588-offline-environment-deployment-guide">RK3588 Offline Environment Deployment Guide</h1>
-<p>This guide applies to the RK3588J development environment for WS-E2. The SDK never auto-downloads large BSPs from the public internet or file-hosting services; obtain the two locked offline packages from EvoVerse first, and let the RK3588 Adapter handle verification, deployment, and qualification.</p>
-<h2 id="the-two-files-to-obtain">The Two Files to Obtain</h2>
+<blockquote>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+</blockquote>
+<p>This guide applies to the WS-E2 RK3588J environment. The separately delivered Linux Environment Manager (<code>evoverse-env</code>) owns installation; the RK3588 Adapter is its only local client. The SDK does not proxy Manager commands, and neither the Manager nor large BSP materials are embedded in a VSIX.</p>
+<h2 id="deliverables">Deliverables</h2>
 <table>
 <thead>
 <tr>
-<th>File</th>
-<th style="text-align: right;">Download size</th>
-<th>Post-install purpose</th>
-<th>SHA-256</th>
+<th>Deliverable</th>
+<th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td>Ubuntu 24.04 x86_64 <code>evoverse-env</code> <code>.deb</code></td>
+<td>Install, verify, and run RK3588 environments</td>
+</tr>
+<tr>
+<td>Verified release-assets directory</td>
+<td>Signed environment index, manifest, material lock, and license policy</td>
+</tr>
+<tr>
 <td><code>rk3588-toolchain-2026.09.evopkg</code></td>
-<td style="text-align: right;">256,584,627 bytes (about 244.7 MiB)</td>
-<td>Ubuntu 22.04 / AArch64 GNU cross-compilation Docker image</td>
-<td><code>d05eaff178a72f6764e75f52418ee3e642a74cb15ca182c93a03cdc005fc28f2</code></td>
+<td>Pinned AArch64 cross-toolchain material</td>
 </tr>
 <tr>
 <td><code>ws-e2-rk3588-bsp-b8f5dda5.evopkg</code></td>
-<td style="text-align: right;">344,225,733 bytes (about 328.3 MiB)</td>
-<td>kernel, U-Boot, rkbin, Buildroot, and WS-E2 inputs at pinned commits</td>
-<td><code>b3107d7bfeabc1fc29bf013bbc980d3d6b883d7ce4e5ef97881b42d2fc43f118</code></td>
+<td>Pinned kernel, U-Boot, rkbin, Buildroot, and WS-E2 inputs</td>
 </tr>
 </tbody>
 </table>
-<p>The rebuilt BSP is expected to occupy about 4.03 GiB; the toolchain image expands to about 685 MiB. The Catalog's hard deployment threshold is 8,300,000,000 bytes; allow for logs and subsequent builds and keep at least 9 GiB free on the target disk.</p>
-<h2 id="before-you-deploy">Before You Deploy</h2>
+<p>The signed index and material lock in the release assets are authoritative for both <code>.evopkg</code> identities. Do not extract, rename, or recompress them. The hard deployment threshold is 8,300,000,000 bytes; keep at least 9 GiB free.</p>
+<h2 id="host-and-connection-prerequisites">Host and Connection Prerequisites</h2>
 <ol>
-<li>Install and start Docker Desktop, and switch to Linux containers.</li>
-<li>Confirm the SDK has synced the latest Catalog (<code>EvoVerse: Sync Catalog</code> — the default public repository needs no GitHub account).</li>
-<li>Confirm the target disk has enough free space.</li>
-<li>Do not extract, rename, or recompress <code>.evopkg</code> files.</li>
+<li>Install the Manager <code>.deb</code> on an Ubuntu 24.04 x86_64 host and provide a working Docker Engine.</li>
+<li>Run <code>evoverse-env handshake --json</code> and confirm that it reports <code>environment-manager/v1</code>.</li>
+<li>The Adapter discovers <code>/usr/bin/evoverse-env</code> and <code>/usr/local/bin/evoverse-env</code>. For another location, set the absolute path in <code>evoverse.rk3588.environmentManagerPath</code>.</li>
+<li>The Adapter gates only the contract major and required capabilities, so Manager and Adapter can upgrade independently. It never silently switches the selected binary during a session.</li>
 </ol>
-<p>By default <code>EVOVERSE_HOME</code> is <code>%USERPROFILE%\evoverse-sdk</code>. If you changed it in the SDK settings, every path below follows the configured value.</p>
-<h2 id="recommended-procedure-drop-into-the-fixed-directory-then-one-click-deploy">Recommended Procedure: Drop into the Fixed Directory, Then One-Click Deploy</h2>
+<p>A Windows IDE is not itself a supported Manager installation host. There is no SDK proxy, HTTP hub, or implicit WSL relay. A Windows IDE therefore needs an explicitly configured local launcher that the Adapter can execute directly; otherwise run the IDE/Adapter on the Ubuntu host.</p>
+<h2 id="installation-flow">Installation Flow</h2>
+<p>The Workbench uses one Adapter -&gt; <code>evoverse-env</code> direct channel:</p>
 <ol>
-<li>In the RK3588 Workbench Overview, click "Open offline package directory".</li>
-<li>Copy both <code>.evopkg</code> files to:</li>
+<li><code>catalog list</code> reads the verified release assets.</li>
+<li><code>plan create</code> creates a deterministic plan for an explicit <code>&lt;id&gt;@&lt;version&gt;</code>; its <code>planDigest</code> binds the materials, version, and disk impact.</li>
+<li>The Workbench displays the plan and licenses. After approval, the Adapter mints and immediately consumes a single-use confirmation token.</li>
+<li>The Manager runs <code>install</code> with the original plan and explicit accepted licenses; it never silently replans.</li>
+<li><code>verify</code> re-proves the installed identity. Environment <code>READY</code> requires both a committed receipt and a passing quick verification.</li>
 </ol>
-<p><code>text
-   &lt;EVOVERSE_HOME&gt;\downloads\rk3588\</code></p>
-<ol>
-<li>Click "Check environment". Only after both packages pass every check — file names, sizes, outer SHA-256, internal manifest, and per-file checksums — does the UI offer a deployment token bound to that check.</li>
-<li>Read the license notice and check the license confirmation box.</li>
-<li>Click "One-click deploy", and do not close the IDE or Docker Desktop during deployment.</li>
-<li>Wait until the Overview shows <code>READY</code>, then move on to Build.</li>
-</ol>
-<p>To abort, use the cancel action of the current run; the Adapter cancels unpacking/deployment under the same run ID and rolls back the installation directories, receipts, and Docker images created by that run. Images that already existed before the deployment are not removed.</p>
-<p>You can also click "Select offline packages" and pick the two files individually. Selecting files does not install anything; deployment becomes possible only after both packages pass the same controlled check.</p>
-<h2 id="what-the-adapter-actually-does">What the Adapter Actually Does</h2>
-<pre class="mermaid">flowchart LR
-  A[Two offline packages] --&gt; B[Size and outer SHA-256]
-  B --&gt; C[Manifest and per-file checksums]
-  C --&gt; D[Unpack into a staging directory]
-  D --&gt; E[Docker load and image ID check]
-  D --&gt; F[Rebuild the BSP from a Git bundle]
-  F --&gt; G[root/submodule/loader/partition-table/toolchain qualification]
-  E --&gt; H[Atomic install and receipts]
-  G --&gt; H
-  H --&gt; I[Environment READY]
-  I --&gt; J[Project preflight / build]
-  J --&gt; K[Hardware verification still NOT_RUN]
-</pre>
-<p>The BSP package stores a controlled Git bundle rather than a <code>.git</code> directory. Deployment rebuilds a real Git repository, restores the pinned root commit and the four submodules, then invokes the SDK's existing BSP qualification gate. If qualification fails, staged results are never passed off as an official installation.</p>
-<h2 id="installation-results">Installation Results</h2>
+<p>The Manager owns transactions, licenses, receipts, and environment identity. The Adapter owns UI confirmation, the invocation session, and normalized results. Cancellation or failure must never be projected as <code>READY</code>.</p>
+<h2 id="diagnostics">Diagnostics</h2>
 <table>
 <thead>
 <tr>
-<th>Content</th>
-<th>Default location</th>
+<th>Status</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>BSP</td>
-<td><code>&lt;EVOVERSE_HOME&gt;\bsp\ws-e2\b8f5dda5\</code></td>
+<td><code>MANAGER_NOT_FOUND</code></td>
+<td>Install the <code>.deb</code> or set <code>evoverse.rk3588.environmentManagerPath</code></td>
 </tr>
 <tr>
-<td>Toolchain archive</td>
-<td><code>&lt;EVOVERSE_HOME&gt;\toolchains\rk3588\2026.09\</code></td>
+<td><code>RK_MANAGER_INCOMPATIBLE</code></td>
+<td>Upgrade the Manager for the reported contract/capability gap</td>
 </tr>
 <tr>
-<td>Installation receipts</td>
-<td><code>&lt;EVOVERSE_HOME&gt;\receipts\rk3588\</code></td>
+<td><code>RK_MANAGER_UNREACHABLE</code></td>
+<td>Check execute permission, host compatibility, and <code>handshake --json</code> output</td>
 </tr>
 <tr>
-<td>Temporary staging area</td>
-<td><code>&lt;EVOVERSE_HOME&gt;\staging\rk3588\</code></td>
+<td><code>LICENSE_NOT_ACCEPTED</code></td>
+<td>Review and accept the licenses bound to the current plan</td>
+</tr>
+<tr>
+<td><code>MATERIAL_DIGEST_MISMATCH</code></td>
+<td>Replace the material with the release-pinned original; do not edit indexes or receipts</td>
+</tr>
+<tr>
+<td><code>INSUFFICIENT_SPACE</code></td>
+<td>Free disk space and create a new plan</td>
 </tr>
 </tbody>
 </table>
-<p>Do not edit the installation receipts by hand. If an installed directory and its receipts disagree, the health check reports <code>REPAIRABLE</code> or <code>USER_ACTION_REQUIRED</code> and never silently overwrites unknown content.</p>
-<h2 id="what-the-statuses-mean">What the Statuses Mean</h2>
-<ul>
-<li><code>PACKAGE_REQUIRED</code>: one or both offline packages are missing.</li>
-<li><code>REPAIRABLE</code>: the packages were found and the environment can be repaired through controlled deployment.</li>
-<li><code>USER_ACTION_REQUIRED</code>: the user must resolve Docker, disk space, package corruption, or an existing-directory conflict.</li>
-<li><code>READY</code>: environment identity and installation receipts passed; this does not mean any project has been built.</li>
-<li><code>BUILD_READY</code>: the current project passed its own preflight and is ready for a controlled build.</li>
-<li><code>NOT_RUN</code>: flashing or board-level hardware verification has not been performed yet.</li>
-</ul>
-<h2 id="faq">FAQ</h2>
-<h3 id="package_digest_mismatch-is-reported"><code>PACKAGE_DIGEST_MISMATCH</code> is reported</h3>
-<p>The file is not the original package declared by the Catalog, or it was corrupted during copying. Delete the copy and obtain it again from EvoVerse; do not modify the Catalog JSON or the verification receipts.</p>
-<h3 id="docker-cli-exists-but-the-daemon-is-unavailable">Docker CLI exists but the daemon is unavailable</h3>
-<p>Start Docker Desktop, wait for the engine to be ready, confirm you are on Linux containers, then click "Check environment" again.</p>
-<h3 id="an-existing-installation-directory-does-not-match">An existing installation directory does not match</h3>
-<p>The tool never overwrites a directory of unknown origin. Back up that directory and its receipts first, have the project owner decide whether to restore the old version or move the conflicting directory away, then redeploy.</p>
-<h3 id="can-i-take-only-the-bsp-and-skip-the-toolchain">Can I take only the BSP and skip the toolchain?</h3>
-<p>No. The reproducible WS-E2 environment binds the BSP and the toolchain image together; a deployment token is never issued when either package is missing.</p>
-<h3 id="can-i-flash-directly-once-the-environment-is-ready">Can I flash directly once the environment is <code>READY</code>?</h3>
-<p>No. You still need to generate/confirm the project Profile, run preflight and Build, and complete the firmware, flashing-method, and board-level verification. Environment health only answers "are the development material and tools the declared versions".</p>
-<p>One-click deployment never searches for or rewrites the Profile of any customer project. After the environment reaches <code>READY</code>, the user must still explicitly choose the target project; the project generation/binding chain then writes the BSP, container, loader, and partition identities, and only that project's own preflight can yield <code>BUILD_READY</code>.</p></main>
+<p>Environment <code>READY</code> proves installation identity only. Project compilation, flashing, boot, and board validation are independent stages and remain <code>NOT_RUN</code> until actually executed.</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
-<script src="../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
+
 </body></html>

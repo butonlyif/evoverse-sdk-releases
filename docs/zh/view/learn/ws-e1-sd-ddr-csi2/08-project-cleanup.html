@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>先预览、确认，再安全整理工程。</span>
 <code>learn/ws-e1-sd-ddr-csi2/08-project-cleanup.md</code>
@@ -120,15 +120,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>08 整理工程并交付</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-08-目录整理与交付">阶段 08 · 目录整理与交付</h1>
 <blockquote>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
 <p>显示链路验证完成后，不要让临时草稿、候选文件和报告散落在工程根目录。本章让 Trae 先生成整理预览，由你逐条确认后再执行，最后用一次 <code>efx_run --flow compile</code> 复编译证明工程仍可交付。</p>
 </blockquote>
-<p>整理的目标是让下一位工程师容易找到文件，不是重写一个已经能用的工程。冻结的规格包（<code>design-package/</code>）、三轮增量晋级形成的基线（含各轮 <code>candidate.promote</code> 回执）、已交付候选与全部证据回执都是受保护文件——它们是这条 TJ180A484S 上 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路的证据链，不参与整理。</p>
+<p>整理的目标是让下一位工程师容易找到文件，不是重写一个已经能用的工程。冻结的规格包（<code>design-package/</code>）、三个模块收敛后晋级形成的基线（含晋级回执）、已交付候选与全部证据回执都是受保护文件——它们是这条 TJ180A484S 上 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路的证据链，不参与整理。</p>
 <p>整理的执行顺序如下图，预览先行、确认驱动、复编译收尾：</p>
 <pre class="mermaid">flowchart TD
     A[&quot;生成整理预览&lt;br&gt;reports/project-cleanup-preview.md&quot;] --&gt; B[&quot;你逐条确认&lt;br&gt;不确定项标为需要决定&quot;]
     B --&gt; C[&quot;只执行确认条目&lt;br&gt;同步修正引用路径&quot;]
     C --&gt; D{&quot;工程 XML 与&lt;br&gt;脚本路径仍有效？&quot;}
-    D --&gt;|是| E[&quot;build.native 复编译&lt;br&gt;efx_run --flow compile&quot;]
+    D --&gt;|是| E[&quot;原生复编译&lt;br&gt;efx_run --flow compile&quot;]
     D --&gt;|否| F[&quot;停在问题处&lt;br&gt;回滚未确认动作&quot;]
     E --&gt; G[&quot;报告：已整理 / 受保护 /&lt;br&gt;引用更新 / 复编译结果&quot;]
 </pre>
@@ -140,10 +141,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
-<li>读取工程合同、材料账本、<code>candidate.deliver</code> 与 <code>candidate.promote</code> 回执和 Efinity 工程文件，建立"文件归属与引用"清单。</li>
+<li>读取工程合同、材料账本、候选交付与晋级回执和 Efinity 工程文件，建立"文件归属与引用"清单。</li>
 <li>预览阶段只产出报告（如 <code>reports/project-cleanup-preview.md</code>），不修改任何工程文件。</li>
 <li>你确认后才整理允许变动的文件，并同步修正已确认的相对路径。</li>
-<li>整理完成后用 <code>build.native</code> 记录一次原生 <code>efx_run --flow compile</code>：路径失效或编译失败会停在问题处，不会复制参考工程文件来掩盖问题。</li>
+<li>整理完成后记录一次原生 <code>efx_run --flow compile</code> 复编译：路径失效或编译失败会停在问题处，不会复制参考工程文件来掩盖问题。</li>
 <li>每一步都尊重工程合同：工程 XML 不手动编辑，引用修正走同步能力。</li>
 </ol>
 <h2 id="你需要确认什么">你需要确认什么</h2>
@@ -199,8 +200,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 <tr>
 <td>"把候选区文件归档到 reports/"</td>
-<td>候选与基线由控制面管辖：<code>candidate.deliver</code> 冻结、<code>candidate.promote</code> 晋级，回执已记录摘要，手工归档会污染 reports</td>
-<td>"候选区文件交付后保持原样，无需归档"</td>
+<td>候选与基线由控制面管辖：候选交付后冻结、晋级后成为基线，回执已记录摘要，手工归档会污染 reports</td>
+<td>"候选区文件保持原样，无需归档"</td>
 </tr>
 <tr>
 <td>"重命名一下工程 XML 让目录更整洁"</td>
@@ -214,7 +215,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><code>reports/project-cleanup-preview.md</code> 记录了预览、你的确认范围、实际变更和未处理项。</li>
 <li>目录能清楚区分 <code>design-package/</code>、<code>rtl/</code>、<code>sim/</code>、<code>constraints/</code>、<code>software/</code>、<code>reports/</code> 与辅助脚本，第三方 IP 与 Efinity 生成物未被误动。</li>
 <li>复编译 <code>efx_run --flow compile</code> 成功，且报告来自整理后的目录状态；失败则保留报告并回滚未确认动作，而不是声称工程仍可交付。</li>
-<li>最终交付说明能指出：物料、冻结规格、三轮晋级形成的基线、编译与硬件证据各在什么目录。</li>
+<li>最终交付说明能指出：物料、冻结规格、模块收敛后晋级形成的基线、编译与硬件证据各在什么目录。</li>
 </ul>
 <p>至此，这条从空目录到板上显示的路径全部走完。回看 <a href="07-skills-and-mcp.html">阶段 07 的速查表</a>，或回到 <a href="README.html">教程总览</a> 开始下一个意图。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="07-skills-and-mcp.html">← 上一阶段：07 Skills 与 MCP</a><a class="stage-overview" href="README.html">教程总览</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>

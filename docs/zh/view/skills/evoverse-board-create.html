@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item on" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../skills.html">← 返回Skills</a>
 <span>用 evoverse-board-create 技能从 PDF 原理图生成板卡目录数据。</span>
 <code>skills/evoverse-board-create.md</code>
@@ -106,7 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Skill：从原理图创建板卡</h1></header>
 <main class="article"><h1 id="evoverse-board-create-用户指南">evoverse-board-create · 用户指南</h1>
 <blockquote>
-<p><strong>面向客户</strong> · EvoVerse SDK v1.0.0 · 2026-10-24</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>面向客户</strong> · EvoVerse SDK v1.0.1 · 2026-10-24</p>
 </blockquote>
 <p>这个 Skill 把板卡资料整理成 SDK 可验证的机器契约，并自动生成人可读说明书。
 适用于独立 FPGA 单板、纯 SoC 单板（RK3588 为首个实现）、FPGA 核心板+底板，
@@ -127,9 +128,10 @@ RK3588 分开保存功能 pinout。核心板和底板各自保存机器事实，
 组合说明书。功能映射直接连接到最终器件，不包含冗余的板间连接器位置。
 每个 SoC 目标在 <code>platforms/&lt;target-id&gt;/</code> 下生成三份最小物料：规范化的小型
 <code>platform.yaml</code>、由已确认原理图事实推导的 <code>&lt;board-id&gt;.dts</code> 初始骨架，以及
-Adapter 词汇的 <code>profile.template.json</code>（未绑定字段保持空白/未解决，绝不伪造）；
-当平台输入中带有确认的本地 BSP/环境绑定事实时，同目录额外生成可执行的
-<code>evoverse-rk3588-profile.json</code>（沿用现有 Profile 模式，原值渲染）。</p>
+Adapter 词汇的 <code>profile.template.json</code>（未绑定字段保持空白/未解决，绝不伪造）。
+模板是唯一面向 Adapter 的产物：生成不再产出可执行 Profile，平台输入携带的
+本地绑定事实仍逐字段校验，缺失即报 <code>INCOMPLETE</code>；旧生成器留下的可执行
+<code>evoverse-rk3588-profile.json</code> 按字节原样保留（legacy，已弃用，永不再写）。</p>
 <p><code>docs/generated/</code> 自动产生；其中面向客户阅读的综合说明书固定为
 <code>docs/generated/board-manual.md</code>：</p>
 <ol>
@@ -157,21 +159,34 @@ Adapter 词汇的 <code>profile.template.json</code>（未绑定字段保持空�
 <p>FPGA 校验区分“封装球存在”和“该球允许承担指定 GPIO/硬核功能”。它检查
 bank/VCCIO、PLL 参考时钟、配置/JTAG、差分对、MIPI lane、DDR、PCIe/QSE/
 SerDes 等器件约束。Efinity probe 的 package/bank 输出不能单独证明硬核合法。</p>
-<p>RK3588 走直接资源流：先确认目标身份，再按「板卡/模组厂商官方 BSP → 芯片
+<p>RK3588 走 requirement-first 资源流：先确认目标身份，再按「板卡/模组厂商官方 BSP → 芯片
 厂商官方 SDK → 厂商明确支持的上游项目」顺序搜索一手开发资源；社区仓库、
 镜像、论坛帖、分销商页面只作发现线索，除非用户显式接受否则不能成为选定的
 BSP 或环境。定制板没有板卡厂商 BSP 时，以芯片厂商官方 SDK 为基础，从原理图
 事实推导本板 DTS；同 SoC 其他板卡的 BSP 不能互换。选定资源只记录可复现信息
 （官方归属、URL/仓库、发布 ref、支持的主机构建环境、许可证/访问说明、观察
 日期）到 <code>sources.yaml</code>，未下载核验的字节不编造哈希。</p>
-<p>大型 BSP 压缩包、工具链、容器镜像、固件包或任何需要接受许可的资源，下载前
-必须先向用户展示确切的来源、版本/ref、已知大小、目标位置与许可/访问要求，
-确认后才下载；Skill 不嵌入凭据、不代用户接受许可。确认后使用现有 Git/HTTP/
-归档/包管理/容器工具在用户批准的位置取得资源，重新运行生成更新同一
-<code>platforms/&lt;target-id&gt;/</code> 目标文件，用真实 BSP 根、ref、环境、loader、分区与
-阶段补全 <code>evoverse-rk3588-profile.json</code>，然后调用现有 RK3588 Adapter
-preflight。下载成功本身不是 <code>BUILD_READY</code>——该结论只由 Adapter 在绑定完成且
-preflight 通过后报告。</p>
+<p>选定来源后，Skill 只记录 requirement，不执行安装：把选定来源写入
+<code>board.yaml</code> 的 <code>environment_requirement</code>（<code>REQUIRED</code> / <code>SATISFIED</code> /
+<code>UNVERIFIED</code>），profile 引用指向
+<code>platforms/&lt;target-id&gt;/profile.template.json</code>；无法核验的访问或许可事实保持
+<code>UNVERIFIED</code>，绝不猜值。环境安装由 Adapter（Environment Manager）负责：
+本 Skill 不安装工具链或容器镜像、不代用户接受许可，状态只报告
+<code>GENERATED</code> 或 <code>INCOMPLETE</code>。<code>BUILD_READY</code> 只由 Adapter 在自身绑定且
+preflight 通过后报告，生成物料绝不宣称。旧生成器留下的可执行
+<code>evoverse-rk3588-profile.json</code> 保持可读且永不被改写（legacy，已弃用）。</p>
+<p><strong>定制板的 BSP 开发物料组装（§3b，dev 侧）</strong>：当选定 BSP 为 SoC 厂商公开
+仓库且不存在板卡厂商 BSP 时，Skill 可在 Linux 宿主（WSL 可用）驱动一次
+dev 侧组装——克隆钉定 commit 的四仓库并逐字节核对 loader 身份 → 超级工程
+（root + submodule + 分区表 + BR2_EXTERNAL 板级树）→ kernel/u-boot 编译级
+smoke → buildroot 完整镜像（可烧录四件套）→ 身份 commit + git bundle +
+往返克隆校验 → 交付为 GitHub Release 附件（catalog sync 不携带大件），
+仓内 <code>bsp/manifest.json</code> 携带 rootCommit、逐文件 sha256、release URL、
+<code>bspSelection</code> 与许可决策。全部构建声明为 compile-level；烧录、启动、
+硬件验证保持 <code>NOT_RUN</code>，绝不宣称。vendor 构建契约（gcc ≥13 告警放宽、
+<code>bl31.elf</code>/<code>tee.bin</code> 源树根拷贝、<code>merge_config.sh</code> 必须在 O= 目录内执行、
+headers 系列须显式选择等）见 SDK 文档《RK3588-vendor构建契约-u-boot与kernel》，
+组装流程全文见本 Skill 的 §3b。</p>
 <p>缺失必备原理图事实、权威 BSP/环境来源、访问权限或用户确认时，状态为
 <code>INCOMPLETE</code>：部分物料仍然生成并激活，可进入 Catalog 被发现，后续补齐事实后
 重新生成同一目标目录即可完成——<code>INCOMPLETE</code> 不是 Catalog 拒收。只有畸形契约、
@@ -190,9 +205,9 @@ python -m pinout_tool.cli material-generate `
 <p>生成 Stage0 只证明输入文件已经形成，不证明 Efinity 编译、烧录或实板运行。
 未运行原生编译时状态为 <code>NATIVE_BUILD_NOT_RUN</code>。RK3588 的原生构建、镜像打包、
 烧录、启动和实板验证是彼此独立的证据边界，生成文件一律不宣称其中任何一项；
-RK3588 Adapter 也会自动发现 <code>platforms/&lt;target-id&gt;/</code> 下生成的模板与可执行
-Profile（可执行 Profile 优先），未绑定模板只呈现 <code>PROFILE_READY</code> 与缺失绑定
-清单，不会转为完整 Profile。</p></main>
+RK3588 Adapter 也会自动发现 <code>platforms/&lt;target-id&gt;/</code> 下生成的模板；未绑定
+模板只呈现 <code>PROFILE_READY</code> 与缺失绑定清单，不会转为完整 Profile；绑定、
+preflight 与 <code>BUILD_READY</code> 均由 Adapter 自身完成。</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
 

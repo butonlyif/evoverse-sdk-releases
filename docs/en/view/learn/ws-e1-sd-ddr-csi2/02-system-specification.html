@@ -112,52 +112,52 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Complete the project step by step in Trae.</span>
 <code>learn/ws-e1-sd-ddr-csi2/02-system-specification.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/02-system-specification.md">Markdown source</a></p>
 <h1>02 Freeze the Specification</h1></header>
-<main class="article tutorial-article"><h1 id="stage-02-freeze-the-specification-delta-specification-and-level-decisions">Stage 02 · Freeze the Specification (Delta Specification and Level Decisions)</h1>
+<main class="article tutorial-article"><h1 id="stage-02-freeze-the-module-specifications">Stage 02 · Freeze the Module Specifications</h1>
 <blockquote>
-<p>The material ledger split the in-house blank area into three increments (SD input, DDR buffering, CSI-2 output), which together cover the entire SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX display link. This stage explains the mechanics of two decisions — how the simulation level is chosen and how the delta specification is frozen — and walks the first increment (SD input) through <code>spec.draft</code> → <code>spec.approve</code> end to end. Until the specification is approved, the control plane allows no candidate delivery; the last two increments repeat their level and specification decisions in Stage 03.</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>The material ledger has carved the self-developed blank area into three module slices (<code>sd_host</code>, <code>frame_buffer_writer</code>, <code>csi2_tx</code>). This stage turns them, in one pass, into executable module specifications and interface contracts, and completes the first decision: confirming the plan and the executable specification. Until the specification is approved, the control plane permits no candidate generation; once approved, later generation, simulation, and composition all hang under this summary fingerprint, and it will not keep asking you to sign off module by module. Every module must ultimately land on the physical resources of the TJ180A484S and be verified by the native <code>efx_run --flow compile</code> unified flow.</p>
 </blockquote>
-<p>The specification is the contract of the reliable design flow: candidates delivered later through <code>candidate.deliver</code> are validated against its summary, and evidence from <code>verification.simulate</code> is bound to its version. The delta specification is measured against the <strong>parent baseline</strong> — the first round's parent is the Stage0 initial baseline, and the last two rounds' parents are the previous round's promotion results. Write it incompletely and every later step gets blocked back to you.</p>
-<p>The complete decision chain of the first increment looks like this:</p>
+<p>A specification is the contract of a reliable design process: each <code>ModuleSpec</code> states ports, widths, clock domains, reset semantics, the acceptance oracle, and coverage items; the interfaces between modules are written as contracts; the whole chain is described by the top-level connections of the in-chip composition. A delivered candidate is checked against the specification summary, and simulation evidence is bound to the specification revision. Write it incompletely and every later step will be blocked back at you.</p>
+<p>The decision chain of this stage looks like this:</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;Extract this round's risk facts&lt;br&gt;SD handshake / write-port backpressure / CDC&quot;] --&gt; B[&quot;simulation.profile.select&lt;br&gt;submit riskFacts&quot;]
-    B --&gt; C[&quot;Server recommends a level&lt;br&gt;by fixed risk rules&quot;]
-    C --&gt; D{&quot;User picks the level&quot;}
-    D --&gt;|below recommendation| E[&quot;Fill in acceptedRisks&quot;]
-    E --&gt; F[&quot;spec.draft&lt;br&gt;draft the delta spec within the chosen level's budget&quot;]
-    D --&gt;|recommendation or above| F
-    F --&gt; G[&quot;spec.approve&lt;br&gt;freeze the specification and generate the summary digest&quot;]
+    A[&quot;Extract the risk facts of the whole intent&lt;br&gt;SD handshake / write-port backpressure / CDC / output timing&quot;] --&gt; B[&quot;Recommend a simulation level from fixed risk rules&quot;]
+    B --&gt; C{&quot;You make the first decision:&lt;br&gt;confirm the plan and the specification&quot;}
+    C --&gt;|below the recommendation| D[&quot;Accept each deferred-verification risk item by item&quot;]
+    D --&gt; E[&quot;Freeze three ModuleSpecs + interface contracts + the composition specification&quot;]
+    C --&gt;|at or above the recommendation| E
+    E --&gt; F[&quot;Generate the specification summary fingerprint&quot;]
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Start the first round of design: read from an SD card and write into a DDR frame buffer on my WS-E1 board (TJ180A484S).
-First tell me what simulation level this round needs:
-it involves SD protocol handshake and backpressure on the frame-buffer write port — walk me through the recommended level and the items whose verification will be deferred; I will decide the level myself.
-Once the level is set, draft this round's specification from the material ledger, covering only the SD write path;
-wherever behavior is ambiguous (for example, how to handle an SD card initialization timeout), give me options to choose from instead of deciding for me.
-Freeze it once I confirm.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">The plan and the specification can be drafted now. Split this SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX chain
+into three modules, sd_host, frame_buffer_writer, and csi2_tx, and give me one ModuleSpec per module:
+ports, widths, clock domains, reset semantics, acceptance scenarios, and the oracle.
+Write the interface contracts between modules, and describe at the top level how the in-chip composition connects them.
+Also tell me what simulation level this chain needs and which risks would be deferred for verification.
+Where behavior is ambiguous (say, how to handle an SD initialization timeout, or the DDR buffer depth), give me a few options;
+once I confirm the plan you freeze the specification — do not keep asking me the same class of question per module afterwards.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li><code>project_status</code> confirms the specification area is empty or holds a draft, and <code>project_next</code> confirms <code>simulation.profile.select</code> and <code>spec.draft</code> are available.</li>
-<li><strong>Level before specification</strong>: extracts the risk facts of this increment (SD protocol handshake, write-port backpressure, CDC) and submits them as the <code>riskFacts</code> of <code>simulation.profile.select</code>; the control plane recommends a level by fixed risk rules. For the SD input increment the recommendation is usually <code>FPGA_INTEGRATION</code>: protocol handshake, backpressure, and no data loss are blocking obligations, while subjective image quality and long full regression runs may be deferred. After you pick a level (choosing below the recommended minimum requires filling in <code>acceptedRisks</code>), the specification is written within the chosen level's budget — scenario counts, Oracles, and coverage items are controlled at the source, and exceeding the budget makes the control plane ask for re-confirmation.</li>
-<li>Drafts the <strong>delta specification</strong> from the material ledger: the SystemSpec increment, ModuleSpecs for this round's in-house modules, MaterialContracts (referencing ledger materials), interface contracts, scenarios and Oracles, acceptance Properties and coverage items; the boundary against the parent baseline's reused parts written item by item.</li>
-<li>On behavioral ambiguity (e.g., the SD card initialization timeout policy), generates a structured DecisionRequest: 2-3 mutually exclusive options plus the reasoning behind the recommendation, for you to choose.</li>
-<li>After you decide, submits <code>project_execute</code> (<code>spec.draft</code>), then freezes with <code>spec.approve</code>.</li>
-<li>Re-runs <code>project_status</code> and shows the specification summary and its digest fingerprint — this round's candidates and evidence all hang off that fingerprint.</li>
+<li>Extracts the risk facts from the whole intent (SD protocol handshake, write-port backpressure, CDC, CSI-2 output timing), derives the recommended simulation level from the fixed risk rules, and explains which verification items are blocking and which can be deferred.</li>
+<li>Drafts three <code>ModuleSpec</code>s and the inter-module interface contracts from the material ledger; every module's acceptance scenarios are tagged with a verification role (reset / main-flow / critical-boundary / protocol / cdc / fifo / numeric-boundary, and so on).</li>
+<li>Drafts the composition specification: the top-level connections among the three modules, the read-only DDR wrapper, and the CSI-2 TX hard macro, plus the clock-domain and reset relationships.</li>
+<li>Where behavior is ambiguous (for example, the SD initialization timeout policy or the buffer depth), produces two to three mutually exclusive options with the reasoning behind the recommendation and hands the choice to you.</li>
+<li>Once you confirm the plan, freezes the specification and generates the summary fingerprint; the three modules and the whole-chain evidence all hang under that fingerprint.</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
-<li><strong>You choose the simulation level yourself</strong>: the AI only recommends by the fixed risk rules and explains the expected blocked verifications and deferred items; fields like <code>recommendedProfile</code> are computed by the server, the Agent must not fill them in, and there is no "AI auto-selects the level". Choosing below the recommended minimum requires writing down the concrete risks you accept (<code>acceptedRisks</code>). Levels bind to their own design iteration — the three increments each decide, none inherited.</li>
-<li><strong>Never select, copy, or snapshot the sd-ddr-csi2 project directory</strong> as a specification source; the specification must come from your material ledger and your decisions. Selecting other Demo materials is allowed, but their conclusions go only into MaterialContracts — they never directly become your design.</li>
+<li><strong>You personally choose the simulation level</strong>: the AI only recommends according to the fixed risk rules and explains the expected blocking verification and the deferrals; the recommendation field is computed server-side and the Agent must not fill it in on your behalf. If you pick below the recommended minimum, you must write down the specific risks you accept. The level binds to this one intent, and the decision is not repeated per module.</li>
+<li><strong>You must not select, copy, or snapshot the sd-ddr-csi2 project directory</strong> as a source of specifications; the specification must come from your material ledger and your decisions. <strong>You may select other Demo material</strong> as reference or reuse, but it has to pass the ledger classification and license check of Stage 01.</li>
 <li>Every decision item is yours to make: the control plane does not accept a "default approval" inferred from natural language.</li>
-<li>Acceptance scenarios are executable: every acceptance Property can produce a pass/fail in the Stage 03 simulation, not a vague "looks right". Scenarios in the specification carry a verification role (reset / main-flow / critical-boundary / integration-smoke / protocol / cdc / fifo / numeric-boundary, etc.), and simulation picks its blocking scope by level.</li>
-<li>The delta specification is measured against the parent baseline: which files are reused, added, or modified — item by item identifiable; this is the basis for the later <code>candidate.promote</code> merge.</li>
-<li>The clock scheme complies with Efinity constraints: PLLs created in the ISF, logic driven by non-divided clocks, synchronizers on asynchronous domains — these go into the specification's physical constraints section.</li>
+<li>Acceptance scenarios are executable: every acceptance property must produce a pass/fail in the Stage 03 simulation, not a vague "it looked right".</li>
+<li>Contracts come before implementation: modules handshake only through contracts; if an interface is fuzzy in the specification, patching it now is the cheapest option — do not leave it until composition.</li>
+<li>The clocking plan complies with Efinity constraints: the PLL is created in the ISF, no divided clock drives logic, and asynchronous domains have synchronizers — write this into the physical-constraints section of the specification.</li>
 </ul>
 <h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
 <table>
@@ -169,32 +169,32 @@ Freeze it once I confirm.
 </thead>
 <tbody>
 <tr>
-<td>The recommended level is higher than expected</td>
-<td>You may pick one level lower, but read every acceptedRisks entry before confirming — what you are signing for is "which verification gets deferred".</td>
+<td>The recommended level is higher than you expected</td>
+<td>You may step it down one notch, but read every accepted risk before confirming — what you sign for is "what is deferred for verification".</td>
 </tr>
 <tr>
-<td>The specification draft is sent back for revisions</td>
-<td>That is the control plane's normal protection: a vaguely written specification will block you again and again at candidate delivery and simulation — cheapest to fix now.</td>
+<td>The specification draft is rejected and needs additions</td>
+<td>This is the control plane's normal protection: a fuzzy specification will block you repeatedly at candidate delivery and simulation, and fixing it now is cheapest.</td>
 </tr>
 <tr>
-<td>None of the decision options fit</td>
-<td>Have Trae fill in each option's differences and consequences and draft again; you can also describe your own policy and ask it to generate fresh options.</td>
+<td>None of the decision options suit you</td>
+<td>Have the Agent fill in the differences and consequences of each option; you can also describe your policy directly and ask it to generate new options.</td>
 </tr>
 <tr>
-<td>Stuck at the level decision</td>
-<td>Ask "which risk facts are still missing"; the recommendation comes from the server's fixed rules and appears naturally once the facts are in.</td>
+<td>Stuck on the level decision</td>
+<td>Ask "which risk facts are still missing"; the recommendation comes from fixed server-side rules, so it will arrive once the facts are complete.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
-<li>Your <code>simulation.profile.select</code> choice is visible in the control-plane state (<code>selectedBy: user</code>), and <code>spec.draft</code> is no longer blocked by <code>SIMULATION_PROFILE_REQUIRED</code>.</li>
-<li>The <code>spec.approve</code> receipt is visible in the control-plane state; the first increment's (SD input) delta specification has moved from draft to approved.</li>
-<li>The specification summary digest is generated, and <code>project_next</code>'s candidate actions are no longer blocked by "an approved specification exists".</li>
-<li>You can point to: this round's module list, each module's interface contract, where the acceptance scenarios and Oracles live, the chosen simulation level and deferral list, and the add/modify list relative to the parent baseline.</li>
-<li>The SDC/ISF constraint requirements of the later <code>efx_run --flow compile</code> have matching clauses in the specification's physical section.</li>
+<li>The first decision (plan and executable specification) is recorded, with <code>selectedBy: user</code> visible.</li>
+<li>The three <code>ModuleSpec</code>s, the inter-module interface contracts, and the composition specification are frozen, and the summary fingerprint has been generated.</li>
+<li>Candidate generation is no longer blocked by "an approved specification is required".</li>
+<li>You can point to: the three-module list, each module's interface contract, acceptance scenarios and oracle, the chosen simulation level and deferral list, and the top-level connections of the composition.</li>
+<li>The SDC/ISF constraint requirements of the later <code>efx_run --flow compile</code> each have a corresponding clause in the physical section of the specification.</li>
 </ul>
-<p>When done, continue to <a href="03-hardware-generation.html">Stage 03: Generate RTL and deliver candidates</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="01-material-analysis.html">← Previous: 01 Material Analysis</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="03-hardware-generation.html">Next: 03 Generate IP and Controlled RTL →</a></nav></main>
+<p>When done, continue to <a href="03-hardware-generation.html">Stage 03: Per-module generation and independent simulation</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="01-material-analysis.html">← Previous: 01 Material Analysis</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="03-hardware-generation.html">Next: 03 Generate IP and Controlled RTL →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

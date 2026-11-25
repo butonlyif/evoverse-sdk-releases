@@ -98,120 +98,94 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
 <span>从安装三个 VSIX、部署双离线包到生成并构建 BUILD_READY 最小系统；工具安装外全部使用自然语言。</span>
 <code>learn/ws-e2-rk3588-minimal/README.md</code>
 <a href="../../../../learn/ws-e2-rk3588-minimal/README.md">Markdown 源文件</a></p>
 <h1>WS-E2 RK3588J 最小系统自然语言教程</h1></header>
 <main class="article"><h1 id="ws-e2-rk3588j-最小系统自然语言教程">WS-E2 RK3588J 最小系统自然语言教程</h1>
-<p>本教程从安装 EvoVerse 开始，最终得到包含 U-Boot、Linux kernel、设备树、最小 rootfs 和固件包的 WS-E2 RK3588J 工程。<strong>除了安装 VSIX、Docker Desktop 等工具，其余操作全部用自然语言生成和执行。</strong></p>
 <blockquote>
-<p>本教程完成软件构建闭环。烧录、启动、DDR/eMMC 压力测试以及 FPGA↔RK3588 实板接口验证保持 <strong>硬件验证：NOT_RUN</strong>。</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+</blockquote>
+<p>本教程是一条 <strong>atomic（原子）旅程</strong>：用 <strong>一个意图</strong> 从安装 EvoVerse 走到包含 U-Boot、Linux kernel、设备树、最小 rootfs 和固件包的 WS-E2 RK3588J 工程。除了安装 VSIX、Docker Desktop 等工具，其余操作全部用自然语言生成和执行。</p>
+<p>原子意图默认 <strong>不强制拆分</strong>。WS-E2 最小系统本身就是一个可交付单元，不需要为了流程完整而拆成子意图、子模块或多次“小步确认”；拆分只在意图确实复杂到无法一次收敛时才发生。</p>
+<p>整条旅程只有三个用户决策节点：</p>
+<ol>
+<li>确认方案与可执行规格；</li>
+<li>按需确认许可、材料部署、高成本动作或设备写入；</li>
+<li>查看证据边界并最终验收。</li>
+</ol>
+<p>背景五阶段（Intent → Plan &amp; Approve → Generate &amp; Converge → Integrate &amp; Realize → Accept）用于解释系统，不需要用户记忆逐条 action 清单。</p>
+<blockquote>
+<p>本教程完成软件构建闭环。烧录、启动、DDR/eMMC 压力测试以及 FPGA↔RK3588 实板接口验证保持 <strong>硬件验证：NOT_RUN</strong>。<code>BUILD_READY</code> 不等于硬件验证。</p>
 </blockquote>
 <pre class="mermaid">flowchart LR
-  A[安装三个 VSIX + Docker] --&gt; B[Catalog + 环境 READY]
-  B --&gt; C[自然语言创建工程]
-  C --&gt; D[PROFILE_READY]
-  D --&gt; E[Preflight]
-  E --&gt; F[四阶段构建]
-  F --&gt; G[BUILD_READY]
-  G --&gt; H[固件 + 回执 + 日志]
-  H --&gt; I[硬件验证：NOT_RUN]
+  A[安装三个 VSIX + Docker] --&gt; B[环境与材料&lt;br/&gt;按需：许可 / 离线包部署]
+  B --&gt; C[一个意图：WS-E2 最小系统]
+  C --&gt; D[方案与可执行规格确认]
+  D --&gt; E[连续生成 / Preflight / 四阶段构建]
+  E --&gt; F[证据复核与验收]
+  F --&gt; G[硬件验证：NOT_RUN]
 </pre>
-<p>每节都提供可以直接复制的“自然语言提示词”。涉及许可、材料选择或风险边界时，Agent 必须等待用户确认。</p>
-<h2 id="0-准备清单">0. 准备清单</h2>
-<ul>
+<p>每节都给出一条可以直接复制的“自然语言提示词”。需要许可、材料选择或风险确认时，Agent 必须停下来等你明确同意。</p>
+<h2 id="0-安装三个-vsix-并准备-docker">0. 安装三个 VSIX 并准备 Docker</h2>
+<p>这是全教程唯一需要手工操作的部分：</p>
+<ol>
 <li>Windows 10/11 x64，目标磁盘至少 9 GiB 可用空间；</li>
 <li>Trae CN 或兼容的 VS Code 宿主；</li>
-<li>Docker Desktop，运行 Linux containers；</li>
-<li>三个 EvoVerse VSIX；</li>
-<li>EvoVerse 提供的两个 <code>.evopkg</code> 离线包。</li>
-</ul>
-<p>不要解压、改名或重新压缩 <code>.evopkg</code>。</p>
-<h2 id="1-安装三个-vsix">1. 安装三个 VSIX</h2>
-<p>这是需要手工操作的工具安装步骤：</p>
-<ol>
-<li>在 Extensions 视图选择“Install from VSIX…”；</li>
-<li>安装 <code>evoverse-sdk-1.0.0.vsix</code>；</li>
-<li>安装 <code>evoverse-efinity-adapter-1.0.0.vsix</code>；</li>
-<li>安装 <code>evoverse-rk3588-adapter-1.0.0.vsix</code>；</li>
+<li>在 Extensions 视图选择“Install from VSIX…”，依次安装 <code>evoverse-sdk-1.0.1.vsix</code>、<code>evoverse-efinity-adapter-1.0.1.vsix</code>、<code>evoverse-rk3588-adapter-1.0.1.vsix</code>；</li>
 <li>重启 IDE；</li>
-<li>安装并启动 Docker Desktop，确认使用 Linux containers。</li>
+<li>安装并启动 Docker Desktop，确认运行 Linux containers；</li>
+<li>准备 EvoVerse 提供的两个 <code>.evopkg</code> 离线包，不要解压、改名或重新压缩。</li>
 </ol>
-<h3 id="自然语言提示词-1-检查安装">自然语言提示词 1：检查安装</h3>
+<h3 id="自然语言提示词-1-安装与准备自检">自然语言提示词 1：安装与准备自检</h3>
 <blockquote>
-<p>检查当前 EvoVerse SDK、Efinity Adapter 和 RK3588 Adapter 是否正确安装并激活，同时检查 Docker CLI、Docker daemon 和 Linux container 模式。只做只读检查，不要修改工程。如果缺少工具，请准确告诉我需要手工安装什么。</p>
+<p>检查当前 EvoVerse SDK、Efinity Adapter 和 RK3588 Adapter 是否正确安装并激活，同时检查 Docker CLI、Docker daemon 和 Linux container 模式；再同步 EvoVerse Catalog（默认公开仓库，无需 GitHub 账号），确认 ws-e2 板卡、rk3588j-evm 载板和 RK3588 最小系统材料可用。只做只读检查，不要修改工程。如果缺少工具，请准确告诉我需要手工安装什么。</p>
 </blockquote>
-<p>工具安装必须由用户完成；不要让 Agent 下载来源不明的安装程序。</p>
-<h2 id="2-同步-catalog-并确认-ws-e2">2. 同步 Catalog 并确认 WS-E2</h2>
-<h3 id="自然语言提示词-2-同步板卡材料">自然语言提示词 2：同步板卡材料</h3>
-<blockquote>
-<p>请同步 EvoVerse Catalog（默认公开仓库，无需 GitHub 账号），然后检查 ws-e2 板卡、rk3588j-evm 载板和 RK3588 最小系统材料是否可用。报告 Catalog 版本、开发目标、离线包声明和证据边界，不要创建工程。</p>
-</blockquote>
-<p>回答中应出现 <code>ws-e2</code>、<code>rk3588j-evm</code>、BSP <code>b8f5dda5</code>、工具链 <code>2026.09</code> 和两个离线包文件名。如果 Catalog 不可用，先修复同步，不能凭记忆伪造材料。</p>
-<p>具体板卡、载板与 Demo 清单以 Catalog 声明为准：本节写出的 BSP 号与工具链版本是写作时的快照，Catalog 更新后可能变化。若同步结果与本节不一致，以 Catalog 为准，让 Agent 如实报告差异，不要按教程旧值硬套。</p>
-<h2 id="3-检查-rk3588-开发环境">3. 检查 RK3588 开发环境</h2>
-<h3 id="自然语言提示词-3-环境体检">自然语言提示词 3：环境体检</h3>
+<p>回答中应出现 <code>ws-e2</code>、<code>rk3588j-evm</code>、BSP <code>b8f5dda5</code>、工具链 <code>2026.09</code> 和两个离线包文件名。工具安装必须由你完成；不要让 Agent 下载来源不明的安装程序。板卡与 Demo 清单以 Catalog 声明为准，本节写出的 BSP 号与工具链版本是写作时的快照，若同步结果不同，以 Catalog 为准。</p>
+<h2 id="1-环境与材料-按需出现的第二个决策节点">1. 环境与材料（按需出现的第二个决策节点）</h2>
+<p>这一节属于第二个决策节点：只有在你需要部署离线材料、接受许可或支付高成本动作时才出现。环境已经 READY 或使用在线材料时，可以直接跳到第 2 节。</p>
+<h3 id="自然语言提示词-2-检查-rk3588-开发环境">自然语言提示词 2：检查 RK3588 开发环境</h3>
 <blockquote>
 <p>检查 RK3588 开发环境。使用 Adapter 的环境体检能力检查 Docker、磁盘空间、WS-E2 BSP、工具链离线包、安装回执和已安装文件身份。解释 PACKAGE_REQUIRED、REPAIRABLE、USER_ACTION_REQUIRED 或 READY，并只给出当前合法的下一步。</p>
 </blockquote>
-<p>对应 MCP 能力：<code>rk3588_environment_status</code>（只读，不产生安装收据或 staging 目录）。</p>
-<p>首次通常得到 <code>PACKAGE_REQUIRED</code>，表示需要离线材料。</p>
-<h2 id="4-获取和部署双离线包">4. 获取和部署双离线包</h2>
-<p>向 EvoVerse 获取：</p>
-<ul>
-<li><code>rk3588-toolchain-2026.09.evopkg</code></li>
-<li><code>ws-e2-rk3588-bsp-b8f5dda5.evopkg</code></li>
-</ul>
-<p>两个离线包存放在固定目录 <code>&lt;EVOVERSE_HOME&gt;\downloads\rk3588\</code>（<code>EVOVERSE_HOME</code> 默认为 <code>%USERPROFILE%\evoverse-sdk</code>）。提示词 4 让 Agent 打开的正是这个目录：把两个原始 evopkg 文件复制进去，再执行提示词 5。</p>
-<h3 id="自然语言提示词-4-打开收件箱">自然语言提示词 4：打开收件箱</h3>
+<p>对应 MCP 能力：<code>rk3588_environment_status</code>（只读，不产生安装收据或 staging 目录）。首次通常得到 <code>PACKAGE_REQUIRED</code>，表示需要离线材料。</p>
+<h3 id="许可与高成本确认-按需-不是所有用户都必经">许可与高成本确认（按需，不是所有用户都必经）</h3>
+<p>把两个原始 evopkg 文件复制到固定目录 <code>&lt;EVOVERSE_HOME&gt;\downloads\rk3588\</code>（<code>EVOVERSE_HOME</code> 默认为 <code>%USERPROFILE%\evoverse-sdk</code>），然后：</p>
 <blockquote>
-<p>请打开 RK3588 离线包固定目录，不要开始部署。我会把 EvoVerse 提供的两个原始 evopkg 文件复制进去。打开后告诉我完整路径。</p>
+<p>重新检查两个 RK3588 离线包，核对 Catalog 声明、字节数、外层 SHA-256、内部 manifest 和逐文件 checksum。通过后展示许可确认内容和预计磁盘占用，等我明确确认后再部署。结束后重新运行完整健康检查，只有最终状态为 READY 才能报告成功。</p>
 </blockquote>
-<p>复制完两个文件后：</p>
-<h3 id="自然语言提示词-5-检查并部署">自然语言提示词 5：检查并部署</h3>
+<p>对应 MCP 能力：先用 <code>rk3588_environment_prepare</code> 获取一次性 <code>inspectionToken</code>，再以 <code>acceptedLicenses: true</code> 调用 <code>rk3588_environment_deploy</code>。token 只对检查时刻的字节有效；包内容变化后必须重新检查，重放旧 token 会被拒绝。</p>
+<p>阅读许可后由你明确回复：“我接受离线包中的许可条款并确认部署。”部署取消或失败时，本次新增目录、回执和镜像应回滚，部署前已有镜像不删除。导入 Docker 镜像、重建 BSP Git 树和逐文件校验加起来可能要十几分钟，期间让 Agent 保持等待，不要叠加新指令；它会在结束后重新跑完整健康检查，只有 READY 才算成功。</p>
+<h2 id="2-一个意图-ws-e2-rk3588j-最小系统">2. 一个意图：WS-E2 RK3588J 最小系统</h2>
+<p>打开一个空目录作为项目目录，然后用一句话描述目标。工程身份来自当前 Catalog、BSP qualification 和生成链路，不需要你手工拼接 Profile。</p>
+<h3 id="自然语言提示词-3-创建-ws-e2-rk3588j-最小系统">自然语言提示词 3：创建 WS-E2 RK3588J 最小系统</h3>
 <blockquote>
-<p>重新检查两个 RK3588 离线包，核对 Catalog 声明、字节数、外层 SHA-256、内部 manifest 和逐文件 checksum。通过后展示许可确认内容和预计磁盘占用，等我明确确认后再一键部署。结束后必须重新运行完整健康检查，只有最终状态为 READY 才能报告成功。</p>
-</blockquote>
-<p>对应 MCP 能力：先用 <code>rk3588_environment_prepare</code> 获取一次性 <code>inspectionToken</code>，再以 <code>acceptedLicenses: true</code> 调用 <code>rk3588_environment_deploy</code>。token 只对检查时刻的字节有效，包内容变化后必须重新检查；重放旧 token 会被拒绝。</p>
-<p>阅读许可后明确回复：“我接受离线包中的许可条款并确认部署。”部署取消或失败时，本次新增目录、回执和镜像应回滚，部署前已有镜像不删除。</p>
-<p>部署不是秒级操作：导入 Docker 镜像、重建 BSP Git 树和逐文件校验加起来可能要十几分钟。部署期间让 Agent 保持等待，不要发新指令；它会在结束后重新跑完整健康检查，只有 READY 才算成功——中途“看起来在动”不是成功证据。</p>
-<h2 id="5-确认环境-ready">5. 确认环境 READY</h2>
-<h3 id="自然语言提示词-6-解释环境证据">自然语言提示词 6：解释环境证据</h3>
-<blockquote>
-<p>再次检查 RK3588 开发环境，逐项解释 READY 的证据：Catalog 包身份、内部 manifest、安装回执、逐文件与额外文件检查、BSP qualification、Docker image digest 和最低 Adapter 版本。最后明确说明哪些事情仍未验证。</p>
-</blockquote>
-<p>此时正确边界是环境 <code>READY</code>，但当前工程尚未达到 <code>BUILD_READY</code>，烧录和硬件验证仍是 <code>NOT_RUN</code>。</p>
-<h2 id="6-创建-ws-e2-rk3588j-最小系统">6. 创建 WS-E2 RK3588J 最小系统</h2>
-<p>打开一个空目录作为项目目录。</p>
-<h3 id="自然语言提示词-7-创建工程">自然语言提示词 7：创建工程</h3>
-<blockquote>
-<p>在当前空目录创建名为 ws-e2-rk3588j-minimal 的 EvoVerse 工程。板卡选择 ws-e2，载板选择 rk3588j-evm，开发目标选择 rk3588。基于当前 Catalog 和已经 READY 的离线环境生成最小 Linux 系统，推荐 eMMC 启动、UART2 日志和 Buildroot minimal rootfs。不要手工拼接 Profile，不要猜测 loader、分区、DDR 或 DTS；身份必须来自当前 Catalog、BSP qualification 和生成链路。生成前展示推荐与替代选择，等我确认。</p>
+<p>在当前空目录创建一个名为 ws-e2-rk3588j-minimal 的 EvoVerse 工程。板卡选择 ws-e2，载板选择 rk3588j-evm，开发目标选择 rk3588。基于当前 Catalog 和已经 READY 的离线环境生成最小 Linux 系统，推荐 eMMC 启动、UART2 日志和 Buildroot minimal rootfs。不要手工拼接 Profile，不要猜测 loader、分区、DDR 或 DTS；身份必须来自当前 Catalog、BSP qualification 和生成链路。生成前展示推荐与替代选择，等我确认。</p>
 </blockquote>
 <p>Agent 应说明：核心板已包含 PMIC、LPDDR4X、eMMC 和基准时钟；这仍不是实板验证结论。</p>
-<h3 id="自然语言提示词-8-确认推荐">自然语言提示词 8：确认推荐</h3>
+<p>对应 MCP 能力：<code>rk3588_project_generate</code>（目标只允许 <code>ws-e2</code> / <code>rk3588j-evm</code> / <code>minimal-linux</code> 组合，工程目录必须是绝对路径；成功后工程为 <code>PROFILE_READY</code>，不代表可构建）。原子单意图不产生集成记录，生命周期直接复用 <code>COMPLETED</code>。</p>
+<h2 id="3-方案与可执行规格确认-第一个决策节点">3. 方案与可执行规格确认（第一个决策节点）</h2>
+<p>生成前把方案固定成可执行规格：BSP 与工具链身份、启动介质、串口、rootfs、loader、分区表和 DTS 来源。规格是升级门禁——以后任何需求变化都必须先改规格再重跑，不能绕过硬编码。</p>
+<h3 id="自然语言提示词-4-确认方案与规格">自然语言提示词 4：确认方案与规格</h3>
 <blockquote>
 <p>我确认采用推荐方案：固定当前 BSP 与工具链身份，eMMC 启动，UART2 日志，Buildroot minimal rootfs。请完成受控生成，但不要构建。检查生成 manifest 的文件所有权，并确认再生成不会覆盖 applications 下的客户内容。</p>
 </blockquote>
-<p>预期生成 Profile、DTS/DTSI、generation manifest、客户应用目录和输出目录骨架。此时可以是 <code>PROFILE_READY</code>，但不能冒充 <code>BUILD_READY</code>。</p>
-<p>对应 MCP 能力：<code>rk3588_project_generate</code>（目标只允许 <code>ws-e2</code> / <code>rk3588j-evm</code> / <code>minimal-linux</code> 组合，工程目录必须是绝对路径；成功后工程为 <code>PROFILE_READY</code>，不代表可构建）。</p>
-<h2 id="7-运行工程-preflight">7. 运行工程 Preflight</h2>
-<h3 id="自然语言提示词-9-预检">自然语言提示词 9：预检</h3>
+<p>预期生成 Profile、DTS/DTSI、generation manifest、客户应用目录和输出目录骨架。此时正确状态是 <code>PROFILE_READY</code>，不能冒充 <code>BUILD_READY</code>。</p>
+<h2 id="4-连续生成-预检与构建">4. 连续生成、预检与构建</h2>
+<p>确认规格后不需要逐条发提示词。让 Agent 连续执行 preflight 与四阶段构建，过程细节由 Adapter 原生链路负责，你只需要观察结果。</p>
+<h3 id="自然语言提示词-5-连续执行-preflight-与四阶段构建">自然语言提示词 5：连续执行 preflight 与四阶段构建</h3>
 <blockquote>
-<p>对当前 RK3588 工程运行 preflight。重新资格化 BSP，检查 root commit、四个 submodule、loader、分区表、容器 digest、工具链、DTS manifest、输出目录和四阶段能力。不要自动修改 BSP 源码；如有阻塞，给出稳定错误码、证据和最小修复建议。</p>
+<p>对当前 RK3588 工程连续执行：先跑 preflight，重新资格化 BSP，检查 root commit、四个 submodule、loader、分区表、容器 digest、工具链、DTS manifest、输出目录和四阶段能力；再使用 RK3588 Adapter 依次构建 U-Boot、kernel/DTB、rootfs、package。每阶段报告退出码、当次必要产物、SHA-256 和诊断；任何阶段失败都停止，不要使用旧产物冒充成功。preflight 发现阻塞时给出稳定错误码、证据和最小修复建议，不要自动修改 BSP 源码。结束后重新计算 Build Identity 和 readiness。</p>
 </blockquote>
+<p>对应 MCP 能力：<code>rk3588_project_preflight</code>（只读资格化检查，timeout 300 秒）与 <code>rk3588_project_build</code>（headless 构建只接受完整四阶段顺序 uboot → kernel → rootfs → package，不接受部分阶段）。</p>
+<p>常见 preflight 阻塞：</p>
 <ul>
 <li><code>BSP_BINDING_REQUIRED</code>：用当前已部署材料重新绑定；</li>
 <li><code>BSP_SOURCE_DIRTY</code>：备份并恢复声明版本，不能绕过；</li>
 <li><code>BSP_QUALIFICATION_STALE</code>：重新核对当前身份，不能继承旧 PASS。</li>
 </ul>
-<p>对应 MCP 能力：<code>rk3588_project_preflight</code>（只读资格化检查，timeout 300 秒；任何修复动作都必须经用户确认后单独执行，不随 preflight 自动发生）。</p>
-<h2 id="8-自然语言完成四阶段构建">8. 自然语言完成四阶段构建</h2>
-<h3 id="自然语言提示词-10-构建">自然语言提示词 10：构建</h3>
-<blockquote>
-<p>使用 RK3588 Adapter 构建当前工程，依次执行 U-Boot、kernel/DTB、rootfs、package。每阶段报告退出码、当次必要产物、SHA-256 和诊断；任何阶段失败都停止，不要使用旧产物冒充成功。结束后重新计算 Build Identity 和 readiness。</p>
-</blockquote>
 <table>
 <thead>
 <tr>
@@ -238,44 +212,45 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
-<p>对应 MCP 能力：<code>rk3588_project_build</code>（headless 构建只接受完整的四阶段顺序 uboot → kernel → rootfs → package，不接受部分阶段）。每阶段的命令、退出码和 SHA-256 证据统一归属于工程目录下 <code>.evoverse/output/build-report.json</code>，最终状态以该文件为权威，聊天回复只是它的摘要。</p>
-<p>四阶段构建是长任务，机器性能一般时半小时以上很常见。构建期间让 Agent 保持等待，不要叠加新任务；任何阶段失败它都会停下来并给出诊断，不会拿旧产物冒充成功——看到失败先让它讲根因，再决定重跑还是修复。</p>
-<h2 id="9-验收最小系统">9. 验收最小系统</h2>
-<h3 id="自然语言提示词-11-验收证据">自然语言提示词 11：验收证据</h3>
+<p>每阶段的命令、退出码和 SHA-256 证据统一归属于工程目录下 <code>.evoverse/output/build-report.json</code>，最终状态以该文件为权威，聊天回复只是它的摘要。四阶段是长任务，机器性能一般时半小时以上很常见；期间让 Agent 保持等待，不要叠加新任务。</p>
+<h2 id="5-证据复核与验收-第三个决策节点">5. 证据复核与验收（第三个决策节点）</h2>
+<h3 id="自然语言提示词-6-验收证据">自然语言提示词 6：验收证据</h3>
 <blockquote>
 <p>验收当前 WS-E2 RK3588J 最小系统。读取 build-report、build-manifest、四阶段 receipts 和固件包，不要只看文件是否存在。用表格列出阶段状态、产物摘要和 Build Identity，判断是否为 BUILD_READY，并单独列出所有 NOT_RUN 项。</p>
 </blockquote>
-<p>验收要求：四阶段属于当前 Build Identity、error diagnostics 为 0、固件包含 U-Boot/Image/DTB/rootfs、工程状态为 <code>BUILD_READY</code>，同时明确 <strong>硬件验证：NOT_RUN</strong>。</p>
 <p>对应 MCP 能力：<code>rk3588_project_status</code>（读取 <code>.evoverse/output/build-report.json</code> 与 readiness 汇总，只读，不重跑构建、不刷新证据）。</p>
-<h2 id="10-下一步选择">10. 下一步选择</h2>
+<p>验收要求：四阶段属于当前 Build Identity、error diagnostics 为 0、固件包含 U-Boot/Image/DTB/rootfs、工程状态为 <code>BUILD_READY</code>；同时明确 <strong>硬件验证：NOT_RUN</strong>。烧录、启动和实板接口都属于 <code>HARDWARE_VERIFIED</code> 范畴，不能由 <code>BUILD_READY</code> 冒充。</p>
+<h2 id="6-失败恢复与规格升级">6. 失败恢复与规格升级</h2>
+<p>失败恢复始终留在原生链路：先读本次 runId 的日志、receipt、diagnostics 和 Profile，区分环境、材料绑定、BSP qualification、原生工具错误和硬件未验证五类问题；不要创建绕过原生工具链的脚本、wrapper 或环境变量 hack（workaround）。</p>
+<blockquote>
+<p>诊断当前 RK3588 操作失败。只分析本次 runId 对应的证据，不继承旧 PASS。先给根因与最小修复方案，等我确认后再修改。</p>
+</blockquote>
+<p>规格升级是另一个受控动作：例如把启动介质从 eMMC 改为 SD，或把 rootfs 从 Buildroot minimal 改为更大集合。先更新方案与可执行规格，再重新生成并重跑 preflight 与四阶段构建；只有受影响节点的证据失效，未受影响的历史产物可以保留但不能被当成新证据。</p>
+<h2 id="7-下一步选择">7. 下一步选择</h2>
 <h3 id="准备烧录-但暂不执行">准备烧录，但暂不执行</h3>
 <blockquote>
 <p>基于当前 WS-E2 Profile 和固件证据给出烧录前检查清单，只说明 loader、分区、设备识别、备份和回滚要求，不执行烧录，保持硬件状态 NOT_RUN。</p>
 </blockquote>
 <h3 id="加入-fpga-协同">加入 FPGA 协同</h3>
 <blockquote>
-<p>在不修改现有 RK3588 BUILD_READY 基线的前提下规划 WS-E2 FPGA + RK3588 system 工程。读取最终器件映射和接口契约，推荐 PCIe、MIPI、RGMII 或 GPIO；不要把板间连接器作为独立真值，不执行硬件验证。</p>
+<p>在不修改现有 RK3588 BUILD_READY 基线的前提下，规划 WS-E2 FPGA + RK3588 系统旅程：按功能分配芯片、冻结接口契约、两芯片可并行实现，最后做芯片级与系统级 composition。不要把板间连接器作为独立真值，不执行硬件验证。</p>
 </blockquote>
 <h3 id="开始板端应用">开始板端应用</h3>
 <blockquote>
 <p>基于当前最小 rootfs 规划第一个 AArch64 用户态应用。应用代码放在客户目录，说明交叉编译、打包和运行时依赖，不修改受管理的 BSP 或生成文件。</p>
 </blockquote>
-<h2 id="11-故障诊断提示词">11. 故障诊断提示词</h2>
-<blockquote>
-<p>诊断当前 RK3588 操作失败。读取本次 runId 对应的日志、receipt、diagnostics 和 Profile，只分析本次证据。区分环境、材料绑定、BSP qualification、原生工具错误和硬件未验证五类问题。不要继承旧 PASS，不要创建绕过原生工具链的脚本；先给根因与最小修复方案，等我确认后再修改。</p>
-</blockquote>
-<h2 id="12-完成检查表">12. 完成检查表</h2>
+<h2 id="8-完成检查表">8. 完成检查表</h2>
 <ul>
-<li>[ ] 安装三个 VSIX并激活</li>
+<li>[ ] 安装三个 VSIX 并激活</li>
 <li>[ ] Docker Linux containers 可用</li>
 <li>[ ] Catalog 中存在 ws-e2 / rk3588j-evm</li>
-<li>[ ] 环境为 <code>READY</code></li>
-<li>[ ] 使用“创建 WS-E2 RK3588J 最小系统”的自然语言提示完成生成</li>
+<li>[ ] 环境按需达到 <code>READY</code>（在线材料可直接跳过材料部署）</li>
+<li>[ ] 用一个自然语言意图描述目标，没有为了流程完整而强制拆分</li>
+<li>[ ] 方案与可执行规格在生成前确认</li>
 <li>[ ] Profile、DTS 和 generation manifest 来源明确</li>
-<li>[ ] Preflight 通过</li>
-<li>[ ] 四阶段构建证据完整</li>
-<li>[ ] 工程为 <code>BUILD_READY</code></li>
-<li>[ ] 烧录和硬件验证保持 <code>NOT_RUN</code></li>
+<li>[ ] 连续执行 preflight 与四阶段构建，证据完整</li>
+<li>[ ] 工程为 <code>BUILD_READY</code>，且明确它不等同于硬件验证</li>
+<li>[ ] 烧录、启动和实板接口验证保持 <code>NOT_RUN</code></li>
 </ul>
 <p>继续阅读：<a href="../../rk3588/RK3588-开发全流程指南.html">RK3588 开发全流程指南</a> · <a href="../../rk3588/RK3588-离线环境部署指南.html">离线环境部署指南</a></p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>

@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>按步骤在 Trae 中完成工程。</span>
 <code>learn/ws-e1-sd-ddr-csi2/06-build-and-display-verification.md</code>
@@ -120,42 +120,88 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>06 编译与显示验证</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-06-编译与硬件验证">阶段 06 · 编译与硬件验证</h1>
 <blockquote>
-<p>前五个阶段都在准备证据，本阶段产生实物证据：<code>build.native</code> 记录一次原生编译，<code>hardware.program</code> 把 bitstream 烧进 TJ180A484S，<code>hardware.validate</code> 按 scenario 逐条确认 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 在板上真实运转。</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>前五个阶段都在准备证据，本阶段产生实物证据：一次原生编译记录构建产物，按需烧录把 bitstream 写入 TJ180A484S，再按场景逐条确认 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 在板上真实运转。</p>
 </blockquote>
-<p>三类证据互不替代：编译通过 ≠ 时序收敛，时序收敛 ≠ 功能正确，烧录成功 ≠ 板上验证通过。没有硬件时，本阶段允许停在编译证据上，并把集成状态如实标记为 <code>INTEGRATION_PENDING_HARDWARE</code>——这与阶段 04 固件章节的边界一致。</p>
-<p>基线状态决定本阶段的入口。基线就绪但从未原生编译时，工程停在 <code>NATIVE_BUILD_PENDING</code>；编译通过但未上板时，停在 <code>BOARD_VALIDATION_REQUIRED</code>。若受控基线资产被自由模式改动过，状态会显示 <code>UNVERIFIED_CHANGES</code>——此时不得把旧基线的 PASS 证据贴到自由改动上，先回到可靠流程重新交付与晋级，或明确接受自由改动并重新编译取证。反过来，可靠仿真也不是通用前置：自由模式普通 Build 始终可用。</p>
+<p>三类证据互不替代：编译通过 ≠ 时序收敛，时序收敛 ≠ 功能正确，烧录成功 ≠ 板上验证通过。没有硬件时，本阶段允许停在编译证据上，并把硬件与系统级状态如实标记为 <code>NOT_RUN</code>——这与阶段 04 固件章节的边界一致。</p>
+<p>基线状态决定本阶段的入口。基线就绪但从未原生编译时，工程停在 <code>NATIVE_BUILD_PENDING</code>；编译通过但未上板时，停在 <code>BOARD_VALIDATION_REQUIRED</code>。若受控基线资产被自由模式改动过，状态会显示 <code>UNVERIFIED_CHANGES</code>——此时不得把旧基线的 PASS 证据贴到自由改动上，先回到可靠流程重新交付，或明确接受自由改动并重新编译取证。反过来，可靠仿真也不是通用前置：自由模式普通 Build 始终可用。</p>
 <p>这几个状态的流转关系如下：</p>
 <pre class="mermaid">stateDiagram-v2
     [*] --&gt; NATIVE_BUILD_PENDING: 基线就绪，尚未原生编译
-    NATIVE_BUILD_PENDING --&gt; BOARD_VALIDATION_REQUIRED: build.native 编译通过
-    BOARD_VALIDATION_REQUIRED --&gt; [*]: hardware.program + hardware.validate
+    NATIVE_BUILD_PENDING --&gt; BOARD_VALIDATION_REQUIRED: 原生编译通过
+    BOARD_VALIDATION_REQUIRED --&gt; [*]: 按需烧录 + 逐场景硬件验证
     NATIVE_BUILD_PENDING --&gt; UNVERIFIED_CHANGES: 自由模式改动基线资产
     BOARD_VALIDATION_REQUIRED --&gt; UNVERIFIED_CHANGES: 自由模式改动基线资产
-    UNVERIFIED_CHANGES --&gt; NATIVE_BUILD_PENDING: 重新交付晋级后恢复
+    UNVERIFIED_CHANGES --&gt; NATIVE_BUILD_PENDING: 重新交付收敛后恢复
 </pre>
+<h2 id="证据终态">证据终态</h2>
+<table>
+<thead>
+<tr>
+<th>终态</th>
+<th>本阶段的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BUILT</code></td>
+<td><code>efx_run --flow compile</code> 产生有效 bitstream 与报告</td>
+</tr>
+<tr>
+<td><code>PACKAGED</code></td>
+<td>产物按目标格式打包（若交付流程需要）</td>
+</tr>
+<tr>
+<td><code>PROGRAMMED</code></td>
+<td>bitstream 已写入确认过的板卡与器件</td>
+</tr>
+<tr>
+<td><code>HARDWARE_VERIFIED</code></td>
+<td>每个声明场景在板上被实际观察到</td>
+</tr>
+<tr>
+<td><code>SYSTEM_VERIFIED</code></td>
+<td>SD → DDR → CSI-2 整链的系统级证据完整</td>
+</tr>
+<tr>
+<td><code>READY_FOR_ACCEPTANCE</code></td>
+<td>技术完成，等待你的接受回执</td>
+</tr>
+<tr>
+<td><code>ACCEPTED</code></td>
+<td>你已给出接受回执</td>
+</tr>
+<tr>
+<td><code>NOT_RUN</code></td>
+<td>未实际执行——没有硬件时 <code>PROGRAMMED</code>、<code>HARDWARE_VERIFIED</code>、<code>SYSTEM_VERIFIED</code> 都保持此状态</td>
+</tr>
+</tbody>
+</table>
+<p><strong>未实际执行的级别一律写 <code>NOT_RUN</code>，不允许用编译日志推断板上结论。</strong></p>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">对工程做一次原生编译，把资源占用、时钟域和时序摘要给我看。
 编译通过后，如果我已经接好 WS-E1 核心板和 JTAG 调试器，引导我烧录：
 烧录前跟我确认板卡和器件编号；烧录后按场景逐条验证显示链路——
 SD 卡初始化、DDR 帧缓冲读回校验、读端所有权交接、CSI-2 TX 输出、
-接收端图像轮换。没接硬件就停在编译证据，如实标记待硬件验证。
+接收端图像轮换。没接硬件就停在编译证据，把硬件和系统级证据标记为 NOT_RUN。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
-<li>先 <code>project_status</code> 检查基线状态：<code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> / <code>UNVERIFIED_CHANGES</code> 各自决定本阶段从哪一步开始；基线被自由改动过时不继承旧 PASS。</li>
-<li><code>build.native</code>（<code>mode: free</code> 或 <code>reliable</code>）触发 Efinity Adapter 调用原生 <code>efx_run --flow compile</code> 统一流程：map → PT → pnr → pgm 一步到底，不拆步骤拼接。</li>
-<li>解析编译报告：资源利用率、I/O 与时钟域、WNS/TNS；把报告路径和摘要作为构建证据登记到控制面。</li>
+<li>先检查基线状态：<code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> / <code>UNVERIFIED_CHANGES</code> 各自决定本阶段从哪一步开始；基线被自由改动过时不继承旧 PASS。</li>
+<li>以 free 或 reliable 模式触发 Efinity Adapter 调用原生 <code>efx_run --flow compile</code> 统一流程：map → PT → pnr → pgm 一步到底，不拆步骤拼接。</li>
+<li>解析编译报告：资源利用率、I/O 与时钟域、WNS/TNS；把报告路径和摘要作为构建证据登记。</li>
 <li>时序违例不会静默放过——WNS &lt; 0 时提示先回到阶段 05 检查约束，或用时序诊断定位根因，而不是反复重编译碰运气。</li>
-<li>硬件就绪时走 <code>hardware.program</code>：<code>adapterId</code> / <code>boardId</code> / <code>deviceId</code> 必填，器件编号写 <code>ANY</code> 或 <code>AUTO</code> 会被控制面以 <code>AMBIGUOUS_DEVICE</code> 拒绝；<code>confirmedBy</code> 记录是谁确认了这次烧录。</li>
-<li><code>hardware.validate</code> 按你声明的 scenarios 逐条验证部署后的固件与 RTL：每条场景独立判定，部分通过就是部分通过。</li>
-<li>没有硬件时：只登记 <code>build.native</code> 证据，集成状态标记 <code>INTEGRATION_PENDING_HARDWARE</code>，不会把"找到 JTAG 入口"写成"板上验证通过"。</li>
+<li>硬件就绪且你完成高成本/设备写入决策后执行烧录：<code>adapterId</code> / <code>boardId</code> / <code>deviceId</code> 必填，器件编号写 <code>ANY</code> 或 <code>AUTO</code> 会被控制面以 <code>AMBIGUOUS_DEVICE</code> 拒绝；<code>confirmedBy</code> 记录是谁确认了这次烧录。</li>
+<li>按你声明的 scenarios 逐条验证部署后的固件与 RTL：每条场景独立判定，部分通过就是部分通过。</li>
+<li>没有硬件时：只登记原生编译证据，硬件与系统级终态标记 <code>NOT_RUN</code>，不会把"找到 JTAG 入口"写成"板上验证通过"。</li>
 </ol>
 <h2 id="你需要确认什么">你需要确认什么</h2>
 <ul>
-<li>烧录目标：板卡与器件编号由你显式确认，工具不会替你猜；插着多块板时尤其如此。</li>
-<li>观察顺序：串口先出现 DDR 读回校验通过，再开始 CSI-2 输出；调试采样（扫描器件、采集关键信号等观测能力）能看到读端与 TX 的活动。</li>
+<li><strong>第二个决策——按需确认高成本或设备写入</strong>：烧录目标由你显式确认；工具不会替你猜板卡与器件编号。只读检查与编译不需要这一步授权。</li>
+<li>烧录目标：板卡与器件编号必须具体，插着多块板时尤其如此。</li>
+<li>观察顺序：串口先出现 DDR 读回校验通过，再开始 CSI-2 输出；调试采样能看到读端与 TX 的活动。</li>
 <li>接收端显示：图像轮换是你亲眼确认的现象，不是从日志推断的结论。</li>
-<li>证据边界：编译证据、时序报告、板上场景证据分别保存；任何一项缺失都要在报告里点名。</li>
+<li>证据边界：编译证据、时序报告、板上场景证据分别保存；任何一项缺失都要在报告里点名，缺失项保持 <code>NOT_RUN</code>。</li>
 </ul>
 <h2 id="如果不顺利">如果不顺利</h2>
 <table>
@@ -184,16 +230,17 @@ SD 卡初始化、DDR 帧缓冲读回校验、读端所有权交接、CSI-2 TX �
 </tr>
 <tr>
 <td>没接硬件</td>
-<td><code>INTEGRATION_PENDING_HARDWARE</code> 是合法终态，停在编译证据即可，不要伪造板上结论。</td>
+<td><code>NOT_RUN</code> 是合法状态，停在编译证据即可，不要伪造板上结论。</td>
 </tr>
 </tbody>
 </table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
-<li><code>efx_run --flow compile</code> 成功，构建与时序报告已作为 <code>build.native</code> 证据登记。</li>
-<li>有硬件时：<code>hardware.program</code> 有烧录回执（含 deviceId 与 confirmedBy），<code>hardware.validate</code> 的全部声明场景通过并留有逐条证据。</li>
-<li>无硬件时：项目如实停留在"编译通过 + <code>INTEGRATION_PENDING_HARDWARE</code>"，不留含糊的空间。</li>
-<li>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路在 TJ180A484S 上被接收端实际观察到——这一条只有在有硬件的场景下才能勾选。</li>
+<li><code>efx_run --flow compile</code> 成功，构建与时序报告已作为编译证据登记（<code>BUILT</code>）。</li>
+<li>有硬件时：烧录有回执（含 deviceId 与 confirmedBy，<code>PROGRAMMED</code>），全部声明场景通过并留有逐条证据（<code>HARDWARE_VERIFIED</code>；整链系统证据完整时 <code>SYSTEM_VERIFIED</code>）。</li>
+<li>无硬件时：项目如实停留在"编译通过 + 硬件/系统证据 <code>NOT_RUN</code>"，不留含糊空间。</li>
+<li>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路在 TJ180A484S 上被接收端实际观察到——这一条只有在有硬件的场景下才能勾选，且不能由仿真或编译结果替代。</li>
+<li>第三个决策（最终验收）只在证据边界展示后发生；技术完成先落到 <code>READY_FOR_ACCEPTANCE</code>，你确认后才进入 <code>ACCEPTED</code>。</li>
 </ul>
 <p>完成后进入 <a href="07-skills-and-mcp.html">阶段 07：Skill 与 MCP 工具速查</a>。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="05-sdk-integration.html">← 上一阶段：05 SDK 集成</a><a class="stage-overview" href="README.html">教程总览</a><a class="next-stage" href="07-skills-and-mcp.html">下一阶段：07 Skills 与 MCP →</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>

@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item on" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../video-sim.html">← 返回Video Sim</a>
 <span>SimISP 图像仿真入口与操作。</span>
 <code>efinity/图像仿真使用指南.md</code>
@@ -106,12 +106,13 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>图像仿真使用指南</h1></header>
 <main class="article"><h1 id="evoverse-simisp-用户使用手册">evoverse.simIsp 用户使用手册</h1>
 <blockquote>
-<p><strong>适用 SDK 版本</strong>: v1.0.0</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26
+<strong>适用 SDK 版本</strong>: v1.0.1</p>
 </blockquote>
 <h2 id="1-概述">1. 概述</h2>
 <p><code>evoverse.simIsp</code> 是 EVOVERSE SDK 中专用于 <strong>ISP（图像信号处理）/ 图像处理 IP 仿真验证</strong> 的命令。它编译项目提供的 testbench、RTL 和可选 BFM，捕获 <code>result.hex</code> 后用 Python 后端进行图像质量分析，最终生成包含 PSNR、锐度、白平衡、直方图、Gamma 等指标的分析报告。</p>
 <blockquote>
-<p>当前 v1.0.0 VSIX 提供 Video Sim 启动入口和配套分析能力，但尚未随包提供通用 AXI-Stream BFM。项目如需 BFM，请放入 <code>sim/BFM/</code> 或 <code>sim/common/</code>。</p>
+<p>当前 v1.0.1 VSIX 提供 Video Sim 启动入口和配套分析能力，但尚未随包提供通用 AXI-Stream BFM。项目如需 BFM，请放入 <code>sim/BFM/</code> 或 <code>sim/common/</code>。</p>
 </blockquote>
 <h3 id="与-evoverse-sim-的区别">与 evoverse.sim 的区别</h3>
 <table>

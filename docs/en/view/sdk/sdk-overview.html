@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
 <span>What the SDK is, its components, capability overview and the typical development loop.</span>
 <code>sdk/sdk-overview.md</code>
@@ -106,7 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>EvoVerse SDK in Depth</h1></header>
 <main class="article"><h1 id="evoverse-sdk-in-depth">EvoVerse SDK In Depth</h1>
 <blockquote>
-<p><strong>Version</strong>: v1.0.0　<strong>Last updated</strong>: 2026-09-30
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>Version</strong>: v1.0.1　<strong>Last updated</strong>: 2026-09-30
 <strong>Supported platforms</strong>: Trae IDE (recommended) / VS Code 1.80+ · Windows</p>
 </blockquote>
 <p>This document is the product-level description of the EvoVerse SDK: what it is, which components it consists of, what it can do, and how its capabilities connect. For step-by-step procedures, use it together with the <a href="user-manual.html">User Manual</a>, the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 project tutorial</a>, and the two controlled Skill documents.</p>
@@ -213,6 +214,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>Adapters register capabilities with the core's AdapterRegistry (build / timing / debug / program / software / ip / designApi / workspace)</li>
 <li>A user request (such as Build) is routed by the core to the matching Adapter; the Adapter invokes the real toolchain (for example <code>efx_run --flow compile</code>) and posts structured results back to the Workbench for display</li>
 <li>Each Adapter owns its Workbench tab content; the core handles loading, resource injection, and the unified look-and-feel</li>
+<li>Boundary governance is certified: a third-party Adapter reaches the same feature parity as the built-in Adapters using only manifest 1.1 declarations (project detection, lifecycle capabilities, workspace/skill/knowledge contributions) plus 1.1 protocol negotiation — the core contains zero vendor product branches; the public-contract snapshots (v0.9.0 golden and v1.1) pin zero public-surface drift across the migration</li>
 </ul>
 <pre class="mermaid">flowchart LR
     WD[workspaceDocument&lt;br&gt;HTML parsing and resource injection] --&gt; WB[&quot;Workbench shell&lt;br&gt;(six tabs / System root)&quot;]
@@ -222,6 +224,39 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     EF --&gt;|build / timing / debug / program&lt;br&gt;software / IP / designApi| RUN[&quot;efx_run --flow compile&quot;]
     RK --&gt; BSP[&quot;BSP profile validation&lt;br&gt;four-stage cross-compilation&quot;]
 </pre>
+<h3 id="3-4-design-intent-paths-and-evidence-boundaries">3.4 Design intent, paths, and evidence boundaries</h3>
+<p>The customer journey exposes only three decision points; the control plane advances everything else continuously:</p>
+<ol>
+<li><strong>Confirm the plan and executable specification</strong> (<code>PLAN_APPROVAL</code>) — simulation profile, IP implementation, module decomposition or chip allocation; every decision that needs customer sign-off is gathered into one confirmation.</li>
+<li><strong>Confirm high-cost work or device writes</strong> (<code>ACTION_AUTHORIZATION</code>) — programming, deployment, and expensive builds are authorized once or per scope as needed.</li>
+<li><strong>Review the evidence boundary and accept</strong> (<code>FINAL_ACCEPTANCE</code>) — at technical completion, review the evidence summary and give the acceptance receipt through <code>project.accept</code>.</li>
+</ol>
+<p>The five background stages (Intent, Plan &amp; Approve, Generate &amp; Converge, Integrate &amp; Realize, Accept) explain the progression; they are not an action list the customer must memorize.</p>
+<table>
+<thead>
+<tr>
+<th>Intent shape</th>
+<th>Default path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple single chip</td>
+<td><strong>atomic by default</strong>: do not decompose for formal completeness; generate continuously after one plan/spec confirmation</td>
+</tr>
+<tr>
+<td>Complex but modular single chip</td>
+<td>Decompose into sub-intents, generate and simulate each, then perform on-chip composition</td>
+</tr>
+<tr>
+<td>FPGA + RK3588 system intent</td>
+<td>Allocate functions to chips first, implement in parallel after confirmation, then perform CHIP/SYSTEM composition</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Specification gate</strong>: before any generation, an executable specification must be formed and frozen; the specification gates the whole upgrade flow, and resource selection prefers authoritative, version-pinned material returned by Catalog / Adapter. A specification change invalidates only the affected evidence.</p>
+<p><strong>Ownership boundaries</strong>: Catalog provides board facts, reference designs, and IP materials only; Core generates the functional code inside the control plane, the specification, and the evidence chain; Adapter provides vendor knowledge, vendor project projection, and native build / package / program / deploy / test.</p>
+<p><strong>Terminal states cannot impersonate one another</strong>: <code>BUILT</code> (artifacts exist) → <code>PACKAGED</code> (packaged) → <code>PROGRAMMED</code> (written to the device) → <code>HARDWARE_VERIFIED</code> (observed on the board) → <code>SYSTEM_VERIFIED</code> (complete system-level evidence) → <code>READY_FOR_ACCEPTANCE</code> (technically complete) → <code>ACCEPTED</code> (customer acceptance receipt); levels not actually executed stay <code>NOT_RUN</code>. Generation ≠ build ≠ package ≠ programming ≠ hardware verification, and passing one layer never promotes you to the next.</p>
 <h2 id="4-capability-overview">4. Capability overview</h2>
 <table>
 <thead>
@@ -330,7 +365,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tr>
 <td>MCP</td>
 <td>MCP server</td>
-<td>The agent entry point to the project control plane; it exposes 11 tools in total: <code>project_status</code> / <code>project_next</code> / <code>project_execute</code> + <code>evoverse_health</code> + 7 <code>rk3588_*</code> tools (environment status / prepare / deploy, project generate / preflight / build / status)</td>
+<td>The agent entry point to the project control plane; it exposes 24 tools in total: <code>project_status</code> / <code>project_next</code> / <code>project_execute</code> + <code>evoverse_health</code> + 7 <code>rk3588_*</code> tools (environment status / prepare / deploy, project generate / preflight / build / status) + 7 Efinity debug-intent tools + 3 Efinity review tools + 3 generic lifecycle tools <code>lifecycle_invoke</code> / <code>lifecycle_status</code> / <code>lifecycle_cancel</code> (protocol-1.1 long-action face: stable requestId, cooperative cancellation, status rebuilt from persisted receipts)</td>
 </tr>
 </tbody>
 </table>
@@ -371,12 +406,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
+<p>The Control page (SDK-owned) adds a <strong>lifecycle stage strip</strong> and an <strong>adoption confirmation surface</strong> (v1.0.0): the strip is a pure projection of the last adapter lifecycle action envelope (the SDK keeps no second state machine); the confirmation surface shows the diff, unknowns, expiry window, and the five candidate-scoped independent evidence levels (static / simulationModel / nativeBuild / targetWrite / hardwareRuntime — absent records render NOT_RUN), and the confirm gesture mints a one-use token through the command channel before the adoption executes; cancel mints nothing. Both adapters join the unified lifecycle action surface (plan → generateCandidate → validateCandidate → prepareAdoption → build/package/program/deploy → evidence.collect) via the protocol 1.1 + payloadSchemaVersion 1.1 two-sided negotiation — protocol-1.0 requests are always refused for lifecycle actions.</p>
+<h3 id="5-1-readiness-projection-and-the-three-layer-doctor">5.1 Readiness projection and the three-layer Doctor</h3>
+<p>The "Start or Continue" card on the Welcome first screen reads the unified <strong>readiness projection</strong> (<code>ProjectReadinessProjection</code>, schema mirrored by <code>sdk/extension/schemas/project-readiness.schema.json</code>): the six-layer chain <code>SDK → Catalog → Adapter → Environment → Project → Target</code>, where every layer's fact carries source / digest / observedAt / freshness, and a stale observation (STALE / MISSING / CORRUPT) never shows up as a current PASS. The projection digest is generated deterministically (facts are order-normalized, the observation clock is excluded), so the same digest means the same conclusion for Welcome / Workbench / MCP / Agent. The projection can be discarded and rebuilt; a cache is never treated as truth.</p>
+<p>The companion command <code>EvoVerse: Doctor (SDK / Environment / Project)</code> aggregates three layers of health checks (spec §9.2): the SDK Doctor (extension / CLI / MCP / Catalog / Adapter discovery), the Environment Doctor (environment availability projected by the owning Adapter; the RK3588 Adapter connects to its Manager directly and the SDK holds no Manager port), and the Project Doctor (control plane + adapter binding). Every check carries a stable namespaced error code (<code>SDK.*</code> / <code>CATALOG.*</code> / <code>ADAPTER.*</code> / <code>ENVIRONMENT.*</code> / <code>PROJECT.*</code>), the responsible layer, a repair suggestion, and a resume point (resumeAction); classification keys only on the error code, never on the message text. On the MCP side, the <code>doctor</code> tool exposes the same JSON contract.</p>
 <h2 id="6-typical-development-loops">6. Typical development loops</h2>
 <h3 id="6-1-the-fpga-mainline-first-run">6.1 The FPGA mainline (first run)</h3>
-<pre><code>Set Up → describe the project goal in Trae → confirm the action recommended by Control → write RTL → Simulate (inspect the waveform)
-→ Check Code Style → Build (read the report) → Program FPGA (watch the board)
+<pre><code>Describe the intent → confirm the plan and executable specification → the Agent generates and verifies RTL
+→ Simulate (inspect the waveform) → Check Code Style → Build (read the report) → Program FPGA (watch the board)
 </code></pre>
-<p>For a complete first-run experience, follow the <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD-to-CSI-2 project tutorial</a>: discover materials and freeze the specification first, then generate and verify the RTL, and finally integrate and build. You never leave the IDE.</p>
+<p>For a complete first-run experience, choose the tutorial that matches the intent shape: a simple single chip follows the atomic path, a complex but modular single chip follows decomposition plus on-chip composition, and an FPGA + RK3588 system follows chip allocation plus CHIP/SYSTEM composition (see §3.4 and <a href="../START-HERE.html">Start Here</a>). You never leave the IDE; the specification is frozen before generation, and evidence stays <code>NOT_RUN</code> until hardware is actually exercised.</p>
 <h3 id="6-2-the-timing-closure-loop">6.2 The timing-closure loop</h3>
 <pre><code>Build → Diagnose Timing (the six-fingerprint root-cause classification engine reports cause and confidence)
 → datapath tracing / pipeline analysis to locate the bottleneck
@@ -397,10 +436,17 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 → Build Software → download according to what the project actually supports → GDB debugging
 </code></pre>
 <h3 id="6-5-vibe-coding-agent-assisted">6.5 Vibe coding (agent-assisted)</h3>
-<pre><code>`/evoverse-design-spec` confirm the simulation level and draft the specification within the level budget → approve the specification
+<p>The customer journey surfaces only three decision nodes; everything else is envelope-driven continuous progress bounded by evidence:</p>
+<ol>
+<li><strong>Specification approval (PLAN_APPROVAL)</strong>: the design decisions that need the customer to decide — simulation level, IP implementation approach, decomposition/allocation — are confirmed together once, then the flow continues.</li>
+<li><strong>Action authorization (ACTION_AUTHORIZATION)</strong>: costly or target-state-changing actions (programming / deployment / expensive builds) need a one-time or scoped authorization.</li>
+<li><strong>Final acceptance (FINAL_ACCEPTANCE)</strong>: when the work is technically complete (<code>READY_FOR_ACCEPTANCE</code>), the customer gives the acceptance receipt through <code>project.accept</code> (bound only to <code>evidenceDigest</code>).</li>
+</ol>
+<pre><code>`/evoverse-design-spec` confirm the simulation level and draft the specification within the level budget → specification approval
 → `/evoverse-rtl` deliver candidate RTL → Design Assurance and level-limited simulation evidence
-→ native Efinity Build
+→ native Efinity Build → action authorization (programming / deployment) → final acceptance
 </code></pre>
+<p>Technical completion (<code>READY_FOR_ACCEPTANCE</code>) is not acceptance (the <code>ACCEPTED</code> receipt / the <code>PROJECT_ACCEPTED</code> fact); an Adapter or native PASS is never <code>SYSTEM_VERIFIED</code>.</p>
 <p>On the reliable path, every agent claim of "passed/promoted" is bound by a control-plane action receipt to the scope, the real project diff, Design Assurance, and simulation evidence. <strong>The simulation level precedes the specification (the user chooses)</strong>: once a reliable iteration is established, the simulation level must be confirmed before <code>spec.draft</code> drafts the specification (<code>simulation.profile.select</code>; otherwise the control plane blocks drafting with <code>SIMULATION_PROFILE_REQUIRED</code>). The AI recommends one of the three levels <code>FPGA_FUNCTIONAL</code> / <code>FPGA_INTEGRATION</code> / <code>HIGH_ASSURANCE</code> (or an explicit user <code>CUSTOM</code>) under fixed risk rules; the user makes the choice. Selecting below the recommended minimum requires <code>acceptedRisks</code> to be recorded, and exceeding the level budget requires reconfirmation. The specification is written to the budget of the selected level, and the level is bound to the design iteration. The <code>packagePath</code> submitted by <code>spec.draft</code> must point to a sealed executable-2.0 specification package directory: the server seals it and records a <code>specPackageDigest</code> as its trusted identity, while <code>specification.md</code> is deterministically rendered by the sealing script for human review only. A bare Markdown file is rejected, with the workspace, the input/parsing paths, and the reason returned; legacy Markdown specifications must be re-drafted from the executable package and migrated. <code>candidate.deliver</code> validates the complete HDL/include/module/testbench closure before the manifest and the facts are persisted; a failure forms no authoritative candidate, and it is safe to retry after the fix. <code>verification.simulate</code> derives the candidate, the source closure, the Test IR, and the spec digest from server-side state and runs module/Intent-scope verification in the feature worktree; a local pass only moves the candidate to <code>READY_FOR_INTEGRATION</code>. Compile or elaboration failures are recorded as the repairable <code>CANDIDATE_COMPILE_FAILED</code>; only a missing backend or vendor model is <code>CAPABILITY_UNAVAILABLE</code>. The mainline system-integration Intent then runs composite specification checks, system simulation, and document confirmation, and only when all of them pass is the baseline promoted atomically. A level-limited simulation pass (<code>FPGA_FUNCTIONAL_PASS</code> and the like) does not change the evidence boundary: <code>NATIVE_BUILD_PENDING</code> and <code>BOARD_VALIDATION_REQUIRED</code> are reported independently, automated fixtures are not real Questa evidence, and Efinity Native Build, timing, programming, and on-board results still have to be reported separately (<code>build.native</code> / <code>hardware.program</code> / <code>hardware.validate</code>).</p>
 <h3 id="6-6-multi-intent-worktrees">6.6 Multi-Intent worktrees</h3>
 <ul>

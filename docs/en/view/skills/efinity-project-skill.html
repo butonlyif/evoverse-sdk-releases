@@ -98,13 +98,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item on" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../skills.html">← Back to Skills</a>
 <span>Create or modify a native Efinity project in natural language and accept it with a real toolchain build.</span>
 <code>skills/efinity-project-skill.md</code>
 <a href="../../../skills/efinity-project-skill.md">Markdown source</a></p>
 <h1>Skill: Configure an Efinity Project in Natural Language</h1></header>
 <main class="article"><h1 id="configure-efinity-projects-in-natural-language">Configure Efinity Projects in Natural Language</h1>
+<blockquote>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+</blockquote>
 <p>The <code>efinity-project</code> Skill creates or modifies Efinity projects from a Trae conversation. It confirms the device, RTL, clocks, pins, IPs, compile options, and Debugger settings step by step, explains the impact of each choice, and then calls Efinity's own project API, DesignAPI, IP Manager, and the unified compile flow.</p>
 <p>Invocation differs by host: in Trae the SDK installs this Skill into the host skill directory, so <code>/efinity-project</code> works directly; in VS Code Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (loaded on demand in agent mode; requires the Copilot Chat extension), and the equivalent is to ask the Agent to read <code>Skills/efinity-project/SKILL.md</code> from the delivered package and follow it as instructions (the MCP tools are already wired into <code>mcp.json</code> by the SDK).</p>
 <h2 id="creating-a-new-project">Creating a new project</h2>

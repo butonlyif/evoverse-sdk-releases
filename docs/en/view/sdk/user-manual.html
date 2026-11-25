@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
 <span>Look things up by function once you know the main flow; not required onboarding reading.</span>
 <code>sdk/user-manual.md</code>
@@ -106,9 +106,10 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>SDK Function Reference Manual</h1></header>
 <main class="article"><h1 id="evoverse-sdk-user-manual">EvoVerse SDK — User Manual</h1>
 <blockquote>
-<p><strong>Version</strong>: v1.0.0
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>Version</strong>: v1.0.1
 <strong>Last updated</strong>: 2026-09-30
-<strong>Applies to SDK version</strong>: v1.0.0
+<strong>Applies to SDK version</strong>: v1.0.1
 <strong>Supported platforms</strong>: Trae IDE / VS Code 1.80+ · Windows · macOS · Linux</p>
 <p><strong>Agent entry</strong>: Trae uses <code>@evoverse</code>; VS Code describes the design directly in the native Agent without <code>@evoverse</code>. The embedded Runtime used by Timing Diagnosis, Build Report, and the compatibility participant is not the VS Code native Agent session.
 <strong>Prerequisites</strong>: Python 3.11+ (auto-detected), Efinity 2026.1+ (required for builds and programming), Icarus Verilog or QuestaSim (required for simulation)</p>
@@ -151,7 +152,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <blockquote>
 <p><strong>If this is your first contact with the SDK</strong>, after completing 1.1 please walk the six-stage "Get Started" flow on the <a href="../../../site-en/customer-portal.html">customer documentation portal</a> end to end — 1.1 only verifies that "the toolchain is in place" and does not replace the engineering-contract awareness the tutorials build. The <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD→DDR→CSI-2 tutorial</a> is the hands-on part of the "walk through a complete tutorial" stage of that flow.</p>
 </blockquote>
-<pre><code>Install the extensions → Set Up → describe the goal in Trae natural language → confirm the Control action → write RTL → Sim → Build → Program
+<pre><code>Install the extensions → Initialize → describe the intent in Trae natural language → confirm the plan and executable specification → the Agent generates and verifies RTL → Sim → Build → Program
 </code></pre>
 <table>
 <thead>
@@ -173,9 +174,9 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <td>2 min</td>
 </tr>
 <tr>
-<td>Create a project</td>
-<td>Welcome → pick a board → Generate</td>
-<td>1 min</td>
+<td>Describe the intent and confirm the plan</td>
+<td>Describe the goal in Chat and confirm the plan and executable specification (the control plane advances without a separate project-initialization action)</td>
+<td>depends on the plan</td>
 </tr>
 <tr>
 <td>Write code</td>
@@ -209,7 +210,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <hr />
 <h2 id="2-system-architecture">2. System architecture</h2>
 <h3 id="2-1-layered-architecture">2.1 Layered architecture</h3>
-<p>EvoVerse SDK v1.0.0 adopts a layered <strong>SDK shell + Adapter</strong> architecture. The SDK keeps the Workbench shell and the System root; vendor-specific capabilities are provided by separate Adapter extensions, connected through the trusted headless adapter protocol:</p>
+<p>EvoVerse SDK v1.0.1 adopts a layered <strong>SDK shell + Adapter</strong> architecture. The SDK keeps the Workbench shell and the System root; vendor-specific capabilities are provided by separate Adapter extensions, connected through the trusted headless adapter protocol:</p>
 <pre class="mermaid">flowchart LR
     subgraph host[&quot;Host (Trae / VS Code)&quot;]
         nl[&quot;Trae: @evoverse / VS Code: native Agent&quot;]
@@ -306,9 +307,9 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h2 id="3-installation-and-configuration">3. Installation and configuration</h2>
 <h3 id="3-1-install-the-extensions">3.1 Install the extensions</h3>
 <ol>
-<li>Obtain the 3 v1.0.0 VSIXes: <code>evoverse-sdk-1.0.0.vsix</code>, <code>evoverse-efinity-adapter-1.0.0.vsix</code>, <code>evoverse-rk3588-adapter-1.0.0.vsix</code></li>
+<li>Obtain the 3 v1.0.1 VSIXes: <code>evoverse-sdk-1.0.1.vsix</code>, <code>evoverse-efinity-adapter-1.0.1.vsix</code>, <code>evoverse-rk3588-adapter-1.0.1.vsix</code></li>
 <li>Trae IDE or Visual Studio Code → the <code>Extensions</code> icon on the left → <code>...</code> at the top right → <code>Install from VSIX...</code></li>
-<li>Install in order: <code>evoverse-sdk</code> first, then the two Adapters (with the delivery package you can run <code>scripts/deploy.ps1</code> for one-click install — see the <a href="../installation/deployment-guide.html">Deployment Guide</a>)</li>
+<li>Install in order: <code>evoverse-sdk</code> first, then the two Adapters (with the delivery package you can run <code>python deploy.py --host trae</code> for one-click install — see the <a href="../installation/deployment-guide.html">Deployment Guide</a>)</li>
 <li><strong>Reload Window</strong> (click it when the prompt appears)</li>
 </ol>
 <p>Trae, standard VS Code, and other VS Code forks use <strong>the same set of VSIXes</strong>—no separate builds are needed. The host is detected only after the extension activates, and the corresponding integration mode is then selected.</p>
@@ -526,7 +527,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </table>
 <h3 id="4-2-the-welcome-main-entry">4.2 The Welcome main entry</h3>
 <p><strong>How to open it</strong>: <code>EvoVerse: Show Welcome</code>, or click the EvoVerse icon in the Activity Bar</p>
-<p>Welcome is the starting point for daily use and contains four areas:</p>
+<p>Welcome is the starting point for daily use and contains five areas:</p>
+<h4 id="start-or-continue-readiness-card">Start or Continue (readiness card)</h4>
+<p>The <strong>single primary action</strong> on the Welcome first screen. It reads the unified <strong>readiness projection</strong> (ProjectReadinessProjection) — a six-layer chain <code>SDK → Catalog → Adapter → Environment → Project → Target</code>, where each layer shows only four things: a controlled-vocabulary status (<code>PASS</code> / <code>FAIL</code> / <code>INCOMPLETE</code> / <code>NOT_RUN</code>), the fact source (source), the freshness (<code>FRESH</code> / <code>STALE</code> / <code>MISSING</code> / <code>CORRUPT</code>), and a stable blocking code. The rules:</p>
+<ul>
+<li><strong>A stale observation never shows up as a current PASS</strong>: a STALE observation (for example the target device is offline) keeps its last recorded value, but the status is downgraded to INCOMPLETE and a FRESHNESS code is attached;</li>
+<li><strong>There is exactly one recommended action at any time</strong> (of the four kinds: start / continue / resume / configure): the primary button carries it, and the other legal actions collapse into "other available actions";</li>
+<li><strong>After a repair, continue from where you were</strong>: resume actions keep the original Intent (resumeIntentId), so fixing one environment layer continues the same intent instead of restarting the project;</li>
+<li><strong>Same generation, same conclusion</strong>: Welcome, Workbench, MCP (the <code>doctor</code> tool), and the Agent read the same projection digest; differing digests mean the observations come from different generations, so their conclusions must not be mixed.</li>
+</ul>
+<p>The projection itself is a <strong>discardable, rebuildable</strong> read model: every refresh rebuilds it from the authoritative facts (health-check reports, the Catalog pointer, the Adapter registry, the control-plane model), and a cache is never treated as truth.</p>
 <h4 id="entry-actions-area">Entry actions area</h4>
 <table>
 <thead>
@@ -615,6 +625,38 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <p>With a single Adapter installed there is no switcher; you enter the corresponding Workspace directly.</p>
+<h3 id="4-2-2-the-control-page-lifecycle-projection-and-adoption-confirmation">4.2.2 The Control page: lifecycle projection and adoption confirmation</h3>
+<p>The Control page (SDK-owned) adds two read-only surfaces (v1.0.0):</p>
+<p><strong>Lifecycle stage strip</strong> — a pure projection of the most recent adapter lifecycle action envelope: the <code>INTENT → PLAN → GENERATE → VALIDATE → PREPARE → ADOPT → BUILD → PACKAGE → PROGRAM → EVIDENCE</code> strip shows the position of the last action (stages before it read done, stages after it wait), the current chip carries that action's four-value status (<code>PASS</code> / <code>FAIL</code> / <code>INCOMPLETE</code> / <code>NOT_RUN</code>), and the strip folds the envelope's five independent evidence levels. The SDK keeps no second state machine — the strip only mirrors what the adapter reported; domain inputs and previews always stay inside each adapter's own workspace pages.</p>
+<p><strong>Adoption confirmation</strong> — every candidate-scoped adoption (<code>asset.adopt</code> with candidateId) must receive an explicit user gesture on this surface:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identity binding</strong></td>
+<td>Candidate ID + spec/candidate digest prefixes + the confirmation validity window (default 10 minutes)</td>
+</tr>
+<tr>
+<td><strong>Changed files</strong></td>
+<td>The candidate diff path list</td>
+</tr>
+<tr>
+<td><strong>Five evidence levels</strong></td>
+<td>Folded independently at candidate scope: static / simulation model / native build / target write / hardware runtime — any level without a record renders honestly as <code>NOT_RUN</code>; no level is ever inferred from a lower one, and the project-level evidence vector is never consulted</td>
+</tr>
+<tr>
+<td><strong>Unknowns</strong></td>
+<td>All <code>NOT_RUN</code> levels plus caller-declared unknowns, fully visible before confirming</td>
+</tr>
+</tbody>
+</table>
+<p>Clicking <strong>Confirm adoption</strong> makes the host mint the <strong>one-use confirmation token</strong> through the command channel and spend it immediately on that <code>asset.adopt</code>; the token never enters the page render or any free text (chat/agent text is never an authorization source). <strong>Cancel</strong> closes the modal with no mint. Expired, replayed, forged, or mis-bound tokens are rejected before any write happens (zero writes).</p>
+<p><strong>Delivery boundary</strong> — the Workbench rendering layer and the confirmation gesture pipeline described above are delivered and covered by controller tests and the cross-product e2e (which drives them exactly the way the host would); their production entry points (command/activation wiring) are not wired yet, so these two surfaces do not appear in ordinary sessions until that wiring lands.</p>
 <h3 id="4-3-the-workbench-6-tabs">4.3 The Workbench (6 tabs)</h3>
 <p>Once a project is open, the Workbench becomes the main operations hub:</p>
 <table>
@@ -2951,6 +2993,7 @@ evoverse --help           # shows the CLI version banner and the currently avail
 <p>The MCP Server actually exposes <strong>97 tools</strong> grouped by domain: Catalog and knowledge base / reliable design and evidence / projects and code generation / build, software, and IP / debug, programming, and timing, etc. The complete list with per-tool required/optional parameters is on the "MCP Tool Reference" page of the documentation portal. <code>new_riscv_project</code>, <code>ip list</code>, <code>ip add</code>, and <code>sync_sources</code> are CLI subcommands, not MCP tools.</p>
 </blockquote>
 <p>The "reliable design and evidence" domain is the core capability for reliable code generation: the control plane keeps only 4 stable interfaces—<code>project_status</code> / <code>project_next</code> / <code>project_execute</code> / <code>evoverse_health</code>. <code>project_next</code> returns the current action envelope (recommended action, user decisions, evidence boundary, recovery info, and <code>terminalState</code>); exactly one action advances at a time: read the current <code>revision</code> → verify the envelope's <code>{actionId, intentId, expectedRevision}</code> → submit <code>project_execute</code> → re-read <code>project_next</code> and the new revision. If a response is lost, first verify the receipt, then decide whether to retry with the same identity; advancing from memory is not allowed.</p>
+<p>Outside the control plane there is a separate <strong>generic lifecycle execution face</strong> (MCP tools <code>lifecycle_invoke</code> / <code>lifecycle_status</code> / <code>lifecycle_cancel</code>, protocol-1.1 adapters only): long actions (for example <code>project.generateCandidate</code>, <code>build.native</code>, <code>target.deploy</code>) are routed with a stable <code>requestId</code> through Protocol 1.1 negotiation — never through hard-coded adapter IDs. Cancellation first sends a cooperative notice (the adapter stopping itself records <code>CANCELLED</code>); only an ignored notice or a deadline expiry escalates to a hard kill, recorded as <code>RECOVERY_REQUIRED</code> (a recovery check is required). Status queries rebuild purely from persisted receipts inside the project (<code>.evoverse/lifecycle/requests/</code>), so a host/MCP process restart never changes the facts — closing the process is neither success nor cancellation. This execution face takes no part in control-plane envelope advancement; adoption confirmation tokens can still be minted only by the trusted host UI, and the agent/MCP face rejects <code>adoption.confirm</code>-style actions outright.</p>
 <p>Execution identity is unified as <code>ExecutionIdentity</code>: the UI shows only the abbreviated <code>executionIdentityDigest</code> read-only; users are never asked to fill in component digests such as candidate/spec/Test IR/environment. Providers verify the real tool environment at the <code>prepare → freeze → execute</code> boundaries; status/next/Workbench projections reuse sealed manifests and receipts instead of re-hashing the candidate tree or large images. File bytes are still re-verified at trust boundaries—freeze, execute, promote, install, and release—so what is reduced is redundant computation, not integrity checking.</p>
 <p><strong>The simulation profile precedes the specification (user choice)</strong>: once a reliable iteration exists, and before <code>spec.draft</code> starts drafting, the control plane requires the simulation profile to be confirmed first (otherwise drafting is blocked with <code>SIMULATION_PROFILE_REQUIRED</code>). The AI recommends one based on fixed risk rules, and the user chooses: <code>FPGA_FUNCTIONAL</code> (single-clock simple functions such as a stopwatch or blinking LED—at most 3 core blocking scenarios + 1 key boundary + 1 integration smoke), <code>FPGA_INTEGRATION</code> (protocol/FIFO/CDC/backpressure/cross-line cross-frame state, such as a windowed ISP or DMA), <code>HIGH_ASSURANCE</code> (high-speed complex protocols, memory control, irreversible control, safety-related), or <code>CUSTOM</code> to explicitly divide blocking/deferred obligations. Choosing below the recommended minimum requires recording <code>acceptedRisks</code>; exceeding the profile budget forces a re-confirmation from the control plane. The specification is written within the selected profile's budget; the profile binds to the design iteration, and changing it requires a new iteration. The <code>packagePath</code> submitted by <code>spec.draft</code> must point to a sealed executable 2.0 specification-package directory: the server seals it and records the <code>specPackageDigest</code> as the reliable identity; <code>specification.md</code> is deterministically generated by the sealing script and is for human review only; Markdown files are rejected, and legacy Markdown specifications must be re-drafted and migrated from the executable package. Simulation passes are profile-qualified (<code>FPGA_FUNCTIONAL_PASS</code> etc.), and deferred items never produce fake PASS; <code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> and the simulation status are always reported separately—a functional-level simulation pass does not mean a native-build or hardware pass.</p>
 <p>In reliable mode, <code>candidate.deliver</code> only freezes the candidate—it does not promote the baseline—and runs RTL Design Assurance (structure, clocks, reset, CDC, FSM, FIFO, completeness, and protocol contracts); the service first checks the complete HDL/include/module/testbench closure, writes no candidate facts on failure, and can be retried safely after a fix. <code>verification.simulate</code> explicitly selects the <code>iverilog</code> or <code>questa</code> backend; the required identity digests are generated server-side from the frozen state, and it runs layer by layer—elaboration, module-smoke, requirement, module-regression, subsystem, system—stopping at the first failing layer. Only when the current candidate's simulation achieves a valid PASS and satisfies qualification does <code>candidate.promote</code> install the baseline. On <code>DUT_FAIL</code> or <code>CANDIDATE_COMPILE_FAILED</code>, the Agent records the failed requirements and a bounded diagnosis; a single well-evidenced cause may be fixed once in a targeted way, while multiple causes or a still-failing fix call for engineering options (rationale, next checks, cost, and uncertainty) for the engineer to choose from or answer with their own judgment. <code>CAPABILITY_UNAVAILABLE</code> is reported only when a simulator or a vendor model is missing. Human judgment is a hypothesis to be verified; when new evidence conflicts, it must be explicitly fed back and renegotiated—it must never be treated as PASS. An automated fixture passing is not the same as real Questa, Efinity Native Build, programming, or on-board passing—the evidence of <code>build.native</code>, <code>hardware.program</code>, and <code>hardware.validate</code> is mutually independent and must be reported separately.</p>
@@ -3303,7 +3346,7 @@ evoverse --help           # shows the CLI version banner and the currently avail
 3. <code>Install from VSIX...</code> → select the new VSIX
 4. <code>Reload Window</code></p>
 <h3 id="q9-what-works-on-macos">Q9: What works on macOS?</h3>
-<p><strong>A</strong>: macOS supports development (code authoring), Icarus simulation, AI collaboration, CLI queries, Catalog management, and document viewing. Icarus <code>iverilog</code> / <code>vvp</code> are executed directly through argument arrays; paths with spaces and non-UTF-8 tool output are handled with macOS/POSIX semantics, with no <code>cmd.exe</code> dependency. The host and deployment are cross-platform (the customer package ships both <code>deploy.ps1</code> and <code>deploy.sh</code>, and the extensions are the same set of VSIXes); full Efinity build/programming still requires a Windows or Linux environment.</p>
+<p><strong>A</strong>: macOS supports development (code authoring), Icarus simulation, AI collaboration, CLI queries, Catalog management, and document viewing. Icarus <code>iverilog</code> / <code>vvp</code> are executed directly through argument arrays; paths with spaces and non-UTF-8 tool output are handled with macOS/POSIX semantics, with no <code>cmd.exe</code> dependency. The host and deployment are cross-platform (the customer package ships a single <code>deploy.py</code> launcher, and the extensions are the same set of VSIXes); full Efinity build/programming still requires a Windows or Linux environment.</p>
 <h3 id="q10-how-does-a-team-sync-the-catalog">Q10: How does a team sync the Catalog?</h3>
 <p><strong>A</strong>: Do not put the runtime <code>catalog/</code> directory back under version control in the SDK or customer projects. Each member runs <code>EvoVerse: Sync Catalog</code> to sync from the official public release repository (no GitHub account required); use <code>evoverse catalog status --json</code> to align the version, commit, and tree digest.</p>
 <h3 id="q11-can-multiple-intents-advance-at-the-same-time">Q11: Can multiple Intents advance at the same time?</h3>

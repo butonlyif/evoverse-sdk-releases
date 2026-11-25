@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Complete the project step by step in Trae.</span>
 <code>learn/ws-e1-sd-ddr-csi2/05-sdk-integration.md</code>
@@ -120,42 +120,42 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>05 SDK Integration</h1></header>
 <main class="article tutorial-article"><h1 id="stage-05-sdk-integration">Stage 05 · SDK Integration</h1>
 <blockquote>
-<p>With the baselines from the three promoted increments and the firmware in place, this stage aligns them with the Efinity project files (XML / ISF / SDC): inspect the project contract, synchronize design sources, and verify design consistency. Every change goes through "preview → confirm → apply".</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>With the three modules converged and the firmware ready, this stage aligns them with the Efinity project files (XML / ISF / SDC): it checks the project contract, synchronizes design sources, and validates design consistency. Every change goes through "preview → confirm → apply".</p>
 </blockquote>
-<p>The project contract defines the correspondence between the project structure the control plane sees and the project files the Efinity toolchain sees. In this step, the pins, clocks, and bank voltages of SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX land on the physical constraints of the TJ180A484S.</p>
-<p>The three classes of verification are separated here: a PASS from <code>verification.simulate</code> proves only that the candidate behaves correctly in the simulation scenarios of the selected level; it proves neither that the native build converges nor that the board actually runs — the latter two are evidenced by stage 06's <code>build.native</code> and <code>hardware.validate</code> respectively.</p>
-<p>Every check in this stage revolves around the project contract, with one goal: make the three views point at the same set of files:</p>
+<p>The project contract defines how the project structure seen by the control plane maps onto the project files seen by the Efinity toolchain. The pins, clocks, and bank voltages of the SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX chain all land on the physical constraints of the TJ180A484S at this step.</p>
+<p>The three classes of verification part ways here: a simulation PASS only proves that the candidate is correct under the simulation scenarios of the chosen level. It does not prove that the native build converges, still less that the design runs on the board — those are evidenced by the native build and the hardware work of Stage 06.</p>
+<p>Every check in this stage revolves around the project contract, with the goal of making the three views point at one set of files:</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;Control-plane asset inventory&lt;br&gt;project_status&quot;] --- B{&quot;Project contract&quot;}
+    A[&quot;Control-plane asset list&quot;] --- B{&quot;Project contract&quot;}
     C[&quot;Efinity project XML&lt;br&gt;design source list&quot;] --- B
     D[&quot;ISF / SDC constraints&quot;] --- B
-    B --&gt; E[&quot;Sync design sources&lt;br&gt;preview → confirm → apply&quot;]
-    E --&gt; F[&quot;Design verification&lt;br&gt;pins / bank voltages / clocks&quot;]
-    F --&gt; G{&quot;Three views consistent?&quot;}
-    G --&gt;|yes| H[&quot;Revision updated&lt;br&gt;build input conditions satisfied&quot;]
+    B --&gt; E[&quot;Synchronize design sources&lt;br&gt;preview → confirm → apply&quot;]
+    E --&gt; F[&quot;Design validation&lt;br&gt;pins / bank voltages / clocks&quot;]
+    F --&gt; G{&quot;Three views agree?&quot;}
+    G --&gt;|yes| H[&quot;revision updated&lt;br&gt;build input conditions satisfied&quot;]
     G --&gt;|no| E
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Run an integration check for me: do the control plane's asset inventory, the Efinity project files,
-and the ISF/SDC constraints all point at the same set of files? Organize every inconsistency you
-find into a preview list for my confirmation, and sync the fixes only after I confirm.
-When done, tell me the new revision.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Run an integration check for me: do the asset list in the control plane, the Efinity project files,
+and the ISF/SDC constraints all point at the same set of files? Put whatever inconsistencies you find into a preview list for me to confirm,
+and only apply the fixes after I confirm. When you are done, tell me the new revision.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li><code>project_status</code> reads the current Baseline and asset inventory and presents the project contract: top-level module, design files, constraint files, device TJ180A484S.</li>
+<li>Reads the current Baseline and the asset list, and presents the project contract: top module, design files, constraint files, and the TJ180A484S device.</li>
 <li>Checks the correspondence between design sources and the project XML: whether newly added candidate RTL has entered the source list, and whether removed files are still referenced by the XML.</li>
-<li>Synchronizes design sources into the Efinity project (adding <code>&lt;efx:design_file&gt;</code> entries, updating flist references) and shows you a full preview before syncing.</li>
-<li>Runs design verification: pin assignments, bank voltages, and clock definitions are compared item by item against the physical section of the specification; the MIPI bank must be 1.2 V, must not share a bank with LVDS, and the PLL must be created in the ISF.</li>
-<li>Applies the confirmed changes and reports the revision change with a fresh <code>project_status</code>.</li>
-<li>Any verification failure is reported as-is — the integration stage fixes only "project files out of sync with the candidate"; it never silently edits your RTL.</li>
+<li>Synchronizes design sources into the Efinity project (adding <code>&lt;efx:design_file&gt;</code> entries, updating flist references), giving you the complete preview before it applies anything.</li>
+<li>Runs design validation: pin assignments, bank voltages, and clock definitions are compared item by item against the physical section of the specification; the MIPI bank must be 1.2V, must not share a bank with LVDS, and the PLL must be created in the ISF.</li>
+<li>Applies the confirmed changes and reports the resulting revision change.</li>
+<li>Reports any validation failure verbatim — the integration stage only fixes "project files inconsistent with the candidates"; it never silently edits your RTL.</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
-<li>Every entry in the preview list: the sync tool touches only what is necessary; no "cosmetic touch-ups" to ISF/SDC.</li>
-<li>Pin strategy: changing functionality must not change pins; new functionality picks free pins from the board pinout, with the same bank voltage.</li>
-<li>The project XML is never hand-edited: structural changes go through the sync capability, avoiding hand-written mistakes such as an empty <code>&lt;efx:inter_file&gt;</code>.</li>
-<li>Entries in the verification report that conflict with the physical section of the specification: either fix the project files, or go back to stage 02 and revise the specification — the two sides must not talk past each other.</li>
+<li>Every change in the preview list: the synchronization tool touches only what is necessary, and performs no "while-I'm-here beautification" on the ISF/SDC.</li>
+<li>Pin policy: changing functionality does not change pins; new functionality takes free pins from the board pinout, and they must share the same bank voltage.</li>
+<li>The project XML is never edited by hand: structural changes go through the synchronization capability, avoiding hand-written errors such as an empty <code>&lt;efx:inter_file&gt;</code>.</li>
+<li>Any item in the validation report that conflicts with the physical section of the specification: either fix the project files or go back to Stage 02 and revise the specification — the two sides cannot each tell a different story.</li>
 </ul>
 <h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
 <table>
@@ -167,27 +167,27 @@ When done, tell me the new revision.
 </thead>
 <tbody>
 <tr>
-<td>The verification report conflicts with the specification's physical section</td>
-<td>Pick one: fix the project files to match the specification, or go back to Stage 02 and revise the specification — the two sides must not talk past each other.</td>
+<td>The validation report conflicts with the physical section of the specification</td>
+<td>Pick one: adapt the project files to the specification, or go back to Stage 02 and revise the specification — the two sides cannot each tell a different story.</td>
 </tr>
 <tr>
-<td>Trae wants to optimize the constraint files while it's at it</td>
-<td>Refuse. The integration stage fixes only "project files out of sync with the candidate"; no cosmetic touch-ups.</td>
+<td>Trae wants to tidy up the constraint files along the way</td>
+<td>Refuse. The integration stage only fixes "project files inconsistent with the candidates"; it performs no incidental beautification.</td>
 </tr>
 <tr>
-<td>The preview list is too long to review</td>
-<td>At minimum confirm three areas entry by entry: pin assignments, bank voltages, and clock definitions — they directly decide whether <code>efx_run --flow compile</code> converges.</td>
+<td>The preview list is too long to read through</td>
+<td>At minimum confirm pins, bank voltages, and clock definitions item by item — those three directly decide whether <code>efx_run --flow compile</code> converges.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
-<li>The three views of the project contract agree: control-plane assets, the Efinity project XML, and the ISF/SDC constraints all point to the same set of files.</li>
-<li>Design verification has zero conflicts, or every remaining conflict has an explicitly recorded decision.</li>
-<li>SDC provides a <code>create_clock</code> for every clock port, and asynchronous domains declare <code>set_clock_groups -asynchronous</code>.</li>
-<li>The project satisfies every input condition of <code>efx_run --flow compile</code>: the source list is complete, constraints are legal, and the device and speed grade are correct.</li>
+<li>The three views of the project contract agree: the control-plane assets, the Efinity project XML, and the ISF/SDC constraints point at the same set of files.</li>
+<li>Design validation reports zero conflicts, or every remaining conflict has an explicit resolution decision on record.</li>
+<li>The SDC provides a <code>create_clock</code> for every clock port, and asynchronous domains declare <code>set_clock_groups -asynchronous</code>.</li>
+<li>The project satisfies all input conditions of <code>efx_run --flow compile</code>: complete source list, valid constraints, correct device and speed grade.</li>
 </ul>
-<p>When done, continue to <a href="06-build-and-display-verification.html">Stage 06: Build and Hardware Verification</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="04-firmware-generation.html">← Previous: 04 Sapphire Firmware</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="06-build-and-display-verification.html">Next: 06 Build and Display Verification →</a></nav></main>
+<p>When done, continue to <a href="06-build-and-display-verification.html">Stage 06: Build and hardware verification</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="04-firmware-generation.html">← Previous: 04 Sapphire Firmware</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="06-build-and-display-verification.html">Next: 06 Build and Display Verification →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

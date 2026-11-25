@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>先生成硬件 IP，再逐项完成 RTL 门禁。</span>
 <code>learn/ws-e1-sd-ddr-csi2/07-skills-and-mcp.md</code>
@@ -120,7 +120,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>07 Skills 与 MCP</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-07-skill-与-mcp-工具速查">阶段 07 · Skill 与 MCP 工具速查</h1>
 <blockquote>
-<p>七个阶段走完，回头看清这条路径用到的全部接口：11 个公开 MCP 工具、25 个控制面动作、6 个内置 Skill。你在 TJ180A484S 上完成 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一步，都对应这张表里的一行和一条证据。</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>主线阶段走完后，回头看清这条路径用到的全部接口：11 个公开 MCP 工具、25 个控制面动作、6 个内置 Skill。你在 TJ180A484S 上完成 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一步，都对应这张表里的一行和一条证据。本章是高级参考，动作 id 只在这里出现；主线章节只用意图与证据说话。</p>
 </blockquote>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">带我做一次交付前回顾：按初始化、物料、规格、候选与仿真、固件、集成、

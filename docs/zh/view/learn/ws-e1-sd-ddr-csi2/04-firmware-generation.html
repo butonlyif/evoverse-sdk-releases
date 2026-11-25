@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>按步骤在 Trae 中完成工程。</span>
 <code>learn/ws-e1-sd-ddr-csi2/04-firmware-generation.md</code>
@@ -120,17 +120,18 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>04 Sapphire 固件</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-04-sapphire-固件">阶段 04 · Sapphire 固件</h1>
 <blockquote>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
 <p>SoC 里的 RISC-V 要跑起来，得先有固件。本阶段在 Sapphire 裸机环境生成软件工程与 BSP，把软件候选送进同一个控制面，并明确硬件/软件契约的交接边界。</p>
 </blockquote>
 <p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路跑在 TJ180A484S 上，固件负责 SD 卡初始化、FAT 读取与帧缓冲灌注的调度。它编译在 Sapphire SoC 上，但它的证据和 RTL 一样进控制面：<strong>编译成功只是 <code>SW_BUILT</code>，不等于功能正确</strong>。</p>
 <p>固件的证据边界如下图——<code>SW_BUILT</code> 之后的每一步都换一种证据，不能互相顶替：</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;三轮增量全部&lt;br&gt;candidate.promote 晋级&quot;] --&gt; B[&quot;soc/ 建裸机工程&lt;br&gt;启动代码 / 链接脚本 / BSP&quot;]
+    A[&quot;三个模块契约全部通过&lt;br&gt;规格指纹保持有效&quot;] --&gt; B[&quot;soc/ 建裸机工程&lt;br&gt;启动代码 / 链接脚本 / BSP&quot;]
     B --&gt; C[&quot;构建软件&lt;br&gt;保存完整日志&quot;]
     C --&gt; D{&quot;产物可校验？&quot;}
     D --&gt;|是| E[&quot;SW_BUILT&lt;br&gt;ELF / BSP 摘要登记&quot;]
     D --&gt;|否| C
-    E --&gt; F[&quot;candidate.deliver&lt;br&gt;hardware-software-contract&quot;]
+    E --&gt; F[&quot;登记软件候选&lt;br&gt;绑定 hardware-software-contract&quot;]
     F --&gt; G[&quot;板上功能验证留待阶段 06&lt;br&gt;此前状态为 INTEGRATION_PENDING_HARDWARE&quot;]
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
@@ -141,12 +142,12 @@ host 上能测的需求都要给出测试方法。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
-<li><code>project_status</code> 确认三轮增量已全部 <code>candidate.promote</code> 晋级（软件依赖晋级后的基线），读取 hardware-software contract。</li>
-<li>在 <code>soc/</code> 下建立裸机软件工程：启动代码、链接脚本、BSP 头文件与寄存器图（来自 CSI-2 晋级基线对应规格的寄存器节，不是任何中间轮次的草稿）。</li>
+<li>确认三个模块的契约证据已齐备、规格指纹仍有效（软件依赖收敛后的硬件基线），并读取 hardware-software contract。</li>
+<li>在 <code>soc/</code> 下建立裸机软件工程：启动代码、链接脚本、BSP 头文件与寄存器图（来自冻结规格的寄存器节，不是任何中间草稿）。</li>
 <li>硬件配置（时钟、地址映射）变更后执行 BSP 重新生成，保证 BSP 与 bitstream 同源。</li>
 <li>构建软件并保存完整日志；只把实际生成且可校验的 ELF/BSP 产物标记为 <code>SW_BUILT</code>。</li>
-<li>软件候选以 <code>candidate.deliver</code> 提交（origin 标注 software 分区），控制面记录它与硬件候选的契约绑定。</li>
-<li>明确报告边界：板上功能验证要等阶段 06 的 <code>hardware.validate</code> 回执；在那之前不会把任何"应该能跑"写成 PASS。</li>
+<li>登记软件候选并标注 software 分区，控制面记录它与硬件候选的契约绑定。</li>
+<li>明确报告边界：板上功能验证要等阶段 06 的硬件证据；在那之前不会把任何"应该能跑"写成 PASS。</li>
 </ol>
 <h2 id="你需要确认什么">你需要确认什么</h2>
 <ul>

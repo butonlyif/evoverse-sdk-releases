@@ -112,52 +112,52 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>按步骤在 Trae 中完成工程。</span>
 <code>learn/ws-e1-sd-ddr-csi2/02-system-specification.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/02-system-specification.md">Markdown 源文件</a></p>
 <h1>02 冻结规格</h1></header>
-<main class="article tutorial-article"><h1 id="阶段-02-冻结规格-差量规格与等级决策">阶段 02 · 冻结规格（差量规格与等级决策）</h1>
+<main class="article tutorial-article"><h1 id="阶段-02-冻结模块规格">阶段 02 · 冻结模块规格</h1>
 <blockquote>
-<p>物料账本把自研空白区拆成了三轮增量（SD 输入、DDR 缓冲、CSI-2 输出），合起来覆盖整条 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 显示链路。本阶段讲清两件事的机制：仿真等级怎么选、差量规格怎么冻结，并以第一轮增量（SD 输入）为例完整走一遍——<code>spec.draft</code> → <code>spec.approve</code>。规格未批准之前，控制面不会允许任何候选交付；后两轮增量会在阶段 03 各自重复等级与规格决策。</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>物料账本把自研空白区拆成三个模块切片（<code>sd_host</code>、<code>frame_buffer_writer</code>、<code>csi2_tx</code>）。本阶段把它们一次性写成可执行的模块规格与接口契约，并完成第一个决策：确认方案与可执行规格。规格未批准之前，控制面不会允许任何候选生成；规格批准后，后续生成、仿真和 composition 都挂在这份摘要指纹下，不再反复要求你逐个模块拍板。所有模块最终都要落到 TJ180A484S 的物理资源，并由原生 <code>efx_run --flow compile</code> 统一流程验证。</p>
 </blockquote>
-<p>规格是可靠设计流程的合同：后续 <code>candidate.deliver</code> 的候选会按它的摘要校验，<code>verification.simulate</code> 的证据会绑定到它的版本。差量规格的对照物是<strong>父基线</strong>——第一轮的父基线是 Stage0 初始基线，后两轮的父基线是上一轮的晋级结果。写得不完整，后面每一步都会被阻塞回来。</p>
-<p>第一轮增量的完整决策链如下：</p>
+<p>规格是可靠设计流程的合同：每个 <code>ModuleSpec</code> 写明端口、位宽、时钟域、复位语义、验收 Oracle 与覆盖项；模块之间写明接口契约；整链写明芯片内 composition 的顶层连接。候选交付会按规格摘要校验，仿真证据会绑定到规格版本。写得不完整，后面每一步都会被阻塞回来。</p>
+<p>本阶段的决策链如下：</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;提取本轮风险事实&lt;br&gt;SD 握手 / 写端口背压 / CDC&quot;] --&gt; B[&quot;simulation.profile.select&lt;br&gt;提交 riskFacts&quot;]
-    B --&gt; C[&quot;服务端按固定风险规则&lt;br&gt;给出推荐等级&quot;]
-    C --&gt; D{&quot;用户选择等级&quot;}
-    D --&gt;|低于推荐| E[&quot;填写 acceptedRisks&quot;]
-    E --&gt; F[&quot;spec.draft&lt;br&gt;按所选等级预算起草差量规格&quot;]
-    D --&gt;|推荐及以上| F
-    F --&gt; G[&quot;spec.approve&lt;br&gt;冻结规格并生成摘要指纹&quot;]
+    A[&quot;提取整条意图的风险事实&lt;br&gt;SD 握手 / 写端口背压 / CDC / 输出时序&quot;] --&gt; B[&quot;按固定风险规则推荐仿真等级&quot;]
+    B --&gt; C{&quot;你做第一个决策：确认方案与规格&quot;}
+    C --&gt;|低于推荐| D[&quot;逐条接受延后验证的风险&quot;]
+    D --&gt; E[&quot;冻结三个 ModuleSpec + 接口契约 + composition 规格&quot;]
+    C --&gt;|推荐及以上| E
+    E --&gt; F[&quot;生成规格摘要指纹&quot;]
 </pre>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">开始第一轮设计：在我的 WS-E1 板子（TJ180A484S）上做 SD 卡读入并写入 DDR 帧缓冲。
-先告诉我这一轮需要什么仿真等级：
-它涉及 SD 协议握手和帧缓冲写端口的背压，把推荐等级和会延后验证的事项讲给我听，
-等级我来定。定完之后按物料清单起草这一轮的规格，只覆盖 SD 写入路径；
-遇到行为有分歧的地方（比如 SD 卡初始化超时怎么处理）给我几个选项让我拍板，
-别替我决定。确认后冻结。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">方案和规格可以起草了。这条 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路
+请拆成 sd_host、frame_buffer_writer、csi2_tx 三个模块，每个模块给我一份
+ModuleSpec：端口、位宽、时钟域、复位语义、验收场景和 Oracle；
+模块之间写明接口契约，顶层写明芯片内 composition 怎么连。
+同时告诉我这条链路需要什么仿真等级、哪些风险会延后验证。
+行为有分歧的地方（比如 SD 初始化超时怎么处理、DDR 缓冲深度）给我几个选项；
+我一次确认方案后你就冻结规格，后面不要为每个模块反复问我同一类问题。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
-<li><code>project_status</code> 确认规格区为空或存在草稿，<code>project_next</code> 确认 <code>simulation.profile.select</code> 与 <code>spec.draft</code> 可用。</li>
-<li><strong>等级先于规格</strong>：从本轮增量提取风险事实（SD 协议握手、写端口背压、CDC），提交 <code>simulation.profile.select</code> 的 <code>riskFacts</code>；控制面按固定风险规则给出推荐。对 SD 输入增量，推荐通常是 <code>FPGA_INTEGRATION</code>：协议握手、背压与数据不丢失是阻塞义务，主观画质和长时间全量回归可以延期。用户选择等级后（低于推荐最低等级需要填写 <code>acceptedRisks</code>），规格按所选等级的预算编写——场景数量、Oracle 与覆盖项从源头受控，超出预算时控制面会要求重新确认。</li>
-<li>按物料账本起草<strong>差量规格</strong>：SystemSpec 增量、本轮自研模块的 ModuleSpec、MaterialContract（引用账本材料）、接口契约、场景与 Oracle、验收 Property 与覆盖项；与父基线复用部分的边界逐条写清。</li>
-<li>遇到行为歧义（如 SD 卡初始化超时策略），生成结构化 DecisionRequest：2-3 个互斥选项 + 推荐理由，交给你选择。</li>
-<li>你选定后提交 <code>project_execute</code>（<code>spec.draft</code>），再以 <code>spec.approve</code> 冻结。</li>
-<li>重新 <code>project_status</code>，展示规格摘要与摘要指纹（digest）——本轮候选与证据都挂在这个指纹下。</li>
+<li>从整条意图提取风险事实（SD 协议握手、写端口背压、CDC、CSI-2 输出时序），按固定风险规则给出推荐仿真等级，并解释阻塞验证项与可延后项。</li>
+<li>按物料账本起草三份 <code>ModuleSpec</code> 与模块间接口契约；每个模块的验收场景标注验证角色（reset / main-flow / critical-boundary / protocol / cdc / fifo / numeric-boundary 等）。</li>
+<li>起草 composition 规格：三个模块与只读 DDR wrapper、CSI-2 TX 硬核的顶层连接、时钟域与复位关系。</li>
+<li>遇到行为歧义（如 SD 初始化超时策略、缓冲深度），生成 2–3 个互斥选项与推荐理由，交给你选择。</li>
+<li>你确认方案后冻结规格并生成摘要指纹；三个模块与整链证据都挂在这个指纹下。</li>
 </ol>
 <h2 id="你需要确认什么">你需要确认什么</h2>
 <ul>
-<li><strong>仿真等级由你本人选择</strong>：AI 只按固定风险规则推荐并解释预计阻塞验证与延期事项；<code>recommendedProfile</code> 等字段由服务端计算，Agent 不得代填，也不存在"AI 自动选择等级"。选择低于推荐最低等级时，必须写下你接受的具体风险（<code>acceptedRisks</code>）。等级绑定在各自的设计迭代上，三轮增量各自决策，互不继承。</li>
-<li><strong>不得选择、复制或快照 sd-ddr-csi2 工程目录</strong>作为规格来源；规格必须出自你的物料账本与你的决策。允许选择其他 Demo 材料作为物料，但它们的结论只能进 MaterialContract，不能直接变成你的设计。</li>
-<li>每个决策项都由你本人拍板：控制面不接受从自然语言推断出的"默认批准"。</li>
-<li>验收场景可执行：每一个验收 Property 都能在阶段 03 的仿真里跑出 pass/fail，而不是一句"看起来对了"。规格中的场景要标注验证角色（reset / main-flow / critical-boundary / integration-smoke / protocol / cdc / fifo / numeric-boundary 等），仿真按等级选阻塞范围。</li>
-<li>差量规格对照父基线：哪些文件复用、哪些新增、哪些修改，逐条可辨认——这是后面 <code>candidate.promote</code> 合并的依据。</li>
-<li>时钟方案符合 Efinity 约束：PLL 在 ISF 中创建、无分频时钟驱动逻辑、异步域有同步器——这些会写进规格的物理约束节。</li>
+<li><strong>仿真等级由你本人选择</strong>：AI 只按固定风险规则推荐并解释预计阻塞验证与延期事项；推荐字段由服务端计算，Agent 不得代填。选择低于推荐最低等级时，必须写下你接受的具体风险。等级绑定在这一个意图上，不按模块重复决策。</li>
+<li><strong>不得选择、复制或快照 sd-ddr-csi2 工程目录</strong>作为规格来源；规格必须出自你的物料账本与你的决策。<strong>允许选择其他 Demo 材料</strong>作为参考或复用，但必须经过阶段 01 的账本分类与许可检查。</li>
+<li>每个决策项由你本人拍板：控制面不接受从自然语言推断出的“默认批准”。</li>
+<li>验收场景可执行：每个验收 Property 都能在阶段 03 的仿真里跑出 pass/fail，而不是一句“看起来对了”。</li>
+<li>接口契约先于实现：模块之间只通过契约握手；若某个接口在规格里含糊，现在补最便宜，不要留到 composition 时再说。</li>
+<li>时钟方案符合 Efinity 约束：PLL 在 ISF 中创建、无分频时钟驱动逻辑、异步域有同步器——写进规格的物理约束节。</li>
 </ul>
 <h2 id="如果不顺利">如果不顺利</h2>
 <table>
@@ -170,31 +170,31 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tbody>
 <tr>
 <td>推荐等级比预想高</td>
-<td>可以选低一档，但要把 acceptedRisks 逐条读过再确认——你签收的是"延后验证什么"。</td>
+<td>可以选低一档，但要把接受的风险逐条读过再确认——你签收的是“延后验证什么”。</td>
 </tr>
 <tr>
 <td>规格草稿被打回要求补充</td>
-<td>这是控制面的正常保护：写得含糊的规格会在候选交付和仿真时反复阻塞你，现在补最便宜。</td>
+<td>这是控制面的正常保护：含糊规格会在候选交付和仿真时反复阻塞你，现在补最便宜。</td>
 </tr>
 <tr>
 <td>决策选项都不合意</td>
-<td>让 Trae 补齐每个选项的差异说明和后果再重新起草；也可以直接描述你的策略，请它生成新选项。</td>
+<td>让 Agent 补齐每个选项的差异说明和后果；也可以直接描述你的策略，请它生成新选项。</td>
 </tr>
 <tr>
 <td>卡在等级决策不动</td>
-<td>问"还缺哪些风险事实"；推荐来自服务端固定规则，事实齐了自然会给。</td>
+<td>问“还缺哪些风险事实”；推荐来自服务端固定规则，事实齐了自然会给。</td>
 </tr>
 </tbody>
 </table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
-<li><code>simulation.profile.select</code> 的用户选择已在控制面状态里可见（<code>selectedBy: user</code>），<code>spec.draft</code> 不再被 <code>SIMULATION_PROFILE_REQUIRED</code> 阻塞。</li>
-<li><code>spec.approve</code> 回执在控制面状态里可见，第一轮（SD 输入）差量规格从 draft 进入 approved。</li>
-<li>规格摘要指纹已生成，<code>project_next</code> 的候选动作不再被"an approved specification exists"阻塞。</li>
-<li>你能指认：本轮模块清单、每个模块的接口契约、验收场景与 Oracle 的位置、所选仿真等级与延期清单、相对父基线的新增/修改清单。</li>
+<li>第一个决策（方案与可执行规格）已记录，<code>selectedBy: user</code> 可见。</li>
+<li>三份 <code>ModuleSpec</code>、模块间接口契约与 composition 规格已冻结，摘要指纹已生成。</li>
+<li>候选生成不再被“需要已批准规格”阻塞。</li>
+<li>你能指认：三个模块清单、每个模块的接口契约、验收场景与 Oracle、所选仿真等级与延期清单、composition 的顶层连接。</li>
 <li>后续 <code>efx_run --flow compile</code> 的 SDC/ISF 约束需求已在规格物理节中有对应条款。</li>
 </ul>
-<p>完成后进入 <a href="03-hardware-generation.html">阶段 03：生成 RTL 并交付候选</a>。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="01-material-analysis.html">← 上一阶段：01 物料分析</a><a class="stage-overview" href="README.html">教程总览</a><a class="next-stage" href="03-hardware-generation.html">下一阶段：03 生成 IP 与受控 RTL →</a></nav></main>
+<p>完成后进入 <a href="03-hardware-generation.html">阶段 03：按模块生成与独立仿真</a>。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="01-material-analysis.html">← 上一阶段：01 物料分析</a><a class="stage-overview" href="README.html">教程总览</a><a class="next-stage" href="03-hardware-generation.html">下一阶段：03 生成 IP 与受控 RTL →</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

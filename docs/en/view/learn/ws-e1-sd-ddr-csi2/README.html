@@ -112,145 +112,168 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Complete the project step by step in Trae.</span>
 <code>learn/ws-e1-sd-ddr-csi2/README.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/README.md">Markdown source</a></p>
 <h1>WS-E1 SD to CSI-2 Overview</h1></header>
-<main class="article tutorial-article"><h1 id="ws-e1-sd-to-csi-2-project-tutorial">WS-E1 SD-to-CSI-2 Project Tutorial</h1>
+<main class="article tutorial-article"><h1 id="ws-e1-sd-to-csi-2-project-tutorial-complex-single-fpga">WS-E1 SD to CSI-2 Project Tutorial (Complex Single FPGA)</h1>
 <blockquote>
-<p>Applicable version: v1.0.0　Target device: TJ180A484S (Titanium Ti60, C4 timing model)　Default host: Trae</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>Applicable version: v1.0.1　Target device: TJ180A484S (Titanium Ti60, C4 timing model)　Default host: Trae</p>
 </blockquote>
-<p>This tutorial takes you from an empty directory to a complete project rebuilt through the EvoVerse SDK's reliable design flow: <strong>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX</strong>. You describe the goal in natural language, and the Project Control Plane decides at every step whether progress is allowed; every conclusion comes with an evidence receipt.</p>
-<p>One red line up front: <strong>you must not copy the RTL, constraints, or project files of the target <code>sd-ddr-csi2</code> project as the baseline for your new project</strong> — the target project exists only for material analysis and conclusion comparison. What you end up with is a project backed by your own specification, your own candidate RTL, and your own evidence chain, not a copy of the reference design.</p>
-<h2 id="before-you-start">Before you start</h2>
-<p>Run through the environment preparation in order; it takes about 10 minutes in total:</p>
+<p>This tutorial teaches exactly <strong>one intent</strong>: build an <strong>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX</strong> display chain on TJ180A484S. A complex single FPGA does not mean the customer must decompose it into a dozen steps; the Agent splits one intent into module slices, lets each module converge independently against its own contract, and finally composes them in a single on-chip composition.</p>
+<p>One red line first: <strong>never copy the target <code>sd-ddr-csi2</code> project's RTL, constraints, or project files as the baseline of a new project</strong>. The target project is used only for material analysis and conclusion comparison; what you need is a project backed by your own specification, your own candidate RTL, and your own evidence chain.</p>
+<h2 id="one-intent-three-decisions">One intent, three decisions</h2>
+<p>The whole journey asks you to make three decisions; the control plane advances everything else continuously:</p>
 <ol>
-<li><strong>Install the three VSIXes</strong> (same version 1.0.0): <code>evoverse-sdk</code>, <code>evoverse-efinity-adapter</code>, <code>evoverse-rk3588-adapter</code>. In the Extensions view choose "Install from VSIX…" and install them one by one; see the <a href="../../installation/trae-install-guide.html">Trae install guide</a>.</li>
-<li><strong>Restart the IDE</strong> so that all three extensions are activated.</li>
-<li><strong>First-run bootstrap</strong>: after the restart a "Set up EvoVerse SDK?" dialog pops up; confirm the workspace location (default <code>~/evoverse-sdk</code>).</li>
-<li><strong>The Welcome page opens automatically</strong>. Click <strong>Sync Catalog</strong> to sync the board catalog and wait for it to finish — the <code>ws-e1 / ws-e1-base</code> board selection later comes from this catalog.</li>
-<li><strong>Start by host</strong>: <strong>Trae:</strong> type <code>@evoverse</code> and describe the goal. <strong>VS Code:</strong> describe the same goal directly in native Chat Agent mode, without <code>@evoverse</code>, after confirming the EvoVerse MCP server is Running. The Workbench Project Control dropdown (<code>evoverse.selectDesignFlow</code>) is a graphical entry, but it does not continue the Agent conversation.</li>
+<li><strong>Confirm the plan and executable specification</strong> — the Agent first proposes the module split (<code>sd_host</code>, <code>frame_buffer_writer</code>, <code>csi2_tx</code> plus clock/reset), each module's <code>ModuleSpec</code> and interface contract, the simulation level, and acceptance scenarios. After one confirmation the specification is frozen; generation will not interrupt you module by module.</li>
+<li><strong>Confirm high-cost work or device writes when needed</strong> — only programming, deployment, or expensive builds require explicit authorization; read-only checks, generation, simulation, and low-cost builds do not interrupt you.</li>
+<li><strong>Review the evidence boundary and accept</strong> — at technical completion, review the evidence summary and not-run levels; give the acceptance receipt after confirmation. Technical completion is not acceptance.</li>
 </ol>
-<p>Then confirm two more things:</p>
+<h2 id="module-split-and-interface-contracts">Module split and interface contracts</h2>
+<p>One intent splits into three module slices, each converging independently before they are composed into one chain:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Interface contract</th>
+<th>Independent evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sd_host</code></td>
+<td>SD card initialization, command/data handshake</td>
+<td>Emits a valid/ready sample stream to <code>frame_buffer_writer</code>; width and cadence are fixed by <code>ModuleSpec</code></td>
+<td>Simulation of protocol scenarios, timeout, and retry policy</td>
+</tr>
+<tr>
+<td><code>frame_buffer_writer</code></td>
+<td>Writes samples into the DDR frame buffer and manages write-side backpressure</td>
+<td>Read-side ownership handoff, write address generation, full/empty semantics</td>
+<td>Simulation of backpressure, boundary addresses, and read-back consistency</td>
+</tr>
+<tr>
+<td><code>csi2_tx</code></td>
+<td>Reads from the frame buffer and emits CSI-2 TX timing</td>
+<td>Line/field sync, lane count, pixel cadence</td>
+<td>Simulation of output timing and protocol scenarios</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interface contracts come before implementation</strong>: each module's <code>ModuleSpec</code> states ports, widths, clock domains, reset semantics, and the acceptance oracle; modules handshake only through contracts instead of "deciding the wiring later at the top". That is what lets modules be generated, simulated, and repaired independently.</p>
+<p><strong>On-chip composition</strong>: after all three modules pass their contracts and simulations, the Agent connects them together with the read-only DDR wrapper and the CSI-2 TX hard IP at the TJ180A484S top level in one composition pass, then runs the full-chain integration check. Composition is not a fourth step the customer must memorize; it is what the Agent performs in the "Integrate &amp; Realize" stage.</p>
+<h2 id="how-the-background-advances">How the background advances</h2>
+<p>The five background stages only explain the system; they are not an action list you must memorize:</p>
+<ol>
+<li><strong>Intent</strong> — turn your natural-language goal into a managed intent and snapshot the current baseline.</li>
+<li><strong>Plan &amp; Approve</strong> — propose the module split, module contracts, simulation level, and acceptance scenarios, then wait for your single confirmation.</li>
+<li><strong>Generate &amp; Converge</strong> — generate candidates and run Design Assurance and independent simulation for each module in parallel; a failure affects only that module.</li>
+<li><strong>Integrate &amp; Realize</strong> — on-chip composition, project contract checks, native build, and programming.</li>
+<li><strong>Accept</strong> — summarize the evidence boundary and wait for your accept or reject receipt.</li>
+</ol>
+<h2 id="terminal-states">Terminal states</h2>
+<p><code>BUILT</code> (build artifacts exist) → <code>PACKAGED</code> (packaged) → <code>PROGRAMMED</code> (written to the device) → <code>HARDWARE_VERIFIED</code> (observed on the board) → <code>SYSTEM_VERIFIED</code> (complete system-level evidence) → <code>READY_FOR_ACCEPTANCE</code> (technically complete) → <code>ACCEPTED</code> (customer acceptance receipt); levels not actually executed stay <code>NOT_RUN</code>. <strong>A simulation PASS is not a passing build, a passing build is not successful programming, and successful programming is not board validation.</strong> Without hardware, hardware and system-level evidence stay <code>NOT_RUN</code>.</p>
+<h2 id="failure-recovery">Failure recovery</h2>
+<p>A simulation FAIL is evidence, not an incident: a delivered candidate is frozen and immutable, so a fix must regenerate the candidate and rerun simulation; the baseline is not polluted by one failure, and other modules' existing evidence does not become invalid. If the failure exposes a contract ambiguity (for example, "how many times should SD initialization retry after timeout" is undefined), the Agent returns to the specification decision instead of privately adding logic in RTL.</p>
+<h2 id="specification-upgrade">Specification upgrade</h2>
+<p>A specification upgrade invalidates only <strong>the affected evidence</strong>. For example, changing the DDR buffer depth from 2 lines to 4 lines:</p>
 <ul>
-<li>Efinity 2026.1+ is confirmed available; functional simulation requires Icarus Verilog (or QuestaSim).</li>
-<li>A WS-E1 core module (TJ180A484S) plus a carrier board is even better; without hardware you can still complete every stage up to compile, and the hardware validation stage will be honestly marked as pending.</li>
+<li>The specification and simulation evidence of <code>frame_buffer_writer</code> become invalid and must be regenerated and resimulated;</li>
+<li>The contracts of <code>sd_host</code> and <code>csi2_tx</code> are unchanged, so their existing evidence remains valid;</li>
+<li>The full-chain composition evidence must be rerun once because the top-level wiring and buffering behavior changed.</li>
 </ul>
-<p>The onboarding chain:</p>
-<pre class="mermaid">flowchart LR
-  A[&quot;Install the three VSIXes&quot;] --&gt; B[&quot;Restart the IDE&quot;]
-  B --&gt; C[&quot;First-run dialog confirms the workspace&lt;br&gt;~/evoverse-sdk&quot;]
-  C --&gt; D[&quot;Welcome page opens automatically&quot;]
-  D --&gt; E[&quot;Sync Catalog syncs the board catalog&quot;]
-  E --&gt; F[&quot;Trae: @evoverse&lt;br/&gt;VS Code: native Agent directly&quot;]
-  F --&gt; G[&quot;Workbench six tabs&lt;br&gt;Home/Build/Timing/Debug/SW/IP&quot;]
-</pre>
-<h2 id="the-reliable-design-flow-a-five-step-control-loop">The reliable design flow: a five-step control loop</h2>
-<p>In v1.0.0, every reliable capability of the SDK is adjudicated by a single control plane (the Project Control Plane). The Agent, the Workbench, and the CLI all advance through the same set of interfaces:</p>
-<ol>
-<li><strong>Read state</strong> — call <code>project_status</code> to get the current <code>revision</code>, Baseline, active Intents, evidence, and candidates.</li>
-<li><strong>Read actions</strong> — call <code>project_next</code> to get the server-allowed list of ActionDescriptors (including preconditions and blocking reasons).</li>
-<li><strong>Interpret and choose</strong> — have the Agent explain each action's effect, preconditions, and blockedReasons to you; ask first when unsure.</li>
-<li><strong>Execute</strong> — after you confirm, submit <code>{actionId, expectedRevision, inputs}</code> with <code>project_execute</code>.</li>
-<li><strong>Handle decisions and re-read the revision</strong> — when a structured decision (DecisionRequest) comes back, you make the call; after the action completes, re-run <code>project_status</code>, and never reuse an old revision.</li>
-</ol>
-<p>Every state advance produces evidence (specification summaries, candidate summaries, simulation receipts, build receipts, hardware receipts), bound into the project state — it cannot be faked verbally in a conversation.</p>
-<h2 id="eight-stages">Eight stages</h2>
+<p>The correct approach is therefore to <strong>rerun only the affected nodes</strong>, not to start the whole tutorial over; one specification upgrade does not void an unrelated module's PASS.</p>
+<h2 id="stage-navigation">Stage navigation</h2>
 <table>
 <thead>
 <tr>
 <th>Stage</th>
 <th>Document</th>
-<th>Control-plane action</th>
+<th>Result to reach in this segment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>00</td>
-<td><a href="00-stage0-harness.html">Set up the project harness</a></td>
-<td><code>project.initialize</code></td>
+<td><a href="00-stage0-harness.html">Environment and harness self-check</a></td>
+<td>The workspace is ready and the Agent can see the board and device you have</td>
 </tr>
 <tr>
 <td>01</td>
 <td><a href="01-material-analysis.html">Material analysis</a></td>
-<td><code>asset.observe</code></td>
+<td>Take stock of reusable, adaptable, reference-only, and unusable material</td>
 </tr>
 <tr>
 <td>02</td>
-<td><a href="02-system-specification.html">Freeze the specification</a></td>
-<td><code>spec.draft</code> → <code>spec.approve</code> (delta specification, mechanics explained)</td>
+<td><a href="02-system-specification.html">Freeze module specifications</a></td>
+<td>The three <code>ModuleSpec</code>s, interface contracts, simulation level, and acceptance scenarios are confirmed in one pass</td>
 </tr>
 <tr>
 <td>03</td>
-<td><a href="03-hardware-generation.html">Generate RTL and deliver candidates</a></td>
-<td>three increments, each round: <code>intent.create</code> → <code>simulation.profile.select</code> → <code>spec.draft</code> → <code>candidate.deliver</code> → <code>verification.simulate</code> → <code>candidate.promote</code></td>
+<td><a href="03-hardware-generation.html">Per-module generation and independent simulation</a></td>
+<td>Each module candidate converges independently; a failure rolls back only that module</td>
 </tr>
 <tr>
 <td>04</td>
 <td><a href="04-firmware-generation.html">Sapphire firmware</a></td>
-<td><code>candidate.deliver</code> (software candidate)</td>
+<td>Firmware and hardware contracts share one source; <code>SW_BUILT</code> is not functional correctness</td>
 </tr>
 <tr>
 <td>05</td>
-<td><a href="05-sdk-integration.html">SDK integration</a></td>
-<td>contract check and source sync</td>
+<td><a href="05-sdk-integration.html">Project integration</a></td>
+<td>Control-plane assets, project XML, and ISF/SDC views agree</td>
 </tr>
 <tr>
 <td>06</td>
-<td><a href="06-build-and-display-verification.html">Compile and hardware validation</a></td>
-<td><code>build.native</code> → <code>hardware.program</code> → <code>hardware.validate</code></td>
+<td><a href="06-build-and-display-verification.html">Build and hardware verification</a></td>
+<td>Native build, on-demand programming, per-scenario hardware evidence; <code>NOT_RUN</code> without hardware</td>
 </tr>
 <tr>
 <td>07</td>
-<td><a href="07-skills-and-mcp.html">Skills and MCP quick reference</a></td>
-<td>tool and action index</td>
+<td><a href="07-skills-and-mcp.html">Skill and MCP quick reference</a></td>
+<td>Advanced reference: action ids, tools, and Skill index</td>
 </tr>
 <tr>
 <td>08</td>
-<td><a href="08-project-cleanup.html">Clean up the project and deliver</a></td>
-<td>evidence archiving and recompile</td>
+<td><a href="08-project-cleanup.html">Organize the project and hand it off</a></td>
+<td>Preview before cleanup; a rebuild proves the project is still deliverable</td>
 </tr>
 </tbody>
 </table>
-<p>Stages depend on one another: no candidate can be delivered before the specification is approved; no simulation evidence can be recorded before a candidate is frozen; no promotion happens before simulation PASSes; and if the previous round has not been promoted, the next increment has no new parent baseline. Build evidence and hardware evidence are independent of each other and never substitute for one another. After every stage the control plane pauses and waits for your confirmation before moving on.</p>
-<h2 id="three-increments-every-round-ends-with-a-promotion">Three increments: every round ends with a promotion</h2>
-<p>The backbone of this tutorial is not "generate the whole pipeline in one shot" but three incremental iterations:</p>
-<p><strong>Stage0 baseline → SD input increment → promotion → DDR buffering increment → promotion → CSI-2 output increment → promotion → Efinity native compile → on-board validation</strong></p>
-<p>Every increment walks the same loop:</p>
+<p>Stage 07 is advanced reference and keeps internal action ids; the main chapters speak only of intent and evidence and never ask you to memorize action names.</p>
+<h2 id="before-you-start">Before you start</h2>
+<p>Walk through environment preparation once, about 10 minutes total:</p>
 <ol>
-<li>When <code>intent.create</code> declares the intent, the control plane snapshots the current baseline assets into <code>IntentRecord.baseBaselineFiles</code> — that snapshot is this round's parent baseline.</li>
-<li><code>candidate.deliver</code> only freezes the candidate and runs Design Assurance, leaving the baseline untouched.</li>
-<li><code>verification.simulate</code> gathers evidence against the frozen candidate independently.</li>
-<li>After the simulation PASSes and promotion eligibility is satisfied, <code>candidate.promote</code> merges the candidate with the parent baseline and installs the result as the new baseline — it is the parent baseline of the next round's increment.</li>
+<li><strong>Install the three VSIXes</strong> (same version 1.0.0): <code>evoverse-sdk</code>, <code>evoverse-efinity-adapter</code>, <code>evoverse-rk3588-adapter</code>. In the Extensions view choose "Install from VSIX…" one by one; see the <a href="../../installation/trae-install-guide.html">Trae installation guide</a>.</li>
+<li><strong>Restart the IDE</strong> so all three extensions activate.</li>
+<li><strong>First-run setup</strong>: after restart, the "Set up EvoVerse SDK?" dialog asks you to confirm the workspace location (default <code>~/evoverse-sdk</code>).</li>
+<li><strong>The Welcome page opens automatically</strong>. Click <strong>Sync Catalog</strong> to synchronize the board catalog and wait for completion—the <code>ws-e1 / ws-e1-base</code> board selection later comes from this catalog.</li>
+<li><strong>Open an empty directory as the project root</strong> and describe the intent in Chat: <strong>Trae:</strong> type <code>@evoverse</code> and then the goal; <strong>VS Code:</strong> describe the same goal directly in native Chat Agent mode without <code>@evoverse</code>, after confirming EvoVerse MCP is Running. Workbench (Project Control dropdown, command <code>evoverse.selectDesignFlow</code>) is a graphical entry, but it does not continue the Agent conversation for you.</li>
 </ol>
-<p>Mapped onto the tutorial stages:</p>
-<pre class="mermaid">flowchart LR
-  S[&quot;Stage0 project initialization&quot;] --&gt; M[&quot;Material analysis&quot;]
-  M --&gt; P[&quot;System specification&lt;br&gt;grade first, then specification&quot;]
-  P --&gt; G[&quot;Hardware generation&lt;br&gt;candidate simulate promote&quot;]
-  G --&gt; Q{&quot;Three increments&lt;br&gt;all promoted?&quot;}
-  Q -- &quot;next increment&quot; --&gt; P
-  Q -- &quot;yes&quot; --&gt; I[&quot;Firmware and SDK integration&quot;]
-  I --&gt; B[&quot;Build and display validation&quot;]
-</pre>
-<p>The <code>expectedRevision</code> carried with every action submission is only a concurrency hint: the control plane always appends facts against the latest revision and never lets a stale revision become a safety boundary.</p>
+<p>Then confirm two more things:</p>
+<ul>
+<li>Efinity 2026.1+ is available; functional simulation needs Icarus Verilog (or QuestaSim).</li>
+<li>A WS-E1 core module (TJ180A484S) plus carrier board is preferable; without hardware you can still complete every stage up to the build, and the hardware verification stage will honestly mark itself as not executed.</li>
+</ul>
 <h2 id="what-you-will-get">What you will get</h2>
 <ul>
-<li>A managed project: project identity, specifications, candidates, and evidence are all traceable in the control-plane state.</li>
-<li>An evidence chain from specification to hardware: every step either carries a PASS receipt or is explicitly marked <code>incomplete</code> / <code>fail</code> — <code>incomplete</code> is never treated as PASS.</li>
-<li>The final bitstream is produced by the Efinity native unified flow <code>efx_run --flow compile</code>; the MIPI CSI-2 output is validated against a real receiver or on-chip debug cores.</li>
+<li>One managed project: project identity, frozen specification, candidates, and evidence are all traceable in the control-plane state.</li>
+<li>An evidence chain from module contracts to hardware: every step either has a PASS receipt or is explicitly marked <code>incomplete</code> / <code>fail</code>—<code>incomplete</code> is never treated as PASS.</li>
+<li>The final bitstream comes from the native Efinity unified flow <code>efx_run --flow compile</code>; the MIPI CSI-2 output is verified with a real receiver or an on-chip debug core.</li>
 </ul>
-<h2 id="what-to-do-when-things-go-sideways">What to Do When Things Go Sideways</h2>
-<p>The prompts in this tutorial deliberately state intent only — no control-plane action names, no process steps. Driving the flow, picking actions, and checking receipts are Trae's job; you do not need to memorize them. Generation and simulation are inherently stochastic, so when things do not go smoothly, handle it by three principles:</p>
+<h2 id="what-to-do-when-something-goes-wrong">What to do when something goes wrong</h2>
+<p>The prompts in this tutorial deliberately state only intent, without control-plane action names or flow steps—advancing the flow, choosing actions, and checking receipts is the Agent's job. The "What you say to Trae" sections in the following chapters remain the Trae mainline; in VS Code, send the same prompt directly to the native Agent and drop the leading <code>@evoverse</code>. Generation and simulation are stochastic; when things do not go smoothly, follow three principles:</p>
 <ol>
-<li><strong>State the goal, not the process.</strong> Describe what you want ("write the SD card data into DDR") instead of command steps. If Trae's approach disagrees with the mechanics described in this tutorial, just ask "how do you plan to proceed" and listen to the explanation before deciding.</li>
-<li><strong>When a step takes long, ask for progress — do not rush it and do not start over.</strong> Generation, simulation, and native builds all run at minutes-to-tens-of-minutes scale; stacking new instructions midway only derails the rhythm. If it feels slow, ask "which step are you on and what is left" instead of resending the prompt.</li>
-<li><strong>When the result does not match expectations, state the expectation before the problem.</strong> Spell out clearly "what I expected to see vs. what I actually saw", and let Trae return to the relevant evidence or specification and redo the flow. A simulation FAIL is not an accident — it is evidence: fix it, re-deliver, re-simulate, and the baseline stays unpolluted.</li>
+<li><strong>State the goal, not the flow.</strong> Describe what you want ("write the SD card data into DDR"), not command steps. If the Agent's approach differs from the mechanism described in the tutorial, ask "how do you plan to advance", listen to its explanation, and then decide.</li>
+<li><strong>When it takes long, ask for progress; do not rush or restart.</strong> Generation, simulation, and native builds are minute-to-tens-of-minutes tasks; stacking new instructions midway only disrupts the cadence. If it feels slow, ask "where are we and what is left" instead of resending the prompt.</li>
+<li><strong>When the result is unexpected, state the expectation first, then the problem.</strong> Make clear "what I expected and what I actually saw", and let the Agent return to the matching evidence or specification and rerun the flow.</li>
 </ol>
-<p>Once you are ready, start from <a href="00-stage0-harness.html">Stage 00: Set up the project harness</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="next-stage" href="00-stage0-harness.html">Next: 00 Build the Stage0 Physical Harness →</a></nav></main>
+<p>When ready, start with <a href="00-stage0-harness.html">Stage 00: Environment and harness self-check</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="next-stage" href="00-stage0-harness.html">Next: 00 Build the Stage0 Physical Harness →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
-<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
+
 </body></html>

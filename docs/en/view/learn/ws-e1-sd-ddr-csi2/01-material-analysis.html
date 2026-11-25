@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Complete the project step by step in Trae.</span>
 <code>learn/ws-e1-sd-ddr-csi2/01-material-analysis.md</code>
@@ -120,46 +120,45 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>01 Material Analysis</h1></header>
 <main class="article tutorial-article"><h1 id="stage-01-material-analysis">Stage 01 · Material Analysis</h1>
 <blockquote>
-<p>Look at the materials before the specification. This stage takes stock of the boards, IP, and Demo materials in the EVOVERSE_HOME operations Catalog, decides what can be reused, what needs adapting, and what is reference-only, then registers the observations into the control plane.</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>Look at the material before the specification. This stage takes stock of the boards, IP, and Demo material in the Catalog, decides what can be reused, what has to be adapted, and what is reference-only, then registers the observations into the project.</p>
 </blockquote>
-<p>The SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX path needs four kinds of material: an SD host controller, a DDR controller and PHY, an MIPI CSI-2 TX hard macro, and the in-house RTL that ties the three together. For the first two, prefer mature IP from the vendor or the operations Catalog; the final blank area is where your generated RTL goes.</p>
-<p>Don't swallow the in-house blank area in one bite: this stage splits the ledger by the <strong>three increments</strong> — SD input, DDR buffering, CSI-2 output — each annotated with reused material, new in-house work, and the constraints involved. Each increment is declared in Stage 03 with <code>intent.create</code>, which automatically snapshots the baseline assets of that moment into <code>IntentRecord.baseBaselineFiles</code>; a cleanly split ledger keeps the later accounting against the parent baseline unambiguous.</p>
-<p>Here is how the four verdicts are reached:</p>
+<p>The SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX chain needs four kinds of material: an SD host controller, a DDR controller plus PHY, the MIPI CSI-2 TX hard macro, and the RTL you write to tie the three together. For the first three, prefer mature vendor or Catalog IP; the remaining blank area is exactly where you will generate RTL.</p>
+<p>The blank area splits into <strong>module slices</strong>: <code>sd_host</code>, <code>frame_buffer_writer</code>, and <code>csi2_tx</code>, each labelled with the reused material, the new logic to be written, and the constraints it touches. A ledger cut this cleanly is what Stage 02's module contracts — and the later rule of "re-run only the affected nodes" — are checked against.</p>
+<p>The four classification outcomes work like this:</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;Scan the operations Catalog&lt;br&gt;and the current project directory&quot;] --&gt; B{&quot;Classify item by item&quot;}
-    B --&gt;|license / device / voltage compatible| C[&quot;REUSE_UNCHANGED&lt;br&gt;instantiate as is&quot;]
-    B --&gt;|usable but needs adaptation to the spec| D[&quot;ADAPT_REQUIRED&lt;br&gt;adapt then use&quot;]
-    B --&gt;|read for ideas only| E[&quot;REFERENCE_ONLY&lt;br&gt;never copy&quot;]
-    B --&gt;|license or mismatch| F[&quot;REJECTED&lt;br&gt;explicitly excluded&quot;]
-    C --&gt; G[&quot;asset.observe registration&lt;br&gt;written to material-ledger.md&quot;]
+    A[&quot;Scan the Catalog&lt;br&gt;and the current project directory&quot;] --&gt; B{&quot;Classify each item&quot;}
+    B --&gt;|license / device / voltage compatible| C[&quot;REUSE_UNCHANGED&lt;br&gt;instantiate the original sample as-is&quot;]
+    B --&gt;|usable but needs reworking to spec| D[&quot;ADAPT_REQUIRED&lt;br&gt;adapt, then use&quot;]
+    B --&gt;|idea only| E[&quot;REFERENCE_ONLY&lt;br&gt;copying prohibited&quot;]
+    B --&gt;|license or compatibility mismatch| F[&quot;REJECTED&lt;br&gt;explicitly excluded&quot;]
+    C --&gt; G[&quot;Register the material ledger&lt;br&gt;material-ledger.md&quot;]
     D --&gt; G
     E --&gt; G
     F --&gt; G
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Continue this project's material analysis. I want to build SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX
-on the TJ180A484S; take stock of the related materials in the operations Catalog and the project directory:
-which can be instantiated as is, which need adapting to my specification, which are reference-only,
-and which cannot be used at all. Organize the findings into a material inventory registered into the project,
-each entry annotated with its source, license, and rationale.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Continue the material analysis for this project. I want an SD card -&gt; DDR frame buffer
+-&gt; MIPI CSI-2 TX chain on the TJ180A484S, so take stock of the relevant material in the Catalog and the project directory:
+what can be instantiated as-is, what has to be reworked to my specification, what is reference-only, and what cannot be used at all.
+Register it in the project as a material list, with the source, the license, and the reasoning recorded for every entry.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li>Uses <code>project_status</code> to confirm the project is initialized and reads the materials view.</li>
-<li>Scans the operations Catalog under EVOVERSE_HOME (the result of Catalog Sync): board specifications, IP inventories, Demo materials, license notes.</li>
-<li>Classifies each candidate material into one of four verdicts:</li>
-<li><code>REUSE_UNCHANGED</code> — instantiate as is (e.g., the DDR hard macro IP, the CSI-2 TX hard macro).</li>
-<li><code>ADAPT_REQUIRED</code> — needs adaptation to your specification (e.g., the interface width of a reference SD host).</li>
-<li><code>REFERENCE_ONLY</code> — read for ideas, never copy (the RTL of the target <code>sd-ddr-csi2</code> project falls in this class).</li>
-<li><code>REJECTED</code> — license, device, or voltage mismatch; explicitly excluded.</li>
-<li>Submits <code>project_execute</code> (actionId <code>asset.observe</code>) to register the observations into the project state.</li>
-<li>Generates the <code>design-package/material-ledger.md</code> material ledger, one row per material with source, classification, and rationale.</li>
+<li>Reads the current project state and the materials view, confirming the harness is ready.</li>
+<li>Scans the operating Catalog: board specifications, the IP list, Demo material, and license statements.</li>
+<li>Assigns each candidate material one of four outcomes:</li>
+<li><code>REUSE_UNCHANGED</code> — instantiate the original sample as-is (for example, the DDR hard IP or the CSI-2 TX hard macro).</li>
+<li><code>ADAPT_REQUIRED</code> — adapt to your specification (for example, the interface width of a reference SD host).</li>
+<li><code>REFERENCE_ONLY</code> — read the idea only, never copy it (the RTL of the target <code>sd-ddr-csi2</code> project falls into this class).</li>
+<li><code>REJECTED</code> — license, device, or voltage mismatch, explicitly excluded.</li>
+<li>Registers the observations into the project state and produces the <code>design-package/material-ledger.md</code> material ledger, listing material, source, classification, and reasoning row by row.</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
-<li>Every <code>REUSE_UNCHANGED</code> verdict is genuinely compatible with the TJ180A484S's bank voltages and pins — prefer downgrading a mismatched material to <code>ADAPT_REQUIRED</code>.</li>
-<li>The boundary of <code>REFERENCE_ONLY</code>: the target project's RTL, constraints, and project files must not enter your project directory, let alone become your new project's baseline.</li>
-<li>No material of unknown provenance in the ledger: every row can answer "where it came from" and "whether the license allows use in the deliverables".</li>
+<li>Whether every <code>REUSE_UNCHANGED</code> entry is genuinely compatible with the bank voltages and pins of the TJ180A484S — when in doubt, downgrade the material to <code>ADAPT_REQUIRED</code>.</li>
+<li>The boundary of <code>REFERENCE_ONLY</code>: the target project's RTL, constraints, and project files must never enter your project directory, let alone become the baseline of a new project.</li>
+<li>The ledger contains no material of unknown provenance: every row must answer "where did this come from, and can its license be used in a deliverable".</li>
 </ul>
 <h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
 <table>
@@ -171,31 +170,31 @@ each entry annotated with its source, license, and rationale.
 </thead>
 <tbody>
 <tr>
-<td>Too many materials listed to review</td>
-<td>Have Trae keep only the entries with a defensible "license and device compatible" verdict and mark the rest as to-be-checked — a leaner ledger beats a padded one.</td>
+<td>Too many listed materials to review</td>
+<td>Have Trae keep only the entries whose license and device compatibility are backed by evidence and mark the rest as pending; a sparse ledger beats a padded one.</td>
 </tr>
 <tr>
-<td>No SD host or CSI-2 material found</td>
-<td>Accept honestly that this link is an in-house blank area — not finding one does not mean improvising one; the blank areas are split into the specification along the three increments.</td>
+<td>No SD host or CSI-2 material can be found</td>
+<td>Accept honestly that "this link is a self-developed blank area" — not finding something is no reason to force-fit it; the blank area gets sliced into the specification by module.</td>
 </tr>
 <tr>
-<td>Trae wants to copy the target sd-ddr-csi2 project's RTL</td>
-<td>Refuse. The target project is reference-only; copying it into your project breaks the entire evidence chain.</td>
+<td>Trae wants to copy over the RTL of the target sd-ddr-csi2 project</td>
+<td>Refuse. The target project is reference only; copying it into your project breaks the entire evidence chain.</td>
 </tr>
 <tr>
-<td>The ledger is short and looks like a template</td>
-<td>The scan was too shallow — feed it the board schematics, BOM, or IP manuals and have it take stock again.</td>
+<td>The ledger is very short and looks like a template</td>
+<td>That means the scan was too shallow — hand it the board schematic, the BOM, or the IP manual and have it take stock again.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
-<li>The <code>asset.observe</code> receipt is visible in the control-plane state, and the materials area agrees with the ledger.</li>
-<li>The ledger covers every link of the data path: SD host, DDR, MIPI CSI-2 TX, clock and reset strategy, and the open blank areas.</li>
-<li>The blank areas are split by the three increments (SD input / DDR buffering / CSI-2 output), each round's reuse, new work, and involved constraints visible at a glance — this is the core input to Stage 02's delta specification.</li>
-<li>Every IP and pin convention used by the later <code>efx_run --flow compile</code> can be traced to a source in the ledger.</li>
+<li>The material observations are visible in the project state, and the materials view agrees with the ledger.</li>
+<li>The ledger covers every link of the data path: SD host, DDR, MIPI CSI-2 TX, the clock and reset strategy, and the unresolved blank areas.</li>
+<li>The blank areas are split by module slice (<code>sd_host</code> / <code>frame_buffer_writer</code> / <code>csi2_tx</code>), with reuse, new logic, and affected constraints obvious for each slice — this is the core input to the Stage 02 module contracts.</li>
+<li>The source of every IP and pin convention used by the later <code>efx_run --flow compile</code> is traceable in the ledger.</li>
 </ul>
-<p>When done, continue to <a href="02-system-specification.html">Stage 02: Freeze the specification</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="00-stage0-harness.html">← Previous: 00 Build the Stage0 Physical Harness</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="02-system-specification.html">Next: 02 Freeze the Specification →</a></nav></main>
+<p>When done, continue to <a href="02-system-specification.html">Stage 02: Freeze the module specifications</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="00-stage0-harness.html">← Previous: 00 Build the Stage0 Physical Harness</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="02-system-specification.html">Next: 02 Freeze the Specification →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

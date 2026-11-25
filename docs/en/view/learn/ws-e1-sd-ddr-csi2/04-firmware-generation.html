@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Complete the project step by step in Trae.</span>
 <code>learn/ws-e1-sd-ddr-csi2/04-firmware-generation.md</code>
@@ -120,40 +120,41 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>04 Sapphire Firmware</h1></header>
 <main class="article tutorial-article"><h1 id="stage-04-sapphire-firmware">Stage 04 · Sapphire Firmware</h1>
 <blockquote>
-<p>The RISC-V inside the SoC needs firmware to come alive. In this stage you generate the software project and BSP for the Sapphire bare-metal environment, bring the software candidate into the same control plane, and make the handoff boundary of the hardware/software contract explicit.</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>The RISC-V core inside the SoC needs firmware before it can run. This stage generates the software project and the BSP in the Sapphire bare-metal environment, feeds the software candidate into the same control plane, and spells out the handover boundary of the hardware/software contract.</p>
 </blockquote>
-<p>The SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX link runs on the TJ180A484S; the firmware handles SD card initialization, FAT reads, and the scheduling of frame-buffer fill. It is compiled on the Sapphire SoC, but its evidence enters the control plane exactly like the RTL's: <strong>a successful build is only <code>SW_BUILT</code>, not proof of functional correctness</strong>.</p>
-<p>The evidence boundary of the firmware is shown below — every step after <code>SW_BUILT</code> switches to a different kind of evidence, and none can substitute for another:</p>
+<p>The SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX chain runs on the TJ180A484S, and the firmware schedules SD card initialization, FAT reads, and frame-buffer filling. It compiles for the Sapphire SoC, but its evidence enters the control plane just like RTL evidence: <strong>a successful compile is only <code>SW_BUILT</code>, not functional correctness</strong>.</p>
+<p>The evidence boundary of the firmware looks like this — after <code>SW_BUILT</code> every step switches to a different class of evidence, and none can stand in for another:</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;All three increments promoted via&lt;br&gt;candidate.promote&quot;] --&gt; B[&quot;Bare-metal project under soc/&lt;br&gt;startup code / linker script / BSP&quot;]
-    B --&gt; C[&quot;Build the software&lt;br&gt;save the full log&quot;]
+    A[&quot;All three module contracts pass&lt;br&gt;specification fingerprint stays valid&quot;] --&gt; B[&quot;Create the bare-metal project under soc/&lt;br&gt;startup code / linker script / BSP&quot;]
+    B --&gt; C[&quot;Build the software&lt;br&gt;keep the full log&quot;]
     C --&gt; D{&quot;Artifacts verifiable?&quot;}
     D --&gt;|yes| E[&quot;SW_BUILT&lt;br&gt;ELF / BSP digests registered&quot;]
     D --&gt;|no| C
-    E --&gt; F[&quot;candidate.deliver&lt;br&gt;hardware-software-contract&quot;]
-    F --&gt; G[&quot;On-board functional verification deferred to Stage 06&lt;br&gt;status stays INTEGRATION_PENDING_HARDWARE until then&quot;]
+    E --&gt; F[&quot;Register the software candidate&lt;br&gt;bind hardware-software-contract&quot;]
+    F --&gt; G[&quot;On-board functional verification waits for Stage 06&lt;br&gt;until then the state is INTEGRATION_PENDING_HARDWARE&quot;]
 </pre>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">The hardware side is complete — now the firmware: create a Sapphire bare-metal project under soc/,
-implement the main loop for SD card initialization and frame-buffer fill, and generate the matching BSP.
-Once it compiles, register the software candidate into the project as well, spelling out its interface contract with the hardware;
-every requirement that can be tested on the host needs a test method.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">The hardware side is done, so let's do the firmware: create the Sapphire bare-metal project under soc/,
+implement the main loop for SD card initialization and frame-buffer filling, and generate the matching BSP.
+Once it compiles, register the software candidate in the project too, and write down its interface contract with the hardware.
+Every requirement that can be tested on the host needs a concrete test method.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li><code>project_status</code> confirms that all three increments have been promoted via <code>candidate.promote</code> (software depends on the promoted baselines) and reads the hardware-software contract.</li>
-<li>Sets up the bare-metal software project under <code>soc/</code>: startup code, linker script, BSP headers, and the register map (from the register section of the specification corresponding to the promoted CSI-2 baseline — never a draft from any intermediate round).</li>
-<li>After hardware configuration (clocks, address map) changes, regenerates the BSP so it stays consistent with the bitstream.</li>
-<li>Builds the software and saves the full log; only the actually produced, verifiable ELF/BSP artifacts get marked <code>SW_BUILT</code>.</li>
-<li>Submits the software candidate via <code>candidate.deliver</code> (origin tagged as the software partition); the control plane records its contract binding to the hardware candidate.</li>
-<li>Reports the boundary explicitly: on-board functional verification waits for the stage 06 <code>hardware.validate</code> receipt; until then, nothing "should work" is written down as PASS.</li>
+<li>Confirms that the contract evidence of all three modules is complete and the specification fingerprint is still valid (it depends on the converged hardware baseline), and reads the hardware-software contract.</li>
+<li>Creates the bare-metal software project under <code>soc/</code>: startup code, linker script, BSP headers, and the register map (taken from the register section of the frozen specification, never from an intermediate draft).</li>
+<li>Regenerates the BSP after hardware configuration changes (clocks, address map) so that the BSP and the bitstream stay derived from the same source.</li>
+<li>Builds the software and keeps the full log; marks as <code>SW_BUILT</code> only the ELF/BSP artifacts that were actually produced and can be verified.</li>
+<li>Registers the software candidate, tags it with the software partition, and the control plane records its contract binding to the hardware candidate.</li>
+<li>States the boundary of its reporting plainly: on-board functional verification waits for the hardware evidence of Stage 06; until then it will not write any "should work" as PASS.</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
-<li>The hardware bitstream, the BSP, and the software must come from the same project configuration; never mix in a BSP from another version.</li>
-<li>Every mandatory software requirement has an executable test method: a host-level unit test or a board-level scenario — one of the two; "eyeball it manually" is not allowed.</li>
-<li>Ownership handoff is clear: the hardware side provides the register map and interrupt contract (OWN_P1), the software side consumes it; any change on either side re-runs candidate delivery.</li>
-<li>Without hardware, this stage stops at <code>SW_BUILT</code>, and on-board verification stays <code>INTEGRATION_PENDING_HARDWARE</code> in the control-plane state.</li>
+<li>The hardware bitstream, the BSP, and the software must all come from the same project configuration; do not mix in a BSP from another revision.</li>
+<li>Every mandatory software requirement has an executable test method: a host-level unit test or a board-level scenario, one of the two — "a human had a look" is not acceptable.</li>
+<li>Ownership handover is clean: the hardware side provides the register map and interrupt contract (OWN_P1) and the software side consumes it; a change on either side goes back through candidate delivery.</li>
+<li>Without hardware, this stage stops at <code>SW_BUILT</code>, and the on-board verification stays at <code>INTEGRATION_PENDING_HARDWARE</code> in the control-plane state.</li>
 </ul>
 <h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
 <table>
@@ -166,26 +167,26 @@ every requirement that can be tested on the host needs a test method.
 <tbody>
 <tr>
 <td>The firmware build reports errors</td>
-<td>First have Trae tell apart two cases: a BSP out of sync with the hardware configuration vs. an application-code problem — the fixes differ; do not guess at both at once.</td>
+<td>First have Trae distinguish a BSP/hardware-configuration mismatch from an application-code problem — the two need different fixes, so do not guess them together.</td>
 </tr>
 <tr>
-<td>The build passes but correctness is unclear</td>
-<td>A successful build is only <code>SW_BUILT</code>, not functional correctness; on-board verification waits for Stage 06 — do not wave it through verbally ahead of time.</td>
+<td>It compiles, but you are unsure the behavior is right</td>
+<td>A successful compile is only <code>SW_BUILT</code>, not functional correctness; on-board verification waits for Stage 06 — do not wave it through verbally.</td>
 </tr>
 <tr>
 <td>No Sapphire toolchain on this machine</td>
-<td>Have Trae report the absence honestly; do not let it download a toolchain from an unknown source on its own.</td>
+<td>Have Trae report the gap honestly; do not let it download a toolchain of unknown provenance on its own.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
-<li>The software candidate receipt is visible in the control-plane state, with the ELF and BSP digests registered.</li>
-<li>The hardware/software contract (register map, address map, interrupts) references the same version on both sides.</li>
-<li>Build logs are saved in full; <code>SW_BUILT</code> and functional-verification states are never conflated.</li>
-<li>The firmware and the RTL candidates together form the complete input for the subsequent <code>efx_run --flow compile</code> and on-board verification.</li>
+<li>The software candidate receipt is visible in the control-plane state, and the ELF and BSP digests are registered.</li>
+<li>Both sides of the hardware/software contract (register map, address map, interrupts) reference the same revision.</li>
+<li>The build log is kept in full, and the two classes of state — <code>SW_BUILT</code> and functional verification — are not conflated.</li>
+<li>Together with the RTL candidates, the firmware completes the input set for the later <code>efx_run --flow compile</code> and the on-board verification.</li>
 </ul>
-<p>When done, continue to <a href="05-sdk-integration.html">Stage 05: SDK Integration</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="03-hardware-generation.html">← Previous: 03 Generate IP and Controlled RTL</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="05-sdk-integration.html">Next: 05 SDK Integration →</a></nav></main>
+<p>When done, continue to <a href="05-sdk-integration.html">Stage 05: SDK integration</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="03-hardware-generation.html">← Previous: 03 Generate IP and Controlled RTL</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="05-sdk-integration.html">Next: 05 SDK Integration →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

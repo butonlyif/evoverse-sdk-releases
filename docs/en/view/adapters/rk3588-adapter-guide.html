@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../rk3588-adapter.html">← Back to RK3588 Adapter</a>
 <span>BSP profiles, four-stage cross-compilation, firmware packaging and current boundaries.</span>
 <code>adapters/rk3588-adapter-guide.md</code>
@@ -106,8 +106,9 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>RK3588 Adapter Guide</h1></header>
 <main class="article"><h1 id="rk3588-adapter-guide">RK3588 Adapter Guide</h1>
 <blockquote>
-<p><strong>Version</strong>: v1.0　<strong>Applies to SDK version</strong>: v1.0.0
-<strong>Updated</strong>: 2026-09-30</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>Version</strong>: v1.1　<strong>Applies to SDK version</strong>: v1.0.1
+<strong>Updated</strong>: 2026-11-12</p>
 </blockquote>
 <p>The RK3588 Adapter provides the software build capabilities for the Rockchip RK3588 SoC: BSP profile validation, four-stage cross-compilation of U-Boot / Kernel / Rootfs, firmware packaging, and artifact verification. For installation instructions, see the <a href="../sdk/sdk-overview.html">SDK Overview</a>.</p>
 <blockquote>
@@ -242,7 +243,90 @@ U-Boot → Kernel → Rootfs (Buildroot) → Package (pack update.img)
 <li><strong>Debug (serial/ADB/SSH/HIL)</strong>: Not implemented. Plans include serial logging (default baud rate 1500000), ADB management, and kernel panic parsing</li>
 <li><strong>Device Tree generation</strong>: Not implemented (board DTS / bridge overlay / resource allocation)</li>
 <li>Validation on real target boards, production flashing, and Android/Yocto support are out of scope for the current version</li>
-</ul></main>
+</ul>
+<h2 id="8-the-generic-lifecycle-action-surface-v1-0-0-protocol-1-1">8. The generic lifecycle action surface (v1.0.0, protocol 1.1)</h2>
+<p>The RK3588 adapter joins the SDK's domain-neutral lifecycle action surface through a <strong>thin mapping</strong> (generated output always lands in the candidate region <code>.evoverse/candidates/&lt;id&gt;/</code>; the legacy <code>.evoverse/active-project.json</code> state stays read-only):</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>RK3588 semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>project.plan</code></td>
+<td>Profile/template discovery → material readiness (BUILD_READY / INCOMPLETE + missing bindings) and the four-stage build sequence (uboot → kernel → rootfs → package)</td>
+</tr>
+<tr>
+<td><code>project.generateCandidate</code></td>
+<td>Runs the catalog generator (recipe/BSP qualification/DTS/skeleton) into the candidate region; a candidate id can never be regenerated</td>
+</tr>
+<tr>
+<td><code>project.validateCandidate</code></td>
+<td>Runs the real profile schema validation on the static level; INCOMPLETE material answers honestly with INCOMPLETE + missing bindings</td>
+</tr>
+<tr>
+<td><code>project.prepareAdoption</code></td>
+<td>Produces a <strong>declarative</strong> adoption plan (C5 transaction shape); the action itself writes nothing and is idempotent</td>
+</tr>
+<tr>
+<td><code>build.native</code></td>
+<td>Delegates to the four-stage build; <code>BUILD_READY</code> can only ever come from this owning-Adapter build evidence; INCOMPLETE material is gated here</td>
+</tr>
+<tr>
+<td><code>artifact.package</code></td>
+<td>Delegates to the offline package builder (BSP / toolchain .evopkg)</td>
+</tr>
+<tr>
+<td><code>target.deploy</code></td>
+<td><strong>Sealed (2026-11-01, P3)</strong>: the legacy direct-deploy channel is closed and uniformly refuses with <code>ENVIRONMENT_MANAGER_REQUIRED</code> + the <code>LEGACY_ENVIRONMENT</code> deprecation notice; environment verification / deployment / qualification moved to the Linux Environment Manager (P4)</td>
+</tr>
+<tr>
+<td><code>evidence.collect</code></td>
+<td>Collects build-status evidence</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Protocol and negotiation</strong>: lifecycle actions accept protocol 1.1 + <code>payloadSchemaVersion: "1.1"</code> only (two-sided negotiation — a declaration is a contract); protocol-1.0 or schema-mismatched requests are stably refused, never degraded.</p>
+<p><strong>Evidence semantics (five independent levels)</strong>: static / simulation_model / native_build / target_write / hardware_runtime fold independently; a missing record is honestly <code>NOT_RUN</code>. <strong>Generation ≠ build ≠ packaging ≠ deployment ≠ hardware validation</strong>: packaging and deployment success emits native_build / target_write evidence only and <strong>never</strong> reports hardware_runtime — RK3588 has no hardware observation channel today, so the hardware runtime level stays honestly <code>NOT_RUN</code>.</p>
+<h2 id="9-direct-linux-environment-manager-channel-since-2026-11-12">9. Direct Linux Environment Manager channel (since 2026-11-12)</h2>
+<p>The RK3588 Adapter is the <strong>sole local client</strong> of the on-machine <code>evoverse-env</code> binary (the Linux Environment Manager, an independently delivered Ubuntu 24.04 .deb): discovery, handshake, execution, cancellation and confirmations all live inside the Adapter — the SDK no longer injects or proxies any Manager channel.</p>
+<p><strong>Independent installation</strong>: install the <code>evoverse-env</code> .deb on an Ubuntu 24.04 x86_64 host following the independent delivery guide; the Adapter only discovers and invokes it — it never installs, replaces, or bundles the Manager into the VSIX.</p>
+<p><strong>Automatic discovery (deterministic order; the first candidate that exists AND passes the handshake wins)</strong>:</p>
+<ol>
+<li><code>evoverse.rk3588.environmentManagerPath</code> — an explicitly configured absolute path</li>
+<li>The Manager installation hint (when the independent delivery provides one)</li>
+<li>Frozen platform standard paths (Linux: <code>/usr/bin/evoverse-env</code>, <code>/usr/local/bin/evoverse-env</code>; none on Windows/macOS)</li>
+<li>The PATH diagnostic candidate — diagnostic only, usable only after a valid handshake</li>
+</ol>
+<p>Discovery freezes: the first candidate that answers <code>evoverse-env handshake --json</code> becomes the session's single Manager binding and is never silently switched during a run. A handshake failure on the config / install-hint / standard-path candidate <strong>blocks outright</strong> (never a silent downgrade to a lower-priority binary); only "no candidate exists anywhere" reports the not-installed state.</p>
+<p><strong>Handshake and capability diagnostics</strong>: the handshake validates only the contract major (<code>environment-manager/v1</code>) and the required capabilities (<code>catalog.list</code> / <code>plan.create</code> / <code>environment.run</code>; the install path additionally needs <code>environment.install</code>). The Manager version is recorded for diagnostics only and never gates. Failures surface three honest diagnoses with remediation:</p>
+<table>
+<thead>
+<tr>
+<th>Diagnosis</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MANAGER_NOT_FOUND</code></td>
+<td>No candidate in the priority order → install the .deb from the independent delivery, or configure <code>evoverse.rk3588.environmentManagerPath</code></td>
+</tr>
+<tr>
+<td><code>RK_MANAGER_INCOMPATIBLE</code></td>
+<td>A Manager was found but fails the capability/contract gate → carries the detected version and missing capabilities; upgrade the Manager</td>
+</tr>
+<tr>
+<td><code>RK_MANAGER_UNREACHABLE</code></td>
+<td>The candidate exists but its handshake failed → carries the reason; the Adapter never falls back to a lower-priority binary</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Adapter-owned confirmations</strong>: the environment install confirmation happens inside the RK3588 Workbench — the page sends the reviewed choice (the action-bound planDigest plus the accepted license set), the Adapter mints a <strong>single-use</strong> confirmation token and consumes it immediately; replay, plan/action/scope/license drift, or expiry is rejected strictly before the Manager is invoked (zero Manager spawns). The token is adapter-local bookkeeping only — it never substitutes for the Manager's own license enforcement; read-only actions (catalog / status) need no confirmation.</p>
+<p><strong>Target operator artifacts</strong>: target actions require operator-approved baseline and policy artifacts (<code>evoverse.rk3588.targetBaselinePath</code> / <code>targetPolicyPath</code>, no implicit default); the optional receipt pair <code>evoverse.rk3588.targetReceiptPath</code> / <code>targetReceiptKeyPath</code> must be provided together. Receipt digest binding and the Ed25519 signature are verified fail-closed in the Adapter; an absent receipt never flips the verdict.</p>
+<p><strong>Evidence boundary</strong>: a successful compile ≠ correct behavior, a successful flash ≠ an on-board PASS — Flash / Debug / on-board validation over the Manager channel stay honestly <code>NOT_RUN</code> until actually executed.</p></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 
 

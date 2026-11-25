@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../customer-portal.html">← 返回EvoVerse SDK</a>
 <span>SDK 是什么、组件构成、能力总览与典型开发闭环。</span>
 <code>sdk/SDK详细说明.md</code>
@@ -106,7 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>EvoVerse SDK 详细说明</h1></header>
 <main class="article"><h1 id="evoverse-sdk-详细说明">EvoVerse SDK 详细说明</h1>
 <blockquote>
-<p><strong>版本</strong>：v1.0.0　<strong>更新日期</strong>：2026-09-30
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>版本</strong>：v1.0.1　<strong>更新日期</strong>：2026-09-30
 <strong>适用平台</strong>：Trae IDE（推荐）/ VS Code 1.80+ · Windows</p>
 </blockquote>
 <p>本文是 EvoVerse SDK 的产品级说明：它是什么、由哪些组件构成、能做哪些事、各能力之间如何衔接。操作步骤请配合<a href="用户使用手册.html">用户使用手册</a>、<a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD 到 CSI-2 工程教程</a>和两篇受控 Skill 文档使用。</p>
@@ -213,6 +214,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>Adapter 向核心的 AdapterRegistry 注册能力（build / timing / debug / program / software / ip / designApi / workspace）</li>
 <li>用户请求（如 Build）由核心路由到对应 Adapter，Adapter 调用真实工具链（如 <code>efx_run --flow compile</code>），结构化结果回传 Workbench 展示</li>
 <li>Adapter 拥有自己的 Workbench Tab 内容；核心负责加载、资源注入与统一外观</li>
+<li>边界治理已认证：第三方 Adapter 仅凭 manifest 1.1 声明（工程检测、生命周期能力、工作区/Skill/知识贡献）加 1.1 协议协商，即可达到与内置 Adapter 相同的功能对等——核心不含任何厂商产品分支；公共契约快照（v0.9.0 golden 与 v1.1）钉死迁移全程零公共面漂移</li>
 </ul>
 <pre class="mermaid">flowchart LR
     WD[workspaceDocument&lt;br&gt;HTML 解析与资源注入] --&gt; WB[&quot;Workbench 外壳&lt;br&gt;（六 Tab / System 根）&quot;]
@@ -222,6 +224,39 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
     EF --&gt;|build / timing / debug / program&lt;br&gt;software / IP / designApi| RUN[&quot;efx_run --flow compile&quot;]
     RK --&gt; BSP[&quot;BSP Profile 校验&lt;br&gt;四阶段交叉编译&quot;]
 </pre>
+<h3 id="3-4-设计意图-路径与证据边界">3.4 设计意图、路径与证据边界</h3>
+<p>客户旅程只呈现三个决策节点，其余由控制面连续推进：</p>
+<ol>
+<li><strong>确认方案与可执行规格</strong>（<code>PLAN_APPROVAL</code>）——仿真等级、IP 实现方式、模块拆分或芯片分配等需要客户拍板的决策，一次聚合确认。</li>
+<li><strong>确认高成本或设备写入</strong>（<code>ACTION_AUTHORIZATION</code>）——烧录、部署、高成本构建按需一次性或按范围授权。</li>
+<li><strong>查看证据边界并最终验收</strong>（<code>FINAL_ACCEPTANCE</code>）——技术完成时查看证据摘要，经 <code>project.accept</code> 给出接受回执。</li>
+</ol>
+<p>后台五阶段（Intent、Plan &amp; Approve、Generate &amp; Converge、Integrate &amp; Realize、Accept）用于解释推进过程，不构成客户必须记忆的 action 清单。</p>
+<table>
+<thead>
+<tr>
+<th>意图形态</th>
+<th>默认路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>简单单芯片</td>
+<td><strong>atomic 默认</strong>：不为形式完整而拆分，一次方案/规格确认后连续生成</td>
+</tr>
+<tr>
+<td>复杂但可模块化的单芯片</td>
+<td>拆成子意图，各自生成/仿真，再做芯片内 composition</td>
+</tr>
+<tr>
+<td>FPGA + RK3588 系统意图</td>
+<td>先按功能分配芯片，经确认后并行实现，再做 CHIP/SYSTEM composition</td>
+</tr>
+</tbody>
+</table>
+<p><strong>规格门禁</strong>：生成前必须先形成并冻结可执行规格；规格是整个升级流程的门禁，资源选择优先使用 Catalog / Adapter 返回的权威且版本固定材料。规格变更只使受影响证据失效。</p>
+<p><strong>责任边界</strong>：Catalog 只提供板卡事实、参考设计与 IP 物料；Core 生成控制面内的功能代码、规格与证据链；Adapter 提供厂家知识、厂家工程投影和 native build / package / program / deploy / test。</p>
+<p><strong>证据终态不能互相冒充</strong>：<code>BUILT</code>（有产物）→ <code>PACKAGED</code>（已打包）→ <code>PROGRAMMED</code>（已写入设备）→ <code>HARDWARE_VERIFIED</code>（实板观察）→ <code>SYSTEM_VERIFIED</code>（系统级证据完整）→ <code>READY_FOR_ACCEPTANCE</code>（技术完成）→ <code>ACCEPTED</code>（客户接受回执）；未实际执行的级别保持 <code>NOT_RUN</code>。生成 ≠ 编译 ≠ 打包 ≠ 烧录 ≠ 硬件验证，任何一层通过都不会自动升格为下一层。</p>
 <h2 id="4-能力总览">4. 能力总览</h2>
 <table>
 <thead>
@@ -330,7 +365,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <tr>
 <td>MCP</td>
 <td>MCP Server</td>
-<td>Agent 的工程控制面入口；公开工具共 11 个：<code>project_status</code> / <code>project_next</code> / <code>project_execute</code> + <code>evoverse_health</code> + 7 个 <code>rk3588_*</code>（环境 status / prepare / deploy，工程 generate / preflight / build / status）</td>
+<td>Agent 的工程控制面入口；公开工具共 24 个：<code>project_status</code> / <code>project_next</code> / <code>project_execute</code> + <code>evoverse_health</code> + 7 个 <code>rk3588_*</code>（环境 status / prepare / deploy，工程 generate / preflight / build / status）+ 7 个 Efinity debug-intent + 3 个 Efinity review + 3 个通用生命周期 <code>lifecycle_invoke</code> / <code>lifecycle_status</code> / <code>lifecycle_cancel</code>（协议 1.1 长动作执行面：稳定 requestId、协作式取消、状态从持久化回执重建）</td>
 </tr>
 </tbody>
 </table>
@@ -371,12 +406,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tr>
 </tbody>
 </table>
+<p>Control 页（SDK 拥有）新增<strong>生命周期阶段条</strong>与<strong>接纳确认面</strong>（v1.0.0）：阶段条是最近一次 Adapter 生命周期动作信封的纯投影（SDK 不建第二状态机）；接纳确认面以候选作用域五级独立证据（static / simulationModel / nativeBuild / targetWrite / hardwareRuntime，无记录即 NOT_RUN）呈现 diff、未验证项与有效期，确认手势经命令通道铸造一次性令牌后执行接纳，取消不铸造。两 Adapter 以协议 1.1 + payloadSchemaVersion 1.1 双边协商接入统一生命周期动作面（plan → generateCandidate → validateCandidate → prepareAdoption → build/package/program/deploy → evidence.collect），协议 1.0 请求对生命周期动作一律拒绝。</p>
+<h3 id="5-1-就绪度投影与三层-doctor">5.1 就绪度投影与三层 Doctor</h3>
+<p>Welcome 首屏的「开始或继续」卡片读取统一<strong>就绪度投影</strong>（<code>ProjectReadinessProjection</code>，schema 镜像 <code>sdk/extension/schemas/project-readiness.schema.json</code>）：六层链 <code>SDK → Catalog → Adapter → Environment → Project → Target</code>，每层事实带 source / digest / observedAt / freshness，过期（STALE / MISSING / CORRUPT）观察永不显示为当前 PASS；投影 digest 确定性生成（事实排序归一，观测时钟不计入），Welcome / Workbench / MCP / Agent 同 digest 即同结论。投影可丢弃、可重建，缓存永不作为真值。</p>
+<p>配套命令 <code>EvoVerse: Doctor (SDK / Environment / Project)</code> 聚合三层体检（spec §9.2）：SDK Doctor（扩展 / CLI / MCP / Catalog / Adapter 发现）、Environment Doctor（由拥有该领域的 Adapter 投影环境可用性；RK3588 Manager 由 RK3588 Adapter 直连，SDK 不持有 Manager 端口）、Project Doctor（控制面 + 适配器绑定）。每条检查带稳定命名空间错误码（<code>SDK.*</code> / <code>CATALOG.*</code> / <code>ADAPTER.*</code> / <code>ENVIRONMENT.*</code> / <code>PROJECT.*</code>）、责任层、修复建议与恢复点（resumeAction）；分类只认错误码，绝不按消息文本。MCP 侧以 <code>doctor</code> 工具暴露同一 JSON 契约。</p>
 <h2 id="6-典型开发闭环">6. 典型开发闭环</h2>
 <h3 id="6-1-fpga-主线-第一次跑通">6.1 FPGA 主线（第一次跑通）</h3>
-<pre><code>Set Up → 在 Trae 描述工程目标 → 确认 Control 推荐动作 → 写 RTL → Simulate（看波形）
-→ Check Code Style → Build（读报告）→ Program FPGA（上板看现象）
+<pre><code>描述意图 → 确认方案与可执行规格 → Agent 生成并验证 RTL
+→ Simulate（看波形）→ Check Code Style → Build（读报告）→ Program FPGA（上板看现象）
 </code></pre>
-<p>首次完整体验使用 <a href="../learn/ws-e1-sd-ddr-csi2/README.html">WS-E1 SD 到 CSI-2 工程教程</a>：先发现物料、冻结规格，再生成并验证 RTL，最后集成和编译。全程无需离开 IDE。</p>
+<p>首次完整体验按意图形态选择教程：简单单芯片走 atomic 路径，复杂但可模块化的单芯片走分解 + 芯片内 composition，FPGA + RK3588 系统走芯片分配 + CHIP/SYSTEM composition（见 §3.4 与 <a href="../START-HERE.html">从这里开始</a>）。全程无需离开 IDE；规格在生成前冻结，硬件未实际执行时证据保持 <code>NOT_RUN</code>。</p>
 <h3 id="6-2-时序收敛闭环">6.2 时序收敛闭环</h3>
 <pre><code>Build → Diagnose Timing（六类指纹根因分类引擎给出原因与置信度）
 → 数据路径追踪 / Pipeline 分析定位瓶颈
@@ -397,10 +436,17 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 → Build Software → 按工程实际能力下载 → GDB 调试
 </code></pre>
 <h3 id="6-5-vibe-coding-agent-辅助">6.5 Vibe Coding（Agent 辅助）</h3>
-<pre><code>`/evoverse-design-spec` 确认仿真等级并按等级预算起草规格 → 批准规格
+<p>客户旅程只呈现三个决策节点，其余是信封驱动的连续进度与证据边界：</p>
+<ol>
+<li><strong>方案批准（PLAN_APPROVAL）</strong>：需要客户拍板的方案决策——仿真等级、IP 实现方式、分解/分配——一次聚合确认后继续。</li>
+<li><strong>动作授权（ACTION_AUTHORIZATION）</strong>：高成本或改变目标状态的动作（烧录 / 部署 / 高成本 Build）需要一次性或范围授权。</li>
+<li><strong>最终接受（FINAL_ACCEPTANCE）</strong>：技术完成（<code>READY_FOR_ACCEPTANCE</code>）时，客户通过 <code>project.accept</code>（只绑定 <code>evidenceDigest</code>）给出接受回执。</li>
+</ol>
+<pre><code>`/evoverse-design-spec` 确认仿真等级并按等级预算起草规格 → 方案批准
 → `/evoverse-rtl` 交付候选 RTL → Design Assurance 与等级限定仿真证据
-→ 原生 Efinity Build
+→ 原生 Efinity Build → 动作授权（烧录 / 部署） → 最终接受
 </code></pre>
+<p>技术完成（<code>READY_FOR_ACCEPTANCE</code>）不等于已接受（<code>ACCEPTED</code> 回执 / <code>PROJECT_ACCEPTED</code> 事实）；Adapter / native PASS 绝不等于 <code>SYSTEM_VERIFIED</code>。</p>
 <p>可靠路径中，Agent 的每个"通过/晋升"声明由控制面动作回执绑定到范围、真实工程 diff、Design Assurance 和仿真证据。<strong>仿真等级先于规格（用户选择）</strong>：可靠迭代建立后、<code>spec.draft</code> 起草规格前必须先确认仿真等级（<code>simulation.profile.select</code>，否则控制面以 <code>SIMULATION_PROFILE_REQUIRED</code> 阻塞起草）；AI 依据固定风险规则推荐 <code>FPGA_FUNCTIONAL</code> / <code>FPGA_INTEGRATION</code> / <code>HIGH_ASSURANCE</code> 三档等级（或用户显式 <code>CUSTOM</code>），由用户选择，低于推荐最低等级必须记录 <code>acceptedRisks</code>，超出等级预算必须重新确认；规格按所选等级的预算编写，等级绑定设计迭代。<code>spec.draft</code> 提交的 <code>packagePath</code> 必须指向密封的可执行 2.0 规格包目录：服务端密封并记录 <code>specPackageDigest</code> 作为可靠身份，<code>specification.md</code> 由密封脚本确定性生成、仅供人工评审；Markdown 文件会被拒绝，并返回 workspace、输入/解析路径及原因，旧 Markdown 规格需从可执行包重新起草迁移。<code>candidate.deliver</code> 在 manifest 和事实落盘前校验 HDL/include/module/testbench 完整闭包；失败不形成权威候选，修正后可安全重试。<code>verification.simulate</code> 从服务端状态派生 candidate、source closure、Test IR 与 spec 摘要，在 feature 工作树执行模块/Intent 范围验证，本地通过只进入 <code>READY_FOR_INTEGRATION</code>；编译/展开失败记录为可修复的 <code>CANDIDATE_COMPILE_FAILED</code>，缺少后端或 vendor model 才是 <code>CAPABILITY_UNAVAILABLE</code>。主线系统集成 Intent 再执行组合规格校验、系统仿真与文档确认，全部通过后才原子晋升基线。等级限定的仿真通过（<code>FPGA_FUNCTIONAL_PASS</code> 等）不改变证据边界：<code>NATIVE_BUILD_PENDING</code> 与 <code>BOARD_VALIDATION_REQUIRED</code> 独立报告，自动化夹具不是实际 Questa 证据，Efinity Native Build、时序、烧录与实板结果仍需分别报告（<code>build.native</code> / <code>hardware.program</code> / <code>hardware.validate</code>）。</p>
 <h3 id="6-6-多-intent-工作树">6.6 多 Intent 工作树</h3>
 <ul>

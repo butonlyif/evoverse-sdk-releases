@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../customer-portal.html"><img src="../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../tutorials.html">Tutorials</a><a class="pnav-item" href="../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../skills.html">Skills</a><a class="pnav-item" href="../video-sim.html">Video Sim</a><a class="pnav-item" href="../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../customer-portal.html">← Back to EvoVerse SDK</a>
 <span>What the customer documentation covers and where each role enters.</span>
 <code>README.md</code>
@@ -106,15 +106,29 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Customer Documentation Guide</h1></header>
 <main class="article"><h1 id="evoverse-sdk-customer-documentation">EvoVerse SDK Customer Documentation</h1>
 <blockquote>
-<p>Current version: v1.0.0　Release baseline: 2026-09-30　Portal updated: 2026-09-30　Default host: Trae</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>Current version: v1.0.1　Release baseline: 2026-09-30　Portal updated: 2026-11-11　Default host: Trae</p>
 </blockquote>
 <h2 id="start-here">Start Here</h2>
-<p>Open the <a href="../../site-en/customer-portal.html">offline customer documentation portal</a> and follow the single linear path <strong>"Get Started · From installation to vibe coding · a passing build"</strong> end to end (29 steps). It walks you from installing the IDE all the way to your first vibe coding session plus a passing build.</p>
+<p>Open the <a href="../../site-en/customer-portal.html">offline customer documentation portal</a> and follow the single linear path <strong>"Get Started · From installation to vibe coding · a passing build"</strong> end to end. It walks you from installing the IDE all the way to your first vibe coding session plus a passing build.</p>
 <p>Do not read the documentation directory file by file. Finish the path first, then look up the references as problems arise.</p>
+<h2 id="the-journey-only-requires-three-decisions">The journey only requires three decisions</h2>
+<ol>
+<li>Confirm the plan and the executable specification;</li>
+<li>Confirm high-cost work or device writes when they are actually needed;</li>
+<li>Review the evidence boundary and accept.</li>
+</ol>
+<p>The five background stages (Intent, Plan &amp; Approve, Generate &amp; Converge, Integrate &amp; Realize, Accept) only explain the system; they are not an action list you must memorize.</p>
+<h2 id="three-design-paths">Three design paths</h2>
+<ul>
+<li><strong>atomic by default</strong>: a simple single-chip intent is not decomposed for formal completeness.</li>
+<li><strong>Complex but modular single chip</strong>: decompose into sub-intents, generate and simulate each, then perform on-chip composition.</li>
+<li><strong>FPGA + RK3588 system intent</strong>: allocate functions to chips first, implement in parallel after confirmation, then perform CHIP/SYSTEM composition.</li>
+</ul>
 <h2 id="documentation-layers">Documentation layers</h2>
 <ul>
 <li><strong>Linear onboarding path</strong>: use this on first entry; it runs chronologically from installation to a passing build.</li>
-<li><strong>Task tutorials</strong>: follow the steps to a well-defined result.</li>
+<li><strong>Task tutorials</strong>: follow the steps to a well-defined result; there is one each for atomic, complex single FPGA, and system intents.</li>
 <li><strong>Troubleshooting</strong>: use this once you have hit a specific error.</li>
 <li><strong>On-demand reference</strong>: Efinity, RTL/SDC/CDC, DesignAPI, CLI/MCP, registers, and Video Sim; not prerequisite onboarding reading.</li>
 </ul>

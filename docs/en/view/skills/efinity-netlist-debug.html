@@ -98,13 +98,16 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item on" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../skills.html">← Back to Skills</a>
 <span>Describe the signals to observe in a Trae conversation, select probes from the compiled netlist, and complete the debug compile.</span>
 <code>skills/efinity-netlist-debug.md</code>
 <a href="../../../skills/efinity-netlist-debug.md">Markdown source</a></p>
 <h1>Skill: Natural-Language Netlist Debug</h1></header>
 <main class="article"><h1 id="natural-language-netlist-debug">Natural-Language Netlist Debug</h1>
+<blockquote>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+</blockquote>
 <p>The <code>efinity-netlist-debug</code> Skill debugs an <strong>already-compiled</strong> Efinity project from a Trae conversation: describe the behavior you want to observe (signals, buses, FSMs, handshakes, counters), and the Skill discovers candidate signals from the compiled netlist and presents them to you. The chat stops after discovery — confirming the selection, generating the debug configuration, and running the debug compile happen in the Workbench Debug tab. The flow never modifies RTL — it writes no <code>(* mark_debug *)</code> attributes; the selected scalars are real post-synthesis signals that synthesis can no longer rename or optimize away.</p>
 <p>Invocation differs by host: in Trae the SDK installs this Skill into the host skill directory, so <code>/efinity-netlist-debug</code> works directly; in VS Code Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (loaded on demand in agent mode; requires the Copilot Chat extension), or ask the Agent to read <code>Skills/efinity-netlist-debug/SKILL.md</code> from the delivered package and follow it as instructions (the MCP debug tools are already wired into <code>mcp.json</code> by the SDK).</p>
 <h2 id="example-usage">Example usage</h2>

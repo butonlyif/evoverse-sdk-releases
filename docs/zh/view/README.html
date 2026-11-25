@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../customer-portal.html"><img src="../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../tutorials.html">教程中心</a><a class="pnav-item" href="../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../video-sim.html">Video Sim</a><a class="pnav-item" href="../skills.html">Skills</a><a class="pnav-item" href="../boards.html">板卡与物料</a><a class="pnav-item" href="../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../customer-portal.html">← 返回EvoVerse SDK</a>
 <span>客户文档边界与角色入口。</span>
 <code>README.md</code>
@@ -106,15 +106,29 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>客户文档说明</h1></header>
 <main class="article"><h1 id="evoverse-sdk-客户文档">EvoVerse SDK 客户文档</h1>
 <blockquote>
-<p>当前版本：v1.0.0　发布基线：2026-09-30　门户整理：2026-09-30　默认宿主：Trae</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>当前版本：v1.0.1　发布日期：2026-11-26　门户整理：2026-11-26　默认宿主：Trae</p>
 </blockquote>
 <h2 id="从这里开始">从这里开始</h2>
 <p>打开 <a href="../../site/customer-portal.html">离线客户文档门户</a>，沿 <strong>"新人入门 · 从安装到 vibe coding · 编译通过"</strong> 一条线性路径走完（29 步）。它从安装 IDE 一直编排到第一次 vibe coding + 编译通过。</p>
 <p>不要从目录逐篇阅读。沿路径走完后，再按遇到的问题查询参考。</p>
+<h2 id="旅程只要求三个决定">旅程只要求三个决定</h2>
+<ol>
+<li>确认方案与可执行规格；</li>
+<li>在实际需要时确认高成本或设备写入；</li>
+<li>查看证据边界并最终验收。</li>
+</ol>
+<p>后台五阶段（Intent、Plan &amp; Approve、Generate &amp; Converge、Integrate &amp; Realize、Accept）只用于解释系统，不构成你必须记忆的操作清单。</p>
+<h2 id="三条设计路径">三条设计路径</h2>
+<ul>
+<li><strong>atomic 默认</strong>：简单单芯片意图不为形式完整而拆分。</li>
+<li><strong>复杂但可模块化的单芯片</strong>：先拆子意图、各自生成/仿真，再做芯片内 composition。</li>
+<li><strong>FPGA + RK3588 系统意图</strong>：先按功能分配芯片，经确认后并行实现，再做 CHIP/SYSTEM composition。</li>
+</ul>
 <h2 id="文档层级">文档层级</h2>
 <ul>
 <li><strong>线性入门路径</strong>：第一次进入时使用，按时间顺序从安装到编译通过。</li>
-<li><strong>任务教程</strong>：跟着步骤完成一个明确结果。</li>
+<li><strong>任务教程</strong>：跟着步骤完成一个明确结果；atomic、复杂单 FPGA 与系统意图各有一条。</li>
 <li><strong>故障排查</strong>：已经遇到具体错误时使用。</li>
 <li><strong>按需参考</strong>：Efinity、RTL/SDC/CDC、DesignAPI、CLI/MCP、寄存器和 Video Sim；不是入门前置阅读。</li>
 </ul>

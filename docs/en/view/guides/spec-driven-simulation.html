@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item on" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../customer-portal.html">← Back to EvoVerse SDK</a>
 <span>The controlled flow: freeze the specification, generate candidate RTL, run rule checks, simulate and promote.</span>
 <code>guides/spec-driven-simulation.md</code>
@@ -106,7 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Specification-Driven Layered Simulation and Vibe Coding</h1></header>
 <main class="article"><h1 id="spec-driven-layered-simulation-and-vibe-coding">Spec-Driven Layered Simulation and Vibe Coding</h1>
 <blockquote>
-<p>Applicable version: EvoVerse SDK v1.0.0</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>Applicable version: EvoVerse SDK v1.0.1</p>
 </blockquote>
 <p>This flow makes the design specification the sole behavioral authority. Even for a small feature, establish and freeze the specification before any RTL is generated. Simulation code, oracles, test vectors, and models are never reverse-engineered from the RTL under test, which rules out "the code and the test are both wrong yet everything still shows PASS".</p>
 <p>The entry is host-specific. <strong>Trae:</strong> start a specification or RTL request with <code>@evoverse</code>. <strong>VS Code:</strong> describe the request directly in the native Agent, without <code>@evoverse</code>; the Agent reads the envelope through EvoVerse MCP and offers free/reliable. In VS Code, <code>@evoverse</code> is only a compatibility navigation entry to Project Control and does not continue the native Agent conversation. The entry itself never creates an Intent or chooses a flow. Reliable work is confirmed stage by stage; free work remains ordinary editing and Build.</p>
@@ -219,6 +220,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <p>Results obtained with an <code>ASSUMPTION_MODEL</code> may only be stated as "passes under the approved assumption model", never as unconditional system compliance.</p>
+<h3 id="simulation-backend-capability-gates">Simulation backend capability gates</h3>
+<p>Each simulation backend declares a capability per dynamic property: <code>SUPPORTED</code> (qualified through mandatory-gate runner evidence), <code>PARTIAL</code> (can run but lacks the mandatory-gate runner), <code>UNSUPPORTED</code> / <code>UNQUALIFIED</code> (no qualification evidence means unqualified). Planning is fail-closed: when a blocking property lands on an <code>UNSUPPORTED</code> / <code>UNQUALIFIED</code> capability, simulation is rejected before execution; blocking properties on a <code>PARTIAL</code> capability require explicit confirmation on every run (the <code>capability:&lt;propertyId&gt;</code> token) and are never silently admitted. Execution receipts record the backend, capability, execution, outcome, and evidence digest per property, with a human-readable degradation note. Simulation evidence is capped at the <code>simulation_model</code> level: no matter how complete a simulation run is, it never infers native-build, programming, or board-validation conclusions. Current capability status: <code>iverilog</code> = <code>SUPPORTED</code>, <code>questa</code> = <code>PARTIAL</code>.</p>
 <h2 id="4-customer-choices-and-re-freezing">4. Customer choices and re-freezing</h2>
 <p>Whenever interface width, latency, register mapping, architectural boundaries, hard-IP models, or oracle direction are ambiguous, the system presents a finite set of options together with the recommendation rationale, the risks, the affected nodes, and the invalidation scope. The customer can only pick from the presented options; choice records are append-only evidence. If a choice changes the specification, the affected specifications must be re-reviewed and re-frozen before generation can continue.</p>
 <p>Neither simulation nor the DUT may silently modify the specification, oracles, tests, thresholds, models, or historical evidence. Automatic repair is capped at three attempts, each allowing exactly one assumption plus a DUT-only patch; on failure, a byte-level rollback follows.</p>

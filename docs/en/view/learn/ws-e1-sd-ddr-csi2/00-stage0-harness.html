@@ -112,45 +112,39 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Establish the WS-E1 C4 physical boundary from an empty directory.</span>
 <code>learn/ws-e1-sd-ddr-csi2/00-stage0-harness.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/00-stage0-harness.md">Markdown source</a></p>
 <h1>00 Build the Stage0 Physical Harness</h1></header>
-<main class="article tutorial-article"><h1 id="stage-00-set-up-the-project-harness-stage0">Stage 00 · Set Up the Project Harness (Stage0)</h1>
+<main class="article tutorial-article"><h1 id="stage-00-environment-and-harness-self-check">Stage 00 · Environment and Harness Self-Check</h1>
 <blockquote>
-<p>Target device: WS-E1 core module TJ180A484S, C4 timing model. This stage turns an empty directory into a managed project under the control plane's jurisdiction — the physical and process baseline for all later stages, and the parent baseline of the first increment intent (SD input).</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>Target device: the WS-E1 core module TJ180A484S with the C4 timing model. This stage writes no RTL. It only confirms that your IDE, extensions, Catalog, and the hardware on your desk agree, so the Agent can safely open this intent inside a managed harness.</p>
 </blockquote>
-<p>Every link in the SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX data path ultimately lands on the physical pins and clock resources of the TJ180A484S. So the first step is not writing RTL but declaring the project identity: board, carrier, jacket, device, and speed grade. In the control plane this corresponds to the <code>project.initialize</code> action.</p>
+<p>Every link of the SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX chain ultimately lands on the physical pins and clock resources of the TJ180A484S. So before you start, reconcile "the hardware you describe" with "the hardware the tools see": board, carrier, jacket, device, and speed grade. The Agent writes the project identity during your first plan confirmation — you do not need to perform a separate project-initialization step.</p>
 <h2 id="prepare-the-environment">Prepare the environment</h2>
-<p>Install the IDE first, then open the project. Three steps:</p>
 <ol>
 <li>Install the three VSIXes: <code>evoverse-sdk</code>, <code>evoverse-efinity-adapter</code>, <code>evoverse-rk3588-adapter</code> (same version, currently 1.0.0), and restart the IDE afterwards.</li>
-<li>On first launch a "Set up EvoVerse SDK?" dialog pops up; confirm the SDK workspace (default <code>~/evoverse-sdk</code>); after confirmation the Welcome page opens automatically.</li>
-<li>On the Welcome page click Sync Catalog, then start by host: <strong>Trae:</strong> type <code>@evoverse</code> in Chat. <strong>VS Code:</strong> describe the goal directly in native Chat Agent mode, without <code>@evoverse</code>, and confirm that EvoVerse MCP is Running. The Workbench Project Control dropdown (<code>evoverse.selectDesignFlow</code>) is navigation only.</li>
+<li>On first launch a "Set up EvoVerse SDK?" dialog pops up; confirm the SDK workspace (default <code>~/evoverse-sdk</code>). Once confirmed, the Welcome page opens automatically.</li>
+<li>On the Welcome page click Sync Catalog once to synchronize the board catalog.</li>
+<li>Open an empty directory as the project root, then start by host: <strong>Trae:</strong> type <code>@evoverse</code> in Chat. <strong>VS Code:</strong> describe the goal directly in native Chat Agent mode, without <code>@evoverse</code>, and confirm that EvoVerse MCP is Running.</li>
 </ol>
-<pre class="mermaid">flowchart LR
-    A[&quot;Install the three VSIXes&lt;br&gt;SDK + Efinity/RK3588 Adapter&quot;] --&gt; B[&quot;Restart the IDE&lt;br&gt;confirm workspace ~/evoverse-sdk&quot;]
-    B --&gt; C[&quot;Welcome page&lt;br&gt;Sync Catalog&quot;]
-    C --&gt; D[&quot;Trae: @evoverse&lt;br/&gt;VS Code: native Agent&quot;]
-</pre>
-<p>Note: <code>~/evoverse-sdk</code> is the SDK workspace, not this tutorial's project root. The next step opens an empty directory, and Stage0 builds the project there.</p>
+<p>Note: <code>~/evoverse-sdk</code> is the SDK workspace, not this tutorial's project root. The project root should be the empty directory you just opened; the Agent maintains the managed harness inside that directory.</p>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<p>Open an empty directory as the project root and say the following in Trae Chat:</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use @evoverse to create an EvoVerse project in this empty directory (in the VS Code native Agent, omit the leading @evoverse). Choose board ws-e1 / ws-e1-base;
-my hardware is a WS-E1 core module (TJ180A484S) seated on a ws-e1-base carrier,
-and the goal is a display link of SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX.
-Before doing anything, read me back the project identity you are about to write (board, carrier, device, speed grade);
-initialize only after I confirm, then walk me through the initialization receipt.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Use @evoverse to start this intent in the current empty directory (in the VS Code native Agent, drop the leading @evoverse).
+My hardware is a WS-E1 core module (listed in the Catalog as ws-e1 / ws-e1-base, device TJ180A484S) seated on the matching carrier,
+and the goal is an SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX display chain.
+Start with an environment and harness self-check: reconcile the toolchain and the Catalog against the board and device I actually have,
+read me back the board, carrier, device, and speed grade you plan to use, and stop and ask me wherever something does not line up.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li><code>project_status</code> confirms the current directory is not yet a managed project (no revision, no Baseline).</li>
-<li><code>project_next</code> reads the server envelope, confirms that <code>recommendedAction.actionId</code> is <code>project.initialize</code>, and checks expectedRevision.</li>
-<li>Reads the project identity back to you before it is written: board (ws-e1), carrier (ws-e1-base), jacket, device TJ180A484S, timing model C4.</li>
-<li>After your confirmation, submits <code>project_execute</code> (actionId <code>project.initialize</code>) and receives the initialization receipt and the new revision.</li>
-<li>Re-reads <code>project_next</code> and shows you the new revision, the established Baseline area, and the next recommended action — without advancing on its own local checklist.</li>
+<li>Reads the workspace and extension state, confirming that all three VSIXes are active, that Efinity and the simulator are available, and that the Catalog has been synced.</li>
+<li>Cross-checks <code>ws-e1</code> / <code>ws-e1-base</code> in the board catalog, the TJ180A484S device, and the C4 timing model, then reads the result back to you.</li>
+<li>Establishes the managed harness in the current empty directory: it records the project identity and the initial baseline, which later intents, specifications, and evidence attach to.</li>
+<li>Consolidates the self-check conclusions, the missing items, and the hardware facts you need to confirm into a single checklist.</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
@@ -173,28 +167,27 @@ initialize only after I confirm, then walk me through the initialization receipt
 </tr>
 <tr>
 <td>The Welcome page does not open automatically</td>
-<td>Open it with <code>evoverse.welcome</code> from the command palette; hold off on starting the conversation until the catalog has been synced at least once.</td>
+<td>Open it with <code>evoverse.welcome</code> from the command palette; if the catalog has never been synced, hold off on the conversation until it is.</td>
 </tr>
 <tr>
 <td>Sync Catalog fails or is slow</td>
 <td>Usually network-related — retry once; afterwards confirm the catalog version with <code>evoverse catalog status --json</code>. Do not skip the sync and force-pick a board.</td>
 </tr>
 <tr>
-<td>Initialization refused with "project directory not empty"</td>
-<td>Switch to another empty directory or move the existing files away — the control plane does not take over files of unknown provenance.</td>
+<td>The project directory is reported as not empty</td>
+<td>Switch to another empty directory, or move the existing files away — the harness does not take over files of unknown provenance.</td>
 </tr>
 <tr>
-<td>Initialization sits silent for a long time</td>
-<td>Ask "which step of the initialization are you on"; do not resend the prompt — repeated initialization only creates reconciliation overhead.</td>
+<td>The self-check sits silent for a long time</td>
+<td>Ask "which step of the self-check are you on"; do not resend the prompt.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
-<li>The revision returned by <code>project_status</code> is non-zero, and the project identity (board / carrier / jacket / device / timing model) matches your hardware.</li>
-<li><code>project_next</code> no longer blocks subsequent actions with "project is not initialized".</li>
-<li>You can state where the project root lives and what state the Baseline area is in.</li>
-<li>You can state that the parent baseline of the first increment (SD input) is the initial baseline established in this stage: Stage 03's <code>intent.create</code> will snapshot it into <code>baseBaselineFiles</code>.</li>
+<li>The self-check conclusions for the toolchain, the Catalog, the board, and the device are visible and match the hardware in your hands.</li>
+<li>The project identity (board / carrier / jacket / device / timing model) is registered in the managed harness.</li>
+<li>You can state where the project root lives and what state the initial baseline is in.</li>
 <li>All later stages (including the final <code>efx_run --flow compile</code>) happen inside this managed project, not in scattered temporary directories.</li>
 </ul>
 <p>When done, continue to <a href="01-material-analysis.html">Stage 01: Material analysis</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="README.html">← Previous: WS-E1 SD to CSI-2 Overview</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="01-material-analysis.html">Next: 01 Material Analysis →</a></nav></main>
@@ -225,5 +218,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
-<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
+
 </body></html>

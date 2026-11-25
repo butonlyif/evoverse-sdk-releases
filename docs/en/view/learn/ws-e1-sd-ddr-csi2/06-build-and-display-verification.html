@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Complete the project step by step in Trae.</span>
 <code>learn/ws-e1-sd-ddr-csi2/06-build-and-display-verification.md</code>
@@ -120,42 +120,88 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>06 Build and Display Verification</h1></header>
 <main class="article tutorial-article"><h1 id="stage-06-build-and-hardware-verification">Stage 06 · Build and Hardware Verification</h1>
 <blockquote>
-<p>The first five stages prepared evidence; this stage produces physical evidence: <code>build.native</code> records a native build, <code>hardware.program</code> programs the bitstream into the TJ180A484S, and <code>hardware.validate</code> confirms, scenario by scenario, that SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX genuinely runs on the board.</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>The first five stages prepared evidence; this stage produces physical evidence: a native build registers the build artifacts, programming writes the bitstream into the TJ180A484S on demand, and the declared scenarios then confirm one by one that SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX genuinely runs on the board.</p>
 </blockquote>
-<p>The three classes of evidence are not interchangeable: a passing build ≠ timing closure, timing closure ≠ functional correctness, and a successful program ≠ on-board validation. Without hardware, this stage may stop at build evidence and honestly mark the integration state <code>INTEGRATION_PENDING_HARDWARE</code> — the same boundary as the stage 04 firmware chapter.</p>
-<p>The baseline state decides where this stage begins. With a baseline ready but never natively built, the project sits at <code>NATIVE_BUILD_PENDING</code>; built but never brought to a board, it sits at <code>BOARD_VALIDATION_REQUIRED</code>. If controlled baseline assets were modified in free mode, the state shows <code>UNVERIFIED_CHANGES</code> — at that point you must not paste the old baseline's PASS evidence onto free-form changes; first return to the reliable flow to re-deliver and promote, or explicitly accept the free-form changes and re-build for fresh evidence. Conversely, reliable simulation is not a universal prerequisite either: the ordinary free-mode Build is always available.</p>
+<p>The three classes of evidence are not interchangeable: a passing build ≠ timing closure, timing closure ≠ functional correctness, and a successful program ≠ on-board validation. Without hardware, this stage may stop at build evidence and honestly mark the hardware and system-level states as <code>NOT_RUN</code> — the same boundary as the Stage 04 firmware chapter.</p>
+<p>The baseline state decides where this stage begins. With a baseline ready but never natively built, the project sits at <code>NATIVE_BUILD_PENDING</code>; built but never brought to a board, it sits at <code>BOARD_VALIDATION_REQUIRED</code>. If controlled baseline assets were modified in free mode, the state shows <code>UNVERIFIED_CHANGES</code> — at that point you must not paste the old baseline's PASS evidence onto free-form changes; first return to the reliable flow to re-deliver, or explicitly accept the free-form changes and re-build for fresh evidence. Conversely, reliable simulation is not a universal prerequisite either: the ordinary free-mode Build is always available.</p>
 <p>The transitions between these states look like this:</p>
 <pre class="mermaid">stateDiagram-v2
     [*] --&gt; NATIVE_BUILD_PENDING: baseline ready, not yet natively built
-    NATIVE_BUILD_PENDING --&gt; BOARD_VALIDATION_REQUIRED: build.native passed
-    BOARD_VALIDATION_REQUIRED --&gt; [*]: hardware.program + hardware.validate
+    NATIVE_BUILD_PENDING --&gt; BOARD_VALIDATION_REQUIRED: native build passed
+    BOARD_VALIDATION_REQUIRED --&gt; [*]: on-demand programming + per-scenario hardware verification
     NATIVE_BUILD_PENDING --&gt; UNVERIFIED_CHANGES: baseline assets modified in free mode
     BOARD_VALIDATION_REQUIRED --&gt; UNVERIFIED_CHANGES: baseline assets modified in free mode
-    UNVERIFIED_CHANGES --&gt; NATIVE_BUILD_PENDING: restored after re-delivery and promotion
+    UNVERIFIED_CHANGES --&gt; NATIVE_BUILD_PENDING: restored after re-delivery and convergence
 </pre>
+<h2 id="evidence-terminal-states">Evidence terminal states</h2>
+<table>
+<thead>
+<tr>
+<th>Terminal state</th>
+<th>Meaning in this stage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BUILT</code></td>
+<td><code>efx_run --flow compile</code> produced a valid bitstream and reports</td>
+</tr>
+<tr>
+<td><code>PACKAGED</code></td>
+<td>Artifacts packaged in the target format (if the delivery flow requires it)</td>
+</tr>
+<tr>
+<td><code>PROGRAMMED</code></td>
+<td>The bitstream was written into the confirmed board and device</td>
+</tr>
+<tr>
+<td><code>HARDWARE_VERIFIED</code></td>
+<td>Every declared scenario was actually observed on the board</td>
+</tr>
+<tr>
+<td><code>SYSTEM_VERIFIED</code></td>
+<td>System-level evidence for the whole SD → DDR → CSI-2 chain is complete</td>
+</tr>
+<tr>
+<td><code>READY_FOR_ACCEPTANCE</code></td>
+<td>Technically complete, waiting for your acceptance receipt</td>
+</tr>
+<tr>
+<td><code>ACCEPTED</code></td>
+<td>You have issued the acceptance receipt</td>
+</tr>
+<tr>
+<td><code>NOT_RUN</code></td>
+<td>Not actually executed — without hardware, <code>PROGRAMMED</code>, <code>HARDWARE_VERIFIED</code>, and <code>SYSTEM_VERIFIED</code> all stay in this state</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Anything not actually executed is always written as <code>NOT_RUN</code>; on-board conclusions must never be inferred from build logs.</strong></p>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
 <section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Run a native build of the project and show me resource utilization, clock domains, and the timing summary.
 Once the build passes, if I have already connected the WS-E1 core board and the JTAG debugger, guide me through programming:
 confirm the board and device ID with me before programming; afterwards verify the display link scenario by scenario —
 SD card initialization, DDR frame-buffer read-back verification, read-side ownership handoff, CSI-2 TX output,
-and image rotation on the receiver. Without hardware attached, stop at the build evidence and honestly mark the hardware validation as pending.
+and image rotation on the receiver. Without hardware attached, stop at the build evidence and mark the hardware and system-level evidence as NOT_RUN.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li>First <code>project_status</code> checks the baseline state: <code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> / <code>UNVERIFIED_CHANGES</code> each decide where this stage starts; a baseline modified in free mode inherits no old PASS.</li>
-<li><code>build.native</code> (<code>mode: free</code> or <code>reliable</code>) triggers the Efinity Adapter to run the native <code>efx_run --flow compile</code> unified flow: map → PT → pnr → pgm in one continuous run, never split into steps and stitched back together.</li>
-<li>Parses the build reports: resource utilization, I/O and clock domains, WNS/TNS; registers the report paths and summary as build evidence with the control plane.</li>
-<li>Timing violations are never waved through silently — when WNS &lt; 0, it prompts you to go back to stage 05 to check constraints, or to use timing diagnosis to locate the root cause, instead of recompiling repeatedly and hoping for luck.</li>
-<li>When hardware is ready, it runs <code>hardware.program</code>: <code>adapterId</code> / <code>boardId</code> / <code>deviceId</code> are required; entering <code>ANY</code> or <code>AUTO</code> for the device ID is rejected by the control plane with <code>AMBIGUOUS_DEVICE</code>; <code>confirmedBy</code> records who confirmed this programming operation.</li>
-<li><code>hardware.validate</code> verifies the deployed firmware and RTL against the scenarios you declared, one by one: each scenario is judged independently; partially passed means partially passed.</li>
-<li>Without hardware: only <code>build.native</code> evidence is registered and the integration state is marked <code>INTEGRATION_PENDING_HARDWARE</code>; "found the JTAG entry point" is never written as "on-board validation passed".</li>
+<li>First checks the baseline state: <code>NATIVE_BUILD_PENDING</code> / <code>BOARD_VALIDATION_REQUIRED</code> / <code>UNVERIFIED_CHANGES</code> each decide where this stage starts; a baseline modified in free mode inherits no old PASS.</li>
+<li>Triggers the Efinity Adapter in free or reliable mode to run the native <code>efx_run --flow compile</code> unified flow: map → PT → pnr → pgm in one continuous run, never split into steps and stitched back together.</li>
+<li>Parses the build reports: resource utilization, I/O and clock domains, WNS/TNS; registers the report paths and summary as build evidence.</li>
+<li>Timing violations are never waved through silently — when WNS &lt; 0, it prompts you to go back to Stage 05 to check constraints, or to use timing diagnosis to locate the root cause, instead of recompiling repeatedly and hoping for luck.</li>
+<li>When hardware is ready and you have completed the high-cost/device-write decision, it programs: <code>adapterId</code> / <code>boardId</code> / <code>deviceId</code> are required; entering <code>ANY</code> or <code>AUTO</code> for the device ID is rejected by the control plane with <code>AMBIGUOUS_DEVICE</code>; <code>confirmedBy</code> records who confirmed this programming operation.</li>
+<li>Verifies the deployed firmware and RTL against the scenarios you declared, one by one: each scenario is judged independently; partially passed means partially passed.</li>
+<li>Without hardware: only the native build evidence is registered, the hardware and system-level terminal states are marked <code>NOT_RUN</code>, and "found the JTAG entry point" is never written as "on-board validation passed".</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
-<li>Programming target: you explicitly confirm the board and device ID; the tool never guesses for you — especially when several boards are attached.</li>
-<li>Observation order: the serial console first shows DDR read-back verification passing, and only then does CSI-2 output start; debug sampling (device scans, captures of key signals, and other observation capabilities) can see read-side and TX activity.</li>
+<li><strong>The second decision — on-demand confirmation of high-cost or device writes</strong>: you explicitly confirm the programming target; the tool never guesses the board and device ID for you. Read-only checks and builds do not require this authorization.</li>
+<li>Programming target: the board and device ID must be specific, especially when several boards are attached.</li>
+<li>Observation order: the serial console first shows DDR read-back verification passing, and only then does CSI-2 output start; debug sampling can see read-side and TX activity.</li>
 <li>Receiver display: image rotation is a phenomenon you confirm with your own eyes, not a conclusion inferred from logs.</li>
-<li>Evidence boundaries: build evidence, timing reports, and on-board scenario evidence are saved separately; any missing item must be called out in the report.</li>
+<li>Evidence boundaries: build evidence, timing reports, and on-board scenario evidence are saved separately; any missing item must be called out in the report and stays <code>NOT_RUN</code>.</li>
 </ul>
 <h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
 <table>
@@ -184,16 +230,17 @@ and image rotation on the receiver. Without hardware attached, stop at the build
 </tr>
 <tr>
 <td>No hardware attached</td>
-<td><code>INTEGRATION_PENDING_HARDWARE</code> is a legitimate terminal state; stopping at build evidence is fine — never fabricate on-board conclusions.</td>
+<td><code>NOT_RUN</code> is a legitimate state; stopping at build evidence is fine — never fabricate on-board conclusions.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
-<li><code>efx_run --flow compile</code> succeeds, and the build and timing reports are registered as <code>build.native</code> evidence.</li>
-<li>With hardware: <code>hardware.program</code> has a programming receipt (including deviceId and confirmedBy), and every declared scenario of <code>hardware.validate</code> passes with per-scenario evidence.</li>
-<li>Without hardware: the project honestly stays at "build passed + <code>INTEGRATION_PENDING_HARDWARE</code>", leaving no room for ambiguity.</li>
-<li>The SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX link is actually observed by the receiver on the TJ180A484S — this box can only be checked when hardware is present.</li>
+<li><code>efx_run --flow compile</code> succeeds, and the build and timing reports are registered as build evidence (<code>BUILT</code>).</li>
+<li>With hardware: programming has a receipt (including deviceId and confirmedBy, <code>PROGRAMMED</code>), and every declared scenario passes with per-scenario evidence (<code>HARDWARE_VERIFIED</code>; <code>SYSTEM_VERIFIED</code> when the whole-chain system evidence is complete).</li>
+<li>Without hardware: the project honestly stays at "build passed + hardware/system evidence <code>NOT_RUN</code>", leaving no room for ambiguity.</li>
+<li>The SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX link is actually observed by the receiver on the TJ180A484S — this box can only be checked when hardware is present, and cannot be replaced by simulation or build results.</li>
+<li>The third decision (final acceptance) happens only after the evidence boundaries are shown; technical completion first lands in <code>READY_FOR_ACCEPTANCE</code>, and only after your confirmation does it move to <code>ACCEPTED</code>.</li>
 </ul>
 <p>When done, continue to <a href="07-skills-and-mcp.html">Stage 07: Skills and MCP Quick Reference</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="05-sdk-integration.html">← Previous: 05 SDK Integration</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="07-skills-and-mcp.html">Next: 07 Skills and MCP →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>

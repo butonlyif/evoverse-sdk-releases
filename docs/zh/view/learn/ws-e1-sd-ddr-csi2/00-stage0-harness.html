@@ -112,45 +112,39 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>从空目录建立 WS-E1 的 C4 物理边界。</span>
 <code>learn/ws-e1-sd-ddr-csi2/00-stage0-harness.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/00-stage0-harness.md">Markdown 源文件</a></p>
 <h1>00 建立 Stage0 物理 Harness</h1></header>
-<main class="article tutorial-article"><h1 id="阶段-00-建立工程-harness-stage0">阶段 00 · 建立工程 Harness（Stage0）</h1>
+<main class="article tutorial-article"><h1 id="阶段-00-环境与-harness-自检">阶段 00 · 环境与 Harness 自检</h1>
 <blockquote>
-<p>目标器件：WS-E1 核心模组 TJ180A484S，C4 timing model。本阶段把一个空目录变成控制面管辖的受管工程，作为后续所有阶段的物理与流程基线——它也是第一轮增量意图（SD 输入）的父基线。</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>目标器件：WS-E1 核心模组 TJ180A484S，C4 timing model。本阶段（Stage0）不写 RTL，只确认 IDE、扩展、Catalog 与你手上的硬件一致，让 Agent 能在受管 Harness 里安全地开始这个意图。</p>
 </blockquote>
-<p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 这条数据链路的每一环，最终都要落到 TJ180A484S 的物理引脚和时钟资源上。所以第一步不是写 RTL，而是声明工程身份：板卡、载板、夹克、器件与速度等级。这一步在控制面里对应 <code>project.initialize</code> 动作。</p>
+<p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一环最终都要落到 TJ180A484S 的物理引脚和时钟资源上。开始前先把“你说的硬件”和“工具看到的硬件”对齐：板卡、载板、夹克、器件与速度等级。工程身份由 Agent 在第一次方案确认时写入，你不需要单独执行一个工程初始化动作。</p>
 <h2 id="准备环境">准备环境</h2>
-<p>先装 IDE，再开工程。三步：</p>
 <ol>
 <li>安装三个 VSIX：<code>evoverse-sdk</code>、<code>evoverse-efinity-adapter</code>、<code>evoverse-rk3588-adapter</code>（版本一致，当前为 1.0.0），装完重启 IDE。</li>
 <li>首次启动会弹出 "Set up EvoVerse SDK?"，确认 SDK 工作区（默认 <code>~/evoverse-sdk</code>）；确认后 Welcome 页自动打开。</li>
-<li>在 Welcome 页点一次 Sync Catalog 同步板卡目录，然后按宿主开始：<strong>Trae：</strong>在聊天里输入 <code>@evoverse</code>；<strong>VS Code：</strong>在原生 Chat 的 Agent 模式直接描述目标，无需 <code>@evoverse</code>，并确认 EvoVerse MCP 为 Running。Workbench 的 Project Control 下拉（<code>evoverse.selectDesignFlow</code>）只负责图形导航。</li>
+<li>在 Welcome 页点一次 Sync Catalog 同步板卡目录。</li>
+<li>打开一个空目录作为工程根，然后按宿主开始：<strong>Trae：</strong>在聊天里输入 <code>@evoverse</code>；<strong>VS Code：</strong>在原生 Chat 的 Agent 模式直接描述目标，无需 <code>@evoverse</code>，并确认 EvoVerse MCP 为 Running。</li>
 </ol>
-<pre class="mermaid">flowchart LR
-    A[&quot;安装三个 VSIX&lt;br&gt;SDK + Efinity/RK3588 Adapter&quot;] --&gt; B[&quot;重启 IDE&lt;br&gt;确认工作区 ~/evoverse-sdk&quot;]
-    B --&gt; C[&quot;Welcome 页&lt;br&gt;Sync Catalog&quot;]
-    C --&gt; D[&quot;Trae: @evoverse&lt;br/&gt;VS Code: 原生 Agent&quot;]
-</pre>
-<p>注意：<code>~/evoverse-sdk</code> 是 SDK 工作区，不是本教程的工程根。下一步打开的是一个空目录，Stage0 在那里建工程。</p>
+<p>注意：<code>~/evoverse-sdk</code> 是 SDK 工作区，不是本教程的工程根。工程根应当是刚刚打开的空目录；Agent 会在这个目录里维护受管 Harness。</p>
 <h2 id="你对-trae-说什么">你对 Trae 说什么</h2>
-<p>打开一个空目录作为工程根，在 Trae Chat 里说：</p>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 @evoverse 在当前空目录建一个 EvoVerse 工程（VS Code 原生 Agent 中去掉开头的 @evoverse）。板卡选 ws-e1 / ws-e1-base，
-我的硬件是一块 WS-E1 核心模组（TJ180A484S）插在 ws-e1-base 底板上，
-目标是做一条 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的显示链路。
-动手之前，先把要写入的工程身份（板卡、载板、器件、速度等级）讲给我听；
-我确认后再初始化，并把初始化回执解释给我。
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>复制</button><pre><code class="language-text">用 @evoverse 在当前空目录开始这个意图（VS Code 原生 Agent 中去掉开头的 @evoverse）。
+我的硬件是一块 WS-E1 核心模组（Catalog 里叫 ws-e1 / ws-e1-base，器件 TJ180A484S），
+插在对应底板上，要做 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的显示链路。
+先做环境与 Harness 自检：把工具链、Catalog 和我手上的板卡/器件对一遍，
+把准备使用的板卡、载板、器件与速度等级讲给我听；有对不上的地方先停下来问我。
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
-<li><code>project_status</code> 确认当前目录还不是受管工程（没有 revision、没有 Baseline）。</li>
-<li><code>project_next</code> 读取服务端 envelope，确认 <code>recommendedAction.actionId</code> 是 <code>project.initialize</code>，并核对 expectedRevision。</li>
-<li>向你复述将写入的工程身份：board（ws-e1）、carrier（ws-e1-base）、jacket、器件 TJ180A484S、timing model C4。</li>
-<li>你确认后提交 <code>project_execute</code>（actionId 为 <code>project.initialize</code>），拿到初始化回执与新 revision。</li>
-<li>重新读取 <code>project_next</code>，向你展示新 revision、Baseline 区已建立和下一推荐动作；不按本地清单自行推进。</li>
+<li>读取工作区与扩展状态，确认三个 VSIX 已激活、Efinity 与仿真器可用、Catalog 已同步。</li>
+<li>核对板卡目录里的 <code>ws-e1</code> / <code>ws-e1-base</code>、器件 TJ180A484S 与 timing model C4，并复述给你。</li>
+<li>在当前空目录建立受管 Harness：记录工程身份与初始基线，供后续意图、规格和证据挂载。</li>
+<li>把自检结论、缺失项和你需要确认的硬件信息整理成一份清单。</li>
 </ol>
 <h2 id="你需要确认什么">你需要确认什么</h2>
 <ul>
@@ -180,22 +174,21 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <td>多为网络原因，重试一次即可；完成后用 <code>evoverse catalog status --json</code> 确认目录版本。不要跳过同步硬选板卡。</td>
 </tr>
 <tr>
-<td>提示"工程目录非空"拒绝初始化</td>
-<td>换一个空目录，或把已有文件挪走——控制面不接管来历不明的文件。</td>
+<td>提示工程目录非空</td>
+<td>换一个空目录，或把已有文件挪走——Harness 不接管来历不明的文件。</td>
 </tr>
 <tr>
-<td>初始化半天没动静</td>
-<td>问一句"初始化到哪一步了"；不要重发提示词，重复初始化只会制造对账负担。</td>
+<td>自检半天没动静</td>
+<td>问一句“自检到哪一步了”；不要重发提示词。</td>
 </tr>
 </tbody>
 </table>
 <h2 id="通过条件">通过条件</h2>
 <ul>
-<li><code>project_status</code> 返回的 revision 非零，工程身份（board / carrier / jacket / device / timing model）与你的硬件一致。</li>
-<li><code>project_next</code> 不再以"project is not initialized"阻塞后续动作。</li>
-<li>你能说出工程根在哪里、Baseline 区是什么状态。</li>
-<li>你能说出第一轮增量（SD 输入）的父基线就是本阶段建立的初始基线：阶段 03 的 <code>intent.create</code> 会把它快照进 <code>baseBaselineFiles</code>。</li>
-<li>后续所有阶段（包括最终 <code>efx_run --flow compile</code>）都将发生在这个受管工程内，而不是散落的临时目录里。</li>
+<li>工具链、Catalog、板卡与器件自检结论可见，且与你手上的硬件一致。</li>
+<li>工程身份（board / carrier / jacket / device / timing model）已在受管 Harness 中登记。</li>
+<li>你能说出工程根在哪里、初始基线是什么状态。</li>
+<li>后续所有阶段（包括最终 <code>efx_run --flow compile</code>）都发生在这个受管工程内，而不是散落的临时目录里。</li>
 </ul>
 <p>完成后进入 <a href="01-material-analysis.html">阶段 01：物料分析</a>。</p><nav class="tutorial-stage-navigation" aria-label="教程阶段导航"><a class="previous-stage" href="README.html">← 上一阶段：WS-E1 SD 到 CSI-2 总览</a><a class="stage-overview" href="README.html">教程总览</a><a class="next-stage" href="01-material-analysis.html">下一阶段：01 物料分析 →</a></nav></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
@@ -225,5 +218,5 @@ document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {
   });
 });
 </script>
-<script src="../../../assets/vendor/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:"base",themeVariables:{primaryColor:"#FDF1E8",primaryBorderColor:"#E8580C",primaryTextColor:"#1C2437",lineColor:"#64748B",secondaryColor:"#EFF2F7",tertiaryColor:"#F8FAFD",fontFamily:"'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif",fontSize:"14px"},flowchart:{curve:"basis"}});</script>
+
 </body></html>

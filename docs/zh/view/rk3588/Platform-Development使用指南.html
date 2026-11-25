@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RK3588 Platform Development 使用指南</title>
+<style>:root{--bg:#F2F5F8;--panel:#fff;--ink:#1C2437;--ink-2:#3E4A62;--muted:#69748A;--line:#D4DAE2;--accent:#E8580C;--accent-hover:#F58444;--soft:#FFF0E8;--faint:#FED7BE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Inter","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 24px;background:var(--ink);box-shadow:0 4px 18px rgba(28,36,55,.18)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;text-decoration:none;line-height:1.1}
+.topbar .brand img{height:30px;width:auto;background:#fff;padding:4px 10px;border-radius:6px}
+.topbar .brand small{display:block;font-weight:400;font-size:10px;opacity:.7;letter-spacing:1.5px;text-transform:uppercase}
+.pnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pnav-item{padding:7px 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px}
+.pnav-item:hover{border-color:var(--accent-hover);color:#fff}
+.pnav-item.on{background:var(--accent);border-color:var(--accent);color:#fff}
+header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:34px}h1{font-size:34px;font-weight:800;margin:4px 0}h2{margin:0 0 10px;font-weight:800}p{color:var(--muted)}.tag{color:var(--accent);font-weight:700}.search{width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 38px}.role{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 1px 2px rgba(28,36,55,.06);transition:transform .15s ease,box-shadow .15s ease}.role:hover{transform:translateY(-3px);box-shadow:0 4px 14px rgba(28,36,55,.08)}.eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.08em}.outcome{background:var(--soft);padding:10px;border-radius:8px}ol{padding:0;list-style:none}li{display:flex;gap:10px;border-top:1px solid var(--line);padding:9px 0}li span{color:var(--muted)}a{color:var(--ink);text-decoration:none}a:hover{color:var(--accent)}
+.group{margin:28px 0}.docs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.doc{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.doc:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.doc small{color:var(--muted);margin-top:4px}.chip{align-self:flex-start;font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+.pcard{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.pcard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 14px rgba(28,36,55,.08)}.pcard-count{color:var(--accent);font-weight:600}
+.overview p{color:var(--muted)}
+.arch{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.arch-tier,.arch-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.arch-tier b,.arch-box b{font-size:14px}.arch-tier b{color:var(--accent)}
+.arch-tier span,.arch-box small{color:var(--muted);font-size:13px}
+.arch-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-left:28px}
+.arch-box{margin-left:28px}.arch-box:hover{border-color:var(--accent)}
+.arch-more{font-size:13px}.arch-more a{color:var(--accent)}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.pipeline-stage{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:16px}.pipeline-stage b{font-size:14px}.pipeline-stage small,.evidence{color:var(--muted);font-size:13px}.evidence{display:inline-block;background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 8px}.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}.tool-card code{color:var(--accent);font-weight:700}.tool-card p{margin:6px 0}.tool-card small{color:var(--muted)}
+.hidden{display:none}footer{color:var(--muted);font-size:13px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:14px;padding:22px 24px;margin:26px 0 6px}
+.hero-copy p{margin:6px 0}.hero-copy .lead{color:var(--ink-2);font-size:15px}
+.quickstart{display:flex;flex-direction:column;gap:8px;margin:0}
+.quickstart a{display:flex;flex-direction:column;gap:2px;background:var(--soft);border:1px solid var(--faint);border-radius:10px;padding:10px 14px}
+.quickstart a:hover{border-color:var(--accent)}
+.quickstart b{color:var(--accent);font-size:14px}
+.quickstart span{color:var(--muted);font-size:13px}
+.book{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+.book-toc{position:sticky;top:64px;max-height:calc(100vh - 84px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px}
+.book-toc h4{margin:12px 0 4px;font-size:12px;color:var(--accent);letter-spacing:.06em}
+.book-toc a{display:block;padding:3px 8px;border-radius:6px;color:var(--ink-2)}
+.book-toc a:hover{background:var(--soft);color:var(--accent)}
+.book-main h2.entry-group{margin:26px 0 12px;font-size:20px;border-bottom:2px solid var(--faint);padding-bottom:6px}
+.entry{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 14px;scroll-margin-top:84px}
+.entry h3{margin:0 0 8px;font-size:17px}
+.entry h3 code{color:var(--accent);font-family:Consolas,"Courier New",monospace}
+.entry>p{margin:0 0 4px}
+.entry pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;margin:10px 0 0;white-space:pre-wrap}
+.doc-body{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 26px 18px}
+.doc-body h1{font-size:24px}.doc-body h2{font-size:19px;margin-top:24px}.doc-body h3{font-size:16px}
+.doc-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+.doc-body th,.doc-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.doc-body th{background:var(--soft)}
+.doc-body code{background:var(--soft);border:1px solid var(--faint);border-radius:4px;padding:0 5px;font-family:Consolas,"Courier New",monospace;font-size:13px}
+.doc-body pre{background:var(--ink);color:#D7E1F0;border-radius:8px;padding:12px;overflow:auto}
+.doc-body pre code{background:none;border:none;color:inherit;padding:0}
+.doc-body blockquote{border-left:4px solid var(--accent);margin:10px 0;padding:4px 14px;background:var(--soft);border-radius:0 8px 8px 0}
+.doc-body ul,.doc-body ol{padding-left:22px;margin:8px 0}
+.doc-body li{display:list-item;border-top:none;padding:2px 0}
+.doc-body a{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;color:var(--accent);line-height:1.2}
+.stat span{color:var(--muted);font-size:12.5px}
+.sect{margin:34px 0 10px}
+.sect .eyebrow2{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.12em}
+.sect h2{margin:0}
+.arch-svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 6px;margin-top:14px}
+.flagship{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.flag{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px;padding:20px 22px}
+.flag h3{margin:0;font-size:19px}
+.flag p{margin:0;color:var(--muted)}
+.flag .chips{display:flex;flex-wrap:wrap;gap:6px}
+.flag .chips code{background:var(--soft);border:1px solid var(--faint);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2)}
+.flag .cta{margin-top:auto;align-self:flex-start;color:#fff;background:var(--accent);border-radius:8px;padding:8px 16px;font-weight:600;font-size:14px}
+.flag .cta:hover{background:var(--accent-hover)}
+.journey{margin-top:14px}
+.phase{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.phase:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--faint)}
+.phase-num{width:44px;height:44px;border-radius:50%;background:var(--soft);border:2px solid var(--accent);color:var(--accent);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.phase-body h3{margin:2px 0 4px;font-size:16px}
+.phase-body p{margin:0 0 6px;color:var(--muted);font-size:13.5px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12.5px;color:var(--ink-2)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:820px){.roles,.docs,.stage-grid,.arch-row,.pipeline,.tool-grid{grid-template-columns:1fr}.arch-row,.arch-box{margin-left:0}h1{font-size:28px}.topbar{padding:10px 16px}.pnav{margin-left:0}}
+@media(max-width:820px){.hero{grid-template-columns:1fr}.book{grid-template-columns:1fr}.book-toc{position:static;max-height:none}.stats{grid-template-columns:repeat(2,1fr)}.flagship{grid-template-columns:1fr}}
+.article{max-width:960px;margin:0 auto;padding:28px 24px 48px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(28,36,55,.06)}
+.doc-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:0 0 6px}
+.doc-meta a{color:var(--accent)}
+.article h1{font-size:26px;margin:10px 0 18px}.article h2{font-size:20px;font-weight:800;margin:30px 0 10px;border-bottom:2px solid var(--accent);padding-bottom:6px}.article h3{font-size:16px;margin:22px 0 8px}.article h4{font-size:15px;margin:18px 0 6px}
+.article p{margin:10px 0}.article ul,.article ol{padding-left:26px;margin:10px 0}.article li{display:list-item;border:0;padding:3px 0;color:var(--ink)}.article li::marker{color:var(--accent)}
+.article code{font-family:Consolas,"Courier New",monospace;font-size:13px;border-radius:4px;padding:1px 6px;background:rgba(232,88,12,.08);color:#C4480A;border:1px solid rgba(232,88,12,.12)}
+.article pre{background:var(--ink);color:#F2F5F8;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px 16px;overflow:auto;margin:12px 0}.article pre code{background:none;color:inherit;border:0;padding:0;font-size:12.5px;line-height:1.6}
+.article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;display:block;overflow-x:auto;border:1px solid var(--line)}.article th,.article td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}.article th{background:#EFF2F7}.article tr:nth-child(even) td{background:#F8FAFD}
+.article blockquote{margin:14px 0;padding:10px 16px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;color:var(--ink-2)}.article blockquote p{color:inherit;margin:4px 0}
+.article img{max-width:100%;border:1px solid var(--line);border-radius:8px}.article hr{border:0;height:1px;background:var(--line);margin:24px 0}
+.article a{color:var(--accent)}
+.article pre.mermaid{background:#FFFFFF;color:var(--ink);font-family:inherit;font-size:14px;padding:16px 12px;text-align:center;border:1px solid var(--line)}
+.article pre.mermaid svg{max-width:100%;height:auto}
+@media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
+<div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
+<p class="doc-meta"><a href="../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
+<span>统一 Platform Release 的在线、离线、无板卡、AI 模型与板卡续接流程，以及软件/硬件证据边界。</span>
+<code>rk3588/Platform-Development使用指南.md</code>
+<a href="../../../rk3588/Platform-Development使用指南.md">Markdown 源文件</a></p>
+<h1>RK3588 Platform Development 使用指南</h1></header>
+<main class="article"><h1 id="rk3588-platform-development-使用指南">RK3588 Platform Development 使用指南</h1>
+<blockquote>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用版本：EvoVerse SDK v1.0.1
+当前发布边界：软件资格可在无板卡时完成；烧录、启动、板端运行和 NPU 性能必须使用真实板卡验证。</p>
+</blockquote>
+<h2 id="1-客户获得什么">1. 客户获得什么</h2>
+<p>客户使用签名的 Platform Development Release，不需要取得或克隆 Platform 开发仓库。一个 Release 用同一份 <code>platform-development-release.json</code>（包含描述符、资格状态和 Ed25519 签名）绑定：</p>
+<ul>
+<li>可刷写固件 <code>update.img</code>；</li>
+<li>从同一 rootfs 派生的 sysroot；</li>
+<li>Windows + Docker 使用的 App Builder；</li>
+<li>AI 项目按需使用的 Model Builder；</li>
+<li>Developer Runtime、SBOM、许可证和源码合规材料；</li>
+<li>软件、启动和硬件资格状态。</li>
+</ul>
+<p>工程中的 <code>.evoverse/platform-lock.json</code> 固定平台版本和描述符摘要。再次打开工程时复用该锁；不同版本不会静默覆盖。</p>
+<h2 id="2-workbench-在线路径">2. Workbench 在线路径</h2>
+<ol>
+<li>安装 SDK、RK3588 Adapter，并同步 Catalog。</li>
+<li>创建或打开与 Catalog 板卡/载板身份匹配的工程。</li>
+<li>从对应板卡的 Release 下载 <code>platform-development-release.json</code>，将原文件放到工程 <code>.evoverse/platform-descriptor.json</code>；不要只复制其中的 <code>descriptor</code> 字段，也不要修改签名内容。然后在 RK3588 Workbench 的 <strong>Platform Development</strong> 卡中选择 <strong>准备平台</strong>。</li>
+<li>查看平台版本、下载大小、许可证和资格状态，然后确认下载。</li>
+<li>无板卡时仅准备 <code>sysroot + App Builder</code>；AI 工程再选择 Model Builder。固件可预下载，但不能记为已烧录。</li>
+<li>选择 <strong>构建应用</strong>；AI 工程再执行 <strong>转换模型</strong>。</li>
+<li>有板卡后选择 <strong>烧录/更新板卡</strong>，验证板卡身份后再执行 <strong>部署并运行</strong>。</li>
+<li>使用 <strong>查看证据</strong> 区分软件、烧录、启动、板端执行和 NPU 性能状态。</li>
+</ol>
+<p>下载采用内容寻址缓存并复验大小和 SHA-256。缓存命中不等于板卡已烧录或已启动。</p>
+<h2 id="3-没有板卡时">3. 没有板卡时</h2>
+<p>没有板卡是受支持状态。客户仍可完成：</p>
+<ul>
+<li>Platform Release 解析和工程锁定；</li>
+<li>AArch64 应用交叉编译；</li>
+<li>ELF 架构、loader、动态依赖和 RPATH 检查；</li>
+<li>ONNX 检查、量化、RKNN 转换和 host simulator 对照；</li>
+<li>Application Package 组装与静态验证。</li>
+</ul>
+<p>完成后状态应为 <code>WAITING_FOR_BOARD</code>。以下事实必须保持 <code>NOT_RUN / NO_BOARD</code>：板卡发现、烧录、启动、目标部署、目标执行、NPU 执行和硬件性能。</p>
+<h2 id="4-手动和离线路径">4. 手动和离线路径</h2>
+<p>在线渠道、企业镜像和离线介质必须携带同一份签名 manifest 和相同资产摘要。</p>
+<ol>
+<li>从已批准渠道取得完整 Release 目录；不要只复制 <code>update.img</code>。</li>
+<li>离线传输签名的 <code>platform-development-release.json</code>、所需资产和 <code>source-compliance.tar</code>（内含 SBOM、许可证及对应源码材料）。</li>
+<li>在联网主机或发布方提供的校验工具上验证签名；在目标 Windows 主机复验每个文件的 SHA-256 和大小。</li>
+<li>将已验证资产导入 SDK 内容寻址缓存，或把描述符放入工程 <code>.evoverse/platform-descriptor.json</code> 后执行 <strong>准备平台</strong>。不得修改描述符以改写本地路径。</li>
+<li>Docker 不可用时，板卡到货后可选择 SSH 板载原生编译；板卡上的 Developer Runtime 身份必须与工程锁一致。</li>
+</ol>
+<p>手动烧录必须使用 Release 随附的烧录说明和该板卡对应的工具。烧录前再次核对 module、carrier、board revision、固件摘要和资格状态。<code>UNQUALIFIED_NO_BOOT</code> 只允许下载和工程准备，不代表客户可以把它当成已验证量产镜像。</p>
+<h2 id="5-ai-模型路径">5. AI 模型路径</h2>
+<p>Model Builder 负责 ONNX 检查、量化、ONNX→RKNN 转换和 host simulator；App Builder 负责编译调用 RKNN Runtime/MPP/RGA 的 AArch64 应用。两者由同一 Platform manifest 绑定 Toolkit、Runtime、driver ABI 和目标 NPU。</p>
+<p>host simulator 通过不等于真实 NPU 通过。最终精度、性能、内存、温度和稳定性必须在真实 RK3588 上记录独立证据。</p>
+<h2 id="6-常见阻断">6. 常见阻断</h2>
+<ul>
+<li><code>PLATFORM_DESCRIPTOR_UNREADABLE</code>：描述符缺失、不是合法 JSON 或无法读取。</li>
+<li><code>PLATFORM_UPGRADE_CONFIRMATION_REQUIRED</code>：工程已有不同平台锁；先审查升级，不要删除锁来绕过。</li>
+<li><code>PLATFORM_MATERIALS_MISSING</code>：缓存资产不完整；重新执行准备平台或重新导入离线资产。</li>
+<li><code>WAITING_FOR_BOARD</code>：软件阶段已完成，等待真实板卡，不是失败。</li>
+<li><code>UNQUALIFIED_NO_BOOT</code>：固件尚无真实启动资格，不得声明烧录/启动 PASS。</li>
+</ul>
+<h2 id="7-客户不需要的内容">7. 客户不需要的内容</h2>
+<p>客户不需要 Platform 私有仓库、内部 CI/CD、构建凭证、未发布 BSP 分支或实验室自动化。Kernel、U-Boot、Buildroot 等开源义务通过与 Release 摘要绑定的 source-compliance 资产履行。</p></main>
+<footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
+
+
+</body></html>

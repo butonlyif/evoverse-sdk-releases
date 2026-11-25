@@ -112,7 +112,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">教程中心</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../boards.html">板卡与物料</a><a class="pnav-item" href="../../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← 返回教程中心</a>
 <span>按步骤在 Trae 中完成工程。</span>
 <code>learn/ws-e1-sd-ddr-csi2/05-sdk-integration.md</code>
@@ -120,13 +120,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>05 SDK 集成</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-05-sdk-集成">阶段 05 · SDK 集成</h1>
 <blockquote>
-<p>三轮增量晋级后的基线与固件已就绪，本阶段把它们与 Efinity 工程文件（XML / ISF / SDC）对齐：检查工程合同、同步设计源、验证设计一致性。所有变更都走"预览 → 确认 → 应用"。</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>三个模块收敛、固件也已就绪，本阶段把它们与 Efinity 工程文件（XML / ISF / SDC）对齐：检查工程合同、同步设计源、验证设计一致性。所有变更都走"预览 → 确认 → 应用"。</p>
 </blockquote>
 <p>工程合同（project contract）定义了控制面看到的工程结构与 Efinity 工具链看到的工程文件之间的对应关系。SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的引脚、时钟、bank 电压都在这一步落到 TJ180A484S 的物理约束上。</p>
-<p>三类验证在此分界：<code>verification.simulate</code> 的 PASS 只证明候选在所选等级的仿真场景下正确，不证明原生编译收敛，更不证明板上运转——后者分别由阶段 06 的 <code>build.native</code> 与 <code>hardware.validate</code> 取证。</p>
+<p>三类验证在此分界：仿真 PASS 只证明候选在所选等级的仿真场景下正确，不证明原生编译收敛，更不证明板上运转——后者分别由阶段 06 的原生编译与硬件证据取证。</p>
 <p>本阶段的所有检查都围绕工程合同展开，目标是让三视图指向同一套文件：</p>
 <pre class="mermaid">flowchart TD
-    A[&quot;控制面资产清单&lt;br&gt;project_status&quot;] --- B{&quot;工程合同&lt;br&gt;project contract&quot;}
+    A[&quot;控制面资产清单&quot;] --- B{&quot;工程合同&lt;br&gt;project contract&quot;}
     C[&quot;Efinity 工程 XML&lt;br&gt;设计源清单&quot;] --- B
     D[&quot;ISF / SDC 约束&quot;] --- B
     B --&gt; E[&quot;同步设计源&lt;br&gt;预览 → 确认 → 应用&quot;]
@@ -142,11 +143,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </code></pre></section>
 <h2 id="trae-会帮你做什么">Trae 会帮你做什么</h2>
 <ol>
-<li><code>project_status</code> 读取当前 Baseline 与资产清单，展示工程合同：顶层模块、设计文件、约束文件、器件 TJ180A484S。</li>
+<li>读取当前 Baseline 与资产清单，展示工程合同：顶层模块、设计文件、约束文件、器件 TJ180A484S。</li>
 <li>检查设计源与工程 XML 的对应关系：新增的候选 RTL 是否已进入源清单，被移除的文件是否还挂在 XML 里。</li>
 <li>同步设计源到 Efinity 工程（新增 <code>&lt;efx:design_file&gt;</code> 条目、更新 flist 引用），同步前给你完整预览。</li>
 <li>运行设计验证：引脚分配、bank 电压、时钟定义与规格物理节逐项比对；MIPI bank 必须 1.2V、与 LVDS 不共 bank、PLL 在 ISF 中创建。</li>
-<li>应用确认后的变更，重新 <code>project_status</code> 报告 revision 变化。</li>
+<li>应用确认后的变更，重新报告 revision 变化。</li>
 <li>任何验证失败都会原样报告——集成阶段只修"工程文件与候选不一致"，不静默改你的 RTL。</li>
 </ol>
 <h2 id="你需要确认什么">你需要确认什么</h2>

@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../efinity-adapter.html">← 返回Efinity Adapter</a>
 <span>Workbench 六 Tab、编译流程、纯 CLI 调试闭环与命令清单。</span>
 <code>adapters/Efinity-Adapter使用指南.md</code>
@@ -106,7 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Efinity Adapter 使用指南</h1></header>
 <main class="article"><h1 id="efinity-adapter-使用指南">Efinity Adapter 使用指南</h1>
 <blockquote>
-<p><strong>版本</strong>：v1.0　<strong>适用 SDK 版本</strong>: v1.0.0
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>版本</strong>：v1.0　<strong>适用 SDK 版本</strong>: v1.0.1
 <strong>更新日期</strong>：2026-09-30</p>
 </blockquote>
 <p>Efinity Adapter 为 Efinix Titanium FPGA 提供 Workbench 工作台与全部厂商能力：编译、时序、片上调试、烧录、RISC-V 软件、IP 管理和接口设计。安装方式见 <a href="../sdk/SDK详细说明.html">SDK 详细说明</a>。</p>
@@ -310,7 +311,50 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>调试需要 Efinity 生成的 debug profile（debug_profile.json）；Profile 未生成时 Debug Tab 第 1 步会提示</li>
 <li>VIO 写入与调试配置应用均需显式确认，不存在静默写硬件的路径</li>
 <li>Workbench UI 由 Adapter 拥有；升级 Adapter 可能带来 Tab 布局调整，功能命令保持稳定</li>
-</ul></main>
+</ul>
+<h2 id="9-通用生命周期动作面-v1-0-0-协议-1-1">9. 通用生命周期动作面（v1.0.0，协议 1.1）</h2>
+<p>Efinity Adapter 以<strong>薄映射</strong>接入 SDK 的领域中立生命周期动作面（生成物永远落在候选区 <code>.evoverse/candidates/&lt;id&gt;/</code>，接纳前不写工作区任何已采纳文件）：</p>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>Efinity 语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>project.plan</code></td>
+<td>发现工程 XML（device/topModule/顶层）并声明原生流程 <code>efx_run --flow compile</code>；可带 board/device 声明做绿地规划</td>
+</tr>
+<tr>
+<td><code>project.generateCandidate</code></td>
+<td>走真实 composer 组合参考工程（含 §9 所有权标记与逐文件 digest）进候选区；候选 ID 不可重生成</td>
+</tr>
+<tr>
+<td><code>project.validateCandidate</code></td>
+<td>走 Design Assurance preflight：static 级别独立评估；可同时请求仿真（simulation_model 独立级别）</td>
+</tr>
+<tr>
+<td><code>project.prepareAdoption</code></td>
+<td>产出<strong>声明式</strong>接纳计划（C5 事务形状），本身零写入、幂等</td>
+</tr>
+<tr>
+<td><code>build.native</code></td>
+<td>委托原生编译能力（<code>build.compile</code>）；产出 native_build 证据</td>
+</tr>
+<tr>
+<td><code>target.program</code></td>
+<td>委托烧录能力（<code>program.flash</code>）；产出 target_write 证据</td>
+</tr>
+<tr>
+<td><code>evidence.collect</code></td>
+<td>汇集工程证据（复用报告读取）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>协议与协商</strong>：生命周期动作仅接受协议 1.1 + <code>payloadSchemaVersion: "1.1"</code>（双边协商，声明即契约）；协议 1.0 或 schema 版本不符一律稳定拒绝（<code>INVALID_REQUEST</code> / <code>API_INCOMPATIBLE</code>），绝不降级服务。</p>
+<p><strong>多工程对齐</strong>：一个工作区内有多个 Efinity 工程 XML 时，未指定 <code>projectScope</code> 保持既有发现序首匹配；指定 scope 则必须命中发现清单之一，未命中报 <code>EFINITY_PROJECT_SCOPE_UNRESOLVED</code>（信封 FAIL），绝不静默回退——规划与编译永远指向同一工程。</p>
+<p><strong>证据语义（五级独立）</strong>：static / simulation_model / native_build / target_write / hardware_runtime 各自独立折叠，无记录即 <code>NOT_RUN</code>。<strong>生成 ≠ 编译 ≠ 烧录 ≠ 硬件验证</strong>：编译或烧录成功不会产生 hardware_runtime 证据；本版本硬件运行级别在 Efinity 面保持诚实 <code>NOT_RUN</code>（片上调试会话属于独立通道，不作为生命周期硬件证据）。</p></main>
 <footer>高级参考用于按需查询；设计记录、发布流程、审计报告和未来规划不属于客户操作入口。</footer>
 
 

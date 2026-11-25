@@ -112,34 +112,34 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .trae-prompt-copy:hover{background:var(--accent);border-color:var(--accent)}
 </style></head><body>
 <div class="topbar"><a class="brand" href="../../../customer-portal.html"><img src="../../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item on" href="../../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../../skills.html">Skills</a><a class="pnav-item" href="../../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../../tutorials.html">← Back to Tutorials</a>
 <span>Generate the hardware IP first, then clear the RTL gates one by one.</span>
 <code>learn/ws-e1-sd-ddr-csi2/07-skills-and-mcp.md</code>
 <a href="../../../../learn/ws-e1-sd-ddr-csi2/07-skills-and-mcp.md">Markdown source</a></p>
 <h1>07 Skills and MCP</h1></header>
-<main class="article tutorial-article"><h1 id="stage-07-skills-and-mcp-tools-quick-reference">Stage 07 · Skills and MCP Tools Quick Reference</h1>
+<main class="article tutorial-article"><h1 id="stage-07-skill-and-mcp-quick-reference">Stage 07 · Skill and MCP Quick Reference</h1>
 <blockquote>
-<p>Having walked through all seven stages, step back and survey every interface this path used: 11 public MCP tools, 25 control-plane actions, and 6 built-in Skills. Every step you took toward SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX on the TJ180A484S corresponds to a row in one of these tables and one piece of evidence.</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>With the mainline stages behind you, step back and look at every interface this path used: 11 public MCP tools, 25 control-plane actions, and 6 built-in Skills. Each step you took on the TJ180A484S toward SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX maps to one row of these tables and one piece of evidence. This chapter is advanced reference; action ids appear only here. The mainline chapters speak in intents and evidence.</p>
 </blockquote>
 <h2 id="what-you-say-to-trae">What you say to Trae</h2>
-<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Walk me through a pre-delivery review: stage by stage across initialization, materials,
-specification, candidates and simulation, firmware, integration, and build and hardware,
-explain what each step did, what evidence it left behind, and which boundaries remain
-unverified. Use language a customer can follow; do not just report tool names.
+<section class="trae-prompt"><button class="trae-prompt-copy" type="button" data-copy-trae-prompt>Copy</button><pre><code class="language-text">Take me through a pre-delivery review: across the seven stages — initialization, material, specification,
+candidates and simulation, firmware, integration, and build plus hardware — explain what was done at each step,
+what evidence was left behind, and which boundaries are still unverified. Explain it in terms the customer can follow, not just tool names.
 </code></pre></section>
 <h2 id="what-trae-does-for-you">What Trae does for you</h2>
 <ol>
-<li>Uses <code>project_status</code> to summarize every fact under the current revision: Baseline, intents, candidates, evidence area.</li>
-<li>Maps each stage's action receipts to their evidence files one by one and flags the <code>incomplete</code> or not-executed items.</li>
-<li>Explains, using the quick-reference tables below, the relationship between "the stages you saw" and "the underlying interfaces", without regenerating any code.</li>
-<li>Offers next-step options: keep optimizing, open a new intent, or head into the stage 08 directory cleanup with the evidence chain in hand.</li>
+<li>Uses <code>project_status</code> to summarize every fact under the current revision: Baseline, intents, candidates, and evidence areas.</li>
+<li>Maps each stage's action receipts one-to-one onto its evidence files, and flags any steps that are <code>incomplete</code> or were never executed.</li>
+<li>Explains the relationship between "the stage you saw" and "the underlying interface" using the quick-reference tables below, without regenerating any code.</li>
+<li>Offers the next-step options: keep optimizing, open a new intent, or carry the evidence chain into the directory organization of Stage 08.</li>
 </ol>
 <h2 id="what-you-need-to-confirm">What you need to confirm</h2>
 <ul>
-<li>Every stage's conclusion is backed by a receipt or a file; "never done" and "never verified" are not written up as "passed".</li>
-<li>You can state what question each of the 11 public MCP tools answers: the 3 control-plane tools handle status, next actions, and execution; <code>evoverse_health</code> handles health; the remaining 7 <code>rk3588_*</code> tools handle the RK3588 environment and project builds.</li>
-<li>Ordinary agent conversation can explain and organize, but it cannot substitute for the receipts of <code>candidate.deliver</code> and <code>verification.simulate</code>.</li>
+<li>Every stage's conclusion is backed by a receipt or a file; "never done" and "never verified" have not been written up as "passed".</li>
+<li>You can explain what each of the 11 public MCP tools answers: three control-plane tools cover state, next step, and execution; <code>evoverse_health</code> covers health; the remaining seven <code>rk3588_*</code> tools cover the RK3588 environment and project builds.</li>
+<li>Ordinary Agent conversation can explain and organize, but it cannot substitute for the receipts of <code>candidate.deliver</code> and <code>verification.simulate</code>.</li>
 </ul>
 <h2 id="if-things-don-t-go-smoothly">If Things Don't Go Smoothly</h2>
 <table>
@@ -151,24 +151,24 @@ unverified. Use language a customer can follow; do not just report tool names.
 </thead>
 <tbody>
 <tr>
-<td>The review skips a stage</td>
-<td>Check the Workbench control plane's state partitions (Baseline / intents / candidates / evidence) and fill the gaps partition by partition — never wave things through from memory.</td>
+<td>The review skipped a stage</td>
+<td>Walk the control-plane status partitions (Baseline / intent / candidate / evidence) one by one and fill the gaps; do not sign off from memory.</td>
 </tr>
 <tr>
 <td>The explanation is all jargon</td>
-<td>Follow up with "what does this step ultimately mean for the image shown on the board", and have it retell it in plain language.</td>
+<td>Ask "what does this step mean for the image finally displayed on the board", and have it restate it in plain language.</td>
 </tr>
 <tr>
-<td>Trae wants to skip the review and go straight to directory cleanup</td>
-<td>Not recommended. The review surfaces missing-evidence links early; discovering them only at Stage 08 means a rollback and a re-build.</td>
+<td>Trae wants to skip the review and go straight to organizing directories</td>
+<td>Not advisable. The review exposes missing-evidence steps early; finding them only in Stage 08 means rolling back and rebuilding.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="pass-criteria">Pass criteria</h2>
 <ul>
-<li>Without looking at the docs, you can recite the full path from materials to <code>efx_run --flow compile</code> build evidence.</li>
-<li>You can point to where each action receipt sits in the <code>project_status</code> output.</li>
-<li>You can tell which stage the project is currently at and what actions are allowed next — the answer from <code>project_next</code>, not a guess.</li>
+<li>Without looking at the docs, you can describe the full path from material to the <code>efx_run --flow compile</code> build evidence.</li>
+<li>You can point out where each action receipt lives in the <code>project_status</code> output.</li>
+<li>You can judge which stage the project currently sits at and which next action is permitted (the answer from <code>project_next</code>, not a guess).</li>
 </ul>
 <h2 id="quick-reference-public-mcp-tools-11">Quick reference: public MCP tools (11)</h2>
 <table>
@@ -181,27 +181,27 @@ unverified. Use language a customer can follow; do not just report tool names.
 <tbody>
 <tr>
 <td><code>project_status</code></td>
-<td>What state is the project in right now? (revision, Baseline, intents, candidates, evidence)</td>
+<td>What is the project state right now? (revision, Baseline, intents, candidates, evidence)</td>
 </tr>
 <tr>
 <td><code>project_next</code></td>
-<td>What actions are allowed now? (action list + each action's inputSchema and blockedReasons)</td>
+<td>What am I allowed to do now? (action list plus each action's inputSchema and blockedReasons)</td>
 </tr>
 <tr>
 <td><code>project_execute</code></td>
-<td>Execute the chosen action (<code>actionId</code> + <code>expectedRevision</code> + <code>inputs</code>)</td>
+<td>Execute the selected action (<code>actionId</code> + <code>expectedRevision</code> + <code>inputs</code>)</td>
 </tr>
 <tr>
 <td><code>evoverse_health</code></td>
-<td>Are the SDK and the toolchain healthy and usable</td>
+<td>Are the SDK and the toolchain healthy and usable?</td>
 </tr>
 <tr>
 <td><code>rk3588_environment_status</code></td>
-<td>Read-only health check of the RK3588 environment: how far the toolchain and BSP are installed</td>
+<td>Read-only health check of the RK3588 environment: how far the toolchain and the BSP are installed</td>
 </tr>
 <tr>
 <td><code>rk3588_environment_prepare</code></td>
-<td>Prepare the RK3588 environment and return an inspectionToken for later checks</td>
+<td>Prepare the RK3588 environment and return an inspectionToken for subsequent checks</td>
 </tr>
 <tr>
 <td><code>rk3588_environment_deploy</code></td>
@@ -209,11 +209,11 @@ unverified. Use language a customer can follow; do not just report tool names.
 </tr>
 <tr>
 <td><code>rk3588_project_generate</code></td>
-<td>Controlled generation of an RK3588 project (produces PROFILE_READY)</td>
+<td>Controlled generation of an RK3588 project (yields PROFILE_READY)</td>
 </tr>
 <tr>
 <td><code>rk3588_project_preflight</code></td>
-<td>Read-only preflight qualification check before building</td>
+<td>Read-only qualification check before building</td>
 </tr>
 <tr>
 <td><code>rk3588_project_build</code></td>
@@ -221,18 +221,18 @@ unverified. Use language a customer can follow; do not just report tool names.
 </tr>
 <tr>
 <td><code>rk3588_project_status</code></td>
-<td>Read the build report at <code>.evoverse/output/build-report.json</code></td>
+<td>Read the <code>.evoverse/output/build-report.json</code> build report</td>
 </tr>
 </tbody>
 </table>
-<p>Other capabilities (JTAG observation, DesignAPI / IP management, project-contract checks, and so on) are provided by the extensions' provider tool surfaces, invoked through Skills and natural language; they are not part of the model-visible public MCP surface.</p>
+<p>The remaining capabilities (JTAG observation, DesignAPI / IP management, project contract checks, and so on) are exposed by the extension's provider tool surface, invoked through Skills and natural language, and are not part of the model-visible public MCP surface.</p>
 <h2 id="quick-reference-control-plane-actions-25">Quick reference: control-plane actions (25)</h2>
 <table>
 <thead>
 <tr>
 <th>Group</th>
 <th>Action</th>
-<th>Meaning</th>
+<th>Semantics</th>
 <th>Stage</th>
 </tr>
 </thead>
@@ -240,19 +240,19 @@ unverified. Use language a customer can follow; do not just report tool names.
 <tr>
 <td>Project</td>
 <td><code>project.initialize</code></td>
-<td>Declare the project identity (board / carrier / Jacket / device)</td>
+<td>Declare the project identity (board / carrier / jacket / device)</td>
 <td>00</td>
 </tr>
 <tr>
 <td>Intent</td>
 <td><code>intent.create</code></td>
-<td>Declare a goal-driven, scoped increment intent (the parent baseline snapshot is captured into <code>baseBaselineFiles</code>)</td>
+<td>Declare a scoped increment intent with a goal (the parent baseline is snapshotted into <code>baseBaselineFiles</code>)</td>
 <td>03</td>
 </tr>
 <tr>
 <td>Intent</td>
 <td><code>intent.rebase</code></td>
-<td>Re-attach the intent to a new baseline after the parent baseline changes (used when REBASE_REQUIRED)</td>
+<td>Re-attach the intent to a new baseline after the parent baseline changes (used on REBASE_REQUIRED)</td>
 <td>As needed</td>
 </tr>
 <tr>
@@ -264,17 +264,17 @@ unverified. Use language a customer can follow; do not just report tool names.
 <tr>
 <td>Intent</td>
 <td><code>intent.purge</code></td>
-<td>Purge the records of terminated intents (tombstones)</td>
+<td>Clear the record of a terminated intent (tombstone)</td>
 <td>As needed</td>
 </tr>
 <tr>
-<td>Spec</td>
+<td>Specification</td>
 <td><code>spec.draft</code></td>
 <td>Draft the delta specification</td>
 <td>02</td>
 </tr>
 <tr>
-<td>Spec</td>
+<td>Specification</td>
 <td><code>spec.approve</code></td>
 <td>Approve and freeze the specification</td>
 <td>02</td>
@@ -282,7 +282,7 @@ unverified. Use language a customer can follow; do not just report tool names.
 <tr>
 <td>Level</td>
 <td><code>simulation.profile.select</code></td>
-<td>Two-stage level decision: the server recommends based on riskFacts and the user chooses; going below the recommendation records acceptedRisks</td>
+<td>Two-party level decision: the server recommends from riskFacts, the user chooses; a choice below the recommendation records acceptedRisks</td>
 <td>02 / 03</td>
 </tr>
 <tr>
@@ -294,37 +294,37 @@ unverified. Use language a customer can follow; do not just report tool names.
 <tr>
 <td>Asset</td>
 <td><code>asset.adopt</code></td>
-<td>Explicitly attach reused assets to the intent's scope</td>
+<td>Explicitly connect a reused asset to the intent scope</td>
 <td>01 / 03</td>
 </tr>
 <tr>
 <td>Contract</td>
 <td><code>contract.qualify</code></td>
-<td>The user approves the deterministically rendered <code>CONTRACT.md</code>, qualifying the module contract (CONTRACT_QUALIFIED)</td>
+<td>The user approves the deterministically rendered <code>CONTRACT.md</code> and the module contract becomes qualified (CONTRACT_QUALIFIED)</td>
 <td>As needed</td>
 </tr>
 <tr>
 <td>Candidate</td>
 <td><code>candidate.deliver</code></td>
-<td>Freeze the candidate and run Design Assurance; the baseline stays untouched</td>
+<td>Freeze the candidate and run Design Assurance, leaving the baseline unchanged</td>
 <td>03 / 04</td>
 </tr>
 <tr>
 <td>Candidate</td>
 <td><code>candidate.repair</code></td>
-<td>Repair a module candidate that failed (re-deliver by moduleId and contract digest)</td>
+<td>Repair a module candidate that did not pass (redeliver by moduleId and contract digest)</td>
 <td>As needed</td>
 </tr>
 <tr>
 <td>Candidate</td>
 <td><code>candidate.promote</code></td>
-<td>After simulation PASS and eligibility are met, merge the candidate with the parent baseline and install it as the new baseline</td>
+<td>After a simulation PASS and satisfying qualification, merge the candidate with the parent baseline and install it as the new baseline</td>
 <td>03</td>
 </tr>
 <tr>
 <td>Verification</td>
 <td><code>verification.simulate</code></td>
-<td>Record simulation evidence (iverilog / questa), captured independently</td>
+<td>Record simulation evidence (iverilog / questa), independently attested</td>
 <td>03 / 04</td>
 </tr>
 <tr>
@@ -342,49 +342,49 @@ unverified. Use language a customer can follow; do not just report tool names.
 <tr>
 <td>Hardware</td>
 <td><code>hardware.validate</code></td>
-<td>Record on-board validation evidence item by item per <code>scenarios</code></td>
+<td>Record on-board verification evidence scenario by scenario per <code>scenarios</code></td>
 <td>06</td>
 </tr>
 <tr>
 <td>Integration</td>
 <td><code>integration.process</code></td>
-<td>Close out system integration after <code>candidate.promote</code> (wrap up the mainline merge)</td>
+<td>Close out system integration after <code>candidate.promote</code> (mainline merge wrap-up)</td>
 <td>As needed</td>
 </tr>
 <tr>
 <td>Recovery</td>
 <td><code>recovery.open</code></td>
-<td>Open a persistent recovery record when a non-terminal state has no usable action (submit <code>inputPreview</code> as-is)</td>
+<td>Open a persistent recovery record when a non-terminal state has no available action (inputPreview submitted verbatim)</td>
 <td>As needed</td>
 </tr>
 <tr>
 <td>Recovery</td>
 <td><code>recovery.quarantine</code></td>
-<td>Idempotent safety exit during recovery: keep the trusted baseline and failure evidence, quarantine the fault scope</td>
+<td>Idempotent safe exit during recovery: keep the trusted baseline and failure evidence, isolate the fault scope</td>
 <td>As needed</td>
 </tr>
 <tr>
-<td>Diagnostics</td>
+<td>Diagnostic</td>
 <td><code>diagnostic.options.propose</code></td>
 <td>Propose diagnostic options</td>
 <td>As needed</td>
 </tr>
 <tr>
-<td>Diagnostics</td>
+<td>Diagnostic</td>
 <td><code>diagnostic.choice.select</code></td>
-<td>Select one option from the proposed diagnostic options</td>
+<td>Select one of the diagnostic options</td>
 <td>As needed</td>
 </tr>
 <tr>
-<td>Diagnostics</td>
+<td>Diagnostic</td>
 <td><code>diagnostic.finding.record</code></td>
 <td>Record a diagnostic finding</td>
 <td>As needed</td>
 </tr>
 <tr>
-<td>Diagnostics</td>
+<td>Diagnostic</td>
 <td><code>diagnostic.repair.record</code></td>
-<td>Record a repair outcome</td>
+<td>Record a repair result</td>
 <td>As needed</td>
 </tr>
 </tbody>
@@ -400,32 +400,32 @@ unverified. Use language a customer can follow; do not just report tool names.
 <tbody>
 <tr>
 <td><code>/efinity-knowledge</code></td>
-<td>Verifying Efinity toolchain, ISF, SDC, and optimization questions</td>
+<td>Looking up Efinity toolchain, ISF, SDC, and optimization questions</td>
 </tr>
 <tr>
 <td><code>/efinity-project</code></td>
-<td>Creating an Efinity project or adjusting its device, sources, constraints, IP, or build settings</td>
+<td>Creating an Efinity project or adjusting device, sources, constraints, IP, build settings</td>
 </tr>
 <tr>
 <td><code>/evoverse-design-spec</code></td>
-<td>Draft executable design-specification packages and decision options</td>
+<td>Drafting an executable design specification package and decision options</td>
 </tr>
 <tr>
 <td><code>/evoverse-rtl</code></td>
-<td>Generate candidate RTL and testbenches from an approved specification</td>
+<td>Generating candidate RTL and testbenches against an approved specification</td>
 </tr>
 <tr>
 <td><code>/evoverse-board-create</code></td>
-<td>Rebuild board materials from schematics / BOM / component documentation</td>
+<td>Rebuilding board material from schematics / BOM / device data</td>
 </tr>
 <tr>
 <td><code>/evoverse-project-review</code></td>
-<td>Project retrospective at milestones / after completion</td>
+<td>Project review at a milestone or on completion</td>
 </tr>
 </tbody>
 </table>
-<p>These slash Skills work in Trae — the SDK has already installed them into Trae's skill directory. In VS Code these Skills are offered to Copilot Chat through the VSIX <code>chatSkills</code> contribution (loaded on demand in agent mode; requires the Copilot Chat extension); you can also ask the Agent to read <code>Skills/&lt;skill-name&gt;/SKILL.md</code> from the delivered package (for example <code>Skills/efinity-knowledge/SKILL.md</code>) and follow it. The MCP tools are wired into the user-level MCP configuration by the SDK on both hosts and are unaffected.</p>
-<p>When done, continue to <a href="08-project-cleanup.html">Stage 08: Directory Cleanup and Delivery</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="06-build-and-display-verification.html">← Previous: 06 Build and Display Verification</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="08-project-cleanup.html">Next: 08 Tidy Up and Deliver the Project →</a></nav></main>
+<p>These slash Skills are available in Trae — the SDK installs them into Trae's Skill directory. In VS Code the same Skills reach Copilot Chat through the VSIX <code>chatSkills</code> declaration (Agent mode loads them on demand, and the Copilot Chat extension must be installed); alternatively you can have the Agent read <code>Skills/&lt;skill-name&gt;/SKILL.md</code> inside the delivery package (for example <code>Skills/efinity-knowledge/SKILL.md</code>) and follow it. Under both hosts, the MCP tools are written into the user-level MCP configuration by the SDK, so they are unaffected.</p>
+<p>When done, continue to <a href="08-project-cleanup.html">Stage 08: Organize the project and hand it off</a>.</p><nav class="tutorial-stage-navigation" aria-label="tutorial stage navigation"><a class="previous-stage" href="06-build-and-display-verification.html">← Previous: 06 Build and Display Verification</a><a class="stage-overview" href="README.html">Tutorial overview</a><a class="next-stage" href="08-project-cleanup.html">Next: 08 Tidy Up and Deliver the Project →</a></nav></main>
 <footer>Advanced references are for on-demand lookup; design records, release procedures, audit reports and future plans are not customer entry points.</footer>
 <script>
 document.querySelectorAll('[data-copy-trae-prompt]').forEach((button) => {

@@ -98,7 +98,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 .article pre.mermaid svg{max-width:100%;height:auto}
 @media(max-width:820px){.article{padding:18px 14px 32px;border:0;border-radius:0}}</style></head><body>
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item on" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
-<header><p class="tag">EvoVerse SDK v1.0.0</p>
+<header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../efinity-adapter.html">← Back to Efinity Adapter</a>
 <span>The complete loop: marking signals, the two-pass build, trigger capture, VIO and debug-residue cleanup.</span>
 <code>efinity/on-chip-debug-guide.md</code>
@@ -106,7 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>Efinity On-Chip Debug Guide</h1></header>
 <main class="article"><h1 id="efinity-on-chip-debug-guide">Efinity On-Chip Debug Guide</h1>
 <blockquote>
-<p><strong>Version</strong>: v1.0　<strong>Applies to SDK</strong>: v1.0.0 (Efinity Adapter)
+<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p><strong>Version</strong>: v1.0　<strong>Applies to SDK</strong>: v1.0.1 (Efinity Adapter)
 <strong>Last updated</strong>: 2026-09-30</p>
 </blockquote>
 <p>The Debug tab of the Efinity Adapter provides a closed-loop on-chip debug flow without opening the Efinity GUI: mark signals → compile twice → program → scan the device → configure trigger conditions → capture waveforms. The whole flow bridges the official Efinity debug API through <code>evoverse_dbg.py</code>, and the results are delivered as VCD waveform files.</p>
