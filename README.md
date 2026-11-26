@@ -25,8 +25,8 @@ EvoVerse SDK 是面向 Efinix FPGA（Efinity 工具链）与 RK3588 嵌入式平
 
 | 语言 | 交付包 | 大小 | SHA256（前 8 位） |
 |------|--------|------|-------------------|
-| 简体中文 | [EvoVerse-SDK-v1.0.1-Customer-Package.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.1/EvoVerse-SDK-v1.0.1-Customer-Package.tar.gz) | 9.96 MB | `176BC34B` |
-| English | [EvoVerse-SDK-v1.0.1-Customer-Package-EN.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.1/EvoVerse-SDK-v1.0.1-Customer-Package-EN.tar.gz) | 9.83 MB | `3ED1F156` |
+| 简体中文 | [EvoVerse-SDK-v1.0.1-Customer-Package.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.1/EvoVerse-SDK-v1.0.1-Customer-Package.tar.gz) | 9.96 MB | `9230EB06` |
+| English | [EvoVerse-SDK-v1.0.1-Customer-Package-EN.tar.gz](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.1/EvoVerse-SDK-v1.0.1-Customer-Package-EN.tar.gz) | 9.83 MB | `66F18445` |
 
 - 完整校验值见 Release 附件 [SHA256SUMS-v1.0.1.txt](https://github.com/butonlyif/evoverse-sdk-releases/releases/download/v1.0.1/SHA256SUMS-v1.0.1.txt)
 - 查看全部版本：[Releases](https://github.com/butonlyif/evoverse-sdk-releases/releases)
