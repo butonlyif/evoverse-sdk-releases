@@ -107,6 +107,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <main class="article"><h1 id="rk3588-platform-development-使用指南">RK3588 Platform Development 使用指南</h1>
 <blockquote>
 <p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>v1.0.1 VSIX 已提供下述选板卡入口；第 4 节保留手动部署路径。</p>
 <p>适用版本：EvoVerse SDK v1.0.1
 当前发布边界：软件资格可在无板卡时完成；烧录、启动、板端运行和 NPU 性能必须使用真实板卡验证。</p>
 </blockquote>
@@ -117,7 +118,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>从同一 rootfs 派生的 sysroot；</li>
 <li>Windows + Docker 使用的 App Builder；</li>
 <li>AI 项目按需使用的 Model Builder；</li>
-<li>Developer Runtime、SBOM、许可证和源码合规材料；</li>
+<li>源码合规包（含 SBOM、许可证及对应源码）；</li>
 <li>软件、启动和硬件资格状态。</li>
 </ul>
 <p>工程中的 <code>.evoverse/platform-lock.json</code> 固定平台版本和描述符摘要。再次打开工程时复用该锁；不同版本不会静默覆盖。</p>
@@ -125,13 +126,13 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <ol>
 <li>安装 SDK、RK3588 Adapter，并同步 Catalog。</li>
 <li>创建或打开与 Catalog 板卡/载板身份匹配的工程。</li>
-<li>从对应板卡的 Release 下载 <code>platform-development-release.json</code>，将原文件放到工程 <code>.evoverse/platform-descriptor.json</code>；不要只复制其中的 <code>descriptor</code> 字段，也不要修改签名内容。然后在 RK3588 Workbench 的 <strong>Platform Development</strong> 卡中选择 <strong>准备平台</strong>。</li>
-<li>查看平台版本、下载大小、许可证和资格状态，然后确认下载。</li>
-<li>无板卡时仅准备 <code>sysroot + App Builder</code>；AI 工程再选择 Model Builder。固件可预下载，但不能记为已烧录。</li>
-<li>选择 <strong>构建应用</strong>；AI 工程再执行 <strong>转换模型</strong>。</li>
-<li>有板卡后选择 <strong>烧录/更新板卡</strong>，验证板卡身份后再执行 <strong>部署并运行</strong>。</li>
+<li>在 RK3588 Workbench 的 <strong>Platform Development</strong> 卡中选择 Catalog 板卡、载板和修订版，选择 <strong>本地准备平台</strong>。SDK 根据 Catalog 的公开地址获取签名描述符，核对摘要、签名和目标身份，并写入工程锁；不需要手工下载描述符。</li>
+<li>默认准备 <code>sysroot + App Builder</code>；AI 工程勾选 <strong>AI Model Builder</strong> 后一起下载。固件可单独预下载，但不能记为已烧录。</li>
+<li>选择 <strong>构建应用</strong>。转换模型前填写 ONNX 路径、固定输入张量、归一化、精度与准确度参数，并配置获授权的 RKNN 厂商材料目录。<strong>转换模型</strong> 依次调用 Platform Model Builder 的 <code>model.prepare</code> 与 <code>model.convert</code>，主机核对准备输出摘要；旧 AI Pipeline 的 <strong>Run Pipeline</strong> 仍是独立入口。</li>
+<li>有板卡后按对应板卡的烧录说明操作，验证板卡身份后再执行 <strong>部署并运行</strong>。</li>
 <li>使用 <strong>查看证据</strong> 区分软件、烧录、启动、板端执行和 NPU 性能状态。</li>
 </ol>
+<p>当前 WS-E2 + RK3588J EVM 修订版 1 的候选包位于 <a href="https://github.com/butonlyif/evoverse-rockchip-platform-release/releases/tag/platform-development-2026.11.24-candidate.1">Platform Release</a>：<code>update.img</code> 是固件，<code>sysroot.tar</code> 和 <code>app-builder.tar</code> 是 App SDK 物料，<code>model-builder.tar</code> 是 AI 构建物料；文件名不含板卡名，目标身份由签名描述符绑定。</p>
 <p>下载采用内容寻址缓存并复验大小和 SHA-256。缓存命中不等于板卡已烧录或已启动。</p>
 <h2 id="3-没有板卡时">3. 没有板卡时</h2>
 <p>没有板卡是受支持状态。客户仍可完成：</p>

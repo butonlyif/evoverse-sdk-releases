@@ -107,17 +107,18 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <main class="article"><h1 id="rk3588-platform-development-guide">RK3588 Platform Development Guide</h1>
 <blockquote>
 <p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>The board-selection flow below is in the source tree; the published v1.0.1 VSIX does not contain it yet. Current customers should use the manual path in section 4.</p>
 <p>Applies to EvoVerse SDK v1.0.1.
 Current boundary: software qualification can finish without a board. Flash, boot, target execution, and NPU performance require real hardware.</p>
 </blockquote>
 <h2 id="1-what-customers-receive">1. What customers receive</h2>
-<p>Customers consume a signed Platform Development Release; they do not clone or receive the Platform development repository. One <code>platform-manifest.json</code> binds:</p>
+<p>Customers consume a signed Platform Development Release; they do not clone or receive the Platform development repository. One <code>platform-development-release.json</code> binds:</p>
 <ul>
 <li>the flashable <code>update.img</code> firmware;</li>
 <li>a sysroot derived from the same root filesystem;</li>
 <li>the App Builder used by Windows with Docker;</li>
 <li>an optional Model Builder for AI projects;</li>
-<li>Developer Runtime, SBOM, licenses, and source-compliance material;</li>
+<li>source-compliance material with SBOM, licenses, and corresponding source;</li>
 <li>separate software, boot, and hardware qualification states.</li>
 </ul>
 <p><code>.evoverse/platform-lock.json</code> pins the platform version and descriptor digest. Reopening the project reuses that lock; another version never replaces it silently.</p>
@@ -125,13 +126,13 @@ Current boundary: software qualification can finish without a board. Flash, boot
 <ol>
 <li>Install the SDK and RK3588 Adapter, then synchronize the Catalog.</li>
 <li>Create or open a project whose Catalog module/carrier identity matches the target.</li>
-<li>Select <strong>Prepare Platform</strong> on the RK3588 Workbench <strong>Platform Development</strong> card.</li>
-<li>Review the version, download size, licenses, and qualification state, then approve the download.</li>
-<li>Without a board, prepare only <code>sysroot + App Builder</code>; add Model Builder for an AI project. Firmware may be pre-downloaded but is not flashed.</li>
-<li>Select <strong>Build Application</strong> and, for AI projects, <strong>Convert Model</strong>.</li>
-<li>When hardware is available, select <strong>Flash/Update Board</strong>, verify board identity, and then <strong>Deploy and Run</strong>.</li>
+<li>Select the Catalog module, carrier, and revision in the RK3588 Workbench <strong>Platform Development</strong> card, then <strong>Prepare locally</strong>. The SDK downloads the signed descriptor through the Catalog reference, checks its digest, signature, and target identity, and pins the project lock.</li>
+<li>The default selection downloads <code>sysroot + App Builder</code>. Check <strong>AI Model Builder</strong> to download it too. Firmware can be pre-downloaded separately; that is not flashing.</li>
+<li>Select <strong>Build Application</strong>. For model conversion, enter the ONNX path, fixed input tensor, normalization, precision, and accuracy parameters, and configure the authorized RKNN vendor material directory. <strong>Convert Model</strong> invokes Platform Model Builder <code>model.prepare</code> and <code>model.convert</code> in order and verifies the prepared output digests. The older <strong>Run Pipeline</strong> button remains a separate path.</li>
+<li>When hardware is available, follow the board-specific flash instructions, verify board identity, then <strong>Deploy and Run</strong>.</li>
 <li>Use <strong>View Evidence</strong> to distinguish software, flash, boot, target execution, and NPU performance facts.</li>
 </ol>
+<p>The current <a href="https://github.com/butonlyif/evoverse-rockchip-platform-release/releases/tag/platform-development-2026.11.24-candidate.1">WS-E2 + RK3588J EVM revision 1 candidate release</a> contains <code>update.img</code> (firmware), <code>sysroot.tar</code> and <code>app-builder.tar</code> (App SDK materials), and <code>model-builder.tar</code> (AI build environment). Their filenames do not include the board ID; the signed descriptor binds the target.</p>
 <p>Downloads use a content-addressed cache and recheck size and SHA-256. A cache hit never proves that a board was flashed or booted.</p>
 <h2 id="3-development-without-a-board">3. Development without a board</h2>
 <p>No-board development is supported. Customers can complete release resolution and locking, AArch64 cross-compilation, ELF/loader/dependency/RPATH checks, ONNX inspection, quantization, RKNN conversion, host-simulator comparison, and static Application Package verification.</p>
