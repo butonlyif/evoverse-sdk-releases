@@ -127,7 +127,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>安装 SDK、RK3588 Adapter，并同步 Catalog。</li>
 <li>创建或打开与 Catalog 板卡/载板身份匹配的工程。</li>
 <li>在 RK3588 Workbench 的 <strong>Board</strong> 页点击 <strong>选择 Catalog 板卡并本地准备</strong>，会跳转到 <strong>Software → Platform Development</strong>。在那里选择 Catalog 板卡、载板和修订版，再点击 <strong>本地准备平台</strong>。SDK 根据 Catalog 的公开地址获取签名描述符，核对摘要、签名和目标身份，并写入工程锁；不需要手工下载描述符。</li>
-<li>默认准备 <code>sysroot + App Builder</code>；AI 工程勾选 <strong>AI Model Builder</strong> 后一起下载。固件可单独预下载，但不能记为已烧录。</li>
+<li>默认准备 <code>sysroot + App Builder</code>；AI 工程勾选 <strong>AI Model Builder</strong> 后一起下载。固件可单独预下载，但不能记为已烧录。
+   下载期间 Workbench 显示工作状态，IDE 通知逐文件显示已下载 MiB 和总大小；App Builder 约 486 MiB。可在通知中取消；若网络持续无数据，下载会超时并从暂存字节续传重试。只有校验通过才写入正式缓存和工程锁。</li>
 <li>选择 <strong>构建应用</strong>。转换模型前填写 ONNX 路径、固定输入张量、归一化、精度与准确度参数，并配置获授权的 RKNN 厂商材料目录。<strong>转换模型</strong> 依次调用 Platform Model Builder 的 <code>model.prepare</code> 与 <code>model.convert</code>，主机核对准备输出摘要；旧 AI Pipeline 的 <strong>Run Pipeline</strong> 仍是独立入口。</li>
 </ol>
 <p>在 Windows 主机上，已校验的 <code>sysroot.tar</code> 保持在 SDK 内容寻址缓存；Builder 在 Linux 容器内解包到 <code>/sysroot</code> 后交叉编译，不要求 Windows 解开 Linux 符号链接。
