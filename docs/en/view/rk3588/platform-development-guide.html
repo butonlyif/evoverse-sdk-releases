@@ -106,8 +106,8 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>RK3588 Platform Development Guide</h1></header>
 <main class="article"><h1 id="rk3588-platform-development-guide">RK3588 Platform Development Guide</h1>
 <blockquote>
-<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
-<p>The board-selection flow below is in the source tree; the published v1.0.1 VSIX does not contain it yet. Current customers should use the manual path in section 4.</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-27</p>
+<p>The current v1.0.1 VSIX includes the board-selection flow. Section 4 describes the manual path.</p>
 <p>Applies to EvoVerse SDK v1.0.1.
 Current boundary: software qualification can finish without a board. Flash, boot, target execution, and NPU performance require real hardware.</p>
 </blockquote>
@@ -127,9 +127,9 @@ Current boundary: software qualification can finish without a board. Flash, boot
 <li>Install the SDK and RK3588 Adapter, then synchronize the Catalog.</li>
 <li>Create or open a project whose Catalog module/carrier identity matches the target.</li>
 <li>In RK3588 Workbench, click <strong>Select board</strong> on the <strong>Board</strong> tab to open <strong>Software → Platform Development</strong>. Select the Catalog module, carrier, and revision there, then click <strong>Prepare locally</strong>. The SDK downloads the signed descriptor through the Catalog reference, checks its digest, signature, and target identity, and pins the project lock.</li>
-<li>The default selection downloads <code>sysroot + App Builder</code>. Check <strong>AI Model Builder</strong> to download it too. Firmware can be pre-downloaded separately; that is not flashing.
+<li>The default selection downloads <code>sysroot + App Builder</code>. Check <strong>AI Model Builder</strong> to download it too. The SDK then obtains the Rockchip RKNN Toolkit2 wheel pinned to the Platform version on this host. First use shows the Rockchip license; after acceptance the SDK downloads the wheel from its publisher and verifies size and SHA-256. The wheel is not embedded in the EvoVerse release or Builder image. Firmware can be pre-downloaded separately; that is not flashing.
    During download, the IDE notification shows the asset name, received MiB, and total MiB; App Builder is about 486 MiB. You can cancel from the notification. A stalled connection times out and retries from staged bytes. The SDK writes the final cache and project lock only after verification.</li>
-<li>Select <strong>Build Application</strong>. For model conversion, enter the ONNX path, fixed input tensor, normalization, precision, and accuracy parameters, and configure the authorized RKNN vendor material directory. <strong>Convert Model</strong> invokes Platform Model Builder <code>model.prepare</code> and <code>model.convert</code> in order and verifies the prepared output digests. The older <strong>Run Pipeline</strong> button remains a separate path.</li>
+<li>Select <strong>Build Application</strong>. For model conversion, enter the ONNX path, fixed input tensor, normalization, precision, and accuracy parameters. The SDK supplies the verified Toolkit directory to Model Builder. <strong>Convert Model</strong> invokes <code>model.prepare</code> and <code>model.convert</code> in order and verifies the prepared output digests. The older <strong>Run Pipeline</strong> button remains a separate path. For offline installations, <code>evoverse.rk3588.restrictedMaterialsDirectory</code> can point to an authorized, verified vendor material directory.</li>
 <li>When hardware is available, follow the board-specific flash instructions, verify board identity, then <strong>Deploy and Run</strong>.</li>
 <li>Use <strong>View Evidence</strong> to distinguish software, flash, boot, target execution, and NPU performance facts.</li>
 </ol>
