@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>06 编译与显示验证</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-06-编译与硬件验证">阶段 06 · 编译与硬件验证</h1>
 <blockquote>
-<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>前五个阶段都在准备证据，本阶段产生实物证据：一次原生编译记录构建产物，按需烧录把 bitstream 写入 TJ180A484S，再按场景逐条确认 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 在板上真实运转。</p>
 </blockquote>
 <p>三类证据互不替代：编译通过 ≠ 时序收敛，时序收敛 ≠ 功能正确，烧录成功 ≠ 板上验证通过。没有硬件时，本阶段允许停在编译证据上，并把硬件与系统级状态如实标记为 <code>NOT_RUN</code>——这与阶段 04 固件章节的边界一致。</p>

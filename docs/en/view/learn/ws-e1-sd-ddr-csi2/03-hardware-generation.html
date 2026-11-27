@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>03 Generate IP and Controlled RTL</h1></header>
 <main class="article tutorial-article"><h1 id="stage-03-per-module-generation-and-independent-simulation">Stage 03 · Per-Module Generation and Independent Simulation</h1>
 <blockquote>
-<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>Once the specification is frozen, the three module slices each generate a candidate, plan Design Assurance, and run simulation at the selected level, then converge independently. They can proceed in parallel or one after another; the key is that each module is responsible only for its own <code>ModuleSpec</code> and interface contract, so a failure rolls back only that module and never drags the other two down with it. The evidence for the whole SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX chain still hangs under one specification summary, and ultimately still has to pass the native <code>efx_run --flow compile</code> on the TJ180A484S.</p>
 </blockquote>
 <p>The boundaries of module generation are as follows — every action is completed by the Agent during Generate &amp; Converge, and you do not need to issue control-plane actions module by module:</p>

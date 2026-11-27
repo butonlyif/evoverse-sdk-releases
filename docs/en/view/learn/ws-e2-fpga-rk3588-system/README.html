@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>FPGA + RK3588 System-Intent Tutorial (WS-E2 Dual-Chip)</h1></header>
 <main class="article tutorial-article"><h1 id="fpga-rk3588-system-intent-tutorial-ws-e2-dual-chip">FPGA + RK3588 System-Intent Tutorial (WS-E2 Dual-Chip)</h1>
 <blockquote>
-<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>Applicable version: v1.0.1　Target devices: TJ180A484S (Titanium Ti60) + RK3588J　Default host: Trae</p>
 </blockquote>
 <p>This tutorial covers exactly <strong>one system intent</strong>: run an application on WS-E2 that necessarily requires the FPGA and the RK3588 to work together — the FPGA owns real-time capture and pixel preprocessing, while the RK3588 runs the Linux user-space application plus networking and storage. A system intent is not two single-chip tutorials pasted together: you allocate functions to the two chips first, freeze one interface contract, then implement each side, and finally perform system-level composition.</p>

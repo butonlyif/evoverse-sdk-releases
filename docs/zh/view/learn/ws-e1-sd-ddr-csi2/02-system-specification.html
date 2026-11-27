@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>02 冻结规格</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-02-冻结模块规格">阶段 02 · 冻结模块规格</h1>
 <blockquote>
-<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>物料账本把自研空白区拆成三个模块切片（<code>sd_host</code>、<code>frame_buffer_writer</code>、<code>csi2_tx</code>）。本阶段把它们一次性写成可执行的模块规格与接口契约，并完成第一个决策：确认方案与可执行规格。规格未批准之前，控制面不会允许任何候选生成；规格批准后，后续生成、仿真和 composition 都挂在这份摘要指纹下，不再反复要求你逐个模块拍板。所有模块最终都要落到 TJ180A484S 的物理资源，并由原生 <code>efx_run --flow compile</code> 统一流程验证。</p>
 </blockquote>
 <p>规格是可靠设计流程的合同：每个 <code>ModuleSpec</code> 写明端口、位宽、时钟域、复位语义、验收 Oracle 与覆盖项；模块之间写明接口契约；整链写明芯片内 composition 的顶层连接。候选交付会按规格摘要校验，仿真证据会绑定到规格版本。写得不完整，后面每一步都会被阻塞回来。</p>

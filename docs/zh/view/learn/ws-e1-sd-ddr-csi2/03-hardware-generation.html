@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>03 生成 IP 与受控 RTL</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-03-按模块生成与独立仿真">阶段 03 · 按模块生成与独立仿真</h1>
 <blockquote>
-<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>规格冻结后，三个模块切片各自生成候选、做 Design Assurance 规划、跑对应等级的仿真，然后各自收敛。它们可以并行推进，也可以先后推进；关键是每个模块只对自己的 <code>ModuleSpec</code> 与接口契约负责，失败只回退该模块，不牵连另外两个。整条 SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路的证据仍挂在同一份规格摘要下，最终仍需通过 TJ180A484S 上的原生 <code>efx_run --flow compile</code>。</p>
 </blockquote>
 <p>模块生成的边界如下——所有动作都由 Agent 在“生成与收敛”阶段完成，你不需要逐个模块下达控制面动作：</p>

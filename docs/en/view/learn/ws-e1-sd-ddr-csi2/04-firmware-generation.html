@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>04 Sapphire Firmware</h1></header>
 <main class="article tutorial-article"><h1 id="stage-04-sapphire-firmware">Stage 04 · Sapphire Firmware</h1>
 <blockquote>
-<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>The RISC-V core inside the SoC needs firmware before it can run. This stage generates the software project and the BSP in the Sapphire bare-metal environment, feeds the software candidate into the same control plane, and spells out the handover boundary of the hardware/software contract.</p>
 </blockquote>
 <p>The SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX chain runs on the TJ180A484S, and the firmware schedules SD card initialization, FAT reads, and frame-buffer filling. It compiles for the Sapphire SoC, but its evidence enters the control plane just like RTL evidence: <strong>a successful compile is only <code>SW_BUILT</code>, not functional correctness</strong>.</p>

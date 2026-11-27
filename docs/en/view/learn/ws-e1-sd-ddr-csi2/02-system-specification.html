@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>02 Freeze the Specification</h1></header>
 <main class="article tutorial-article"><h1 id="stage-02-freeze-the-module-specifications">Stage 02 · Freeze the Module Specifications</h1>
 <blockquote>
-<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>The material ledger has carved the self-developed blank area into three module slices (<code>sd_host</code>, <code>frame_buffer_writer</code>, <code>csi2_tx</code>). This stage turns them, in one pass, into executable module specifications and interface contracts, and completes the first decision: confirming the plan and the executable specification. Until the specification is approved, the control plane permits no candidate generation; once approved, later generation, simulation, and composition all hang under this summary fingerprint, and it will not keep asking you to sign off module by module. Every module must ultimately land on the physical resources of the TJ180A484S and be verified by the native <code>efx_run --flow compile</code> unified flow.</p>
 </blockquote>
 <p>A specification is the contract of a reliable design process: each <code>ModuleSpec</code> states ports, widths, clock domains, reset semantics, the acceptance oracle, and coverage items; the interfaces between modules are written as contracts; the whole chain is described by the top-level connections of the in-chip composition. A delivered candidate is checked against the specification summary, and simulation evidence is bound to the specification revision. Write it incompletely and every later step will be blocked back at you.</p>

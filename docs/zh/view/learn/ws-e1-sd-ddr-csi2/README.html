@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>WS-E1 SD 到 CSI-2 总览</h1></header>
 <main class="article tutorial-article"><h1 id="ws-e1-sd-到-csi-2-工程教程-复杂单-fpga">WS-E1 SD 到 CSI-2 工程教程（复杂单 FPGA）</h1>
 <blockquote>
-<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>适用版本：v1.0.1　目标器件：TJ180A484S（Titanium Ti60，C4 timing model）　默认宿主：Trae</p>
 </blockquote>
 <p>本教程只讲<strong>一个意图</strong>：在 TJ180A484S 上做一条 <strong>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX</strong> 显示链路。复杂单 FPGA 不等于必须由客户拆成十几个步骤；Agent 会把一个意图拆成若干模块切片，让每个模块按自己的契约独立收敛，最后在同一次芯片内 composition 中合成。</p>

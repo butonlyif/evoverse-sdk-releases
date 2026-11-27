@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>04 Sapphire 固件</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-04-sapphire-固件">阶段 04 · Sapphire 固件</h1>
 <blockquote>
-<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>SoC 里的 RISC-V 要跑起来，得先有固件。本阶段在 Sapphire 裸机环境生成软件工程与 BSP，把软件候选送进同一个控制面，并明确硬件/软件契约的交接边界。</p>
 </blockquote>
 <p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 链路跑在 TJ180A484S 上，固件负责 SD 卡初始化、FAT 读取与帧缓冲灌注的调度。它编译在 Sapphire SoC 上，但它的证据和 RTL 一样进控制面：<strong>编译成功只是 <code>SW_BUILT</code>，不等于功能正确</strong>。</p>

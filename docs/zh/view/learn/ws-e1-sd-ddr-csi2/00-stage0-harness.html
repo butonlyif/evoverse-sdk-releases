@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>00 建立 Stage0 物理 Harness</h1></header>
 <main class="article tutorial-article"><h1 id="阶段-00-环境与-harness-自检">阶段 00 · 环境与 Harness 自检</h1>
 <blockquote>
-<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>目标器件：WS-E1 核心模组 TJ180A484S，C4 timing model。本阶段（Stage0）不写 RTL，只确认 IDE、扩展、Catalog 与你手上的硬件一致，让 Agent 能在受管 Harness 里安全地开始这个意图。</p>
 </blockquote>
 <p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一环最终都要落到 TJ180A484S 的物理引脚和时钟资源上。开始前先把“你说的硬件”和“工具看到的硬件”对齐：板卡、载板、夹克、器件与速度等级。工程身份由 Agent 在第一次方案确认时写入，你不需要单独执行一个工程初始化动作。</p>

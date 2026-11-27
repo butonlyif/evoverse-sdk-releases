@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>06 Build and Display Verification</h1></header>
 <main class="article tutorial-article"><h1 id="stage-06-build-and-hardware-verification">Stage 06 · Build and Hardware Verification</h1>
 <blockquote>
-<p>EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>The first five stages prepared evidence; this stage produces physical evidence: a native build registers the build artifacts, programming writes the bitstream into the TJ180A484S on demand, and the declared scenarios then confirm one by one that SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX genuinely runs on the board.</p>
 </blockquote>
 <p>The three classes of evidence are not interchangeable: a passing build ≠ timing closure, timing closure ≠ functional correctness, and a successful program ≠ on-board validation. Without hardware, this stage may stop at build evidence and honestly mark the hardware and system-level states as <code>NOT_RUN</code> — the same boundary as the Stage 04 firmware chapter.</p>

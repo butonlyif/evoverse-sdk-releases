@@ -120,7 +120,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <h1>FPGA + RK3588 系统意图教程（WS-E2 双芯片）</h1></header>
 <main class="article tutorial-article"><h1 id="fpga-rk3588-系统意图教程-ws-e2-双芯片">FPGA + RK3588 系统意图教程（WS-E2 双芯片）</h1>
 <blockquote>
-<p>适用 EvoVerse SDK v1.0.1 · 2026-11-26</p>
+<p>适用 EvoVerse SDK v1.0.1 · 2026-11-28</p>
 <p>适用版本：v1.0.1　目标器件：TJ180A484S（Titanium Ti60） + RK3588J　默认宿主：Trae</p>
 </blockquote>
 <p>本教程只讲<strong>一个系统意图</strong>：在 WS-E2 上跑一个必须由 FPGA 与 RK3588 协同完成的应用——FPGA 负责实时采集与像素预处理，RK3588 负责 Linux 用户态应用与网络/存储。系统意图不是把两份单芯片教程粘在一起，而是先按功能分配芯片，冻结一份接口契约，再分别实现、最后做系统级 composition。</p>
