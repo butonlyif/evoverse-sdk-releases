@@ -100,7 +100,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
-<span>BSP Profile、四阶段交叉编译、固件打包与当前边界。</span>
+<span>BSP Profile、Workbench 九 Tab（含 Deliver 交付旅程）、四阶段交叉编译、固件打包与当前边界。</span>
 <code>adapters/RK3588-Adapter使用指南.md</code>
 <a href="../../../adapters/RK3588-Adapter使用指南.md">Markdown 源文件</a></p>
 <h1>RK3588 Adapter 使用指南</h1></header>
@@ -138,7 +138,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <p>工具链版本由 BSP Profile 的 <code>environment</code> 段（<code>containerDigest</code> / <code>toolchainTriple</code> / <code>toolchainSha256</code>）锁定；preflight 阶段做哈希校验，不匹配即阻塞构建。</p>
-<h2 id="2-workbench-八-tab">2. Workbench 八 Tab</h2>
+<h2 id="2-workbench-九-tab">2. Workbench 九 Tab</h2>
 <p>打开方式：<code>RK3588: Open Workbench</code>。</p>
 <table>
 <thead>
@@ -183,6 +183,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <td><strong>Software</strong></td>
 <td>应用程序管理</td>
 <td>占位</td>
+</tr>
+<tr>
+<td><strong>Deliver</strong></td>
+<td>从选板到交付的连续旅程：能力 Profile 精确门控、物料进度（命名文件/字节/取消/续传）、生成-构建-组包精确产物路径、软件/硬件部署分离（见 Platform Development 指南 2.1-2.3 节）</td>
+<td>可用</td>
 </tr>
 <tr>
 <td><strong>Debug</strong></td>

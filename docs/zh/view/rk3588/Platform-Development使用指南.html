@@ -100,14 +100,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">教程中心</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../boards.html">板卡与物料</a><a class="pnav-item" href="../../cli-reference.html">CLI 参考</a><a class="pnav-item" href="../../mcp-reference.html">MCP 工具参考</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../rk3588-adapter.html">← 返回RK3588 Adapter</a>
-<span>统一 Platform Release 的在线、离线、无板卡、AI 模型与板卡续接流程，以及软件/硬件证据边界。</span>
+<span>统一 Platform Release 的 Deliver 交付旅程、SoC Profile 矩阵、在线/离线/无板卡/AI 模型路径与软件/硬件证据边界。</span>
 <code>rk3588/Platform-Development使用指南.md</code>
 <a href="../../../rk3588/Platform-Development使用指南.md">Markdown 源文件</a></p>
 <h1>RK3588 Platform Development 使用指南</h1></header>
 <main class="article"><h1 id="rk3588-platform-development-使用指南">RK3588 Platform Development 使用指南</h1>
 <blockquote>
 <p>适用 EvoVerse SDK v1.0.1 · 2026-11-27</p>
-<p>v1.0.1 VSIX 已提供下述选板卡入口；第 4 节保留手动部署路径。</p>
+<p>v1.0.1 VSIX 已提供下述选板卡入口与 <strong>Deliver</strong> 交付旅程（2.1 节）。第 4 节保留手动部署路径。</p>
+<p>应用工具链增量（新 App Builder、能力 profile 清单、zlib 能力包）经独立签名、不可变的 <strong>Application Toolchain Add-on</strong> 发布（<a href="https://github.com/butonlyif/evoverse-rockchip-platform-release/releases/tag/application-toolchain-2026.11.27-candidate.1">application-toolchain-2026.11.27-candidate.1</a>），绑定已发布 Platform/sysroot 摘要；SDK 侧在平台准备时经信封摘要钉扎 + Ed25519 验签 + 全绑定核对后自动选用。GitHub 为主通道（完整二进制），Gitee 仅提供签名索引与 SHA256SUMS（与 Platform 候选同约定）。</p>
 <p>适用版本：EvoVerse SDK v1.0.1
 当前发布边界：软件资格可在无板卡时完成；烧录、启动、板端运行和 NPU 性能必须使用真实板卡验证。</p>
 </blockquote>
@@ -123,20 +124,110 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </ul>
 <p>工程中的 <code>.evoverse/platform-lock.json</code> 固定平台版本和描述符摘要。再次打开工程时复用该锁；不同版本不会静默覆盖。</p>
 <h2 id="2-workbench-在线路径">2. Workbench 在线路径</h2>
+<h3 id="2-1-deliver-交付旅程">2.1 Deliver 交付旅程</h3>
+<p>Workbench 的 <strong>Deliver</strong> Tab 把从选板到交付的链路呈现为连续六步，每一步持久化身份、进度、产物与下一步动作；切换 Tab 或重开 Workbench 不丢失已完成的步骤与回执：</p>
 <ol>
-<li>安装 SDK、RK3588 Adapter，并同步 Catalog。</li>
+<li><strong>Board</strong> — 选择 Catalog 板卡（module + carrier + revision）。工程已锁定其他目标时该步 BLOCKED 并指明锁定的平台；未提供 platform-development 条目的板卡不继承任何平台资产。</li>
+<li><strong>Profile</strong> — 从 SoC 能力矩阵（2.2 节）选择应用能力 Profile；非 READY Profile 精确列出缺口与下一步，Generate 按钮不启用。</li>
+<li><strong>Materials</strong> — 平台物料准备。进度显示命名文件、已收/总字节数、续传偏移、重试次数与缓存命中标记；可取消并续传。</li>
+<li><strong>Model</strong>（仅 AI Profile 出现）— ONNX→RKNN 转换；非 AI 旅程不出现该步，也不出现任何模型转换或 Rockchip 许可提示。</li>
+<li><strong>Build &amp; package</strong> — 通用旅程一键执行封闭的 <code>generic.app.pipeline</code>（生成 → <code>app.build</code> → <code>package.assemble</code> → <code>package.verify</code>），显示精确产物路径与摘要；AI 旅程走 <code>ai.pipeline.run</code> 七步流水线（需要 Linux Environment Manager 环境锁）。</li>
+<li>
+<p><strong>Deploy</strong> — 软件资格与部署/硬件资格分离：无板卡时保持 <code>NO_BOARD / NOT_RUN</code>；软件完成只由提交的 no-board 回执证明，旅程不会自行推断完成。</p>
+</li>
+<li>
+<p>安装 SDK、RK3588 Adapter，并同步 Catalog。</p>
+</li>
 <li>创建或打开与 Catalog 板卡/载板身份匹配的工程。</li>
 <li>在 RK3588 Workbench 的 <strong>Board</strong> 页点击 <strong>选择 Catalog 板卡并本地准备</strong>，会跳转到 <strong>Software → Platform Development</strong>。在那里选择 Catalog 板卡、载板和修订版，再点击 <strong>本地准备平台</strong>。SDK 根据 Catalog 的公开地址获取签名描述符，核对摘要、签名和目标身份，并写入工程锁；不需要手工下载描述符。</li>
-<li>默认准备 <code>sysroot + App Builder</code>；AI 工程勾选 <strong>AI Model Builder</strong> 后一起下载。SDK 在本机取得与 Platform 锁定版本匹配的 Rockchip RKNN Toolkit2 wheel；首次获取前显示许可确认，从上游下载并核对固定大小与 SHA-256。厂商 wheel 不在 EvoVerse 公开镜像或 Builder 镜像中。固件可单独预下载，但不能记为已烧录。
+<li>默认准备 <code>sysroot + App Builder</code>；AI 工程勾选 <strong>AI Model Builder</strong> 后一起下载。SDK 在本机取得与 Platform 锁定版本匹配的 RKNN Toolkit2 wheel、rknpu2 头文件和 AArch64 运行库；首次获取前显示许可确认，从官方来源逐项下载并核对大小与 SHA-256。三项厂商材料不进入 EvoVerse 公开包或 Builder 镜像。仅准备非 AI 平台资产时不会获取 RKNN。固件可单独预下载，但不能记为已烧录。
    下载期间 Workbench 显示工作状态，IDE 通知逐文件显示已下载 MiB 和总大小；App Builder 约 486 MiB。可在通知中取消；若网络持续无数据，下载会超时并从暂存字节续传重试。只有校验通过才写入正式缓存和工程锁。</li>
-<li>选择 <strong>构建应用</strong>。转换模型前填写 ONNX 路径、固定输入张量、归一化、精度与准确度参数；已验证的 Toolkit 目录由 SDK 自动交给 Model Builder。<strong>转换模型</strong> 依次调用 Platform Model Builder 的 <code>model.prepare</code> 与 <code>model.convert</code>，主机核对准备输出摘要；旧 AI Pipeline 的 <strong>Run Pipeline</strong> 仍是独立入口。离线安装可手动配置 <code>evoverse.rk3588.restrictedMaterialsDirectory</code> 指向已授权、已校验的厂商材料目录。</li>
+<li>选择 <strong>构建应用</strong>。转换模型前填写 ONNX 路径、固定输入张量、归一化、精度与准确度参数；SDK 仅在三项材料全部校验后把目录以只读方式交给 Builder。<strong>转换模型</strong> 依次调用 Platform Model Builder 的 <code>model.prepare</code> 与 <code>model.convert</code>，主机核对准备输出摘要；旧 AI Pipeline 的 <strong>Run Pipeline</strong> 仍是独立入口。
+   通用 C/C++ 工程选择 <strong>generic-cli (CMake)</strong> 模式：<code>app.source</code> 指向含 <code>CMakeLists.txt</code> 的目录，App Builder 在 Linux 容器内用平台锁定的 sysroot 交叉编译，不获取、不挂载、不链接任何 RKNN 材料；产物 ELF 的依赖白名单同样禁止 <code>librknnrt.so</code>。构建请求绑定源码树摘要（<code>sourceDigest</code>）：源码变化后再用同一请求会得到 <code>INPUT_INVALID</code>，必须重新构建。CMake 报错时会点名缺失的目标库（例如 <code>cannot find -l&lt;库&gt;</code> 被解析为结构化 <code>missingDependencies</code>）。能力域 Profile 由 2.2 节矩阵精确门控：<code>network-service</code> 走已验证 sysroot 的 POSIX socket；<code>compression</code> / <code>cryptography</code> 处于 <code>NEEDS_PACK</code>（可导入能力包，见 2.3 节）；摄像头/ISP、音频、媒体编解码处于 <code>NEEDS_CUSTOM_PLATFORM</code>；ROS 2 与实时 Linux 为 <code>NOT_INSTALLED</code> 集成候选。非 READY Profile 的生成请求按状态拒绝（如 <code>GENERIC_APP_PROFILE_NEEDS_PACK:compression</code>、<code>NEEDS_CUSTOM_PLATFORM:isp-camera</code>、<code>GENERIC_APP_PROFILE_NOT_INSTALLED:ros2</code>）并携带精确缺口，不会静默生成。</li>
 </ol>
 <p>在 Windows 主机上，已校验的 <code>sysroot.tar</code> 保持在 SDK 内容寻址缓存；Builder 在 Linux 容器内解包到 <code>/sysroot</code> 后交叉编译，不要求 Windows 解开 Linux 符号链接。
-6. 有板卡后按对应板卡的烧录说明操作，验证板卡身份后再执行 <strong>部署并运行</strong>。
-7. 使用 <strong>查看证据</strong> 区分软件、烧录、启动、板端执行和 NPU 性能状态。</p>
+6. <strong>组装应用包</strong>。通用包（generic-cli）只包含 <code>application</code>、声明的 <code>resources/</code> 资源和 <code>PACKAGE-MANIFEST.json</code>；组包前 Builder 用同源 sysroot 证明 ELF 每个动态依赖在目标平台上存在，并把平台提供的依赖与 sysroot 身份记入 manifest。普通包不含模型或 RKNN runtime。<strong>验证应用包</strong> 先只读检查包内全部成员（链接、设备节点、越界路径在解包前拒绝），再解包复验逐文件摘要、ELF 架构/loader、许可证分类和 <code>hardwareRuntime: NOT_RUN</code>。AI 包（含 <code>model.rknn</code>、<code>prep-config.json</code>、<code>librknnrt.so</code>）沿用原有路径。
+7. 有板卡后按对应板卡的烧录说明操作，验证板卡身份后再执行 <strong>部署并运行</strong>。
+8. 使用 <strong>查看证据</strong> 区分软件、烧录、启动、板端执行和 NPU 性能状态。</p>
 <p>当前 WS-E2 + RK3588J EVM 修订版 1 的候选包位于 <a href="https://github.com/butonlyif/evoverse-rockchip-platform-release/releases/tag/platform-development-2026.11.24-candidate.1">Platform Release</a>：<code>update.img</code> 是固件，<code>sysroot.tar</code> 和 <code>app-builder.tar</code> 是 App SDK 物料，<code>model-builder.tar</code> 是 AI 构建物料；文件名不含板卡名，目标身份由签名描述符绑定。</p>
 <p>下载采用内容寻址缓存并复验大小和 SHA-256。缓存命中不等于板卡已烧录或已启动。</p>
-<h2 id="3-没有板卡时">3. 没有板卡时</h2>
+<h3 id="2-2-soc-应用能力-profile-矩阵">2.2 SoC 应用能力 Profile 矩阵</h3>
+<p><code>platform.status</code> 以<strong>封闭矩阵</strong>评估每个应用能力 Profile 的就绪状态——状态由签名描述符、内容寻址缓存与已验证厂商材料的<strong>事实</strong>投影而来，页面与生成器从不自行推断就绪。非 READY Profile 的生成请求按状态精确拒绝（携带缺口清单），不会静默生成：</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>类型</th>
+<th>状态（物料就绪后）</th>
+<th>前提 / 精确缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>generic-cli</code></td>
+<td>通用 C 应用</td>
+<td>READY</td>
+<td>平台锁 + sysroot + App Builder 缓存</td>
+</tr>
+<tr>
+<td><code>rknn-file-inference</code></td>
+<td>RKNN 模型推理（AI）</td>
+<td>READY</td>
+<td>上述 + Model Builder 缓存 + 三项 RKNN 厂商材料校验</td>
+</tr>
+<tr>
+<td><code>network-service</code></td>
+<td>网络服务（POSIX socket）</td>
+<td>READY</td>
+<td>POSIX socket 服务已由已验证 sysroot（glibc）提供</td>
+</tr>
+<tr>
+<td><code>compression</code></td>
+<td>数据压缩（zlib）</td>
+<td>NEEDS_PACK</td>
+<td>sysroot 缺 zlib 服务；可导入 zlib 能力包（2.3 节）或申请定制平台</td>
+</tr>
+<tr>
+<td><code>cryptography</code></td>
+<td>加解密（OpenSSL EVP）</td>
+<td>NEEDS_PACK</td>
+<td>sysroot 缺 OpenSSL EVP 服务；同上</td>
+</tr>
+<tr>
+<td><code>isp-camera</code></td>
+<td>ISP 摄像头采集</td>
+<td>NEEDS_CUSTOM_PLATFORM</td>
+<td>需内核驱动 + 设备证据，当前发布未携带</td>
+</tr>
+<tr>
+<td><code>audio-processing</code></td>
+<td>音频采集/播放</td>
+<td>NEEDS_CUSTOM_PLATFORM</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>media-codec</code></td>
+<td>媒体编解码（MPP）</td>
+<td>NEEDS_CUSTOM_PLATFORM</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>ros2</code></td>
+<td>ROS 2 节点</td>
+<td>NOT_INSTALLED</td>
+<td>已声明的集成候选，本批未安装；启用需单独验证的 pack</td>
+</tr>
+<tr>
+<td><code>real-time</code></td>
+<td>实时控制（PREEMPT_RT）</td>
+<td>NOT_INSTALLED</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<p>物料未准备时全部 Profile 至少处于 <code>NEEDS_MATERIALS</code>（指明缺平台锁/缓存资产）。READY Profile 只暴露矩阵声明的已验证 API 集（如 <code>posix-math</code>、<code>posix-sockets</code>、<code>rknn-inference</code>）；代码生成只会使用这些 API。</p>
+<h3 id="2-3-能力包导入-capability-pack">2.3 能力包导入（capability pack）</h3>
+<p><code>NEEDS_PACK</code> Profile 缺的只是 sysroot 服务，可通过第三方能力包补齐：包提供头文件、目标库（如 <code>libz.so.1</code>）与构建/运行闭包证据，SDK 在导入时逐项核对摘要与闭包，校验失败的包不暴露任何 API。生成的应用以<strong>应用私有</strong>方式部署该库（<code>third_party/&lt;pack&gt;/</code> vendoring + <code>$ORIGIN</code> runpath），平台依赖闭包不包含它——目标 rootfs 无需预装。包评估与私有部署机制已在管线侧实现；Workbench 侧的包选择控件属于后续版本。</p>
 <p>没有板卡是受支持状态。客户仍可完成：</p>
 <ul>
 <li>Platform Release 解析和工程锁定；</li>
@@ -146,13 +237,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li>Application Package 组装与静态验证。</li>
 </ul>
 <p>完成后状态应为 <code>WAITING_FOR_BOARD</code>。以下事实必须保持 <code>NOT_RUN / NO_BOARD</code>：板卡发现、烧录、启动、目标部署、目标执行、NPU 执行和硬件性能。</p>
+<p>Deliver 旅程的 <strong>Deploy</strong> 步骤对无板卡客户保持等待/阻塞并显示 <code>NO_BOARD</code>：软件完成（<code>softwareComplete</code>）只由提交的 no-board 回执证明，缺失回执时旅程不会自行推断完成；AI 旅程的 <code>ai.pipeline.run</code> 七步流水线需要 Linux Environment Manager 环境锁，Windows 无管理器主机上以类型化错误如实拒绝。</p>
 <h2 id="4-手动和离线路径">4. 手动和离线路径</h2>
 <p>在线渠道、企业镜像和离线介质必须携带同一份签名 manifest 和相同资产摘要。</p>
 <ol>
 <li>从已批准渠道取得完整 Release 目录；不要只复制 <code>update.img</code>。</li>
 <li>离线传输签名的 <code>platform-development-release.json</code>、所需资产和 <code>source-compliance.tar</code>（内含 SBOM、许可证及对应源码材料）。</li>
 <li>在联网主机或发布方提供的校验工具上验证签名；在目标 Windows 主机复验每个文件的 SHA-256 和大小。</li>
-<li>将已验证资产导入 SDK 内容寻址缓存，或把描述符放入工程 <code>.evoverse/platform-descriptor.json</code> 后执行 <strong>准备平台</strong>。不得修改描述符以改写本地路径。</li>
+<li>将已验证资产导入 SDK 内容寻址缓存，或把描述符放入工程 <code>.evoverse/platform-descriptor.json</code> 后执行 <strong>准备平台</strong>。不得修改描述符以改写本地路径。
+   RKNN 三项材料可放在同一个本机目录，文件名分别为 <code>rknn-toolkit2</code>、<code>rknpu2-runtime-headers</code>、<code>rknpu2-runtime-aarch64</code>；通过 SDK 命令 <code>evoverse.platform.prepare</code> 传入 <code>roles</code>（含 <code>model-builder</code>）和 <code>offlineMaterialsDirectory</code>。确认许可后，SDK 会先校验三项摘要再导入本机缓存；Workbench 当前尚无离线目录选择控件。</li>
 <li>Docker 不可用时，板卡到货后可选择 SSH 板载原生编译；板卡上的 Developer Runtime 身份必须与工程锁一致。</li>
 </ol>
 <p>手动烧录必须使用 Release 随附的烧录说明和该板卡对应的工具。烧录前再次核对 module、carrier、board revision、固件摘要和资格状态。<code>UNQUALIFIED_NO_BOOT</code> 只允许下载和工程准备，不代表客户可以把它当成已验证量产镜像。</p>
@@ -164,6 +257,14 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <li><code>PLATFORM_DESCRIPTOR_UNREADABLE</code>：描述符缺失、不是合法 JSON 或无法读取。</li>
 <li><code>PLATFORM_UPGRADE_CONFIRMATION_REQUIRED</code>：工程已有不同平台锁；先审查升级，不要删除锁来绕过。</li>
 <li><code>PLATFORM_MATERIALS_MISSING</code>：缓存资产不完整；重新执行准备平台或重新导入离线资产。</li>
+<li><code>PLATFORM_VENDOR_DIGEST_MISMATCH</code>：本机 RKNN 文件与锁定摘要不符；检查来源和版本后移走损坏缓存，再重新准备。</li>
+<li><code>PLATFORM_RESTRICTED_MATERIALS_REQUIRED</code>：App/Model Builder 需要三项 RKNN 材料；在 <strong>本地准备平台</strong> 中勾选 <strong>AI Model Builder</strong> 后重试。</li>
+<li><code>NEEDS_CUSTOM_PLATFORM:&lt;profile&gt;</code>：该能力域（摄像头/ISP、音频、媒体编解码）需要平台定制构建——内核驱动、设备树或设备证据，当前发布未携带；需平台方逐项验证后开放。</li>
+<li><code>GENERIC_APP_PROFILE_NEEDS_PACK:&lt;profile&gt;</code>：该域（压缩/加解密）只缺 sysroot 服务；导入对应能力包（2.3 节）或申请定制平台。</li>
+<li><code>GENERIC_APP_PROFILE_NOT_INSTALLED:&lt;profile&gt;</code>：ROS 2 / 实时 Linux 为已声明的集成候选，本批未安装；启用需要单独验证的 pack。</li>
+<li><code>PLATFORM_PREPARE_BUSY</code>：同一工程同时只允许一个平台准备运行；等待其完成或先取消。</li>
+<li><code>GENERIC_APP_PROFILE_UNKNOWN:&lt;id&gt;</code>：请求的 Profile 不在当前平台状态矩阵内（封闭集合）。</li>
+<li><code>INPUT_INVALID</code>（<code>app.source</code> 摘要不匹配）：工程源码在上次构建后发生变化，旧构建回执已失效；重新发起构建即可。</li>
 <li><code>WAITING_FOR_BOARD</code>：软件阶段已完成，等待真实板卡，不是失败。</li>
 <li><code>UNQUALIFIED_NO_BOOT</code>：固件尚无真实启动资格，不得声明烧录/启动 PASS。</li>
 </ul>

@@ -126,7 +126,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <p>SD card -&gt; DDR frame buffer -&gt; MIPI CSI-2 TX 的每一环最终都要落到 TJ180A484S 的物理引脚和时钟资源上。开始前先把“你说的硬件”和“工具看到的硬件”对齐：板卡、载板、夹克、器件与速度等级。工程身份由 Agent 在第一次方案确认时写入，你不需要单独执行一个工程初始化动作。</p>
 <h2 id="准备环境">准备环境</h2>
 <ol>
-<li>安装三个 VSIX：<code>evoverse-sdk</code>、<code>evoverse-efinity-adapter</code>、<code>evoverse-rk3588-adapter</code>（版本一致，当前为 1.0.0），装完重启 IDE。</li>
+<li>安装三个 VSIX：<code>evoverse-sdk</code>、<code>evoverse-efinity-adapter</code>、<code>evoverse-rk3588-adapter</code>（版本一致，当前为 1.0.1），装完重启 IDE。</li>
 <li>首次启动会弹出 "Set up EvoVerse SDK?"，确认 SDK 工作区（默认 <code>~/evoverse-sdk</code>）；确认后 Welcome 页自动打开。</li>
 <li>在 Welcome 页点一次 Sync Catalog 同步板卡目录。</li>
 <li>打开一个空目录作为工程根，然后按宿主开始：<strong>Trae：</strong>在聊天里输入 <code>@evoverse</code>；<strong>VS Code：</strong>在原生 Chat 的 Agent 模式直接描述目标，无需 <code>@evoverse</code>，并确认 EvoVerse MCP 为 Running。</li>

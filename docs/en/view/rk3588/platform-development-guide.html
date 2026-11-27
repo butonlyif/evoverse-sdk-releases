@@ -100,14 +100,15 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../rk3588-adapter.html">← Back to RK3588 Adapter</a>
-<span>Online, offline, no-board, AI-model, and board-continuation workflows for one Platform Release, with explicit software and hardware evidence boundaries.</span>
+<span>The Deliver journey, SoC profile matrix, and the online/offline/no-board/AI-model workflows of one Platform Release, with explicit software and hardware evidence boundaries.</span>
 <code>rk3588/platform-development-guide.md</code>
 <a href="../../../rk3588/platform-development-guide.md">Markdown source</a></p>
 <h1>RK3588 Platform Development Guide</h1></header>
 <main class="article"><h1 id="rk3588-platform-development-guide">RK3588 Platform Development Guide</h1>
 <blockquote>
 <p>EvoVerse SDK v1.0.1 · 2026-11-27</p>
-<p>The current v1.0.1 VSIX includes the board-selection flow. Section 4 describes the manual path.</p>
+<p>The current v1.0.1 VSIX includes the board-selection flow and the <strong>Deliver</strong> journey (§2.1). Section 4 describes the manual path.</p>
+<p>Application-toolchain increments (the new App Builder, the capability-profiles manifest and the zlib capability pack) ship as a separately signed, immutable <strong>Application Toolchain Add-on</strong> (<a href="https://github.com/butonlyif/evoverse-rockchip-platform-release/releases/tag/application-toolchain-2026.11.27-candidate.1">application-toolchain-2026.11.27-candidate.1</a>) bound to the published Platform/sysroot digests. The SDK selects it automatically during platform prepare after envelope-digest pinning, Ed25519 signature verification and full identity cross-binding. GitHub is the primary channel (complete binaries); Gitee mirrors the signed index plus SHA256SUMS only (same convention as the Platform candidate).</p>
 <p>Applies to EvoVerse SDK v1.0.1.
 Current boundary: software qualification can finish without a board. Flash, boot, target execution, and NPU performance require real hardware.</p>
 </blockquote>
@@ -123,28 +124,120 @@ Current boundary: software qualification can finish without a board. Flash, boot
 </ul>
 <p><code>.evoverse/platform-lock.json</code> pins the platform version and descriptor digest. Reopening the project reuses that lock; another version never replaces it silently.</p>
 <h2 id="2-online-workbench-path">2. Online Workbench path</h2>
+<h3 id="2-1-the-deliver-journey">2.1 The Deliver journey</h3>
+<p>The Workbench <strong>Deliver</strong> tab presents the path from board selection to delivery as one continuous six-step journey. Every step persists identity, progress, outputs, and the next action; switching tabs or reopening the Workbench never loses completed steps or receipts:</p>
 <ol>
-<li>Install the SDK and RK3588 Adapter, then synchronize the Catalog.</li>
+<li><strong>Board</strong> — select the Catalog board (module + carrier + revision). When the project is locked to another target the step turns BLOCKED and names the locked platform; a board without a platform-development entry inherits no platform assets.</li>
+<li><strong>Profile</strong> — pick the application capability profile from the SoC matrix (§2.2); a non-READY profile lists its exact gaps and next action, and Generate stays disabled.</li>
+<li><strong>Materials</strong> — platform material preparation. Progress shows the named file, received/total bytes, resume offset, retry attempt, and cache-hit marker; the run can be cancelled and resumed.</li>
+<li><strong>Model</strong> (AI profiles only) — ONNX-to-RKNN conversion; a non-AI journey never shows this step, any model conversion, or a Rockchip license prompt.</li>
+<li><strong>Build &amp; package</strong> — the generic journey runs the closed <code>generic.app.pipeline</code> (generate → <code>app.build</code> → <code>package.assemble</code> → <code>package.verify</code>) in one action, showing exact result paths and digests; the AI journey uses the <code>ai.pipeline.run</code> seven-step pipeline (which requires the Linux Environment Manager environment lock).</li>
+<li>
+<p><strong>Deploy</strong> — software qualification stays separate from deployment/hardware qualification: without a board the step holds <code>NO_BOARD / NOT_RUN</code>; software completion is attested only by a committed no-board receipt, never inferred by the journey.</p>
+</li>
+<li>
+<p>Install the SDK and RK3588 Adapter, then synchronize the Catalog.</p>
+</li>
 <li>Create or open a project whose Catalog module/carrier identity matches the target.</li>
 <li>In RK3588 Workbench, click <strong>Select board</strong> on the <strong>Board</strong> tab to open <strong>Software → Platform Development</strong>. Select the Catalog module, carrier, and revision there, then click <strong>Prepare locally</strong>. The SDK downloads the signed descriptor through the Catalog reference, checks its digest, signature, and target identity, and pins the project lock.</li>
-<li>The default selection downloads <code>sysroot + App Builder</code>. Check <strong>AI Model Builder</strong> to download it too. The SDK then obtains the Rockchip RKNN Toolkit2 wheel pinned to the Platform version on this host. First use shows the Rockchip license; after acceptance the SDK downloads the wheel from its publisher and verifies size and SHA-256. The wheel is not embedded in the EvoVerse release or Builder image. Firmware can be pre-downloaded separately; that is not flashing.
+<li>The default selection downloads <code>sysroot + App Builder</code>. Check <strong>AI Model Builder</strong> to download it too. The SDK obtains the pinned RKNN Toolkit2 wheel, rknpu2 header, and AArch64 runtime on this host. First use asks for license acceptance; the SDK then downloads each file from its official source and verifies size and SHA-256. These vendor bytes are absent from the EvoVerse release and Builder image. Preparing only non-AI platform assets does not fetch RKNN. Firmware can be pre-downloaded separately; that is not flashing.
    During download, the IDE notification shows the asset name, received MiB, and total MiB; App Builder is about 486 MiB. You can cancel from the notification. A stalled connection times out and retries from staged bytes. The SDK writes the final cache and project lock only after verification.</li>
-<li>Select <strong>Build Application</strong>. For model conversion, enter the ONNX path, fixed input tensor, normalization, precision, and accuracy parameters. The SDK supplies the verified Toolkit directory to Model Builder. <strong>Convert Model</strong> invokes <code>model.prepare</code> and <code>model.convert</code> in order and verifies the prepared output digests. The older <strong>Run Pipeline</strong> button remains a separate path. For offline installations, <code>evoverse.rk3588.restrictedMaterialsDirectory</code> can point to an authorized, verified vendor material directory.</li>
+<li>Select <strong>Build Application</strong>. For model conversion, enter the ONNX path, fixed input tensor, normalization, precision, and accuracy parameters. The SDK supplies the directory read-only only after all three materials verify. <strong>Convert Model</strong> invokes <code>model.prepare</code> and <code>model.convert</code> in order and verifies the prepared output digests. The older <strong>Run Pipeline</strong> button remains a separate path.
+   A generic C/C++ project selects the <strong>generic-cli (CMake)</strong> mode: <code>app.source</code> points at a directory containing <code>CMakeLists.txt</code>; the App Builder cross-compiles it inside the Linux container against the platform-locked sysroot without fetching, mounting, or linking any RKNN material, and the produced ELF's dependency whitelist likewise forbids <code>librknnrt.so</code>. The build request binds a source-tree digest (<code>sourceDigest</code>): after the source changes, resubmitting the same request fails with <code>INPUT_INVALID</code> and the build must be reissued. CMake failures name the missing target library (a <code>cannot find -l&lt;lib&gt;</code> line is parsed into structured <code>missingDependencies</code>). Domain profiles are gated precisely by the §2.2 matrix: <code>network-service</code> uses the verified sysroot's POSIX sockets; <code>compression</code> / <code>cryptography</code> sit at <code>NEEDS_PACK</code> (import the capability pack, §2.3); camera/ISP, audio, and media codec sit at <code>NEEDS_CUSTOM_PLATFORM</code>; ROS 2 and real-time Linux are <code>NOT_INSTALLED</code> integration candidates. A non-READY profile's generation request is refused by state (e.g. <code>GENERIC_APP_PROFILE_NEEDS_PACK:compression</code>, <code>NEEDS_CUSTOM_PLATFORM:isp-camera</code>, <code>GENERIC_APP_PROFILE_NOT_INSTALLED:ros2</code>) carrying the exact gaps — nothing is generated silently.</li>
+<li><strong>Assemble the application package</strong>. A generic-cli package contains only <code>application</code>, the declared <code>resources/</code> payloads, and <code>PACKAGE-MANIFEST.json</code>; before staging, the Builder proves with the same-origin sysroot that every ELF dynamic dependency exists on the target and records the platform-provided dependencies plus the sysroot identity in the manifest. Generic packages never contain the model or RKNN runtime. <strong>Verify Package</strong> first lists every tar member read-only (links, device nodes, and escaping paths are rejected before extraction), then unpacks and re-checks per-file digests, ELF architecture/loader, license classification, and <code>hardwareRuntime: NOT_RUN</code>. AI packages (<code>model.rknn</code>, <code>prep-config.json</code>, <code>librknnrt.so</code>) keep their original path.</li>
 <li>When hardware is available, follow the board-specific flash instructions, verify board identity, then <strong>Deploy and Run</strong>.</li>
 <li>Use <strong>View Evidence</strong> to distinguish software, flash, boot, target execution, and NPU performance facts.</li>
 </ol>
 <p>The current <a href="https://github.com/butonlyif/evoverse-rockchip-platform-release/releases/tag/platform-development-2026.11.24-candidate.1">WS-E2 + RK3588J EVM revision 1 candidate release</a> contains <code>update.img</code> (firmware), <code>sysroot.tar</code> and <code>app-builder.tar</code> (App SDK materials), and <code>model-builder.tar</code> (AI build environment). Their filenames do not include the board ID; the signed descriptor binds the target.</p>
 <p>Downloads use a content-addressed cache and recheck size and SHA-256. A cache hit never proves that a board was flashed or booted.</p>
-<h2 id="3-development-without-a-board">3. Development without a board</h2>
+<h3 id="2-2-soc-application-capability-profile-matrix">2.2 SoC application capability profile matrix</h3>
+<p><code>platform.status</code> evaluates every application capability profile against a <strong>closed matrix</strong> — the states project from facts (signed descriptor, content-addressed cache, verified vendor materials), never inferred by the page or the generator. A non-READY profile's generation request is refused with its exact state and gap list; nothing is generated silently:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Kind</th>
+<th>State (materials prepared)</th>
+<th>Prerequisite / exact gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>generic-cli</code></td>
+<td>generic C application</td>
+<td>READY</td>
+<td>platform lock + sysroot + App Builder cached</td>
+</tr>
+<tr>
+<td><code>rknn-file-inference</code></td>
+<td>RKNN model inference (AI)</td>
+<td>READY</td>
+<td>the above + Model Builder cached + all three RKNN vendor materials verified</td>
+</tr>
+<tr>
+<td><code>network-service</code></td>
+<td>network service (POSIX sockets)</td>
+<td>READY</td>
+<td>POSIX socket service provided by the verified sysroot (glibc)</td>
+</tr>
+<tr>
+<td><code>compression</code></td>
+<td>data compression (zlib)</td>
+<td>NEEDS_PACK</td>
+<td>sysroot lacks the zlib service; import the zlib capability pack (§2.3) or request a custom platform</td>
+</tr>
+<tr>
+<td><code>cryptography</code></td>
+<td>cryptography (OpenSSL EVP)</td>
+<td>NEEDS_PACK</td>
+<td>sysroot lacks the OpenSSL EVP service; same options</td>
+</tr>
+<tr>
+<td><code>isp-camera</code></td>
+<td>ISP camera capture</td>
+<td>NEEDS_CUSTOM_PLATFORM</td>
+<td>requires kernel drivers + device evidence the current release does not carry</td>
+</tr>
+<tr>
+<td><code>audio-processing</code></td>
+<td>audio capture/playback</td>
+<td>NEEDS_CUSTOM_PLATFORM</td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>media-codec</code></td>
+<td>media codec (MPP)</td>
+<td>NEEDS_CUSTOM_PLATFORM</td>
+<td>same</td>
+</tr>
+<tr>
+<td><code>ros2</code></td>
+<td>ROS 2 node</td>
+<td>NOT_INSTALLED</td>
+<td>declared integration candidate, not installed in this batch; enabling requires a separately verified pack</td>
+</tr>
+<tr>
+<td><code>real-time</code></td>
+<td>real-time control (PREEMPT_RT)</td>
+<td>NOT_INSTALLED</td>
+<td>same</td>
+</tr>
+</tbody>
+</table>
+<p>Before materials are prepared every profile is at least <code>NEEDS_MATERIALS</code> (naming the missing platform lock / cached assets). A READY profile exposes only the verified API set declared by the matrix (e.g. <code>posix-math</code>, <code>posix-sockets</code>, <code>rknn-inference</code>); code generation uses only those APIs.</p>
+<h3 id="2-3-capability-pack-import">2.3 Capability pack import</h3>
+<p>A <code>NEEDS_PACK</code> profile is missing only a sysroot service, which a third-party capability pack can supply: the pack provides headers, the target library (e.g. <code>libz.so.1</code>), and build/runtime closure evidence; the SDK verifies every digest and closure item on import, and a pack that fails verification exposes no API. The generated application deploys the library <strong>app-privately</strong> (<code>third_party/&lt;pack&gt;/</code> vendoring + <code>$ORIGIN</code> runpath) — the platform dependency closure excludes it, so the target rootfs never needs it preinstalled. Pack evaluation and private deployment are implemented in the pipeline; a Workbench pack picker is a later release.</p>
 <p>No-board development is supported. Customers can complete release resolution and locking, AArch64 cross-compilation, ELF/loader/dependency/RPATH checks, ONNX inspection, quantization, RKNN conversion, host-simulator comparison, and static Application Package verification.</p>
 <p>The valid endpoint is <code>WAITING_FOR_BOARD</code>. Board discovery, flash, boot, target deployment, target execution, NPU execution, and hardware performance remain <code>NOT_RUN / NO_BOARD</code>.</p>
+<p>For no-board customers the Deliver journey's <strong>Deploy</strong> step stays waiting/blocked and shows <code>NO_BOARD</code>: software completion (<code>softwareComplete</code>) is attested only by a committed no-board receipt — the journey never infers completion when the receipt is absent. The AI journey's <code>ai.pipeline.run</code> seven-step pipeline requires the Linux Environment Manager environment lock; on a Windows host without the manager it fails with a typed, honest refusal.</p>
 <h2 id="4-manual-and-offline-path">4. Manual and offline path</h2>
 <p>Online channels, enterprise mirrors, and offline media must carry the same signed manifest and identical asset digests.</p>
 <ol>
 <li>Obtain the complete Release directory from an approved channel; do not copy only <code>update.img</code>.</li>
 <li>Transfer the manifest, signature, <code>SHA256SUMS</code>, required assets, SBOM, and licenses.</li>
 <li>Verify the signature with the release verification tool, then verify every asset's SHA-256 and size on the destination Windows host.</li>
-<li>Import verified assets into the SDK content-addressed cache, or place the descriptor at <code>.evoverse/platform-descriptor.json</code> and run <strong>Prepare Platform</strong>. Do not edit the descriptor to substitute local paths.</li>
+<li>Import verified assets into the SDK content-addressed cache, or place the descriptor at <code>.evoverse/platform-descriptor.json</code> and run <strong>Prepare Platform</strong>. Do not edit the descriptor to substitute local paths.
+   Put the three RKNN files in one local directory named <code>rknn-toolkit2</code>, <code>rknpu2-runtime-headers</code>, and <code>rknpu2-runtime-aarch64</code>. Invoke the SDK command <code>evoverse.platform.prepare</code> with <code>roles</code> containing <code>model-builder</code> and <code>offlineMaterialsDirectory</code>. After license acceptance, the SDK verifies all three digests before importing. The Workbench does not yet have an offline-directory picker.</li>
 <li>If Docker is unavailable, use SSH native build after the board arrives. The device Developer Runtime must match the project lock.</li>
 </ol>
 <p>Manual flashing must use the board-specific instructions shipped with the Release. Recheck module, carrier, board revision, firmware digest, and qualification state first. <code>UNQUALIFIED_NO_BOOT</code> permits download and project preparation; it is not a production-qualified image.</p>
@@ -156,6 +249,14 @@ Current boundary: software qualification can finish without a board. Flash, boot
 <li><code>PLATFORM_DESCRIPTOR_UNREADABLE</code>: the descriptor is absent, unreadable, or invalid JSON.</li>
 <li><code>PLATFORM_UPGRADE_CONFIRMATION_REQUIRED</code>: the project is pinned to another release; review and explicitly approve an upgrade.</li>
 <li><code>PLATFORM_MATERIALS_MISSING</code>: cached assets are incomplete; prepare again or re-import the offline release.</li>
+<li><code>PLATFORM_VENDOR_DIGEST_MISMATCH</code>: a local RKNN file differs from the pinned digest; check its source/version, remove the damaged cache entry, then prepare again.</li>
+<li><code>PLATFORM_RESTRICTED_MATERIALS_REQUIRED</code>: App/Model Builder needs all three RKNN files; select <strong>AI Model Builder</strong> in <strong>Prepare locally</strong>, then retry.</li>
+<li><code>NEEDS_CUSTOM_PLATFORM:&lt;profile&gt;</code>: that SoC domain (camera/ISP, audio, media codec) needs a platform-custom build — kernel driver, device tree, or device evidence the current release does not carry; it opens only after the platform provider verifies those items.</li>
+<li><code>GENERIC_APP_PROFILE_NEEDS_PACK:&lt;profile&gt;</code>: the domain (compression / cryptography) is missing only a sysroot service; import the matching capability pack (§2.3) or request a custom platform.</li>
+<li><code>GENERIC_APP_PROFILE_NOT_INSTALLED:&lt;profile&gt;</code>: ROS 2 / real-time Linux are declared integration candidates, not installed in this batch; enabling requires a separately verified pack.</li>
+<li><code>PLATFORM_PREPARE_BUSY</code>: one platform prepare at a time per workspace; wait for it or cancel it first.</li>
+<li><code>GENERIC_APP_PROFILE_UNKNOWN:&lt;id&gt;</code>: the requested profile is not in the current platform status matrix (closed set).</li>
+<li><code>INPUT_INVALID</code> (<code>app.source</code> digest mismatch): the project source changed after the last build, so the prior build receipt is stale; issue the build again.</li>
 <li><code>WAITING_FOR_BOARD</code>: software work is complete and awaits hardware; this is not a failure.</li>
 <li><code>UNQUALIFIED_NO_BOOT</code>: the firmware has no real boot qualification and must not be reported as flash/boot PASS.</li>
 </ul>

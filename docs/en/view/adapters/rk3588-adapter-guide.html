@@ -100,7 +100,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <div class="topbar"><a class="brand" href="../../customer-portal.html"><img src="../../assets/evoverse-logo.png" alt="EvoVerse"><span>EvoVerse SDK<small>Docs</small></span></a><nav class="pnav"><a class="pnav-item" href="../../customer-portal.html">EvoVerse SDK</a><a class="pnav-item" href="../../tutorials.html">Tutorials</a><a class="pnav-item" href="../../efinity-adapter.html">Efinity Adapter</a><a class="pnav-item on" href="../../rk3588-adapter.html">RK3588 Adapter</a><a class="pnav-item" href="../../skills.html">Skills</a><a class="pnav-item" href="../../video-sim.html">Video Sim</a><a class="pnav-item" href="../../boards.html">Boards and Materials</a></nav></div>
 <header><p class="tag">EvoVerse SDK v1.0.1</p>
 <p class="doc-meta"><a href="../../rk3588-adapter.html">← Back to RK3588 Adapter</a>
-<span>BSP profiles, four-stage cross-compilation, firmware packaging and current boundaries.</span>
+<span>BSP profiles, the nine Workbench tabs (incl. the Deliver journey), four-stage cross-compilation, firmware packaging and current boundaries.</span>
 <code>adapters/rk3588-adapter-guide.md</code>
 <a href="../../../adapters/rk3588-adapter-guide.md">Markdown source</a></p>
 <h1>RK3588 Adapter Guide</h1></header>
@@ -138,7 +138,7 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 </tbody>
 </table>
 <p>Toolchain versions are locked by the <code>environment</code> section of the BSP profile (<code>containerDigest</code> / <code>toolchainTriple</code> / <code>toolchainSha256</code>); the preflight stage verifies the hashes and blocks the build on any mismatch.</p>
-<h2 id="2-the-eight-workbench-tabs">2. The Eight Workbench Tabs</h2>
+<h2 id="2-the-nine-workbench-tabs">2. The Nine Workbench Tabs</h2>
 <p>Open it with <code>RK3588: Open Workbench</code>.</p>
 <table>
 <thead>
@@ -183,6 +183,11 @@ header,main,footer{max-width:1180px;margin:auto;padding:24px}header{padding-top:
 <td><strong>Software</strong></td>
 <td>Application management</td>
 <td>Placeholder</td>
+</tr>
+<tr>
+<td><strong>Deliver</strong></td>
+<td>Continuous board-to-delivery journey: precise capability-profile gating, material progress (named file/bytes/cancel/resume), generate-build-package with exact result paths, software vs deployment/hardware separation (see Platform Development Guide §2.1-2.3)</td>
+<td>Available</td>
 </tr>
 <tr>
 <td><strong>Debug</strong></td>

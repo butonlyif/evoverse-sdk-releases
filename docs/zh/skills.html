@@ -601,6 +601,16 @@ validated by this command. Missing BSP/layout files, unknown keys and path
 escapes fail closed. <code>platform-request</code> remains the product requirement handoff;
 <code>platform-material.json</code> is the Catalog-owned execution material consumed by
 the generic Platform generator.
+The mapping must include <code>flash_package</code> with explicit RKAF model,
+manufacturer and role/partition entries derived from the selected board's
+approved layout. Do not copy WS-E2 package names to another board. The command
+also references <code>interface-coverage.json</code>. If absent, it seeds that file from
+<code>platform.yaml.optional_peripherals</code> with every layer <code>UNVERIFIED</code> and hardware
+test <code>NOT_RUN</code>; this is a gap list, not confirmed hardware support. If no
+interface candidates are declared, the command stops and asks for board facts.
+An existing reviewed coverage file is preserved byte for byte, and its exact
+module/carrier/revision target must match before generating Platform material.
+Interface evidence paths are relative to the selected carrier material root.
 The template is the only Adapter-facing artifact: generation never renders
 an executable profile. A binding carried in the platform input is still
 validated field by field, and any gap returns <code>INCOMPLETE</code>; an executable
