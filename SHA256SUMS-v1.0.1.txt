@@ -1,2 +1,2 @@
-4969ec7164fc76318c5bd777dc8d2b2a88374f0168e803e845aa3d38236cbcda  EvoVerse-SDK-v1.0.1-Customer-Package.tar.gz
-6fdabc61f3d28a5dbbd87a143da1f2b7ebab82331492f0e6e2761c98e3586c24  EvoVerse-SDK-v1.0.1-Customer-Package-EN.tar.gz
+4022d5e59d3645c5ea44367dfa636376299e1286d0aafb3ced16c125e52b2394  EvoVerse-SDK-v1.0.1-Customer-Package.tar.gz
+be9db190a552d5aa51703e6475a417ba52e4c102bc51ebd77bf22717820bac44  EvoVerse-SDK-v1.0.1-Customer-Package-EN.tar.gz
